@@ -143,22 +143,22 @@
               <el-icon>
                 <Menu />
               </el-icon>
-              <span>主页</span>
+              <span>概览</span>
             </el-menu-item>
 
             <!-- 无子集 -->
             <el-menu-item index="/container" @click='saveActiveIndex("/container")'>
               <el-icon>
-                <Notebook />
+                <Coin />
               </el-icon>
               <span>容器服务</span>
             </el-menu-item>
 
             <el-menu-item index="/cicd" @click='saveActiveIndex("/cicd")'>
               <el-icon>
-                <Collection />
+                <Operation />
               </el-icon>
-              <span>CICD</span>
+              <span>DevOps</span>
             </el-menu-item>
 
             <el-menu-item index="/user" @click='saveActiveIndex("/user")'>
@@ -174,8 +174,6 @@
               </el-icon>
               <span>权限管理</span>
             </el-menu-item>
-
-
 
           </el-menu>
         </el-col>
@@ -199,11 +197,13 @@
     Collection,
     HomeFilled,
     Search,
+    Coin,
     Shop,
     CaretBottom,
     HelpFilled,
     Message,
     Lock,
+    Operation,
     Guide,
     User,
   } from '@element-plus/icons-vue'
@@ -271,10 +271,12 @@
       Shop,
       HomeFilled,
       Search,
+      Coin,
       CaretBottom,
       Message,
       User,
       Guide,
+      Operation,
     }
   }
 </script>
