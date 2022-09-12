@@ -1,7 +1,4 @@
-# Web-UI
+# Piuxiu-dashboard
 
-## Login Page
-![login](./static/loginpage.png)
-
-## Install WEB-UI
+## Install Piuxiu-dashboard
 [Installation](./install.md)

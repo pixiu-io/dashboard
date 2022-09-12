@@ -1,4 +1,4 @@
-# Install WEB-UI
+# Install Piuxiu-dashboard
 
 ## Project setup
 ```

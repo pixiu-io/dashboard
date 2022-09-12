@@ -36,7 +36,7 @@
       </div>
 
       <div style="display: flex; align-items:center;">
-        <el-input class="header-input" v-model="headInput" placeholder="请输入内容" :suffix-icon="Search" @blur="handleLost"
+        <el-input class="header-input" v-model="headInput" placeholder="搜索产品、文档..." :suffix-icon="Search" @blur="handleLost"
           @focus="handleInput" clearable>
           <template #suffix>
             <el-icon class="el-input__icon">
@@ -156,7 +156,7 @@
 
             <el-menu-item index="/cicd" @click='saveActiveIndex("/cicd")'>
               <el-icon>
-                <Operation />
+                <DataLine />
               </el-icon>
               <span>DevOps</span>
             </el-menu-item>
@@ -194,7 +194,7 @@
     Setting,
     Notebook,
     UserFilled,
-    Collection,
+    DataLine,
     HomeFilled,
     Search,
     Coin,
@@ -265,7 +265,7 @@
       Notebook,
       Setting,
       Lock,
-      Collection,
+      DataLine,
       HelpFilled,
       UserFilled,
       Shop,

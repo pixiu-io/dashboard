@@ -1,3 +1,3 @@
 <template>
-    <div>CICD</div>
+    <div>DevOps</div>
 </template>
