@@ -36,7 +36,7 @@
       </div>
 
       <div style="display: flex; align-items:center;">
-        <el-input class="header-input" v-model="headInput" placeholder="请输入内容" :suffix-icon="Search" @blur="handleLost"
+        <el-input class="header-input" v-model="headInput" placeholder="搜索产品、文档..." :suffix-icon="Search" @blur="handleLost"
           @focus="handleInput" clearable>
           <template #suffix>
             <el-icon class="el-input__icon">

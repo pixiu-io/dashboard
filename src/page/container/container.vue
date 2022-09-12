@@ -11,13 +11,11 @@
                 </el-button>
 
                 <el-input placeholder="多个过滤标签用回车分隔" v-model="pageInfo.query" style="width: 560px; float: right;"
-                    clearable @input="getCloudList" @clear="getCloudList">
-                    <template #append>
-                        <el-button type="primary" size="default" @click="getCloudList">
-                            <el-icon style="vertical-align: middle; margin-right: 6px;">
-                                <Search />
-                            </el-icon> 搜索
-                        </el-button>
+                    clearable @input="getCloudList" @clear="getCloudList" :suffix-icon="Search">
+                    <template #suffix>
+                        <el-icon class="el-input__icon">
+                            <search />
+                        </el-icon>
                     </template>
                 </el-input>
 
@@ -153,8 +151,8 @@
 </script>
 
 <style>
-.box-card {
-    margin-top: 20px;
-  /* width: 480px; */
-}
+    .box-card {
+        margin-top: 20px;
+        /* width: 480px; */
+    }
 </style>
