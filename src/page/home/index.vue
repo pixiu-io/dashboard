@@ -54,7 +54,7 @@
           <div></div>
         </el-drawer>
 
-        <a href="https://www.baidu.com" class="header-bottom">文档</a>
+        <a href="https://github.com/caoyingjunz/gopixiu" class="header-bottom">Github</a>
 
         <el-dropdown>
           <span style="font-size:small; margin-right: 25px; color: #ADB0BB;">

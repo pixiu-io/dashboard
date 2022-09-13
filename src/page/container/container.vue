@@ -36,8 +36,8 @@
 
                 <el-table-column prop="status" label="状态" width="200" />
                 <el-table-column prop="cloud_type" label="集群类型" width="200" />
-                <el-table-column prop="kubernetes_version" label="kubernetes版本" width="200" />
-                <el-table-column prop="nodes" label="节点数" width="200" />
+                <el-table-column prop="kube_version" label="kubernetes版本" width="200" />
+                <el-table-column prop="node_number" label="节点数" width="200" />
                 <el-table-column prop="resources" label="资源量" />
 
                 <el-table-column fixed="right" label="操作" width="200">
