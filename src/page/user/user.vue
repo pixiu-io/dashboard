@@ -1,3 +1,3 @@
 <template>
-    <div>用户管理</div>
-    </template>
+  <div>用户管理</div>
+</template>
