@@ -13,7 +13,7 @@ const instance = axios.create({
 instance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
-    token && (config.headers.Authorization = token); // 如果localstorage存在token则将token直接写入headers
+    token && (config.headers.Authorization = "Bearer " + token); // 如果localstorage存在token则将token直接写入headers
     if (config.method === "POST") {
       config.data = JSON.stringify(config.data);
     }
