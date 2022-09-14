@@ -25,7 +25,6 @@ instance.interceptors.request.use(
 // 返回结果中间件
 instance.interceptors.response.use(
   (response) => {
-    console.log(response);
     return response.data;
   },
   (error) => {

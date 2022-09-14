@@ -123,24 +123,17 @@ export default {
       this.load = true;
 
       // 发送登陆请求
-      this.$http
-        .post("/users/login", this.loginInfo)
-        .then((res) => {
-          const token = res.data.result;
-          localStorage.setItem("token", token);
-          localStorage.setItem("account", this.loginInfo.name);
-
-          this.$message.success("登陆成功");
-          this.$router.push("/index");
-        })
-        .catch((err) => {
-          this.load = false;
-          if (err.status == 500) {
-            return this.$message.error(err.statusText);
-          }
-
-          return this.$message.error(err.data.message);
-        });
+      let res = await this.$http({
+        method: "post",
+        url: "/users/login",
+        data: this.loginInfo,
+      });
+      const token = res.result;
+      localStorage.setItem("token", token);
+      localStorage.setItem("account", this.loginInfo.name);
+      this.$message.success("登陆成功");
+      this.$router.push("/index");
+      this.load = false;
     },
   },
   components: {
