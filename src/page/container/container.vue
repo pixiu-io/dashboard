@@ -1,5 +1,32 @@
 <template>
-    <div style="font-weight: bold; font-size: 18px;"> 容器服务 </div>
+    <el-card style="margin-top: -20px; margin-left: -20px; margin-right: -20px;">
+        <el-row>
+            <el-col>
+                <span style="font-weight: bold; font-size: 18px; vertical-align: middle;"> 容器服务 </span>
+                <span style="font-size: 12px; margin-left: 10px; vertical-align: middle; margin-right: 10px">地域</span>
+
+                <el-select v-model="value" placeholder="Select">
+                    <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                    :disabled="item.disabled"
+                    />
+                </el-select>
+
+                <span style="font-size: 12px; float: right; color: rgba(0,0,0,.9); vertical-align: middle; margin-left: 5px"> 管理指南
+                    <el-icon style="vertical-align: middle; margin-right: 10px;">
+                        <Edit />
+                    </el-icon>
+                </span>
+           </el-col>
+        </el-row>
+    </el-card>
+
+    <el-card class="app-docs">
+        <div style="vertical-align: middle; margin-top: -10px">已有超级节点能力全面升级，支持更多集群版本</div>
+    </el-card>
 
     <div style="margin-top: 40px;">
         <el-row>
@@ -102,6 +129,23 @@
                 autosize: {
                     minRows: 8,
                 },
+
+                value: '无锡',
+                options: [
+                    {
+                        value: '无锡',
+                        label: '无锡',
+                    },
+                    {
+                        value: '宿迁',
+                        label: '宿迁',
+                    },
+                    {
+                        value: '杭州',
+                        label: '杭州',
+                        disabled: true,
+                    },
+                ],
             }
         },
         created() {
@@ -154,5 +198,26 @@
     .box-card {
         margin-top: 20px;
         /* width: 480px; */
+    }
+
+    .app-docs {
+        margin-top: 20px;
+        height: 60px;
+        font-size: 12px;
+        line-height: inherit;
+        padding: 14px 20px;
+        vertical-align: middle;
+        color: #002da0;
+        border: 1px solid #d5e7ff;
+        border-radius: 0;
+        background: #d5e7ff;
+        position: relative;
+        box-sizing: border-box;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
     }
 </style>
