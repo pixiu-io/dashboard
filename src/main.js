@@ -14,7 +14,7 @@ app.use(ElementPlus, {locale: zhCn})
 app.use(router)
 
 import axios from 'axios'
-axios.defaults.baseURL = 'http://localhost:8081'
+axios.defaults.baseURL = 'http://localhost:8080'
 
 // http拦截: 在 axios 请求发送之前给每个接口携带token去后端校验
 axios.interceptors.request.use(config => {
