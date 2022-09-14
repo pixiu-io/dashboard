@@ -18,7 +18,7 @@ axios.defaults.baseURL = 'http://localhost:8080'
 
 // http拦截: 在 axios 请求发送之前给每个接口携带token去后端校验
 axios.interceptors.request.use(config => {
-    config.headers.Authorization = window.sessionStorage.getItem("token") // 服务端从请求头中获取 Authorization 作为 token
+    config.headers.Authorization = "Bearer " + window.sessionStorage.getItem("token") // 服务端从请求头中获取 Authorization 作为 token
     return config
 })
 // http拦截: 在 axios 请求发送之后, 最返回值进行处理

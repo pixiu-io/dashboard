@@ -340,6 +340,6 @@
   }
 
   .el-main {
-    background: #fff;
+    background: #F3F4F7;
   }
 </style>
