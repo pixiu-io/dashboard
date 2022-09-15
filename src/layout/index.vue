@@ -14,7 +14,6 @@
       "
     >
       <pixiu-header />
-
     </el-header>
 
     <el-container>
@@ -29,7 +28,6 @@
             active-text-color="#ffd04b"
             background-color="rgb(51, 55, 68)"
             border-right="none"
-
             :default-active="data.activeIndex"
             text-color="#fff"
             @open="handleOpen"
@@ -93,21 +91,14 @@ let data = reactive({
       icon: "DataLine",
     },
     {
-      name: "系统管理",
-      url: "/sys",
-      icon: "Setting",
-      children: [
-        {
-          name: "用户管理",
-          url: "/user",
-          icon: "UserFilled",
-        },
-        {
-          name: "权限管理",
-          url: "/role",
-          icon: "Guide",
-        },
-      ],
+      name: "用户管理",
+      url: "/user",
+      icon: "UserFilled",
+    },
+    {
+      name: "权限管理",
+      url: "/role",
+      icon: "Guide",
     },
   ],
 });
@@ -151,7 +142,6 @@ const mouseLeave = () => {
   width: auto;
   margin: 5px;
 }
-
 
 .el-aside {
   height: 100%;

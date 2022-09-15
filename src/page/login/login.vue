@@ -129,7 +129,6 @@ const login = async () => {
   proxy.$message.success("登陆成功");
   proxy.$router.push("/index");
   data.load = false;
-
 };
 </script>
 
