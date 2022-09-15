@@ -14,6 +14,7 @@
       "
     >
       <pixiu-header />
+
     </el-header>
 
     <el-container>
@@ -28,6 +29,7 @@
             active-text-color="#ffd04b"
             background-color="rgb(51, 55, 68)"
             border-right="none"
+
             :default-active="data.activeIndex"
             text-color="#fff"
             @open="handleOpen"
@@ -150,6 +152,7 @@ const mouseLeave = () => {
   margin: 5px;
 }
 
+
 .el-aside {
   height: 100%;
   width: auto !important; /**宽度自适应 */
@@ -167,11 +170,5 @@ const mouseLeave = () => {
 
 .el-main {
   background: #fff;
-}
-
-.expand-icon {
-  position: absolute;
-  width: 100%;
-  bottom: 0;
 }
 </style>

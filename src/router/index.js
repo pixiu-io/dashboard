@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory } from "vue-router";
+
 import Layout from "@/layout/index.vue";
 import { Home, Login, Role, User, Cicd, Container } from "@/page";
 const routes = [
@@ -64,6 +65,7 @@ const routes = [
     name: "Login",
     component: Login,
   },
+
 ];
 
 const router = createRouter({
