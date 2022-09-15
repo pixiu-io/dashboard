@@ -25,8 +25,7 @@
                         </ul>
                       </div>
                       <el-input
-                        v-model="loginInfo.name"
-                        :prefix-icon="UserFilled"
+                        v-model="data.loginInfo.name"
                         placeholder="请输入账号"
                         clearable
                         maxlength="128"
@@ -34,14 +33,13 @@
                       >
                         <template #prefix>
                           <el-icon class="el-input__icon">
-                            <user-filled />
+                            <component is="UserFilled" />
                           </el-icon>
                         </template>
                       </el-input>
 
                       <el-input
-                        v-model="loginInfo.password"
-                        :prefix-icon="Lock"
+                        v-model="data.loginInfo.password"
                         placeholder="请输入密码"
                         show-password
                         clearable
@@ -50,7 +48,7 @@
                       >
                         <template #prefix>
                           <el-icon class="el-input__icon">
-                            <lock />
+                            <component is="Lock"></component>
                           </el-icon>
                         </template>
                       </el-input>
@@ -99,47 +97,38 @@
   </div>
 </template>
 
-<script>
-import { UserFilled, Lock } from "@element-plus/icons-vue";
+<script setup>
+import { reactive, getCurrentInstance } from "vue";
+const { proxy } = getCurrentInstance();
 
-export default {
-  data() {
-    return {
-      loginInfo: {
-        name: "",
-        password: "",
-      },
-      load: false,
-      // 图标高级
-      Lock: "",
-      UserFilled: "",
-    };
+const data = reactive({
+  loginInfo: {
+    name: "",
+    password: "",
   },
-  methods: {
-    forget() {
-      this.$message.error("忘记密码，请联系管理员");
-    },
-    async login() {
-      this.load = true;
+  load: false,
+  // 图标高级
+  Lock: "",
+  UserFilled: "",
+});
+const forget = () => {
+  proxy.$message.error("忘记密码，请联系管理员");
+};
+const login = async () => {
+  data.load = true;
 
-      // 发送登陆请求
-      let res = await this.$http({
-        method: "post",
-        url: "/users/login",
-        data: this.loginInfo,
-      });
-      const token = res.result;
-      localStorage.setItem("token", token);
-      localStorage.setItem("account", this.loginInfo.name);
-      this.$message.success("登陆成功");
-      this.$router.push("/index");
-      this.load = false;
-    },
-  },
-  components: {
-    Lock,
-    UserFilled,
-  },
+  // 发送登陆请求
+  let res = await proxy.$http({
+    method: "post",
+    url: "/users/login",
+    data: data.loginInfo,
+  });
+  const token = res.result;
+  localStorage.setItem("token", token);
+  localStorage.setItem("account", data.loginInfo.name);
+  proxy.$message.success("登陆成功");
+  proxy.$router.push("/index");
+  data.load = false;
 };
 </script>
 

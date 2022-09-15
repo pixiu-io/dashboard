@@ -17,9 +17,9 @@
           >地域</span
         >
 
-        <el-select v-model="value" placeholder="Select">
+        <el-select v-model="data.value" placeholder="Select">
           <el-option
-            v-for="item in options"
+            v-for="item in data.options"
             :key="item.value"
             :label="item.label"
             :value="item.value"
@@ -38,7 +38,7 @@
         >
           管理指南
           <el-icon style="vertical-align: middle; margin-right: 10px">
-            <Edit />
+            <component is="Edit" />
           </el-icon>
         </span>
       </el-col>
@@ -60,14 +60,14 @@
           style="margin-left: 1px"
         >
           <el-icon style="vertical-align: middle; margin-right: 4px">
-            <plus />
+            <component is="Plus" />
           </el-icon>
           新建集群
         </el-button>
 
         <el-input
           placeholder="多个过滤标签用回车分隔"
-          v-model="pageInfo.query"
+          v-model="data.pageInfo.query"
           style="width: 560px; float: right"
           clearable
           @input="getCloudList"
@@ -76,7 +76,7 @@
         >
           <template #suffix>
             <el-icon class="el-input__icon">
-              <search />
+              <component is="Search" />
             </el-icon>
           </template>
         </el-input>
@@ -85,7 +85,7 @@
 
     <el-card class="box-card">
       <el-table
-        :data="cloudList"
+        :data="data.cloudList"
         stripe
         style="margin-top: 2px; width: 100%"
         v-loading="loading"
@@ -120,7 +120,7 @@
               @click="handleEdit(scope.row)"
             >
               <el-icon style="vertical-align: middle; margin-right: 5px">
-                <Edit />
+                <component is="Edit" />
               </el-icon>
               编辑
             </el-button>
@@ -133,7 +133,7 @@
               style="margin-right: 10px"
             >
               <el-icon style="vertical-align: middle; margin-right: 5px">
-                <Delete />
+                <component is="Delete" />
               </el-icon>
               删除
             </el-button>
@@ -149,11 +149,11 @@
           margin-top: 20px;
           margin-bottom: 20px;
         "
-        v-model:currentPage="pageInfo.page"
-        v-model:page-size="pageInfo.page_size"
+        :current-page="data.pageInfo.page"
+        :page-size="data.pageInfo.page_size"
         :page-sizes="[10, 20, 50]"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
+        :total="data.total"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       />
@@ -161,99 +161,69 @@
   </div>
 </template>
 
-<script>
-import {
-  Refresh,
-  Search,
-  Delete,
-  Edit,
-  ArrowDown,
-  Plus,
-  Upload,
-  Download,
-  UploadFilled,
-  DocumentCopy,
-  FolderOpened,
-  FolderAdd,
-} from "@element-plus/icons-vue";
+<script setup>
+import { reactive, getCurrentInstance, onMounted } from "vue";
+const { proxy } = getCurrentInstance();
+const data = reactive({
+  pageInfo: {
+    query: "",
+    use_page: true, // 默认启用分页效果
+    page: 1,
+    page_size: 10, // 默认值需要是分页定义的值
+  },
 
-export default {
-  data() {
-    return {
-      pageInfo: {
-        query: "",
-        use_page: true, // 默认启用分页效果
-        page: 1,
-        page_size: 10, // 默认值需要是分页定义的值
-      },
+  loading: false,
 
-      loading: false,
+  cloudList: [], // k8s 集群列表
 
-      cloudList: [], // k8s 集群列表
-
-      autosize: {
-        minRows: 8,
-      },
+  autosize: {
+    minRows: 8,
+  },
+  value: "无锡",
+  options: [
+    {
       value: "无锡",
-      options: [
-        {
-          value: "无锡",
-          label: "无锡",
-        },
-        {
-          value: "宿迁",
-          label: "宿迁",
-        },
-        {
-          value: "杭州",
-          label: "杭州",
-          disabled: true,
-        },
-      ],
-    };
-  },
-  created() {
-    this.getCloudList();
-  },
-  methods: {
-    async getCloudList() {
-      // TODO 考虑将loading取到全局上面来，避免过多的去写loading状态管理
-      this.loading = true;
-      const res = await this.$http({
-        method: "get",
-        url: "clouds",
-        data: this.pageInfo,
-      });
-      this.loading = false;
+      label: "无锡",
+    },
+    {
+      value: "宿迁",
+      label: "宿迁",
+    },
+    {
+      value: "杭州",
+      label: "杭州",
+      disabled: true,
+    },
+  ],
+});
 
-      this.pageInfo.page = res.result.page;
-      this.pageInfo.page_size = res.result.page_size;
-      this.cloudList = res.result;
-      this.total = 10;
-    },
-    handleSizeChange(newSize) {
-      this.pageInfo.page_size = newSize;
-      this.getLabelList();
-    },
-    handleCurrentChange(newPage) {
-      this.pageInfo.page = newPage;
-      this.getLabelList();
-    },
-  },
-  components: {
-    DocumentCopy,
-    Search,
-    Edit,
-    Delete,
-    ArrowDown,
-    Plus,
-    Upload,
-    Download,
-    Refresh,
-    UploadFilled,
-    FolderOpened,
-    FolderAdd,
-  },
+onMounted(() => {
+  getCloudList();
+});
+
+const getCloudList = async () => {
+  // TODO 考虑将loading取到全局上面来，避免过多的去写loading状态管理
+  data.loading = true;
+  const res = await proxy.$http({
+    method: "get",
+    url: "/clouds",
+    data: data.pageInfo,
+  });
+  data.loading = false;
+
+  data.pageInfo.page = res.result.page;
+  data.pageInfo.page_size = res.result.page_size;
+  data.cloudList = res.result;
+  data.total = 10;
+};
+
+const handleSizeChange = (newSize) => {
+  data.pageInfo.page_size = newSize;
+  this.getLabelList();
+};
+const handleCurrentChange = (newPage) => {
+  this.pageInfo.page = newPage;
+  this.getLabelList();
 };
 </script>
 
