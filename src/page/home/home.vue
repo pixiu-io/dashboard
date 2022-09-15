@@ -1,3 +1,3 @@
 <template>
-    <div>概览</div>
+  <div>概览</div>
 </template>

@@ -1,71 +1,71 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 
-// TODO:考虑添加路由守卫机制，统一处理权限
+import Layout from "@/layout/index.vue";
+import { Home, Login, Role, User, Cicd, Container } from "@/page";
 const routes = [
   {
-    // 登陆界面
     path: "/",
-    name: "login",
-    component: () =>
-      import(/*webpackChunkName:'Login'*/ "@/page/login/login.vue"),
+    redirect: "/index",
   },
+
   {
     // 布局项
-    path: "/index",
-    name: "index",
+    path: "/",
     meta: {
       title: "概览",
     },
-    component: () => import(/*webpackChunkName:'Index'*/ "@/layout/index.vue"),
+    component: Layout,
     children: [
       {
         // 首页
-        path: "/index",
-        name: "index",
+        path: "index",
+        name: "Index",
         meta: {
           title: "概览",
         },
-        component: () =>
-          import(/*webpackChunkName:'Home'*/ "@/page/home/home.vue"),
+        component: Home,
       },
       {
-        path: "/container",
-        name: "container",
+        path: "container",
+        name: "Container",
         meta: {
           title: "容器服务",
         },
-        component: () =>
-          import(/*webpackChunkName:'User'*/ "@/page/container/container.vue"),
+        component: Container,
       },
       {
-        path: "/cicd",
-        name: "cicd",
+        path: "cicd",
+        name: "Cicd",
         meta: {
-          title: "cicd",
+          title: "DevOps",
         },
-        component: () =>
-          import(/*webpackChunkName:'User'*/ "@/page/cicd/cicd.vue"),
+        component: Cicd,
       },
       {
-        path: "/user",
-        name: "user",
+        path: "user",
+        name: "User",
         meta: {
-          title: "user",
+          title: "用户",
         },
-        component: () =>
-          import(/*webpackChunkName:'User'*/ "@/page/user/user.vue"),
+        component: User,
       },
       {
-        path: "/role",
-        name: "role",
+        path: "role",
+        name: "Role",
         meta: {
-          title: "user",
+          title: "权限",
         },
-        component: () =>
-          import(/*webpackChunkName:'Role'*/ "@/page/user/role.vue"),
+        component: Role,
       },
     ],
   },
+  {
+    // 登陆界面
+    path: "/login",
+    name: "Login",
+    component: Login,
+  },
+
 ];
 
 const router = createRouter({
@@ -73,17 +73,13 @@ const router = createRouter({
   routes,
 });
 
-// 路由导航守卫
-router.beforeEach((to, from, next) => {
-  if (to.path == "/") {
-    next();
-  } else {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      next("/");
-    } else {
-      next();
-    }
+router.beforeEach((to, from) => {
+  const token = localStorage.getItem("token");
+  if (!token && to.fullPath !== "/login") {
+    return { name: "Login" };
+  }
+  if (token && to.fullPath === "/login") {
+    return { name: "Index" };
   }
 });
 
