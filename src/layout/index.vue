@@ -43,7 +43,7 @@
                   :is="`${data.isCollapse ? 'Expand' : 'Fold'}`"
                 ></component>
               </el-icon>
-              <template #title>体验调研</template>
+              <template #title> <dev style="margin-left: 20px;">体验调研</dev></template>
             </el-menu-item>
           </el-menu>
         </el-col>
@@ -156,6 +156,12 @@ const mouseLeave = () => {
 .el-menu {
   border-right: none;
   height: 100%;
+}
+
+.expand-icon {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
 }
 
 .el-main {

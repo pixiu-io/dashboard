@@ -147,7 +147,6 @@ const login = async () => {
 
 /* 有用 */
 .u-button_IeaEDOvW {
-  -webkit-appearance: none;
   margin: 0;
   border: none;
   overflow: visible;
@@ -165,13 +164,6 @@ const login = async () => {
   /* background: rgb(38, 39, 110); */
   /* color: #0c1f7f; */
   border: 1px solid #e5e8ed;
-}
-
-/* 有用 */
-.el-input__inner {
-  height: 40px;
-  /* 边框 */
-  border: 0px solid #dfe4ec;
 }
 
 /* 有用 */

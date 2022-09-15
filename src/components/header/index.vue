@@ -206,12 +206,13 @@ const logout = () => {
   transition: width 0.5s;
 }
 .header-input:hover {
-  width: 300px;
+  width: 350px;
 }
 
 .el-menu-class {
   height: 51px;
 }
+
 
 .header-bottom {
   font-size: small;
