@@ -1,5 +1,5 @@
 <template>
-  <el-card style="margin-top: -20px; margin-left: -20px; margin-right: -20px">
+  <el-card style="margin-top: -20px; margin-left: -20px; margin-right: -20px;">
     <el-row>
       <el-col>
         <span
@@ -14,10 +14,15 @@
             vertical-align: middle;
             margin-right: 10px;
           "
-          >地域</span
         >
+          地域
+        </span>
 
-        <el-select v-model="data.value" placeholder="Select">
+        <el-select
+          v-model="data.value"
+          placeholder="Select"
+          style="width: 100px"
+        >
           <el-option
             v-for="item in data.options"
             :key="item.value"
@@ -51,7 +56,7 @@
     </div>
   </el-card>
 
-  <div style="margin-top: 40px">
+  <div style="margin-top: 20px">
     <el-row>
       <el-col>
         <el-button
@@ -95,7 +100,11 @@
 
         <el-table-column prop="name" label="名称/ID" width="200">
           <template #default="scope">
-            <el-link type="primary" @click="jumpRoute(scope.row.label_id)">
+            <el-link
+              style="color: #006eff"
+              type="primary"
+              @click="jumpRoute(scope.row.cloud_id)"
+            >
               {{ scope.row.name }}
             </el-link>
           </template>
@@ -110,33 +119,41 @@
         />
         <el-table-column prop="node_number" label="节点数" width="200" />
         <el-table-column prop="resources" label="资源量" />
-
         <el-table-column fixed="right" label="操作" width="200">
           <template #default="scope">
             <el-button
-              type="primary"
-              plain
               size="small"
+              type="text"
+              style="color: #006eff"
               @click="handleEdit(scope.row)"
             >
-              <el-icon style="vertical-align: middle; margin-right: 5px">
-                <component is="Edit" />
-              </el-icon>
-              编辑
+              设置
             </el-button>
 
             <el-button
-              type="primary"
-              plain
+              type="text"
               size="small"
               @click="handleDelete(scope.row)"
-              style="margin-right: 10px"
+              style="margin-right: 10px; color: #006eff"
             >
-              <el-icon style="vertical-align: middle; margin-right: 5px">
-                <component is="Delete" />
-              </el-icon>
               删除
             </el-button>
+
+            <el-dropdown>
+              <span class="el-dropdown-link">
+                更多 <el-icon><arrow-down /></el-icon>
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item style="color: #006eff"
+                    >启动</el-dropdown-item
+                  >
+                  <el-dropdown-item style="color: #006eff"
+                    >详情</el-dropdown-item
+                  >
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </template>
         </el-table-column>
       </el-table>
@@ -251,5 +268,17 @@ const handleCurrentChange = (newPage) => {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+}
+
+.example-showcase .el-dropdown + .el-dropdown {
+  margin-left: 15px;
+}
+
+.el-dropdown-link {
+  cursor: pointer;
+  color: #006eff;
+  display: flex;
+  font-size: 12px;
+  margin-top: 6px;
 }
 </style>

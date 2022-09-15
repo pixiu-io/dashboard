@@ -15,7 +15,9 @@ for (const name in ElIcons) {
   app.component(name, ElIcons[name]);
 } // 全局注册图标，用于处理动态图标展示
 
-app.use(ElementPlus, { locale: zhCn });
+app.use(ElementPlus, {
+  locale: zhCn,
+});
 app.use(router);
 
 app.config.globalProperties.$http = axios;

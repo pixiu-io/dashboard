@@ -17,7 +17,11 @@
     </el-button>
     <span style="margin-left: 16px; font-size: medium">|</span>
 
-    <el-menu
+    <span style="margin-left: 16px; font-size: small; color: #adb0bb"
+      >云产品</span
+    >
+
+    <!-- <el-menu
       :default-active="data.activeIndex"
       active-text-color="#ffd04b"
       class="el-menu-class"
@@ -28,13 +32,13 @@
     >
       <el-sub-menu index="1">
         <template #title>
-          <span style="font-size: small; color: #adb0bb"> 云产品 </span>
+          <span style="font-size: small; color: #adb0bb; height: 51px;"> 云产品 </span>
         </template>
         <el-menu-item style="width: 900px; height: 500px" index="2-1"
           >TODO</el-menu-item
         >
       </el-sub-menu>
-    </el-menu>
+    </el-menu> -->
   </div>
 
   <div style="display: flex; align-items: center">
@@ -206,7 +210,7 @@ const logout = () => {
   transition: width 0.5s;
 }
 .header-input:hover {
-  width: 300px;
+  width: 350px;
 }
 
 .el-menu-class {
