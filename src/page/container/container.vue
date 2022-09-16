@@ -1,5 +1,5 @@
 <template>
-  <el-card style="margin-top: -20px; margin-left: -20px; margin-right: -20px;">
+  <el-card style="margin-top: -20px; margin-left: -20px; margin-right: -20px">
     <el-row>
       <el-col>
         <span
@@ -63,6 +63,7 @@
           type="primary"
           @click="handleCreate"
           style="margin-left: 1px"
+          v-permissions="'user:cloud:add'"
         >
           <el-icon style="vertical-align: middle; margin-right: 4px">
             <component is="Plus" />
@@ -126,6 +127,7 @@
               type="text"
               style="color: #006eff"
               @click="handleEdit(scope.row)"
+              v-permissions="'user:cloud:setting'"
             >
               设置
             </el-button>
@@ -135,6 +137,7 @@
               size="small"
               @click="handleDelete(scope.row)"
               style="margin-right: 10px; color: #006eff"
+              v-permissions="'user:cloud:delete'"
             >
               删除
             </el-button>
@@ -144,12 +147,12 @@
                 更多 <el-icon><arrow-down /></el-icon>
               </span>
               <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item style="color: #006eff"
-                    >启动</el-dropdown-item
-                  >
-                  <el-dropdown-item style="color: #006eff"
-                    >详情</el-dropdown-item
+                <el-dropdown-menu class="dropdown-buttons">
+                  <el-dropdown-item style="color: #006eff">
+                    启动
+                  </el-dropdown-item>
+                  <el-dropdown-item style="color: #006eff">
+                    详情</el-dropdown-item
                   >
                 </el-dropdown-menu>
               </template>
@@ -280,5 +283,11 @@ const handleCurrentChange = (newPage) => {
   display: flex;
   font-size: 12px;
   margin-top: 6px;
+}
+.dropdown-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 </style>
