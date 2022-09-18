@@ -33,7 +33,6 @@
   <el-main>
     <router-view />
   </el-main>
-
 </template>
 
 <script setup>
