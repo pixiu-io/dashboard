@@ -135,7 +135,7 @@
             <el-button
               type="text"
               size="small"
-              @click="handleDelete(scope.row)"
+              @click="deleteCloud(scope.row)"
               style="margin-right: 10px; color: #006eff"
               v-permissions="'user:cloud:delete'"
             >
@@ -144,7 +144,8 @@
 
             <el-dropdown>
               <span class="el-dropdown-link">
-                更多 <el-icon><arrow-down /></el-icon>
+                更多
+                <el-icon><arrow-down /></el-icon>
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
@@ -152,8 +153,8 @@
                     启动
                   </el-dropdown-item>
                   <el-dropdown-item style="color: #006eff">
-                    详情</el-dropdown-item
-                  >
+                    详情
+                  </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -170,7 +171,7 @@
           margin-bottom: 20px;
         "
         :current-page="data.pageInfo.page"
-        :page-size="data.pageInfo.page_size"
+        :page-size="data.pageInfo.limit"
         :page-sizes="[10, 20, 50]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="data.total"
@@ -183,13 +184,13 @@
 
 <script setup>
 import { reactive, getCurrentInstance, onMounted } from "vue";
+import { ElMessage, ElMessageBox } from "element-plus";
 const { proxy } = getCurrentInstance();
 const data = reactive({
   pageInfo: {
     query: "",
-    use_page: true, // 默认启用分页效果
     page: 1,
-    page_size: 10, // 默认值需要是分页定义的值
+    limit: 10, // 默认值需要是分页定义的值
   },
 
   loading: false,
@@ -231,19 +232,53 @@ const getCloudList = async () => {
   });
   data.loading = false;
 
-  data.pageInfo.page = res.result.page;
-  data.pageInfo.page_size = res.result.page_size;
-  data.cloudList = res.result;
-  data.total = 10;
+  data.cloudList = res.result.data;
+  data.total = res.result.total;
 };
 
 const handleSizeChange = (newSize) => {
   data.pageInfo.page_size = newSize;
-  this.getLabelList();
+  getCloudList();
 };
 const handleCurrentChange = (newPage) => {
   this.pageInfo.page = newPage;
-  this.getLabelList();
+  getCloudList();
+};
+
+// 删除cloud
+// TODO: 待优化
+const deleteCloud = async (row) => {
+  ElMessageBox.confirm(
+    "此操作将永久删除 " + row.name + " 集群. 是否继续?",
+    "提示",
+    {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+      draggable: true,
+    }
+  )
+    .then(() => {
+      proxy
+        .$http({
+          method: "delete",
+          url: "/clouds/" + row.id,
+        })
+        .then((res) => {
+          getCloudList();
+          ElMessage({
+            type: "success",
+            message: "删除成功",
+          });
+        })
+        .catch((err) => {
+          ElMessage({
+            type: "error",
+            message: err,
+          });
+        });
+    })
+    .catch(() => {}); // 取消
 };
 </script>
 
