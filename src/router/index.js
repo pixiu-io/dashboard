@@ -1,7 +1,7 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 
 import Layout from "@/layout/index.vue";
-import { Home, Login, Role, User, Cicd, Container } from "@/page";
+import { Home, Login, Role, User, Cicd, Container, Kubernetes } from "@/page";
 const routes = [
   {
     path: "/",
@@ -32,6 +32,14 @@ const routes = [
           title: "容器服务",
         },
         component: Container,
+      },
+      {
+        path: "kubernetes",
+        name: "Kubernetes",
+        meta: {
+          title: "kubernetes",
+        },
+        component: Kubernetes,
       },
       {
         path: "cicd",
@@ -65,7 +73,6 @@ const routes = [
     name: "Login",
     component: Login,
   },
-
 ];
 
 const router = createRouter({

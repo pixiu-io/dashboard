@@ -104,7 +104,7 @@
             <el-link
               style="color: #006eff"
               type="primary"
-              @click="jumpRoute(scope.row.cloud_id)"
+              @click="jumpRoute(scope.row)"
             >
               {{ scope.row.name }}
             </el-link>
@@ -168,8 +168,7 @@
           float: right;
           margin-right: 40px;
           margin-top: 20px;
-          margin-bottom: 20px;
-        "
+          margin-bottom: 20px;"
         :current-page="data.pageInfo.page"
         :page-size="data.pageInfo.limit"
         :page-sizes="[10, 20, 50]"
@@ -234,6 +233,16 @@ const getCloudList = async () => {
 
   data.cloudList = res.result.data;
   data.total = res.result.total;
+};
+
+const jumpRoute = (row) => {
+  proxy.$router.push({
+    name: "Kubernetes",
+    params: {
+      id: row.id,
+      name: row.name
+    },
+  });
 };
 
 const handleSizeChange = (newSize) => {
