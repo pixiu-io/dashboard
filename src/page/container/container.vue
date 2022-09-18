@@ -104,7 +104,7 @@
             <el-link
               style="color: #006eff"
               type="primary"
-              @click="jumpRoute(scope.row.id)"
+              @click="jumpRoute(scope.row)"
             >
               {{ scope.row.name }}
             </el-link>
@@ -235,11 +235,12 @@ const getCloudList = async () => {
   data.total = res.result.total;
 };
 
-const jumpRoute = (cloudId) => {
+const jumpRoute = (row) => {
   proxy.$router.push({
     name: "Kubernetes",
     params: {
-      cloudId: cloudId,
+      id: row.id,
+      name: row.name
     },
   });
 };

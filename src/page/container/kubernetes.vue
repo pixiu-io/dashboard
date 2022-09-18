@@ -7,11 +7,11 @@ import { reactive, getCurrentInstance, onMounted } from "vue";
 const { proxy } = getCurrentInstance();
 
 const data = reactive({
-  cloudId: "",
+  cloud: {}
 });
 
 onMounted(() => {
-  data.cloudId = proxy.$route.params.cloudId
-  console.log(data.cloudId)
+  data.cloud = proxy.$route.params
+  console.log(data.cloud)
 });
 </script>
