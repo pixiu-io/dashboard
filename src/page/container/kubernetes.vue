@@ -28,6 +28,12 @@
     >
     </el-menu>
   </el-aside>
+
+  <!-- 主体 -->
+  <el-main>
+    <router-view />
+  </el-main>
+
 </template>
 
 <script setup>

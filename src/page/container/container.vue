@@ -160,6 +160,11 @@
             </el-dropdown>
           </template>
         </el-table-column>
+
+        <template v-slot:empty>
+          <div>集群列表为空</div>
+        </template>
+
       </el-table>
 
       <!-- 分页区域 -->
