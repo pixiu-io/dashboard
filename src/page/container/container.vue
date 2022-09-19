@@ -162,7 +162,7 @@
         </el-table-column>
 
         <template v-slot:empty>
-          <div>集群列表为空</div>
+          <div>没有任何容器集群 [立即创建]</div>
         </template>
 
       </el-table>
