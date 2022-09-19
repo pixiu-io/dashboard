@@ -160,6 +160,11 @@
             </el-dropdown>
           </template>
         </el-table-column>
+
+        <template v-slot:empty>
+          <div>没有任何容器集群 [立即创建]</div>
+        </template>
+
       </el-table>
 
       <!-- 分页区域 -->

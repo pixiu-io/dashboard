@@ -1,24 +1,12 @@
 <template>
-  <el-card
+  <el-aside
     style="
       margin-top: -20px;
       margin-left: -20px;
       margin-right: -20px;
-      height: 60px;
+      height: 100%;
     "
   >
-    <el-row>
-      <el-col>
-        <span
-          style="font-weight: bold; font-size: 20px; vertical-align: middle"
-        >
-          {{ data.cloud.name }}
-        </span>
-      </el-col>
-    </el-row>
-  </el-card>
-
-  <el-aside>
     <el-menu
       active-text-color="#ffd04b"
       background-color="#f6f7fb"
@@ -28,6 +16,11 @@
     >
     </el-menu>
   </el-aside>
+
+  <!-- 主体 -->
+  <el-main>
+    <router-view />
+  </el-main>
 </template>
 
 <script setup>
