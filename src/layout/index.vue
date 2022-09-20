@@ -43,16 +43,18 @@
                   :is="`${data.isCollapse ? 'Expand' : 'Fold'}`"
                 ></component>
               </el-icon>
-              <template #title> <dev style="margin-left: 20px;">体验调研</dev></template>
+              <template #title>
+                <dev style="margin-left: 20px">体验调研</dev></template
+              >
             </el-menu-item>
           </el-menu>
         </el-col>
       </el-aside>
 
       <!-- 主体 -->
-      <el-main>
-        <router-view />
-      </el-main>
+      <!-- <el-main> -->
+      <router-view />
+      <!-- </el-main> -->
     </el-container>
   </el-container>
 </template>
@@ -64,7 +66,6 @@ import { reactive, onMounted } from "vue";
 import { useRouter } from "vue-router";
 const router = useRouter();
 
-console.log();
 let data = reactive({
   activeIndex: router.currentRoute.value.fullPath
     ? router.currentRoute.value.fullPath
