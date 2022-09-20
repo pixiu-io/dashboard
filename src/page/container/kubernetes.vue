@@ -1,19 +1,13 @@
 <template>
-  <el-aside
-    style="
-      margin-top: -20px;
-      margin-left: -20px;
-      margin-right: -20px;
-      height: 100%;
-    "
-  >
+  <el-aside style="height: 100%">
     <el-menu
       active-text-color="#ffd04b"
       background-color="#f6f7fb"
-      text-color="#fff"
+      text-color="#000"
       router
       class="el-menu-vertical-no-collapse"
     >
+      <pixiu-menu :items="data.items" />
     </el-menu>
   </el-aside>
 
@@ -25,10 +19,25 @@
 
 <script setup>
 import { reactive, getCurrentInstance, onMounted } from "vue";
+import PixiuMenu from "@/components/menu/index.vue";
 const { proxy } = getCurrentInstance();
 
 const data = reactive({
   cloud: {},
+  items: [
+    {
+      name: "Deployment",
+      url: "/deployments",
+    },
+    {
+      name: "Service",
+      url: "/services",
+    },
+    {
+      name: "ConfigMap",
+      url: "/congfig-maps",
+    },
+  ],
 });
 
 onMounted(() => {
@@ -69,6 +78,7 @@ onMounted(() => {
 
 .el-aside {
   height: 100%;
+  width: auto !important;
 }
 
 .el-menu-vertical-no-collapse:not(.el-menu--collapse) {
