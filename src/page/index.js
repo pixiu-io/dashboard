@@ -2,6 +2,7 @@ import Cicd from "./cicd/cicd.vue";
 import Container from "./container/container.vue";
 import Kubernetes from "./container/kubernetes.vue";
 import Deployment from "./container/deployment.vue";
+import Node from "./container/node.vue";
 import Home from "./home/home.vue";
 import Login from "./login/login.vue";
 import Setting from "./setting/setting.vue";
@@ -18,4 +19,5 @@ export {
   Container,
   Kubernetes,
   Deployment,
+  Node,
 };

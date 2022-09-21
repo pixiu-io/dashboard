@@ -10,6 +10,7 @@ import {
   Container,
   Kubernetes,
   Deployment,
+  Node,
 } from "@/page";
 const routes = [
   {
@@ -56,6 +57,14 @@ const routes = [
           title: "deployment",
         },
         component: Deployment,
+      },
+      {
+        path: "nodes",
+        name: "Node",
+        meta: {
+          title: "node",
+        },
+        component: Node,
       },
       {
         path: "cicd",
