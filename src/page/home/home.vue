@@ -1,74 +1,96 @@
 <template>
   <el-main id="main">
-    <div style="height: 400px; width: 400px">
-      <my-echarts :option="option1"></my-echarts>
+    <div style="font-weight: bold; font-size: 18px; vertical-align: middle">
+      概览
     </div>
-    <div style="height: 400px; width: 400px">
-      <my-echarts :option="option2"></my-echarts></div
-  ></el-main>
+
+    <el-row>
+      <el-col>
+        <div
+          style="
+            height: 600px;
+            width: 600px;
+            margin-left: 100px;
+            margin-top: 100px;
+          "
+        >
+          <my-echarts :option="cloudOption"></my-echarts>
+        </div>
+
+        <div style="height: 600px; width: 1000px; float: right">
+          <my-echarts :option="option"></my-echarts>
+        </div>
+      </el-col>
+    </el-row>
+  </el-main>
 </template>
 
 <script setup>
 import { reactive } from "vue";
 import MyEcharts from "@/components/echarts/index.vue";
-const option1 = reactive({
-  title: { text: "总用户量" },
+
+const option = reactive({
+  title: {
+    text: "用户列表",
+  },
   tooltip: {},
+  legend: {
+    data: ["销量"],
+  },
   xAxis: {
-    data: ["12-3", "12-4", "12-5", "12-6", "12-7", "12-8"],
+    data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"],
   },
   yAxis: {},
   series: [
     {
-      name: "用户量",
-      type: "line",
+      name: "销量",
+      type: "bar",
       data: [5, 20, 36, 10, 10, 20],
     },
   ],
 });
-const option2 = reactive({
-  tooltip: {
-    trigger: "item",
-  },
+
+const cloudOption = reactive({
+  title: { text: "容器" },
   legend: {
-    top: "5%",
-    left: "center",
+    top: "bottom",
+  },
+  toolbox: {
+    show: true,
+    feature: {
+      mark: { show: true },
+      dataView: { show: true, readOnly: false },
+      restore: { show: true },
+      saveAsImage: { show: true },
+    },
   },
   series: [
     {
-      name: "Access From",
+      name: "Nightingale Chart",
       type: "pie",
-      radius: ["40%", "70%"],
-      avoidLabelOverlap: false,
+      radius: [50, 250],
+      center: ["50%", "50%"],
+      roseType: "area",
       itemStyle: {
-        borderRadius: 10,
-        borderColor: "#fff",
-        borderWidth: 2,
-      },
-      label: {
-        show: false,
-        position: "center",
-      },
-      emphasis: {
-        label: {
-          show: true,
-          fontSize: "40",
-          fontWeight: "bold",
-        },
-      },
-      labelLine: {
-        show: false,
+        borderRadius: 8,
       },
       data: [
-        { value: 1048, name: "Search Engine" },
-        { value: 735, name: "Direct" },
-        { value: 580, name: "Email" },
-        { value: 484, name: "Union Ads" },
-        { value: 300, name: "Video Ads" },
+        { value: 40, name: "rose 1" },
+        { value: 38, name: "rose 2" },
+        { value: 32, name: "rose 3" },
+        { value: 30, name: "rose 4" },
+        { value: 28, name: "rose 5" },
+        { value: 26, name: "rose 6" },
+        { value: 22, name: "rose 7" },
+        { value: 18, name: "rose 8" },
       ],
     },
   ],
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.input-with-select .el-input-group__prepend {
+  background-color: var(--el-fill-color-blank);
+}
+</style>
