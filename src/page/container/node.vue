@@ -15,11 +15,12 @@
       <el-table
         :data="data.nodeList"
         stripe
-        style="margin-top: 20px; width: 100%"
+        style="margin-top: 40px; width: 100%"
         v-loading="loading"
         @selection-change="handleSelectionChange"
+        :header-cell-style="{ background: '#f4f3f9', color: '#606266', height: '40px' }"
       >
-        <el-table-column prop="name" label="名称" width="200">
+        <el-table-column prop="name" label="名称" width="120">
           <template #default="scope">
             <el-link
               style="color: #006eff"
@@ -30,8 +31,8 @@
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column prop="roles" label="角色" width="200" />
-        <el-table-column prop="status" label="状态" width="200" />
+        <el-table-column prop="roles" label="角色" width="180" />
+        <el-table-column prop="status" label="状态" width="120" />
         <el-table-column prop="internal_ip" label="IP" width="200" />
         <el-table-column
           prop="container_runtime"
@@ -48,7 +49,6 @@
               type="text"
               style="color: #006eff"
               @click="handleEdit(scope.row)"
-              v-permissions="'user:cloud:setting'"
             >
               设置
             </el-button>

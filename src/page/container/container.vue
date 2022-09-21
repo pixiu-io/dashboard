@@ -97,6 +97,7 @@
           style="margin-top: 2px; width: 100%"
           v-loading="loading"
           @selection-change="handleSelectionChange"
+          :header-cell-style="{ background: '#f4f3f9', color: '#606266' }"
         >
           <!-- <el-table-column type="selection" width="38" /> -->
 
