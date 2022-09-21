@@ -2,8 +2,10 @@
   <router-view />
 </template>
 
-<script>
-export default {};
+<script setup>
+import { provide } from "vue";
+import * as echarts from "echarts";
+provide("echarts", echarts);
 </script>
 
 <style></style>
