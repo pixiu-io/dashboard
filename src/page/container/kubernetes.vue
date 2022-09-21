@@ -27,19 +27,19 @@ const data = reactive({
   items: [
     {
       name: "Node",
-      url: "/nodes",
+      url: "/kubernetes/nodes",
     },
     {
       name: "Deployment",
-      url: "/deployments",
+      url: "/kubernetes/deployments",
     },
     {
       name: "Service",
-      url: "/services",
+      url: "/kubernetes/services",
     },
     {
       name: "ConfigMap",
-      url: "/congfig-maps",
+      url: "/kubernetes/config-maps",
     },
   ],
 });
