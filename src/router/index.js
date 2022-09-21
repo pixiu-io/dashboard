@@ -49,23 +49,26 @@ const routes = [
           title: "kubernetes",
         },
         component: Kubernetes,
+        children: [
+          {
+            path: "nodes",
+            name: "Node",
+            meta: {
+              title: "node",
+            },
+            component: Node,
+          },
+          {
+            path: "deployments",
+            name: "Deployment",
+            meta: {
+              title: "deployment",
+            },
+            component: Deployment,
+          },
+        ],
       },
-      {
-        path: "deployments",
-        name: "Deployment",
-        meta: {
-          title: "deployment",
-        },
-        component: Deployment,
-      },
-      {
-        path: "nodes",
-        name: "Node",
-        meta: {
-          title: "node",
-        },
-        component: Node,
-      },
+
       {
         path: "cicd",
         name: "Cicd",
