@@ -1,13 +1,22 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 
 import Layout from "@/layout/index.vue";
-import { Home, Login, Role, User, Cicd, Container, Kubernetes } from "@/page";
+import {
+  Home,
+  Login,
+  Role,
+  User,
+  Cicd,
+  Container,
+  Kubernetes,
+  Deployment,
+  Node,
+} from "@/page";
 const routes = [
   {
     path: "/",
     redirect: "/index",
   },
-
   {
     // 布局项
     path: "/",
@@ -40,6 +49,22 @@ const routes = [
           title: "kubernetes",
         },
         component: Kubernetes,
+      },
+      {
+        path: "deployments",
+        name: "Deployment",
+        meta: {
+          title: "deployment",
+        },
+        component: Deployment,
+      },
+      {
+        path: "nodes",
+        name: "Node",
+        meta: {
+          title: "node",
+        },
+        component: Node,
       },
       {
         path: "cicd",

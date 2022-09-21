@@ -26,6 +26,10 @@ const data = reactive({
   cloud: {},
   items: [
     {
+      name: "Node",
+      url: "/nodes",
+    },
+    {
       name: "Deployment",
       url: "/deployments",
     },
