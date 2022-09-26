@@ -193,14 +193,15 @@
     title="选择集群类型"
     style="color: #000000; font: 14px"
     width="30%"
-    draggable
     center
     @close="data.createCloudVisible = false"
   >
-    <span
-      >It should be noted that the content will not be aligned in center by
-      default</span
-    >
+    <div>
+      <el-radio-group v-model="data.cloudType">
+        <el-radio label="1" size="large" border>标准集群</el-radio>
+        <el-radio label="2" size="large" border>自建集群</el-radio>
+      </el-radio-group>
+    </div>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="data.createCloudVisible = false">取消</el-button>
@@ -221,6 +222,7 @@ const data = reactive({
     limit: 10, // 默认值需要是分页定义的值
   },
 
+  cloudType: "1",
   loading: false,
 
   // 触发创建页面
