@@ -110,8 +110,8 @@ const login = async () => {
   height: 100%;
 }
 .login-container {
-  width: 25%;
-  height: 40%;
+  width: 450px;
+  height: 380px;
   box-sizing: border-box;
   background: #fff;
   transition: box-shadow 0.2s;
