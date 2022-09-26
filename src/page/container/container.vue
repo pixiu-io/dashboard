@@ -62,7 +62,7 @@
         <el-col>
           <el-button
             type="primary"
-            @click="handleCreate"
+            @click="createCloud"
             style="margin-left: 1px"
             v-permissions="'user:cloud:add'"
           >
@@ -187,6 +187,27 @@
       </el-card>
     </div>
   </el-main>
+
+  <el-dialog
+    v-model="data.createCloudVisible"
+    title="选择集群类型"
+    style="color: #000000; font: 14px"
+    width="30%"
+    draggable
+    center
+    @close="data.createCloudVisible = false"
+  >
+    <span
+      >It should be noted that the content will not be aligned in center by
+      default</span
+    >
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="data.createCloudVisible = false">取消</el-button>
+        <el-button type="primary" @click="confirmCreateCloud">创建</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup>
@@ -201,6 +222,9 @@ const data = reactive({
   },
 
   loading: false,
+
+  // 触发创建页面
+  createCloudVisible: false,
 
   cloudList: [], // k8s 集群列表
 
@@ -221,6 +245,10 @@ const data = reactive({
       value: "杭州",
       label: "杭州",
       disabled: true,
+    },
+    {
+      value: "泗阳",
+      label: "泗阳",
     },
   ],
 });
@@ -251,6 +279,11 @@ const jumpRoute = (row) => {
       name: row.name,
     },
   });
+};
+
+const createCloud = () => {
+  data.createCloudVisible = true;
+  console.log("create create,", data.createCloudVisible);
 };
 
 const handleSizeChange = (newSize) => {
@@ -341,5 +374,9 @@ const deleteCloud = async (row) => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.dialog-footer button:first-child {
+  margin-right: 10px;
 }
 </style>
