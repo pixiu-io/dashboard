@@ -292,26 +292,11 @@ const createCloud = () => {
   data.cloudType = "1";
 };
 
-const jumpToInsertCluster = () => {
-  proxy.$router.push({
-    name: "InsertCluster",
-  });
-};
-
-const jumpToCreateCluster = () => {
-  proxy.$router.push({
-    name: "CreateCluster",
-  });
-};
-
+// 根据选择的类型跳转到不同操作页面
 const confirmCreateCloud = () => {
-  if (data.cloudType == "1") {
-    // 跳转到导入集群的页面
-    jumpToInsertCluster();
-  } else {
-    // 跳转到创建集群的页面
-    jumpToCreateCluster();
-  }
+  proxy.$router.push({
+    name: data.cloudType == "1" ? "InsertCluster" : "CreateCluster",
+  });
 };
 
 const handleSizeChange = (newSize) => {

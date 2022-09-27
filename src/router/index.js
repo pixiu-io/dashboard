@@ -12,7 +12,7 @@ import {
   Deployment,
   Node,
   InsertCluster,
-  CreateCluster
+  CreateCluster,
 } from "@/page";
 const routes = [
   {
