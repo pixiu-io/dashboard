@@ -292,8 +292,26 @@ const createCloud = () => {
   data.cloudType = "1";
 };
 
+const jumpToInsertCluster = () => {
+  proxy.$router.push({
+    name: "InsertCluster",
+  });
+};
+
+const jumpToCreateCluster = () => {
+  proxy.$router.push({
+    name: "CreateCluster",
+  });
+};
+
 const confirmCreateCloud = () => {
-  console.log("jump to", data.cloudType);
+  if (data.cloudType == "1") {
+    // 跳转到导入集群的页面
+    jumpToInsertCluster();
+  } else {
+    // 跳转到创建集群的页面
+    jumpToCreateCluster();
+  }
 };
 
 const handleSizeChange = (newSize) => {
