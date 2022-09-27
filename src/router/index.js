@@ -11,6 +11,8 @@ import {
   Kubernetes,
   Deployment,
   Node,
+  InsertCluster,
+  CreateCluster,
 } from "@/page";
 const routes = [
   {
@@ -41,6 +43,22 @@ const routes = [
           title: "容器服务",
         },
         component: Container,
+      },
+      {
+        path: "insertCluster",
+        name: "InsertCluster",
+        meta: {
+          title: "导入集群",
+        },
+        component: InsertCluster,
+      },
+      {
+        path: "createCluster",
+        name: "CreateCluster",
+        meta: {
+          title: "创建集群",
+        },
+        component: CreateCluster,
       },
       {
         path: "kubernetes",

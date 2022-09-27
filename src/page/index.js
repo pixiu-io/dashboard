@@ -8,6 +8,8 @@ import Login from "./login/login.vue";
 import Setting from "./setting/setting.vue";
 import User from "./user/user.vue";
 import Role from "./user/role.vue";
+import InsertCluster from "./container/insertCluster";
+import CreateCluster from "./container/createCluster";
 
 export {
   Home,
@@ -20,4 +22,6 @@ export {
   Kubernetes,
   Deployment,
   Node,
+  InsertCluster,
+  CreateCluster,
 };

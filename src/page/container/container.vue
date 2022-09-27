@@ -97,7 +97,6 @@
           style="margin-top: 2px; width: 100%"
           v-loading="loading"
           @selection-change="handleSelectionChange"
-          :header-cell-style="{ background: '#f4f3f9', color: '#606266' }"
         >
           <!-- <el-table-column type="selection" width="38" /> -->
 
@@ -164,7 +163,12 @@
           </el-table-column>
 
           <template v-slot:empty>
-            <div>没有任何容器集群 [立即创建]</div>
+            <div style="text-align: center">
+              没有任何容器集群
+              <button @click="createCloud" class="app-pixiu-btn--link">
+                [立即创建]
+              </button>
+            </div>
           </template>
         </el-table>
 
@@ -285,7 +289,14 @@ const jumpRoute = (row) => {
 
 const createCloud = () => {
   data.createCloudVisible = true;
-  console.log("create create,", data.createCloudVisible);
+  data.cloudType = "1";
+};
+
+// 根据选择的类型跳转到不同操作页面
+const confirmCreateCloud = () => {
+  proxy.$router.push({
+    name: data.cloudType == "1" ? "InsertCluster" : "CreateCluster",
+  });
 };
 
 const handleSizeChange = (newSize) => {
@@ -380,5 +391,18 @@ const deleteCloud = async (row) => {
 
 .dialog-footer button:first-child {
   margin-right: 10px;
+}
+
+.app-pixiu-btn--link {
+  text-align: center;
+  height: auto;
+  padding: 0;
+  vertical-align: middle;
+  line-height: 1.5;
+  border: none;
+  color: #006eff;
+  margin-left: 2px;
+  background-color: #fff;
+  cursor: pointer;
 }
 </style>
