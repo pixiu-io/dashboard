@@ -5,15 +5,7 @@
 <script setup>
 // 独立封装echarts的使用，根据传递进来的option生成不同的图表
 //按需导入需要用到的 vue函数 和echarts
-import {
-  ref,
-  inject,
-  onMounted,
-  defineProps,
-  onBeforeUnmount,
-  watch,
-  nextTick,
-} from "vue";
+import { ref, inject, onMounted, onBeforeUnmount, watch, nextTick } from "vue";
 import elementResizeDetectorMaker from "element-resize-detector";
 const echarts = inject("echarts");
 //获取 dom 和 父组件数据 并定义"myChart"用于初始化图表
