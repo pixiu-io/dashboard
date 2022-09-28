@@ -372,13 +372,13 @@ const jumpRoute = (row) => {
 
 const createCloud = () => {
   data.createCloudVisible = true;
-  data.cloudType = "1";
+  data.cloudType = 1;
 };
 
 // 根据选择的类型跳转到不同操作页面
 const confirmCreateCloud = () => {
   proxy.$router.push({
-    name: data.cloudType == "1" ? "InsertCluster" : "CreateCluster",
+    name: data.cloudType == 1 ? "InsertCluster" : "CreateCluster",
   });
 };
 
