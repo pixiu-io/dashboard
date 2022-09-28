@@ -196,16 +196,53 @@
     v-model="data.createCloudVisible"
     title="选择集群类型"
     style="color: #000000; font: 14px"
-    width="30%"
+    width="50%"
     center
     @close="data.createCloudVisible = false"
   >
-    <div>
-      <el-radio-group v-model="data.cloudType">
-        <el-radio label="1" size="large" border>标准集群</el-radio>
-        <el-radio label="2" size="large" border>自建集群</el-radio>
-      </el-radio-group>
-    </div>
+    <!-- <div >
+       <div>
+        1asdadasdasasdsadadadasda23fafadfafdasdfafadfaf adfafdasf
+        adfafdasfasfddasf @after-appear="dfafdafadf fadfa"
+      </div>
+      <el-radio-group v-model="data.cloudType" style="display: flex">
+        <div>
+          <el-radio></el-radio>
+        </div>
+        <div style="height: 100px; width: 100px; box-sizing: border-box">
+          <el-radio label="2" size="large">{{ "" }}</el-radio>
+        </div>
+      </el-radio-group> 
+    </div> -->
+    <el-row :gutter="20">
+      <pixiu-radio-card
+        :type="1"
+        :defaultType="data.cloudType"
+        @click="changeActive"
+        ><div>
+          标准集群
+          <div>abcd</div>
+          <div>abcd</div>
+          <div>abcd</div>
+          <div>abcd</div>
+          <div>abcd</div>
+          <div>abcd</div>
+          <div>abcd</div>
+          <div>abcd</div>
+          <div>abcd</div>
+          <div>abcd</div>
+          <div>abcd</div>
+          <div>abcd</div>
+        </div></pixiu-radio-card
+      >
+      <pixiu-radio-card
+        :type="2"
+        :defaultType="data.cloudType"
+        @click="changeActive"
+        >Serverless集群</pixiu-radio-card
+      >
+    </el-row>
+
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="data.createCloudVisible = false">取消</el-button>
@@ -218,6 +255,7 @@
 <script setup>
 import { reactive, getCurrentInstance, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
+import PixiuRadioCard from "@/components/radioCard/index.vue";
 const { proxy } = getCurrentInstance();
 const data = reactive({
   pageInfo: {
@@ -226,7 +264,8 @@ const data = reactive({
     limit: 10, // 默认值需要是分页定义的值
   },
 
-  cloudType: "1",
+  isActive: false,
+  cloudType: 1,
   loading: false,
 
   // 触发创建页面
@@ -262,6 +301,10 @@ const data = reactive({
 onMounted(() => {
   getCloudList();
 });
+
+const changeActive = (value) => {
+  data.cloudType = value;
+};
 
 const getCloudList = async () => {
   // TODO 考虑将loading取到全局上面来，避免过多的去写loading状态管理
