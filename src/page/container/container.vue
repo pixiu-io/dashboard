@@ -350,6 +350,9 @@ const deleteCloud = async (row) => {
   margin-top: 20px;
   /* width: 480px; */
 }
+.el-main {
+  background-color: #f3f4f7;
+}
 .app-docs {
   margin-top: 20px;
   height: 60px;
