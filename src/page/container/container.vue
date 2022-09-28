@@ -196,51 +196,91 @@
     v-model="data.createCloudVisible"
     title="选择集群类型"
     style="color: #000000; font: 14px"
-    width="50%"
+    width="60%"
     center
     @close="data.createCloudVisible = false"
   >
-    <!-- <div >
-       <div>
-        1asdadasdasasdsadadadasda23fafadfafdasdfafadfaf adfafdasf
-        adfafdasfasfddasf @after-appear="dfafdafadf fadfa"
-      </div>
-      <el-radio-group v-model="data.cloudType" style="display: flex">
-        <div>
-          <el-radio></el-radio>
-        </div>
-        <div style="height: 100px; width: 100px; box-sizing: border-box">
-          <el-radio label="2" size="large">{{ "" }}</el-radio>
-        </div>
-      </el-radio-group> 
-    </div> -->
     <el-row :gutter="20">
       <pixiu-radio-card
         :type="1"
         :defaultType="data.cloudType"
         @click="changeActive"
         ><div>
-          标准集群
-          <div>abcd</div>
-          <div>abcd</div>
-          <div>abcd</div>
-          <div>abcd</div>
-          <div>abcd</div>
-          <div>abcd</div>
-          <div>abcd</div>
-          <div>abcd</div>
-          <div>abcd</div>
-          <div>abcd</div>
-          <div>abcd</div>
-          <div>abcd</div>
+          <div
+            style="
+              margin-top: 10px;
+              font: 14px;
+              font-weight: 700;
+              color: #000000;
+            "
+          >
+            标准集群
+          </div>
+
+          <div
+            style="
+              margin-top: 20px;
+              font: 12px;
+              color: #00000066;
+              /* padding-left: 10px;
+              position: relative; */
+            "
+          >
+            可以将用户本地基础设施的 Kubernetes 集群或者其他云厂商的 Kubernetes
+            集群注册到容器服务进行统一管理。
+          </div>
+          <div style="margin-top: 20px; color: #000 !important">
+            多云管理，灵活接入各种计算资源
+          </div>
+          <div style="margin-top: 8px; color: #000 !important">
+            对接现有 DevOps 系统，实现多云发布
+          </div>
+          <div style="margin-top: 8px; color: #000 !important">
+            完全兼容开源 Kubernetes 集群
+          </div>
+          <div
+            style="
+              margin-top: 20px;
+              color: #000 !important;
+              margin-bottom: 50px;
+            "
+          >
+            生态开源 多云管理
+          </div>
         </div></pixiu-radio-card
       >
+
       <pixiu-radio-card
         :type="2"
         :defaultType="data.cloudType"
         @click="changeActive"
-        >Serverless集群</pixiu-radio-card
       >
+        <div
+          style="margin-top: 10px; font: 14px; font-weight: 700; color: #000000"
+        >
+          自建集群
+        </div>
+
+        <div style="margin-top: 20px; font: 12px; color: #00000066">
+          默认集群类型，完全兼容开源 Kubernetes
+          集群标准功能，并强化节点管理、集群网络、容器调度等能力。
+        </div>
+
+        <div style="margin-top: 20px; color: #000 !important">
+          标准源生 Kubernets 集群、丰富的自定义接口
+        </div>
+        <div style="margin-top: 8px; color: #000 !important">
+          适用于高稳定性、定制化集群业务
+        </div>
+        <div style="margin-top: 8px; color: #000 !important">
+          灵活的集群网络、容器调度
+        </div>
+        <div
+          style="margin-top: 20px; color: #000 !important; margin-bottom: 50px"
+        >
+          标准K8s集群 支持原生节点
+        </div>
+      </pixiu-radio-card>
     </el-row>
 
     <template #footer>
@@ -332,13 +372,13 @@ const jumpRoute = (row) => {
 
 const createCloud = () => {
   data.createCloudVisible = true;
-  data.cloudType = "1";
+  data.cloudType = 1;
 };
 
 // 根据选择的类型跳转到不同操作页面
 const confirmCreateCloud = () => {
   proxy.$router.push({
-    name: data.cloudType == "1" ? "InsertCluster" : "CreateCluster",
+    name: data.cloudType == 1 ? "InsertCluster" : "CreateCluster",
   });
 };
 
