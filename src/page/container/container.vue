@@ -230,13 +230,13 @@
             集群注册到容器服务进行统一管理。
           </div>
           <div style="margin-top: 20px; color: #000 !important">
-            多云管理，灵活接入和管理企业的各种计算资源
+            多云管理，灵活接入各种计算资源
           </div>
           <div style="margin-top: 8px; color: #000 !important">
-            自动发布，可对接现有 DevOps 系统，实现多云发布
+            对接现有 DevOps 系统，实现多云发布
           </div>
           <div style="margin-top: 8px; color: #000 !important">
-            全场景适用，完全兼容开源 Kubernetes 集群标准能力
+            完全兼容开源 Kubernetes 集群
           </div>
           <div
             style="
