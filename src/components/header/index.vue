@@ -140,14 +140,14 @@
         <span>
           <el-avatar :size="30" :src="data.circleUrl" />
         </span>
-        <!-- <span>
-                <el-icon style="margin-left: 8px; margin-top: 18px; font-size:larger;">
-                  <CaretBottom />
-                </el-icon>
-              </span> -->
+
         <template #dropdown>
-          <span style="margin-left: 20px; font-size: 18px"> 断马 </span>
-          <div style="margin-left: 20px">账号ID: 12345678910</div>
+          <div style="margin-left: 20px; font-size: 18px; margin-top: 15px">
+            {{ data.loginUser }}
+          </div>
+          <div style="margin-left: 20px; margin-top: 10px">
+            账号ID: {{ data.userId }}
+          </div>
 
           <el-dropdown-menu>
             <el-dropdown-item divided>
@@ -180,7 +180,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, getCurrentInstance } from "vue";
+import { reactive, ref, getCurrentInstance, onMounted } from "vue";
 const { proxy } = getCurrentInstance();
 const data = reactive({
   circleUrl:
@@ -188,6 +188,13 @@ const data = reactive({
   radio: "开启",
   activeIndex: 1,
   showMessage: false,
+
+  loginUser: "",
+  userId: "123456789",
+});
+
+onMounted(() => {
+  data.loginUser = localStorage.getItem("account");
 });
 
 const headInput = ref("");
