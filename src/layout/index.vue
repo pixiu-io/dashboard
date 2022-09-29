@@ -75,7 +75,11 @@ let data = reactive({
   inputWidth: "200px",
 
   isCollapse: true, // 真则为在边栏，假则不在边栏
-  menus: [
+  menus: [],
+});
+
+onMounted(() => {
+  data.menus = [
     {
       name: "概览",
       url: "/index",
@@ -101,7 +105,7 @@ let data = reactive({
       url: "/role",
       icon: "Guide",
     },
-  ],
+  ];
 });
 
 const mouseEnter = () => {
