@@ -10,6 +10,7 @@ import User from "./user/user.vue";
 import Role from "./user/role.vue";
 import InsertCluster from "./container/insertCluster";
 import CreateCluster from "./container/createCluster";
+import NotFound from "./notFound/notFound.vue";
 
 export {
   Home,
@@ -24,4 +25,5 @@ export {
   Node,
   InsertCluster,
   CreateCluster,
+  NotFound,
 };

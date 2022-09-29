@@ -13,6 +13,7 @@ import {
   Node,
   InsertCluster,
   CreateCluster,
+  NotFound,
 } from "@/page";
 const routes = [
   {
@@ -119,6 +120,7 @@ const routes = [
     name: "Login",
     component: Login,
   },
+  { path: "/:pathMatch(.*)", name: "NotFound", component: NotFound },
 ];
 
 const router = createRouter({
