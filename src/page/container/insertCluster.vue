@@ -3,17 +3,44 @@
     <el-card style="margin-top: -20px; margin-left: -20px; margin-right: -20px">
       <div class="app-pixiu-header-title">导入标准集群</div>
     </el-card>
-    <div>导入</div>
+
+    <el-card style="margin-top: 20px">
+      <el-form
+        :label-position="labelPosition"
+        label-width="100px"
+        :model="formLabelAlign"
+        style="max-width: 460px"
+      >
+        <el-form-item label="集群名称">
+          <el-input v-model="formLabelAlign.name" />
+        </el-form-item>
+        <el-form-item label="所在地域">
+          <el-input v-model="formLabelAlign.region" />
+        </el-form-item>
+        <el-form-item label="集群描述">
+          <el-input v-model="formLabelAlign.description" />
+        </el-form-item>
+      </el-form>
+    </el-card>
   </el-main>
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance } from "vue";
+import { reactive, getCurrentInstance, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import PixiuRadioCard from "@/components/radioCard/index.vue";
 const { proxy } = getCurrentInstance();
 const data = reactive({
   loading: false,
+});
+
+const labelPosition = ref("left");
+
+const formLabelAlign = reactive({
+  name: "",
+  region: "",
+  type: "",
+  description: "",
 });
 
 const jumpRoute = (row) => {
