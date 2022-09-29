@@ -319,6 +319,13 @@ const data = reactive({
   cloudType: 1,
   loading: false,
 
+  cloudStatus: {
+    0: "正常",
+    1: "异常",
+    2: "构建中",
+    3: "删除中",
+  },
+
   // 触发创建页面
   createCloudVisible: false,
 
