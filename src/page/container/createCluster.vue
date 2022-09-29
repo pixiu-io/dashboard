@@ -27,7 +27,7 @@
   };
   </script>
 
-  <style>
+  <style scoped="scoped">
   .box-card {
     margin-top: 20px;
   }
