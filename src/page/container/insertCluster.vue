@@ -3,7 +3,7 @@
     <el-card style="margin-top: -20px; margin-left: -20px; margin-right: -20px">
       <div class="app-pixiu-header-title">导入标准集群</div>
     </el-card>
-    <div>dd</div>
+    <div>导入</div>
   </el-main>
 </template>
 
@@ -31,6 +31,7 @@ const jumpRoute = (row) => {
 .box-card {
   margin-top: 20px;
 }
+
 .el-main {
   background-color: #f3f4f7;
 }
