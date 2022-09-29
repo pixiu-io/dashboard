@@ -9,7 +9,7 @@
         }`"
       >
         <el-col
-          :span="4"
+          :span="props.span"
           style="
             height: 40px;
             display: flex;
@@ -25,7 +25,7 @@
             }`"
           ></div>
         </el-col>
-        <el-col :span="20">
+        <el-col :span="24 - props.span">
           <slot />
         </el-col>
       </el-row></div
@@ -33,9 +33,12 @@
 </template>
 
 <script setup>
-import { defineEmits } from "vue";
 const props = defineProps({
   type: Number,
+  span: {
+    type: Number,
+    default: 4,
+  },
   defaultType: Number,
 });
 const emits = defineEmits(["click"]);
@@ -58,7 +61,6 @@ const abc = (value) => {
 
 .pixiu-card__default:hover {
   border: 1px solid #409eff;
-  cursor: pointer;
 }
 
 .pixiu-card__default:hover .pixiu-radio__default {

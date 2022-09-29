@@ -194,17 +194,22 @@
 
   <el-dialog
     v-model="data.createCloudVisible"
-    title="选择集群类型"
     style="color: #000000; font: 14px"
-    width="60%"
+    width="1200px"
     center
     @close="data.createCloudVisible = false"
   >
+    <template #title>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">
+        选择集群类型
+      </div>
+    </template>
     <el-row :gutter="20">
       <pixiu-radio-card
         :type="1"
         :defaultType="data.cloudType"
         @click="changeActive"
+        :span="2"
         ><div>
           <div
             style="
@@ -254,6 +259,7 @@
         :type="2"
         :defaultType="data.cloudType"
         @click="changeActive"
+        :span="2"
       >
         <div
           style="margin-top: 10px; font: 14px; font-weight: 700; color: #000000"
@@ -267,7 +273,7 @@
         </div>
 
         <div style="margin-top: 20px; color: #000 !important">
-          标准源生 Kubernets 集群、丰富的自定义接口
+          标准原生 Kubernets 集群、丰富的自定义接口
         </div>
         <div style="margin-top: 8px; color: #000 !important">
           适用于高稳定性、定制化集群业务
