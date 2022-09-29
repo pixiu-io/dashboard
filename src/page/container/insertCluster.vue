@@ -4,45 +4,43 @@
       <div class="app-pixiu-header-title">导入标准集群</div>
     </el-card>
 
-    <el-card style="margin-top: 20px">
-      <el-form
-        :label-position="labelPosition"
-        label-width="100px"
-        :model="formLabelAlign"
-        style="max-width: 460px"
-      >
-        <el-form-item label="集群名称">
-          <el-input v-model="formLabelAlign.name" />
-        </el-form-item>
-        <el-form-item label="所在地域">
-          <el-input v-model="formLabelAlign.region" />
-        </el-form-item>
+    <div class="app-pixiu-content-card">
+      <el-card style="margin-top: 30px; width: 75%">
+        <el-form
+          :label-position="labelPosition"
+          label-width="100px"
+          :model="formLabelAlign"
+          style="max-width: 460px"
+        >
+          <el-form-item label="集群名称">
+            <el-input v-model="formLabelAlign.name" />
+          </el-form-item>
+          <el-form-item label="所在地域">
+            <el-input v-model="formLabelAlign.region" />
+          </el-form-item>
 
-        <el-form-item label="集群描述">
-          <el-input v-model="formLabelAlign.description" />
-        </el-form-item>
+          <el-form-item label="集群描述">
+            <el-input v-model="formLabelAlign.description" />
+          </el-form-item>
 
-        <el-form-item>
-          <el-button type="primary" @click="submitForm(ruleFormRef)"
-            >完成</el-button
-          >
-          <el-button @click="resetForm(ruleFormRef)">取消</el-button>
-        </el-form-item>
-      </el-form>
-    </el-card>
+          <el-form-item>
+            <el-button type="primary" @click="submitForm(ruleFormRef)"
+              >完成</el-button
+            >
+            <el-button @click="resetForm(ruleFormRef)">取消</el-button>
+          </el-form-item>
+        </el-form>
+      </el-card>
+    </div>
   </el-main>
 </template>
 
 <script setup>
 import { reactive, getCurrentInstance, ref } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-import PixiuRadioCard from "@/components/radioCard/index.vue";
 const { proxy } = getCurrentInstance();
 const data = reactive({
   loading: false,
 });
-
-const labelPosition = ref("left");
 
 const formLabelAlign = reactive({
   name: "",
@@ -50,6 +48,8 @@ const formLabelAlign = reactive({
   type: "",
   description: "",
 });
+
+const labelPosition = ref("left");
 
 const jumpRoute = (row) => {
   proxy.$router.push({
@@ -65,6 +65,11 @@ const jumpRoute = (row) => {
 <style>
 .box-card {
   margin-top: 20px;
+}
+
+.app-pixiu-content-card {
+  display: flex;
+  justify-content: space-around;
 }
 
 .el-main {
