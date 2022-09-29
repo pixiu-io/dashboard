@@ -112,7 +112,12 @@
             </template>
           </el-table-column>
 
-          <el-table-column prop="status" label="状态" width="200" />
+          <el-table-column
+            :formatter="cloudStatusFormatter"
+            prop="status"
+            label="状态"
+            width="200"
+          />
           <el-table-column prop="cloud_type" label="集群类型" width="200" />
           <el-table-column
             prop="kube_version"
@@ -314,6 +319,13 @@ const data = reactive({
   cloudType: 1,
   loading: false,
 
+  cloudStatus: {
+    0: "正常",
+    1: "异常",
+    2: "构建中",
+    3: "删除中",
+  },
+
   // 触发创建页面
   createCloudVisible: false,
 
@@ -350,6 +362,10 @@ onMounted(() => {
 
 const changeActive = (value) => {
   data.cloudType = value;
+};
+
+const cloudStatusFormatter = (row, column, cellValue) => {
+  return data.cloudStatus[cellValue];
 };
 
 const getCloudList = async () => {
@@ -392,6 +408,7 @@ const handleSizeChange = (newSize) => {
   data.pageInfo.page_size = newSize;
   getCloudList();
 };
+
 const handleCurrentChange = (newPage) => {
   this.pageInfo.page = newPage;
   getCloudList();
