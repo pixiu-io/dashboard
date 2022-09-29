@@ -17,8 +17,16 @@
         <el-form-item label="所在地域">
           <el-input v-model="formLabelAlign.region" />
         </el-form-item>
+
         <el-form-item label="集群描述">
           <el-input v-model="formLabelAlign.description" />
+        </el-form-item>
+
+        <el-form-item>
+          <el-button type="primary" @click="submitForm(ruleFormRef)"
+            >完成</el-button
+          >
+          <el-button @click="resetForm(ruleFormRef)">取消</el-button>
         </el-form-item>
       </el-form>
     </el-card>
