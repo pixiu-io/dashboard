@@ -319,13 +319,6 @@ const data = reactive({
   cloudType: 1,
   loading: false,
 
-  cloudStatus: {
-    0: "正常",
-    1: "异常",
-    2: "构建中",
-    3: "删除中",
-  },
-
   // 触发创建页面
   createCloudVisible: false,
 
@@ -360,12 +353,19 @@ onMounted(() => {
   getCloudList();
 });
 
+const cloudStatus = {
+  0: "正常",
+  1: "异常",
+  2: "正在初始化",
+  3: "删除中",
+};
+
 const changeActive = (value) => {
   data.cloudType = value;
 };
 
 const cloudStatusFormatter = (row, column, cellValue) => {
-  return data.cloudStatus[cellValue];
+  return cloudStatus[cellValue];
 };
 
 const getCloudList = async () => {

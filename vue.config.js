@@ -5,7 +5,7 @@ module.exports = defineConfig({
   devServer: {
     proxy: {
       "/": {
-        target: process.env.VUE_BASE_URL,
+        target: process.env.VUE_APP_BASE_API,
         changeOrigin: true,
         ws: false,
       },
