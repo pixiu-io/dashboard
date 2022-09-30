@@ -3,19 +3,19 @@
     <div class="login-container">
       <div class="tab-container">
         <div class="tab-item">
-          <ul class="u-tabs_head_3_DeFFee">
-            <li
-              title="用户登录"
-              selected="selected"
-              class="u-tabs_item_3_DeFFee"
-            >
-              <span>用户登录</span>
-            </li>
-          </ul>
+          <div selected="selected" class="u-tabs_item_3_DeFFee">
+            {{ $t(`message.user_login`) }}
+          </div>
+          <div class="change-language-container" @click="change">
+            <el-icon class="el-input__icon">
+              <component is="Switch" />
+            </el-icon>
+            {{ $t(`message.switch_language`) }}
+          </div>
         </div>
         <el-input
           v-model="data.loginInfo.name"
-          placeholder="请输入账号"
+          :placeholder="$t(`message.username`)"
           clearable
           maxlength="128"
           size="large"
@@ -29,7 +29,7 @@
         </el-input>
         <el-input
           v-model="data.loginInfo.password"
-          placeholder="请输入密码"
+          :placeholder="$t(`message.password`)"
           show-password
           clearable
           maxlength="128"
@@ -50,7 +50,7 @@
               @click="forget"
               size="large"
             >
-              忘记密码
+              {{ $t(`message.forget`) }}
             </el-button>
           </div>
           <el-button
@@ -58,7 +58,8 @@
             size="large"
             @click="login"
             :loading="data.load"
-            >登陆</el-button
+          >
+            {{ $t(`message.login`) }}</el-button
           >
         </div>
       </div>
@@ -67,7 +68,7 @@
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance, inject } from "vue";
+import { reactive, getCurrentInstance } from "vue";
 const { proxy } = getCurrentInstance();
 const data = reactive({
   loginInfo: {
@@ -81,6 +82,14 @@ const data = reactive({
 });
 const forget = () => {
   proxy.$message.error("忘记密码，请联系管理员");
+};
+
+const change = () => {
+  if (proxy.$i18n.locale === "zh") {
+    proxy.$i18n.locale = "en";
+  } else {
+    proxy.$i18n.locale = "zh";
+  }
 };
 const login = async () => {
   data.load = true;
@@ -130,6 +139,7 @@ const login = async () => {
 }
 .tab-item {
   width: 100%;
+  display: flex;
 }
 
 .u-tabs_item_3_DeFFee {
@@ -139,9 +149,19 @@ const login = async () => {
   height: 30px;
   line-height: 30px;
   padding: 0 20px;
-  border: 1px solid black;
+  border: 1px solid #ece5e3;
   border-bottom: none;
   /* margin-bottom: -1px; */
+}
+
+.change-language-container {
+  width: 70%;
+  cursor: pointer;
+  border-bottom: 1px solid #ece5e3;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  color: #508ae2;
 }
 
 /* 有用 */

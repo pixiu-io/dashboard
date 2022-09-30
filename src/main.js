@@ -8,6 +8,7 @@ import * as ElIcons from "@element-plus/icons-vue";
 import { pinia } from "@/store";
 import { permissionDirective } from "@/directive";
 import axios from "@/utils/http";
+import i18n from "@/utils/i18n";
 // 全局引入css
 import "../style/apps.css";
 
@@ -24,6 +25,7 @@ app.use(ElementPlus, {
   locale: zhCn,
 });
 app.use(router);
+app.use(i18n);
 
 app.config.globalProperties.$http = axios;
 
