@@ -7,4 +7,4 @@ RUN npm config set registry https://registry.npmmirror.com/ && npm install && np
 FROM nginx:alpine
 LABEL MAINTAINER="PIXIU"
 COPY --from=builder /build/dist /usr/share/nginx/html/pixiu
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
