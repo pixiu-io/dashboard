@@ -31,6 +31,27 @@
             </div>
 
             <div style="margin-top: 20px" />
+            <el-form-item label="KubeConfig">
+              <el-upload
+                drag
+                multiple
+                :on-change="handleChange"
+                :before-remove="beforeRemove"
+                :limit="1"
+                :file-list="data.clusterForm.kubeconfig"
+                :auto-upload="false"
+              >
+                <el-icon class="el-icon--upload">
+                  <upload-filled />
+                </el-icon>
+                <div class="el-upload__text">
+                  将 kubeconfig 拖到此处，或 <em>点击上传</em>
+                </div>
+                <!-- <el-button slot="trigger" size="small" type="primary">选取文件</el-button> -->
+              </el-upload>
+            </el-form-item>
+
+            <div style="margin-top: 20px" />
             <el-form-item label="集群描述" style="width: 50%">
               <el-input
                 v-model="data.clusterForm.description"
@@ -84,6 +105,7 @@ const data = reactive({
     region: "无锡",
     description: "",
     create_ns: "enabled", // 创建 pixiu 的系统命名空间
+    kubeconfig: "",
   },
 
   // 后续从后端获取
@@ -140,6 +162,14 @@ const backToContainer = () => {
   proxy.$router.push({
     name: "Container",
   });
+};
+
+const handleChange = (file, files) => {
+  data.clusterForm.kubeconfig = file;
+};
+
+const beforeRemove = (file, files) => {
+  return proxy.$confirm(`确定移除 ${file.name}？`);
 };
 </script>
 
