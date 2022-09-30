@@ -3,22 +3,58 @@
     <div style="font-weight: bold; font-size: 18px; vertical-align: middle">
       概览
     </div>
-
+    <div>
+      <div
+        style="
+          display: flex;
+          margin-top: 40px;
+          height: 100px;
+          margin-left: 20px;
+        "
+      >
+        <transition name="el-zoom-in-top">
+          <div class="transition-box">820<br />集群总数</div>
+        </transition>
+        <transition name="el-zoom-in-center">
+          <div class="transition-box">80<br />节点总数</div>
+        </transition>
+        <transition name="el-zoom-in-center">
+          <div class="transition-box">67<br />流水线总数</div>
+        </transition>
+        <transition name="el-zoom-in-center">
+          <div class="transition-box">660<br />服务总数</div>
+        </transition>
+        <transition name="el-zoom-in-center">
+          <div class="transition-box">890<br />实例总数</div>
+        </transition>
+        <transition name="el-zoom-in-bottom">
+          <div class="transition-box">9<br />告警总数</div>
+        </transition>
+      </div>
+    </div>
     <el-row>
       <el-col>
         <div
           style="
-            height: 600px;
-            width: 600px;
-            margin-left: 100px;
-            margin-top: 100px;
+            height: 450px;
+            width: 45%;
+            margin-left: 30px;
+            margin-top: 50px;
+            display: inline-block;
           "
         >
           <my-echarts :option="cloudOption"></my-echarts>
         </div>
-
-        <div style="height: 600px; width: 1000px; float: right">
-          <my-echarts :option="option"></my-echarts>
+        <div
+          style="
+            height: 450px;
+            width: 45%;
+            margin-left: 30px;
+            margin-top: 50px;
+            display: inline-block;
+          "
+        >
+          <my-echarts :option="option" style="margin-top: 46px; margin-left: -120px;"></my-echarts>
         </div>
       </el-col>
     </el-row>
@@ -30,20 +66,27 @@ import { reactive } from "vue";
 import MyEcharts from "@/components/echarts/index.vue";
 
 const option = reactive({
-  title: {
-    text: "用户列表",
-  },
+  // title: {
+  //   text: "平台用户访问分析",
+  // },
   tooltip: {},
   legend: {
-    data: ["销量"],
+    data: ["用户访问"],
   },
   xAxis: {
-    data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"],
+    data: [
+      "2022/09/01",
+      "2022/09/02",
+      "2022/09/03",
+      "2022/09/04",
+      "2022/09/05",
+      "2022/09/06",
+    ],
   },
   yAxis: {},
   series: [
     {
-      name: "销量",
+      name: "用户访问",
       type: "bar",
       data: [5, 20, 36, 10, 10, 20],
     },
@@ -51,12 +94,12 @@ const option = reactive({
 });
 
 const cloudOption = reactive({
-  title: { text: "容器" },
+  title: { text: "平台产品访问分析" },
   legend: {
     top: "bottom",
   },
   toolbox: {
-    show: true,
+    show: false,
     feature: {
       mark: { show: true },
       dataView: { show: true, readOnly: false },
@@ -66,23 +109,21 @@ const cloudOption = reactive({
   },
   series: [
     {
-      name: "Nightingale Chart",
+      name: "产品使用分析",
       type: "pie",
-      radius: [50, 250],
+      radius: [20, 140],
       center: ["50%", "50%"],
       roseType: "area",
       itemStyle: {
         borderRadius: 8,
       },
       data: [
-        { value: 40, name: "rose 1" },
-        { value: 38, name: "rose 2" },
-        { value: 32, name: "rose 3" },
-        { value: 30, name: "rose 4" },
-        { value: 28, name: "rose 5" },
-        { value: 26, name: "rose 6" },
-        { value: 22, name: "rose 7" },
-        { value: 18, name: "rose 8" },
+        { value: 40, name: "容器服务" },
+        { value: 38, name: "中间件" },
+        { value: 32, name: "DevOps" },
+        { value: 30, name: "微服务" },
+        { value: 28, name: "用户中心" },
+        { value: 26, name: "低代码" },
       ],
     },
   ],
@@ -90,7 +131,17 @@ const cloudOption = reactive({
 </script>
 
 <style scoped>
-.input-with-select .el-input-group__prepend {
-  background-color: var(--el-fill-color-blank);
+.transition-box {
+  margin-bottom: 50px;
+  width: 200px;
+  height: 100px;
+  border-radius: 4px;
+  background-color: #409eff;
+  text-align: center;
+  color: #fff;
+  padding: 20px 20px;
+  box-sizing: border-box;
+  margin-right: 20px;
+  font-size: 18px;
 }
 </style>
