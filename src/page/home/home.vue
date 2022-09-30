@@ -38,7 +38,7 @@
           style="
             height: 450px;
             width: 45%;
-            margin-left: 20px;
+            margin-left: 30px;
             margin-top: 50px;
             display: inline-block;
           "
@@ -54,7 +54,7 @@
             display: inline-block;
           "
         >
-          <my-echarts :option="option"></my-echarts>
+          <my-echarts :option="option" style="margin-top: 46px; margin-left: -120px;"></my-echarts>
         </div>
       </el-col>
     </el-row>
@@ -66,12 +66,12 @@ import { reactive } from "vue";
 import MyEcharts from "@/components/echarts/index.vue";
 
 const option = reactive({
-  title: {
-    text: "平台用户访问分析",
-  },
+  // title: {
+  //   text: "平台用户访问分析",
+  // },
   tooltip: {},
   legend: {
-    data: ["访问量"],
+    data: ["用户访问"],
   },
   xAxis: {
     data: [
@@ -86,7 +86,7 @@ const option = reactive({
   yAxis: {},
   series: [
     {
-      name: "访问量",
+      name: "用户访问",
       type: "bar",
       data: [5, 20, 36, 10, 10, 20],
     },
