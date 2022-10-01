@@ -37,7 +37,7 @@
                 :on-change="handleChange"
                 :before-remove="beforeRemove"
                 :limit="1"
-                :file-list="data.clusterForm.kubeconfig"
+                :file-list="data.kubeconfig"
                 :auto-upload="false"
               >
                 <el-icon class="el-icon--upload">
@@ -127,11 +127,11 @@ const data = reactive({
     region: "无锡",
     description: "",
     create_ns: "enabled", // 创建 pixiu 的系统命名空间
-    kubeconfig: [],
     enable_pixiu_eventer: false, // 启用高性能事件收集器
 
-    allowCreated: true,
+    allowCreated: true, // 仅在前端生效
   },
+  kubeconfig: [],
 
   // 后续从后端获取
   regionOptions: [
@@ -173,11 +173,11 @@ const data = reactive({
 const labelPosition = ref("left");
 
 const comfirmCreate = async () => {
-  if (data.clusterForm.kubeconfig.length == 0) {
+  if (data.kubeconfig.length == 0) {
     return proxy.$message.error("failed to found the kubeConfig file.");
   }
 
-  var configFile = data.clusterForm.kubeconfig[0].raw;
+  var configFile = data.kubeconfig[0].raw;
   var fileFormData = new FormData();
   fileFormData.append("kubeconfig", configFile, configFile.name);
   fileFormData.append(
@@ -204,11 +204,11 @@ const cancelCreate = () => {
 };
 
 const connectKubernetes = async () => {
-  if (data.clusterForm.kubeconfig.length == 0) {
+  if (data.kubeconfig.length == 0) {
     return proxy.$message.error("failed to found the kubeConfig file.");
   }
 
-  var configFile = data.clusterForm.kubeconfig[0].raw;
+  var configFile = data.kubeconfig[0].raw;
   var fileFormData = new FormData();
   fileFormData.append("kubeconfig", configFile, configFile.name);
   var requestConfig = {
@@ -239,7 +239,7 @@ const backToContainer = () => {
 };
 
 const handleChange = (file, files) => {
-  data.clusterForm.kubeconfig = files;
+  data.kubeconfig = files;
 };
 
 const beforeRemove = (file, files) => {
