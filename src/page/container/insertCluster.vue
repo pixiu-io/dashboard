@@ -197,6 +197,11 @@ const comfirmCreate = async () => {
     data: fileFormData,
     config: requestConfig,
   });
+  if (resp.code != 200) {
+    return proxy.$message.error("导入集群失败: "+ resp.message);
+  }
+  proxy.$message.success("导入集群");
+  backToContainer();
 };
 
 const cancelCreate = () => {
