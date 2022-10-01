@@ -49,6 +49,15 @@
                 </div>
                 <!-- <el-button slot="trigger" size="small" type="primary">选取文件</el-button> -->
               </el-upload>
+
+              <el-row>
+                <el-button
+                  type="primary"
+                  style="margin-left: 20px; margin-top: 130px"
+                  @click="connectKubernetes"
+                  >可用性检查</el-button
+                >
+              </el-row>
             </el-form-item>
 
             <div style="margin-top: 20px" />
@@ -89,7 +98,10 @@
 
             <div style="margin-top: 40px" />
             <el-form-item>
-              <el-button type="primary" @click="comfirmCreate()"
+              <el-button
+                type="primary"
+                :disabled="data.clusterForm.allowCreated"
+                @click="comfirmCreate()"
                 >完成</el-button
               >
               <el-button @click="cancelCreate()">取消</el-button>
@@ -119,6 +131,8 @@ const data = reactive({
     create_ns: "enabled", // 创建 pixiu 的系统命名空间
     kubeconfig: "",
     enable_pixiu_eventer: false, // 启用高性能事件收集器
+
+    allowCreated: true,
   },
 
   // 后续从后端获取
@@ -168,6 +182,10 @@ const comfirmCreate = () => {
 const cancelCreate = () => {
   console.log("cancel");
   backToContainer();
+};
+
+const connectKubernetes = () => {
+  data.clusterForm.allowCreated = false;
 };
 
 // 回到 container 页面
