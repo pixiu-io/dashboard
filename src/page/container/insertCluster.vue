@@ -3,7 +3,7 @@
     <pixiu-card title="导入标准集群" height="50px" />
     <el-main>
       <div class="app-pixiu-content-card">
-        <el-card style="margin-top: 30px; width: 75%">
+        <el-card style="margin-top: 10px; width: 75%">
           <el-form
             :label-position="labelPosition"
             label-width="120px"
@@ -52,10 +52,10 @@
 
               <el-row>
                 <el-button
-                  type="primary"
+                  type="text"
                   style="margin-left: 20px; margin-top: 130px"
                   @click="connectKubernetes"
-                  >可用性检查</el-button
+                  >连通检查</el-button
                 >
               </el-row>
             </el-form-item>
