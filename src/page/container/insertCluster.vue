@@ -180,17 +180,17 @@ const comfirmCreate = async () => {
   var configFile = data.clusterForm.kubeconfig[0].raw;
   var fileFormData = new FormData();
   fileFormData.append("kubeconfig", configFile, configFile.name);
-  var requestConfig = {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  };
   fileFormData.append(
     "clusterData",
     new Blob([JSON.stringify(data.clusterForm)]),
     { type: "application/json" }
   );
 
+  var requestConfig = {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  };
   const resp = await proxy.$http({
     method: "post",
     url: "/clouds",
