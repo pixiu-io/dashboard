@@ -198,9 +198,11 @@ const comfirmCreate = async () => {
     config: requestConfig,
   });
   if (resp.code != 200) {
-    return proxy.$message.error("导入集群失败: "+ resp.message);
+    return proxy.$message.error(
+      "集群 " + data.clusterForm.name + " 导入失败: " + resp.message
+    );
   }
-  proxy.$message.success("导入集群");
+  proxy.$message.success("集群 " + data.clusterForm.name + " 导入成功");
   backToContainer();
 };
 
