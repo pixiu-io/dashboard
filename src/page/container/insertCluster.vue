@@ -34,7 +34,6 @@
             <el-form-item label="KubeConfig">
               <el-upload
                 drag
-                multiple
                 :on-change="handleChange"
                 :before-remove="beforeRemove"
                 :limit="1"
@@ -47,7 +46,6 @@
                 <div class="el-upload__text">
                   将 kubeconfig 拖到此处，或 <em>点击上传</em>
                 </div>
-                <!-- <el-button slot="trigger" size="small" type="primary">选取文件</el-button> -->
               </el-upload>
 
               <el-row>
@@ -129,7 +127,7 @@ const data = reactive({
     region: "无锡",
     description: "",
     create_ns: "enabled", // 创建 pixiu 的系统命名空间
-    kubeconfig: "",
+    kubeconfig: [],
     enable_pixiu_eventer: false, // 启用高性能事件收集器
 
     allowCreated: true,
@@ -196,7 +194,7 @@ const backToContainer = () => {
 };
 
 const handleChange = (file, files) => {
-  data.clusterForm.kubeconfig = file;
+  data.clusterForm.kubeconfig = files;
 };
 
 const beforeRemove = (file, files) => {
