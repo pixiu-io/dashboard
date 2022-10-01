@@ -182,7 +182,31 @@ const cancelCreate = () => {
   backToContainer();
 };
 
-const connectKubernetes = () => {
+const connectKubernetes = async () => {
+  if (data.clusterForm.kubeconfig.length == 0) {
+    return proxy.$message.error("failed to found the kubeConfig file.");
+  }
+
+  var configFile = data.clusterForm.kubeconfig[0].raw;
+  var fileFormData = new FormData();
+  fileFormData.append("kubeconfig", configFile, configFile.name);
+  var requestConfig = {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  };
+
+  const resp = await proxy.$http({
+    method: "post",
+    url: "/clouds/ping",
+    data: fileFormData,
+    config: requestConfig,
+  });
+
+  if (resp.code != 200) {
+    return proxy.$message.error("kubernetes 集群连接异常"); // 连通性检测异常
+  }
+  proxy.$message.success("kubernetes 集群连接正常")
   data.clusterForm.allowCreated = false;
 };
 
