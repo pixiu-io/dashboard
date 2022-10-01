@@ -6,7 +6,7 @@
         <el-card style="margin-top: 30px; width: 75%">
           <el-form
             :label-position="labelPosition"
-            label-width="110px"
+            label-width="120px"
             :model="data.clusterForm"
           >
             <div style="margin-top: 20px" />
@@ -50,6 +50,18 @@
                 <!-- <el-button slot="trigger" size="small" type="primary">选取文件</el-button> -->
               </el-upload>
             </el-form-item>
+
+            <div style="margin-top: 20px" />
+            <el-form-item label="高性能 eventer">
+              <el-switch
+                v-model="data.clusterForm.enable_pixiu_eventer"
+                active-text="启用"
+                inactive-text="关闭"
+              />
+            </el-form-item>
+            <div class="app-pixiu-describe" style="margin-top: -12px">
+              启用 pixiu-eventer 组件，提供高性能的 kubernetes 事件查询能力
+            </div>
 
             <div style="margin-top: 20px" />
             <el-form-item label="集群描述" style="width: 50%">
@@ -106,6 +118,7 @@ const data = reactive({
     description: "",
     create_ns: "enabled", // 创建 pixiu 的系统命名空间
     kubeconfig: "",
+    enable_pixiu_eventer: false, // 启用高性能事件收集器
   },
 
   // 后续从后端获取
@@ -188,7 +201,7 @@ const beforeRemove = (file, files) => {
 }
 
 .app-pixiu-describe {
-  margin-left: 110px;
+  margin-left: 120px;
   font-size: 12px;
   color: #888888;
 }
