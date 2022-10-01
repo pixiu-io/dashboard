@@ -52,10 +52,10 @@
 
               <el-row>
                 <el-button
-                  type="primary"
+                  type="text"
                   style="margin-left: 20px; margin-top: 130px"
                   @click="connectKubernetes"
-                  >可用性检查</el-button
+                  >连通检查</el-button
                 >
               </el-row>
             </el-form-item>
