@@ -34,11 +34,10 @@
             <el-form-item label="KubeConfig">
               <el-upload
                 drag
-                multiple
                 :on-change="handleChange"
                 :before-remove="beforeRemove"
                 :limit="1"
-                :file-list="data.clusterForm.kubeconfig"
+                :file-list="data.kubeconfig"
                 :auto-upload="false"
               >
                 <el-icon class="el-icon--upload">
@@ -47,7 +46,6 @@
                 <div class="el-upload__text">
                   将 kubeconfig 拖到此处，或 <em>点击上传</em>
                 </div>
-                <!-- <el-button slot="trigger" size="small" type="primary">选取文件</el-button> -->
               </el-upload>
 
               <el-row>
@@ -129,11 +127,11 @@ const data = reactive({
     region: "无锡",
     description: "",
     create_ns: "enabled", // 创建 pixiu 的系统命名空间
-    kubeconfig: "",
     enable_pixiu_eventer: false, // 启用高性能事件收集器
 
-    allowCreated: true,
+    allowCreated: true, // 仅在前端生效
   },
+  kubeconfig: [],
 
   // 后续从后端获取
   regionOptions: [
@@ -174,17 +172,69 @@ const data = reactive({
 
 const labelPosition = ref("left");
 
-const comfirmCreate = () => {
-  console.log("create");
+const comfirmCreate = async () => {
+  if (data.kubeconfig.length == 0) {
+    return proxy.$message.error("failed to found the kubeConfig file.");
+  }
+
+  var configFile = data.kubeconfig[0].raw;
+  var fileFormData = new FormData();
+  fileFormData.append("kubeconfig", configFile, configFile.name);
+  fileFormData.append(
+    "clusterData",
+    new Blob([JSON.stringify(data.clusterForm)]),
+    { type: "application/json" }
+  );
+
+  var requestConfig = {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  };
+  const resp = await proxy.$http({
+    method: "post",
+    url: "/clouds",
+    data: fileFormData,
+    config: requestConfig,
+  });
+  if (resp.code != 200) {
+    return proxy.$message.error(
+      "集群 " + data.clusterForm.name + " 导入失败: " + resp.message
+    );
+  }
+  proxy.$message.success("集群 " + data.clusterForm.name + " 导入成功");
   backToContainer();
 };
 
 const cancelCreate = () => {
-  console.log("cancel");
   backToContainer();
 };
 
-const connectKubernetes = () => {
+const connectKubernetes = async () => {
+  if (data.kubeconfig.length == 0) {
+    return proxy.$message.error("failed to found the kubeConfig file.");
+  }
+
+  var configFile = data.kubeconfig[0].raw;
+  var fileFormData = new FormData();
+  fileFormData.append("kubeconfig", configFile, configFile.name);
+  var requestConfig = {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  };
+
+  const resp = await proxy.$http({
+    method: "post",
+    url: "/clouds/ping",
+    data: fileFormData,
+    config: requestConfig,
+  });
+
+  if (resp.code != 200) {
+    return proxy.$message.error("kubernetes 集群连接异常"); // 连通性检测异常
+  }
+  proxy.$message.success("kubernetes 集群连接正常");
   data.clusterForm.allowCreated = false;
 };
 
@@ -196,7 +246,7 @@ const backToContainer = () => {
 };
 
 const handleChange = (file, files) => {
-  data.clusterForm.kubeconfig = file;
+  data.kubeconfig = files;
 };
 
 const beforeRemove = (file, files) => {
