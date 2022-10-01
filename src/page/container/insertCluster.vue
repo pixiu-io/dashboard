@@ -3,7 +3,7 @@
     <pixiu-card title="导入标准集群" height="50px" />
     <el-main>
       <div class="app-pixiu-content-card">
-        <el-card style="margin-top: 30px; width: 75%">
+        <el-card style="margin-top: 10px; width: 75%">
           <el-form
             :label-position="labelPosition"
             label-width="120px"
