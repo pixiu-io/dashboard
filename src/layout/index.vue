@@ -38,7 +38,7 @@
           >
             <pixiu-menu :items="data.menus" />
             <el-menu-item class="expand-icon">
-              <el-icon>
+              <el-icon @click="toggleCollapse">
                 <component
                   :is="`${data.isCollapse ? 'Expand' : 'Fold'}`"
                 ></component>
@@ -75,6 +75,7 @@ let data = reactive({
   inputWidth: "200px",
 
   isCollapse: true, // 真则为在边栏，假则不在边栏
+  manualCollapse: false, // 手动控制侧边栏是否开启，默认为 false
   menus: [],
 });
 
@@ -108,12 +109,24 @@ onMounted(() => {
   ];
 });
 
+// 点击之后进行手动切换
+const toggleCollapse = () => {
+  data.manualCollapse = !data.manualCollapse;
+};
+
+const handleOpen = (key, keyPath) => {};
+const handleClose = (key, keyPath) => {};
+
 const mouseEnter = () => {
-  data.isCollapse = false;
+  if (!data.manualCollapse) {
+    data.isCollapse = false;
+  }
 };
 
 const mouseLeave = () => {
-  data.isCollapse = true;
+  if (!data.manualCollapse) {
+    data.isCollapse = true;
+  }
 };
 </script>
 
