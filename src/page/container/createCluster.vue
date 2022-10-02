@@ -28,7 +28,7 @@
         <el-card style="width: 97%">
           <el-form
             :label-position="labelPosition"
-            label-width="120px"
+            label-width="140px"
             :model="data.clusterForm"
           >
             <div style="margin-top: 20px" />
@@ -94,15 +94,18 @@
 
             <div style="margin-top: 25px" />
             <el-form-item label="容器网络">
-              <el-input
-                style="width: 30%"
-                v-model="data.clusterForm.pod_cidr"
-                placeholder="默认 172.30.0.0/16"
-              />
+              <el-card style="width: 90%; height: 100px; background-color: #F2F2F2;">
+                <el-input
+                  style="width: 30%"
+                  v-model="data.clusterForm.pod_cidr"
+                  placeholder="默认 172.30.0.0/16"
+                />
+
+                <div class="app-pixiu-describe" style="margin-top: 10px;margin-left: 6px;">
+                  创建后无法更改
+                </div>
+              </el-card>
             </el-form-item>
-            <div class="app-pixiu-describe" style="margin-top: -12px">
-              创建后无法更改
-            </div>
 
             <div style="margin-top: 25px" />
             <el-form-item label="Service CIDR">
@@ -252,7 +255,7 @@ const backToContainer = () => {
 }
 
 .app-pixiu-describe {
-  margin-left: 120px;
+  margin-left: 140px;
   font-size: 12px;
   color: #888888;
 }
