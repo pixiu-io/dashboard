@@ -10,7 +10,7 @@
             :model="data.clusterForm"
           >
             <div style="margin-top: 20px" />
-            <el-form-item label="集群名称" style="width: 30%">
+            <el-form-item label="集群名称" style="width: 50%">
               <el-input
                 v-model="data.clusterForm.name"
                 placeholder="请输入集群名称"
@@ -71,7 +71,7 @@
             </div>
 
             <div style="margin-top: 20px" />
-            <el-form-item label="集群描述" style="width: 50%">
+            <el-form-item label="集群描述" style="width: 60%">
               <el-input
                 v-model="data.clusterForm.description"
                 placeholder="请输入 Kubernentes 集群描述"
@@ -119,7 +119,7 @@ const { proxy } = getCurrentInstance();
 const data = reactive({
   loading: false,
   autosize: {
-    minRows: 4,
+    minRows: 5,
   },
 
   clusterForm: {
@@ -128,6 +128,7 @@ const data = reactive({
     description: "",
     create_ns: "enabled", // 创建 pixiu 的系统命名空间
     enable_pixiu_eventer: false, // 启用高性能事件收集器
+    cloud_type: "0", // 导入集群的类型为 0
 
     allowCreated: true, // 仅在前端生效
   },
