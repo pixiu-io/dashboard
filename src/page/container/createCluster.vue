@@ -19,8 +19,8 @@
       <el-step title="集群信息" />
       <el-step title="节点选择" />
       <el-step title="节点配置" />
-      <el-step title="组件配置" />
-      <el-step title="信息确认" />
+      <el-step title="组件选项" />
+      <el-step title="确认" />
     </el-steps>
 
     <el-main>
