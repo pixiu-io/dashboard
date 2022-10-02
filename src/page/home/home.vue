@@ -54,7 +54,7 @@
             display: inline-block;
           "
         >
-          <my-echarts :option="option" style="margin-top: 46px; margin-left: -120px;"></my-echarts>
+          <my-echarts :option="option" style="margin-top: 46px;"></my-echarts>
         </div>
       </el-col>
     </el-row>
