@@ -95,13 +95,13 @@
             <div style="margin-top: 25px" />
             <el-form-item label="容器网络">
               <el-card style="width: 90%; height: 100px; background-color: #F2F2F2;">
+                <el-col>CIDR</el-col>
                 <el-input
-                  style="width: 30%"
+                  style="width: 30%;margin-left: 30px;"
                   v-model="data.clusterForm.pod_cidr"
                   placeholder="默认 172.30.0.0/16"
                 />
-
-                <div class="app-pixiu-describe" style="margin-top: 10px;margin-left: 6px;">
+                <div class="app-pixiu-describe" style="margin-top: 10px;margin-left: 62px;">
                   创建后无法更改
                 </div>
               </el-card>
