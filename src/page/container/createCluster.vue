@@ -113,20 +113,20 @@
                 <span style="margin-left: 4px">.</span>
 
                 <el-input
-                  style="width: 50px; margin-left: 4px"
+                  class="pod-pixiu-mask"
                   v-model="data.clusterForm.b_cidr"
                 />
 
                 <span style="margin-left: 4px">.</span>
                 <el-input
-                  style="width: 50px; margin-left: 4px"
+                  class="pod-pixiu-mask"
                   v-model="data.clusterForm.c_cidr"
                   disabled
                 />
 
                 <span style="margin-left: 4px">.</span>
                 <el-input
-                  style="width: 50px; margin-left: 4px"
+                  class="pod-pixiu-mask"
                   v-model="data.clusterForm.d_cidr"
                   disabled
                 />
@@ -154,12 +154,54 @@
 
             <div style="margin-top: 25px" />
             <el-form-item label="Service CIDR">
-              <el-input
-                style="width: 30%"
-                v-model="data.clusterForm.service_cidr"
-                placeholder="默认 10.254.0.0/16"
-              />
+              <div>
+                <el-select
+                  v-model="data.clusterForm.a_cidr"
+                  style="width: 70px"
+                >
+                  <el-option
+                    v-for="item in data.aCidrOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+                <span style="margin-left: 4px">.</span>
+
+                <el-input
+                  class="pod-pixiu-mask"
+                  v-model="data.clusterForm.b_cidr"
+                />
+
+                <span style="margin-left: 4px">.</span>
+                <el-input
+                  class="pod-pixiu-mask"
+                  v-model="data.clusterForm.c_cidr"
+                  disabled
+                />
+
+                <span style="margin-left: 4px">.</span>
+                <el-input
+                  class="pod-pixiu-mask"
+                  v-model="data.clusterForm.d_cidr"
+                  disabled
+                />
+
+                <span style="margin-left: 4px">/</span>
+                <el-select
+                  v-model="data.clusterForm.pod_mask"
+                  style="width: 70px; margin-left: 4px"
+                >
+                  <el-option
+                    v-for="item in data.podMaskOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </div>
             </el-form-item>
+
             <div class="app-pixiu-describe" style="margin-top: -12px">
               kubernetes 的 service CIDR，不能和宿主机网络以及 Pod
               网络冲突，选择后无法更改。
@@ -326,6 +368,11 @@ const backToContainer = () => {
 
 .el-main {
   background-color: #f3f4f7;
+}
+
+.pod-pixiu-mask {
+  width: 50px;
+  margin-left: 4px;
 }
 
 .app-pixiu-describe {
