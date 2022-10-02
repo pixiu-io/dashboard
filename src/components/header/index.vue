@@ -48,7 +48,7 @@
       placeholder="搜索产品、文档..."
       :suffix-icon="Search"
       @blur="handleLost"
-      @focus="handleInput"
+      @focus="inputContext"
       clearable
     >
       <template #suffix>
@@ -198,6 +198,8 @@ onMounted(() => {
 });
 
 const headInput = ref("");
+
+const inputContext = () => {};
 
 const handleMessage = () => {
   data.showMessage = true;
