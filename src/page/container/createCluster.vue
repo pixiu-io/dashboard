@@ -1,49 +1,70 @@
 <template>
+  <div style="display: flex; flex-direction: column; width: 100%; height: 100%">
+    <pixiu-card title="创建标准集群" height="50px" />
     <el-main>
-      <el-card style="margin-top: -20px; margin-left: -20px; margin-right: -20px">
-        <div class="app-pixiu-header-title">创建标准集群</div>
-      </el-card>
-      <div>创建</div>
+      <div class="app-pixiu-content-card">
+        <el-card style="margin-top: 10px; width: 75%">
+          <el-form> </el-form>
+        </el-card>
+      </div>
     </el-main>
-  </template>
+  </div>
+</template>
 
-  <script setup>
-  import { reactive, getCurrentInstance } from "vue";
-  import { ElMessage, ElMessageBox } from "element-plus";
-  import PixiuRadioCard from "@/components/radioCard/index.vue";
-  const { proxy } = getCurrentInstance();
-  const data = reactive({
-    loading: false,
+<script setup>
+import { reactive, getCurrentInstance, ref } from "vue";
+import PixiuCard from "@/components/card/index.vue";
+const { proxy } = getCurrentInstance();
+
+const data = reactive({
+  loading: false,
+  autosize: {
+    minRows: 5,
+  },
+
+  clusterForm: {
+    name: "",
+    region: "无锡",
+    description: "",
+    create_ns: "enabled", // 创建 pixiu 的系统命名空间
+    enable_pixiu_eventer: false, // 启用高性能事件收集器
+    cloud_type: "1", // 导入集群的类型为 1
+
+    allowCreated: true, // 仅在前端生效
+  },
+});
+
+const comfirmCreate = async () => {};
+
+const cancelCreate = () => {
+  backToContainer();
+};
+
+// 回到 container 页面
+const backToContainer = () => {
+  proxy.$router.push({
+    name: "Container",
   });
+};
+</script>
 
-  const jumpRoute = (row) => {
-    proxy.$router.push({
-      name: "Kubernetes",
-      params: {
-        id: row.id,
-        name: row.name,
-      },
-    });
-  };
-  </script>
+<style scoped="scoped">
+.box-card {
+  margin-top: 20px;
+}
 
-  <style scoped="scoped">
-  .box-card {
-    margin-top: 20px;
-  }
+.app-pixiu-content-card {
+  display: flex;
+  justify-content: space-around;
+}
 
-  .el-main {
-    background-color: #f3f4f7;
-  }
+.el-main {
+  background-color: #f3f4f7;
+}
 
-  .app-pixiu-header-title {
-    display: inline-block;
-    height: 30px;
-    line-height: 30px;
-    vertical-align: middle;
-    font-size: 16px;
-    font-weight: 700;
-    margin-right: 20px;
-    max-width: 70%;
-  }
-  </style>
+.app-pixiu-describe {
+  margin-left: 120px;
+  font-size: 12px;
+  color: #888888;
+}
+</style>

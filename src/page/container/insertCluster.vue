@@ -128,6 +128,7 @@ const data = reactive({
     description: "",
     create_ns: "enabled", // 创建 pixiu 的系统命名空间
     enable_pixiu_eventer: false, // 启用高性能事件收集器
+    cloud_type: "0", // 导入集群的类型为 0
 
     allowCreated: true, // 仅在前端生效
   },
