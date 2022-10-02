@@ -92,7 +92,32 @@
               flannel。
             </div>
 
-            <div style="margin-top: 20px" />
+            <div style="margin-top: 25px" />
+            <el-form-item label="容器网络">
+              <el-input
+                style="width: 30%"
+                v-model="data.clusterForm.pod_cidr"
+                placeholder="默认 172.30.0.0/16"
+              />
+            </el-form-item>
+            <div class="app-pixiu-describe" style="margin-top: -12px">
+              创建后无法更改
+            </div>
+
+            <div style="margin-top: 25px" />
+            <el-form-item label="Service CIDR">
+              <el-input
+                style="width: 30%"
+                v-model="data.clusterForm.service_cidr"
+                placeholder="默认 10.254.0.0/16"
+              />
+            </el-form-item>
+            <div class="app-pixiu-describe" style="margin-top: -12px">
+              kubernetes 的 service CIDR，不能和宿主机网络以及 Pod
+              网络冲突，选择后无法更改。
+            </div>
+
+            <div style="margin-top: 25px" />
             <el-form-item label="集群描述" style="width: 60%">
               <el-input
                 v-model="data.clusterForm.description"
@@ -100,17 +125,6 @@
                 type="textarea"
                 :autosize="data.autosize"
               />
-            </el-form-item>
-
-            <div style="margin-top: 40px" />
-            <el-form-item>
-              <el-button
-                type="primary"
-                :disabled="data.clusterForm.allowCreated"
-                @click="comfirmCreate()"
-                >完成</el-button
-              >
-              <el-button @click="cancelCreate()">取消</el-button>
             </el-form-item>
           </el-form>
         </el-card>
@@ -147,6 +161,8 @@ const data = reactive({
     kubernetes_version: "1.20.0",
     kubernetes_runtime: "docker",
     cni: "flannel", // 默认网络插件
+    service_cidr: "",
+    pod_cidr: "",
 
     allow_created: true, // 仅在前端生效
   },
@@ -159,6 +175,10 @@ const data = reactive({
     {
       value: "1.20.0",
       label: "1.20.0",
+    },
+    {
+      value: "1.23.6",
+      label: "1.23.6",
     },
   ],
 
