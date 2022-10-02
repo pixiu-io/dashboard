@@ -111,11 +111,7 @@ onMounted(() => {
 
 // 点击之后进行手动切换
 const toggleCollapse = () => {
-  if (data.manualCollapse) {
-    data.manualCollapse = false;
-  } else {
-    data.manualCollapse = true;
-  }
+  data.manualCollapse = !data.manualCollapse;
 };
 
 const handleOpen = (key, keyPath) => {};
