@@ -94,14 +94,59 @@
 
             <div style="margin-top: 25px" />
             <el-form-item label="容器网络">
-              <el-card style="width: 90%; height: 100px; background-color: #F2F2F2;">
+              <el-card
+                style="width: 90%; height: 100px; background-color: #f2f2f2"
+              >
                 <el-col>CIDR</el-col>
+
+                <el-select
+                  v-model="data.clusterForm.a_cidr"
+                  style="width: 70px; margin-left: 30px"
+                >
+                  <el-option
+                    v-for="item in data.aCidrOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+                <span style="margin-left: 4px">.</span>
+
                 <el-input
-                  style="width: 30%;margin-left: 30px;"
-                  v-model="data.clusterForm.pod_cidr"
-                  placeholder="默认 172.30.0.0/16"
+                  style="width: 50px; margin-left: 4px"
+                  v-model="data.clusterForm.b_cidr"
                 />
-                <div class="app-pixiu-describe" style="margin-top: 10px;margin-left: 62px;">
+
+                <span style="margin-left: 4px">.</span>
+                <el-input
+                  style="width: 50px; margin-left: 4px"
+                  v-model="data.clusterForm.c_cidr"
+                  disabled
+                />
+
+                <span style="margin-left: 4px">.</span>
+                <el-input
+                  style="width: 50px; margin-left: 4px"
+                  v-model="data.clusterForm.d_cidr"
+                  disabled
+                />
+
+                <span style="margin-left: 4px">/</span>
+                <el-select
+                  v-model="data.clusterForm.pod_mask"
+                  style="width: 70px; margin-left: 4px"
+                >
+                  <el-option
+                    v-for="item in data.podMaskOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+                <div
+                  class="app-pixiu-describe"
+                  style="margin-top: 10px; margin-left: 62px"
+                >
                   创建后无法更改
                 </div>
               </el-card>
@@ -165,7 +210,14 @@ const data = reactive({
     kubernetes_runtime: "docker",
     cni: "flannel", // 默认网络插件
     service_cidr: "",
+
+    // pod 网络相关设置
     pod_cidr: "",
+    a_cidr: "172",
+    b_cidr: "30",
+    c_cidr: "0",
+    d_cidr: "0",
+    pod_mask: "16",
 
     allow_created: true, // 仅在前端生效
   },
@@ -182,6 +234,28 @@ const data = reactive({
     {
       value: "1.23.6",
       label: "1.23.6",
+    },
+  ],
+
+  aCidrOptions: [
+    {
+      value: "192",
+      label: "192",
+    },
+    {
+      value: "172",
+      label: "172",
+    },
+  ],
+
+  podMaskOptions: [
+    {
+      value: "16",
+      label: "16",
+    },
+    {
+      value: "24",
+      label: "24",
     },
   ],
 
