@@ -31,203 +31,217 @@
             :model="data.clusterForm"
           >
             <div style="margin-top: 20px" />
-            <el-form-item label="集群名称" style="width: 50%">
-              <el-input
-                v-model="data.clusterForm.name"
-                placeholder="请输入集群名称"
-              />
-            </el-form-item>
-
-            <div style="margin-top: 25px" />
-            <el-form-item label="Kubernetes 版本">
-              <el-select v-model="data.clusterForm.kubernetes_version">
-                <el-option
-                  v-for="item in data.kubernetes_version_options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
+            <div v-if="data.active == 0">
+              <el-form-item label="集群名称" style="width: 50%">
+                <el-input
+                  v-model="data.clusterForm.name"
+                  placeholder="请输入集群名称"
                 />
-              </el-select>
-            </el-form-item>
-            <div class="app-pixiu-describe" style="margin-top: -12px">
-              当前已支持 kubernetes 版本有: 1.18、1.20，1.22 版本。
-            </div>
+              </el-form-item>
 
-            <div style="margin-top: 25px" />
-            <el-form-item label="所在地域" style="width: 100%">
-              <el-radio-group v-model="data.clusterForm.region">
-                <el-radio-button
-                  :label="item.label"
-                  v-for="item in data.regionOptions"
-                />
-              </el-radio-group>
-            </el-form-item>
-            <div class="app-pixiu-describe">
-              处在不同地域的云产品内网不通，导入后无法更换。建议选择合适的地域，以提高使用体验。
-            </div>
-
-            <div style="margin-top: 25px" />
-            <el-form-item label="容器运行时">
-              <el-radio-group v-model="data.clusterForm.kubernetes_runtime">
-                <el-radio-button label="docker">docker</el-radio-button>
-                <el-radio-button label="containerd">containerd</el-radio-button>
-                <el-radio-button label="cri-O" disabled>cri-O</el-radio-button>
-              </el-radio-group>
-            </el-form-item>
-            <div class="app-pixiu-describe" style="margin-top: -12px">
-              pixiu 支持的容器运行时，目前支持 docker 和 containerd， cri-O
-              计划被支持，近请期待。
-            </div>
-
-            <div style="margin-top: 25px" />
-            <el-form-item label="容器网络插件">
-              <el-radio-group v-model="data.clusterForm.cni">
-                <el-radio-button label="calico">calico</el-radio-button>
-                <el-radio-button label="flannel">flannel</el-radio-button>
-              </el-radio-group>
-            </el-form-item>
-            <div class="app-pixiu-describe" style="margin-top: -12px">
-              选择 kubernetes 集群 pod 网络类型，一经选择无法更改，推荐使用
-              flannel。
-            </div>
-
-            <div style="margin-top: 25px" />
-            <el-form-item label="容器网络">
-              <el-card
-                style="width: 90%; height: 100px; background-color: #f2f2f2"
-              >
-                <el-col>CIDR</el-col>
-
-                <el-select
-                  v-model="data.podNetworkForm.a_cidr"
-                  style="width: 70px; margin-left: 30px"
-                >
+              <div style="margin-top: 25px" />
+              <el-form-item label="Kubernetes 版本">
+                <el-select v-model="data.clusterForm.kubernetes_version">
                   <el-option
-                    v-for="item in data.podCidrOptions"
+                    v-for="item in data.kubernetes_version_options"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
                   />
                 </el-select>
-                <span style="margin-left: 4px">.</span>
-
-                <el-input
-                  class="pod-pixiu-mask"
-                  v-model="data.podNetworkForm.b_cidr"
-                />
-
-                <span style="margin-left: 4px">.</span>
-                <el-input
-                  class="pod-pixiu-mask"
-                  v-model="data.podNetworkForm.c_cidr"
-                  disabled
-                />
-
-                <span style="margin-left: 4px">.</span>
-                <el-input
-                  class="pod-pixiu-mask"
-                  v-model="data.podNetworkForm.d_cidr"
-                  disabled
-                />
-
-                <span style="margin-left: 4px">/</span>
-                <el-select
-                  v-model="data.podNetworkForm.pod_mask"
-                  style="width: 70px; margin-left: 4px"
-                >
-                  <el-option
-                    v-for="item in data.podMaskOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-                <div
-                  class="app-pixiu-describe"
-                  style="margin-top: 10px; margin-left: 62px"
-                >
-                  创建后无法更改
-                </div>
-              </el-card>
-            </el-form-item>
-
-            <div style="margin-top: 25px" />
-            <el-form-item label="Service CIDR">
-              <div>
-                <el-select
-                  v-model="data.serviceNetworkForm.a_cidr"
-                  style="width: 70px"
-                >
-                  <el-option
-                    v-for="item in data.serviceCidrOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
-                <span style="margin-left: 4px">.</span>
-
-                <el-input
-                  class="pod-pixiu-mask"
-                  v-model="data.serviceNetworkForm.b_cidr"
-                />
-
-                <span style="margin-left: 4px">.</span>
-                <el-input
-                  class="pod-pixiu-mask"
-                  v-model="data.serviceNetworkForm.c_cidr"
-                  disabled
-                />
-
-                <span style="margin-left: 4px">.</span>
-                <el-input
-                  class="pod-pixiu-mask"
-                  v-model="data.serviceNetworkForm.d_cidr"
-                  disabled
-                />
-
-                <span style="margin-left: 4px">/</span>
-                <el-select
-                  v-model="data.serviceNetworkForm.service_mask"
-                  style="width: 70px; margin-left: 4px"
-                >
-                  <el-option
-                    v-for="item in data.serviceMaskOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  />
-                </el-select>
+              </el-form-item>
+              <div class="app-pixiu-describe" style="margin-top: -12px">
+                当前已支持 kubernetes 版本有: 1.18、1.20，1.22 版本。
               </div>
-            </el-form-item>
 
-            <div class="app-pixiu-describe" style="margin-top: -12px">
-              kubernetes 的 service CIDR，不能和宿主机网络以及 Pod
-              网络冲突，选择后无法更改。
+              <div style="margin-top: 25px" />
+              <el-form-item label="所在地域" style="width: 100%">
+                <el-radio-group v-model="data.clusterForm.region">
+                  <el-radio-button
+                    :label="item.label"
+                    v-for="item in data.regionOptions"
+                  />
+                </el-radio-group>
+              </el-form-item>
+              <div class="app-pixiu-describe">
+                处在不同地域的云产品内网不通，导入后无法更换。建议选择合适的地域，以提高使用体验。
+              </div>
+
+              <div style="margin-top: 25px" />
+              <el-form-item label="容器运行时">
+                <el-radio-group v-model="data.clusterForm.kubernetes_runtime">
+                  <el-radio-button label="docker">docker</el-radio-button>
+                  <el-radio-button label="containerd"
+                    >containerd</el-radio-button
+                  >
+                  <el-radio-button label="cri-O" disabled
+                    >cri-O</el-radio-button
+                  >
+                </el-radio-group>
+              </el-form-item>
+              <div class="app-pixiu-describe" style="margin-top: -12px">
+                pixiu 支持的容器运行时，目前支持 docker 和 containerd， cri-O
+                计划被支持，近请期待。
+              </div>
+
+              <div style="margin-top: 25px" />
+              <el-form-item label="容器网络插件">
+                <el-radio-group v-model="data.clusterForm.cni">
+                  <el-radio-button label="calico">calico</el-radio-button>
+                  <el-radio-button label="flannel">flannel</el-radio-button>
+                </el-radio-group>
+              </el-form-item>
+              <div class="app-pixiu-describe" style="margin-top: -12px">
+                选择 kubernetes 集群 pod 网络类型，一经选择无法更改，推荐使用
+                flannel。
+              </div>
+
+              <div style="margin-top: 25px" />
+              <el-form-item label="容器网络">
+                <el-card
+                  style="width: 90%; height: 100px; background-color: #f2f2f2"
+                >
+                  <el-col>CIDR</el-col>
+
+                  <el-select
+                    v-model="data.podNetworkForm.a_cidr"
+                    style="width: 70px; margin-left: 30px"
+                  >
+                    <el-option
+                      v-for="item in data.podCidrOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                  <span style="margin-left: 4px">.</span>
+
+                  <el-input
+                    class="pod-pixiu-mask"
+                    v-model="data.podNetworkForm.b_cidr"
+                  />
+
+                  <span style="margin-left: 4px">.</span>
+                  <el-input
+                    class="pod-pixiu-mask"
+                    v-model="data.podNetworkForm.c_cidr"
+                    disabled
+                  />
+
+                  <span style="margin-left: 4px">.</span>
+                  <el-input
+                    class="pod-pixiu-mask"
+                    v-model="data.podNetworkForm.d_cidr"
+                    disabled
+                  />
+
+                  <span style="margin-left: 4px">/</span>
+                  <el-select
+                    v-model="data.podNetworkForm.pod_mask"
+                    style="width: 70px; margin-left: 4px"
+                  >
+                    <el-option
+                      v-for="item in data.podMaskOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                  <div
+                    class="app-pixiu-describe"
+                    style="margin-top: 10px; margin-left: 62px"
+                  >
+                    创建后无法更改
+                  </div>
+                </el-card>
+              </el-form-item>
+
+              <div style="margin-top: 25px" />
+              <el-form-item label="Service CIDR">
+                <div>
+                  <el-select
+                    v-model="data.serviceNetworkForm.a_cidr"
+                    style="width: 70px"
+                  >
+                    <el-option
+                      v-for="item in data.serviceCidrOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                  <span style="margin-left: 4px">.</span>
+
+                  <el-input
+                    class="pod-pixiu-mask"
+                    v-model="data.serviceNetworkForm.b_cidr"
+                  />
+
+                  <span style="margin-left: 4px">.</span>
+                  <el-input
+                    class="pod-pixiu-mask"
+                    v-model="data.serviceNetworkForm.c_cidr"
+                    disabled
+                  />
+
+                  <span style="margin-left: 4px">.</span>
+                  <el-input
+                    class="pod-pixiu-mask"
+                    v-model="data.serviceNetworkForm.d_cidr"
+                    disabled
+                  />
+
+                  <span style="margin-left: 4px">/</span>
+                  <el-select
+                    v-model="data.serviceNetworkForm.service_mask"
+                    style="width: 70px; margin-left: 4px"
+                  >
+                    <el-option
+                      v-for="item in data.serviceMaskOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </div>
+              </el-form-item>
+
+              <div class="app-pixiu-describe" style="margin-top: -12px">
+                kubernetes 的 service CIDR，不能和宿主机网络以及 Pod
+                网络冲突，选择后无法更改。
+              </div>
+
+              <div style="margin-top: 25px" />
+              <el-form-item label="集群描述" style="width: 60%">
+                <el-input
+                  v-model="data.clusterForm.description"
+                  placeholder="请输入 Kubernentes 集群描述"
+                  type="textarea"
+                  :autosize="data.autosize"
+                />
+              </el-form-item>
             </div>
 
-            <div style="margin-top: 25px" />
-            <el-form-item label="集群描述" style="width: 60%">
-              <el-input
-                v-model="data.clusterForm.description"
-                placeholder="请输入 Kubernentes 集群描述"
-                type="textarea"
-                :autosize="data.autosize"
-              />
-            </el-form-item>
+            <div v-if="data.active == 1">222</div>
+
+            <div v-if="data.active == 2">333</div>
+
+            <div v-if="data.active == 3">444</div>
+
+            <div v-if="data.active == 4">555</div>
 
             <div style="display: flex; justify-content: center">
               <el-space>
-                <div v-if="data.active == 1">
+                <div v-if="data.active == 0">
                   <el-button @click="cancelCreate()">取消</el-button>
                 </div>
-                <div v-if="data.active > 1">
+                <div v-if="data.active > 0">
                   <el-button @click="pre">上一步</el-button>
                 </div>
-                <div v-if="data.active < 5">
+                <div v-if="data.active < 4">
                   <el-button type="primary" @click="next">下一步</el-button>
                 </div>
-                <div v-if="data.active == 5">
+                <div v-if="data.active == 4">
                   <el-button type="primary" @click="confirmCreate"
                     >完成</el-button
                   >
@@ -252,7 +266,7 @@ const data = reactive({
     minRows: 5,
   },
 
-  active: 1, // 步骤条展示
+  active: 0, // 步骤条展示
 
   clusterForm: {
     name: "",
@@ -400,6 +414,7 @@ watch(data.podNetworkForm, (podNetwork, oldPodNetwork) => {
 
 const labelPosition = ref("left");
 
+// TODO: 字符串拼接优化
 const newServiceNetwork = (serviceNetwork) => {
   data.clusterForm.service_cidr =
     serviceNetwork.a_cidr +
@@ -412,7 +427,7 @@ const newServiceNetwork = (serviceNetwork) => {
     "/" +
     serviceNetwork.service_mask;
 };
-
+// TODO: 字符串拼接优化
 const newPodNetwork = (podNetwork) => {
   data.clusterForm.pod_cidr =
     podNetwork.a_cidr +
@@ -427,11 +442,11 @@ const newPodNetwork = (podNetwork) => {
 };
 
 const pre = () => {
-  if (data.active-- <= 1) data.active = 1;
+  if (data.active-- <= 0) data.active = 0;
 };
 
 const next = () => {
-  if (data.active++ >= 5) data.active = 5;
+  if (data.active++ >= 4) data.active = 4;
 };
 
 const confirmCreate = async () => {};
