@@ -239,8 +239,51 @@
                   style="width: 90%; height: 100px; background-color: #f2f2f2"
                 >
                 </el-card>
+                    v-model="data.serviceNetworkForm.c_cidr"
+                    disabled
+                  />
+
+                  <span style="margin-left: 4px">.</span>
+                  <el-input
+                    class="pod-pixiu-mask"
+                    v-model="data.serviceNetworkForm.d_cidr"
+                    disabled
+                  />
+
+                  <span style="margin-left: 4px">/</span>
+                  <el-select
+                    v-model="data.serviceNetworkForm.service_mask"
+                    style="width: 70px; margin-left: 4px"
+                  >
+                    <el-option
+                      v-for="item in data.serviceMaskOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                    />
+                  </el-select>
+                </div>
+              </el-form-item>
+
+              <div class="app-pixiu-describe" style="margin-top: -12px">
+                kubernetes 的 service CIDR，不能和宿主机网络以及 Pod
+                网络冲突，选择后无法更改。
+              </div>
+
+              <div style="margin-top: 25px" />
+              <el-form-item label="集群描述" style="width: 60%">
+                <el-input
+                  v-model="data.clusterForm.description"
+                  placeholder="请输入 Kubernentes 集群描述"
+                  type="textarea"
+                  :autosize="data.autosize"
+                />
               </el-form-item>
             </div>
+            <div v-if="data.active == 2">333</div>
+
+            <div v-if="data.active == 1">222</div>
+
             <div v-if="data.active == 2">333</div>
 
             <div v-if="data.active == 3">444</div>
