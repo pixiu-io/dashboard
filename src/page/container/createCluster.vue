@@ -215,10 +215,15 @@
                 :autosize="data.autosize"
               />
             </el-form-item>
+
             <div style="display: flex; justify-content: center">
               <el-space>
                 <el-button @click="cancelCreate()">取消</el-button>
+                <el-button @click="pre">上一步</el-button>
                 <el-button type="primary" @click="next">下一步</el-button>
+                <el-button type="primary" @click="confirmCreate"
+                  >完成</el-button
+                >
               </el-space>
             </div>
           </el-form>
@@ -229,7 +234,7 @@
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance, ref } from "vue";
+import { reactive, getCurrentInstance, ref, watch } from "vue";
 import PixiuCard from "@/components/card/index.vue";
 const { proxy } = getCurrentInstance();
 
@@ -363,12 +368,25 @@ const data = reactive({
   ],
 });
 
+watch(
+  () => data.active,
+  (newActive, oldActive) => {
+    console.log("newActive", newActive);
+    console.log("oldActive", oldActive);
+  }
+);
+
 const labelPosition = ref("left");
 
-const next = () => {
-  if (data.active++ > 4) data.active = 1;
+const pre = () => {
+  if (data.active-- <= 1) data.active = 1;
 };
-const comfirmCreate = async () => {};
+
+const next = () => {
+  if (data.active++ >= 5) data.active = 5;
+};
+
+const confirmCreate = async () => {};
 
 const cancelCreate = () => {
   backToContainer();
