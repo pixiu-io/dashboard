@@ -22,7 +22,6 @@
       <el-step title="组件选项" />
       <el-step title="确认" />
     </el-steps>
-
     <el-main>
       <div class="app-pixiu-content-card">
         <el-card style="width: 97%">
@@ -216,15 +215,16 @@
                 :autosize="data.autosize"
               />
             </el-form-item>
+            <div style="display: flex; justify-content: center">
+              <el-space>
+                <el-button @click="cancelCreate()">取消</el-button>
+                <el-button type="primary" @click="next">下一步</el-button>
+              </el-space>
+            </div>
           </el-form>
         </el-card>
       </div>
     </el-main>
-
-    <span style="margin-left: 20%">
-      <el-button @click="cancelCreate()">取消</el-button>
-      <el-button type="primary" @click="next">下一步</el-button>
-    </span>
   </div>
 </template>
 
