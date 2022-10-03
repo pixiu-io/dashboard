@@ -271,6 +271,7 @@ const data = reactive({
 
     allow_created: true, // 仅在前端生效
   },
+
   // k8s service 的选项
   serviceNetworkForm: {
     a_cidr: "10",
@@ -376,14 +377,41 @@ const data = reactive({
   ],
 });
 
-// 监听变化
+// 监听子属性变化 demo
 watch(
   () => data.active,
   (newActive, oldActive) => {
-    console.log("newActive", newActive);
-    console.log("oldActive", oldActive);
+    console.log("newActive", newActive, "oldActive", oldActive);
   }
 );
+
+// 监听整个 serviceNetworkForm
+watch(data.serviceNetworkForm, (newServiceNetwork, oldServiceNetwork) => {
+  data.clusterForm.service_cidr =
+    newServiceNetwork.a_cidr +
+    "." +
+    newServiceNetwork.b_cidr +
+    "." +
+    newServiceNetwork.c_cidr +
+    "." +
+    newServiceNetwork.d_cidr +
+    "/" +
+    newServiceNetwork.service_mask;
+});
+
+// 监听整个 podNetworkForm
+watch(data.podNetworkForm, (newPodNetwork, oldPodNetwork) => {
+  data.clusterForm.pod_cidr =
+    newPodNetwork.a_cidr +
+    "." +
+    newPodNetwork.b_cidr +
+    "." +
+    newPodNetwork.c_cidr +
+    "." +
+    newPodNetwork.d_cidr +
+    "/" +
+    newPodNetwork.pod_mask;
+});
 
 const labelPosition = ref("left");
 
