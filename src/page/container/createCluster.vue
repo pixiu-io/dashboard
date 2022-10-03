@@ -242,7 +242,7 @@
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance, ref, watch } from "vue";
+import { reactive, getCurrentInstance, ref, watch, onMounted } from "vue";
 import PixiuCard from "@/components/card/index.vue";
 const { proxy } = getCurrentInstance();
 
@@ -268,8 +268,6 @@ const data = reactive({
     service_cidr: "",
     // pod 网络相关设置
     pod_cidr: "",
-
-    allow_created: true, // 仅在前端生效
   },
 
   // k8s service 的选项
@@ -377,6 +375,11 @@ const data = reactive({
   ],
 });
 
+onMounted(() => {
+  newServiceNetwork(data.serviceNetworkForm);
+  newPodNetwork(data.podNetworkForm);
+});
+
 // 监听子属性变化 demo
 watch(
   () => data.active,
@@ -386,34 +389,42 @@ watch(
 );
 
 // 监听整个 serviceNetworkForm
-watch(data.serviceNetworkForm, (newServiceNetwork, oldServiceNetwork) => {
-  data.clusterForm.service_cidr =
-    newServiceNetwork.a_cidr +
-    "." +
-    newServiceNetwork.b_cidr +
-    "." +
-    newServiceNetwork.c_cidr +
-    "." +
-    newServiceNetwork.d_cidr +
-    "/" +
-    newServiceNetwork.service_mask;
+watch(data.serviceNetworkForm, (serviceNetwork, oldServiceNetwork) => {
+  newServiceNetwork(serviceNetwork);
 });
 
 // 监听整个 podNetworkForm
-watch(data.podNetworkForm, (newPodNetwork, oldPodNetwork) => {
-  data.clusterForm.pod_cidr =
-    newPodNetwork.a_cidr +
-    "." +
-    newPodNetwork.b_cidr +
-    "." +
-    newPodNetwork.c_cidr +
-    "." +
-    newPodNetwork.d_cidr +
-    "/" +
-    newPodNetwork.pod_mask;
+watch(data.podNetworkForm, (podNetwork, oldPodNetwork) => {
+  newPodNetwork(podNetwork);
 });
 
 const labelPosition = ref("left");
+
+const newServiceNetwork = (serviceNetwork) => {
+  data.clusterForm.service_cidr =
+    serviceNetwork.a_cidr +
+    "." +
+    serviceNetwork.b_cidr +
+    "." +
+    serviceNetwork.c_cidr +
+    "." +
+    serviceNetwork.d_cidr +
+    "/" +
+    serviceNetwork.service_mask;
+};
+
+const newPodNetwork = (podNetwork) => {
+  data.clusterForm.pod_cidr =
+    podNetwork.a_cidr +
+    "." +
+    podNetwork.b_cidr +
+    "." +
+    podNetwork.c_cidr +
+    "." +
+    podNetwork.d_cidr +
+    "/" +
+    podNetwork.pod_mask;
+};
 
 const pre = () => {
   if (data.active-- <= 1) data.active = 1;
