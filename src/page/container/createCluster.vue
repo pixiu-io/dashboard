@@ -17,7 +17,7 @@
       style="margin-top: 15px; margin-left: -70px"
     >
       <el-step title="集群信息" />
-      <el-step title="节点选择" />
+      <el-step title="新增节点" />
       <el-step title="节点配置" />
       <el-step title="组件选项" />
       <el-step title="确认" />
@@ -99,11 +99,11 @@
                 <el-col>CIDR</el-col>
 
                 <el-select
-                  v-model="data.clusterForm.a_cidr"
+                  v-model="data.podNetworkForm.a_cidr"
                   style="width: 70px; margin-left: 30px"
                 >
                   <el-option
-                    v-for="item in data.aCidrOptions"
+                    v-for="item in data.podCidrOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -113,26 +113,26 @@
 
                 <el-input
                   class="pod-pixiu-mask"
-                  v-model="data.clusterForm.b_cidr"
+                  v-model="data.podNetworkForm.b_cidr"
                 />
 
                 <span style="margin-left: 4px">.</span>
                 <el-input
                   class="pod-pixiu-mask"
-                  v-model="data.clusterForm.c_cidr"
+                  v-model="data.podNetworkForm.c_cidr"
                   disabled
                 />
 
                 <span style="margin-left: 4px">.</span>
                 <el-input
                   class="pod-pixiu-mask"
-                  v-model="data.clusterForm.d_cidr"
+                  v-model="data.podNetworkForm.d_cidr"
                   disabled
                 />
 
                 <span style="margin-left: 4px">/</span>
                 <el-select
-                  v-model="data.clusterForm.pod_mask"
+                  v-model="data.podNetworkForm.pod_mask"
                   style="width: 70px; margin-left: 4px"
                 >
                   <el-option
@@ -155,11 +155,11 @@
             <el-form-item label="Service CIDR">
               <div>
                 <el-select
-                  v-model="data.clusterForm.a_cidr"
+                  v-model="data.serviceNetworkForm.a_cidr"
                   style="width: 70px"
                 >
                   <el-option
-                    v-for="item in data.aCidrOptions"
+                    v-for="item in data.serviceCidrOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -169,30 +169,30 @@
 
                 <el-input
                   class="pod-pixiu-mask"
-                  v-model="data.clusterForm.b_cidr"
+                  v-model="data.serviceNetworkForm.b_cidr"
                 />
 
                 <span style="margin-left: 4px">.</span>
                 <el-input
                   class="pod-pixiu-mask"
-                  v-model="data.clusterForm.c_cidr"
+                  v-model="data.serviceNetworkForm.c_cidr"
                   disabled
                 />
 
                 <span style="margin-left: 4px">.</span>
                 <el-input
                   class="pod-pixiu-mask"
-                  v-model="data.clusterForm.d_cidr"
+                  v-model="data.serviceNetworkForm.d_cidr"
                   disabled
                 />
 
                 <span style="margin-left: 4px">/</span>
                 <el-select
-                  v-model="data.clusterForm.pod_mask"
+                  v-model="data.serviceNetworkForm.service_mask"
                   style="width: 70px; margin-left: 4px"
                 >
                   <el-option
-                    v-for="item in data.podMaskOptions"
+                    v-for="item in data.serviceMaskOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -251,19 +251,29 @@ const data = reactive({
     kubernetes_version: "1.20.0",
     kubernetes_runtime: "docker",
     cni: "flannel", // 默认网络插件
+    // k8s service 网段
     service_cidr: "",
-
     // pod 网络相关设置
     pod_cidr: "",
+
+    allow_created: true, // 仅在前端生效
+  },
+  // k8s service 的选项
+  serviceNetworkForm: {
+    a_cidr: "10",
+    b_cidr: "254",
+    c_cidr: "0",
+    d_cidr: "0",
+    service_mask: "16",
+  },
+  // k8s pod 网络的选项
+  podNetworkForm: {
     a_cidr: "172",
     b_cidr: "30",
     c_cidr: "0",
     d_cidr: "0",
     pod_mask: "16",
-
-    allow_created: true, // 仅在前端生效
   },
-
   kubernetes_version_options: [
     {
       value: "1.22.6",
@@ -279,7 +289,7 @@ const data = reactive({
     },
   ],
 
-  aCidrOptions: [
+  podCidrOptions: [
     {
       value: "192",
       label: "192",
@@ -289,8 +299,24 @@ const data = reactive({
       label: "172",
     },
   ],
-
+  serviceCidrOptions: [
+    {
+      value: "10",
+      label: "10",
+    },
+  ],
   podMaskOptions: [
+    {
+      value: "16",
+      label: "16",
+    },
+    {
+      value: "24",
+      label: "24",
+    },
+  ],
+
+  serviceMaskOptions: [
     {
       value: "16",
       label: "16",
