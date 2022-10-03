@@ -218,12 +218,20 @@
 
             <div style="display: flex; justify-content: center">
               <el-space>
-                <el-button @click="cancelCreate()">取消</el-button>
-                <el-button @click="pre">上一步</el-button>
-                <el-button type="primary" @click="next">下一步</el-button>
-                <el-button type="primary" @click="confirmCreate"
-                  >完成</el-button
-                >
+                <div v-if="data.active == 1">
+                  <el-button @click="cancelCreate()">取消</el-button>
+                </div>
+                <div v-if="data.active > 1">
+                  <el-button @click="pre">上一步</el-button>
+                </div>
+                <div v-if="data.active < 5">
+                  <el-button type="primary" @click="next">下一步</el-button>
+                </div>
+                <div v-if="data.active == 5">
+                  <el-button type="primary" @click="confirmCreate"
+                    >完成</el-button
+                  >
+                </div>
               </el-space>
             </div>
           </el-form>
