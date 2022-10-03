@@ -215,10 +215,23 @@
                 :autosize="data.autosize"
               />
             </el-form-item>
+
             <div style="display: flex; justify-content: center">
               <el-space>
-                <el-button @click="cancelCreate()">取消</el-button>
-                <el-button type="primary" @click="next">下一步</el-button>
+                <div v-if="data.active == 1">
+                  <el-button @click="cancelCreate()">取消</el-button>
+                </div>
+                <div v-if="data.active > 1">
+                  <el-button @click="pre">上一步</el-button>
+                </div>
+                <div v-if="data.active < 5">
+                  <el-button type="primary" @click="next">下一步</el-button>
+                </div>
+                <div v-if="data.active == 5">
+                  <el-button type="primary" @click="confirmCreate"
+                    >完成</el-button
+                  >
+                </div>
               </el-space>
             </div>
           </el-form>
@@ -229,7 +242,7 @@
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance, ref } from "vue";
+import { reactive, getCurrentInstance, ref, watch, onMounted } from "vue";
 import PixiuCard from "@/components/card/index.vue";
 const { proxy } = getCurrentInstance();
 
@@ -255,9 +268,8 @@ const data = reactive({
     service_cidr: "",
     // pod 网络相关设置
     pod_cidr: "",
-
-    allow_created: true, // 仅在前端生效
   },
+
   // k8s service 的选项
   serviceNetworkForm: {
     a_cidr: "10",
@@ -363,12 +375,66 @@ const data = reactive({
   ],
 });
 
+onMounted(() => {
+  newServiceNetwork(data.serviceNetworkForm);
+  newPodNetwork(data.podNetworkForm);
+});
+
+// 监听子属性变化 demo
+watch(
+  () => data.active,
+  (newActive, oldActive) => {
+    console.log("newActive", newActive, "oldActive", oldActive);
+  }
+);
+
+// 监听整个 serviceNetworkForm
+watch(data.serviceNetworkForm, (serviceNetwork, oldServiceNetwork) => {
+  newServiceNetwork(serviceNetwork);
+});
+
+// 监听整个 podNetworkForm
+watch(data.podNetworkForm, (podNetwork, oldPodNetwork) => {
+  newPodNetwork(podNetwork);
+});
+
 const labelPosition = ref("left");
 
-const next = () => {
-  if (data.active++ > 4) data.active = 1;
+const newServiceNetwork = (serviceNetwork) => {
+  data.clusterForm.service_cidr =
+    serviceNetwork.a_cidr +
+    "." +
+    serviceNetwork.b_cidr +
+    "." +
+    serviceNetwork.c_cidr +
+    "." +
+    serviceNetwork.d_cidr +
+    "/" +
+    serviceNetwork.service_mask;
 };
-const comfirmCreate = async () => {};
+
+const newPodNetwork = (podNetwork) => {
+  data.clusterForm.pod_cidr =
+    podNetwork.a_cidr +
+    "." +
+    podNetwork.b_cidr +
+    "." +
+    podNetwork.c_cidr +
+    "." +
+    podNetwork.d_cidr +
+    "/" +
+    podNetwork.pod_mask;
+};
+
+const pre = () => {
+  if (data.active-- <= 1) data.active = 1;
+};
+
+const next = () => {
+  if (data.active++ >= 5) data.active = 5;
+};
+
+const confirmCreate = async () => {};
 
 const cancelCreate = () => {
   backToContainer();
