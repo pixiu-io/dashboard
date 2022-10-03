@@ -229,16 +229,16 @@
                   <el-radio-button disabled label="0">标准集群</el-radio-button>
                 </el-radio-group>
               </el-form-item>
-              <div class="app-pixiu-describe" style="margin-top: -5px;">
+              <div class="app-pixiu-describe" style="margin-top: -5px">
                 集群的 Master， Etcd 和 Node 均由 Pixiu 进行创建和管理。
               </div>
 
               <div style="margin-top: 25px" />
               <el-form-item label="Node 节点配置">
-                <el-radio-group v-model="data.clusterForm.cloud_type">
-                  <el-radio-button label="1">自建集群</el-radio-button>
-                  <el-radio-button disabled label="0">标准集群</el-radio-button>
-                </el-radio-group>
+                <el-card
+                  style="width: 90%; height: 100px; background-color: #f2f2f2"
+                >
+                </el-card>
               </el-form-item>
             </div>
             <div v-if="data.active == 2">333</div>
