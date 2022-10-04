@@ -52,8 +52,23 @@
     </el-card>
 
     <el-card class="app-docs">
-      <div style="vertical-align: middle; margin-top: -10px">
-        已有超级节点能力全面升级，支持更多集群版本
+      <div>
+        <el-icon
+          style="
+            vertical-align: middle;
+            font-size: 18px;
+            margin-left: -20px;
+            margin-right: 8px;
+            margin-top: -25px;
+          "
+          ><WarningFilled
+        /></el-icon>
+
+        <div
+          style="vertical-align: middle; margin-top: -27px; margin-left: 10px"
+        >
+          Kubernetnes 节点能力全面升级，支持更多集群版本。
+        </div>
       </div>
     </el-card>
 

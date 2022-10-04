@@ -18,7 +18,7 @@
     >
       <el-step title="集群信息" />
       <el-step title="新增节点" />
-      <el-step title="节点配置" />
+      <el-step title="集群配置" />
       <el-step title="组件选项" />
       <el-step title="确认" />
     </el-steps>
@@ -233,6 +233,59 @@
                 集群的 Master， Etcd 和 Node 均由 Pixiu 进行创建和管理。
               </div>
 
+              <div style="margin-top: 20px" />
+              <el-form-item label="高可用 kubernetes">
+                <el-switch
+                  v-model="data.clusterForm.enable_ha_kubernetes"
+                  active-text="启用"
+                  inactive-text="关闭"
+                />
+              </el-form-item>
+              <div class="app-pixiu-describe" style="margin-top: -12px">
+                启用高可用 Kubernetes 集群时，推荐 master 节点数为 3
+              </div>
+
+              <div style="margin-top: 25px" />
+              <el-form-item label="Master&Etcd 配置">
+                <el-table
+                  :data="nodeTableData"
+                  style="
+                    width: 100%;
+                    background-color: #f3f4f7;
+                    margin-top: 2px;
+                  "
+                  max-height="400"
+                  :header-cell-style="{
+                    background: '#f4f3f9',
+                    color: '#606266',
+                    height: '35px',
+                  }"
+                >
+                  <el-table-column prop="name" label="主机名" width="160px" />
+                  <el-table-column prop="address" label="地址" width="120px" />
+                  <el-table-column prop="user" label="用户名" width="180px" />
+                  <el-table-column prop="password" label="密码" />
+                  <el-table-column fixed="right" label="操作" width="120px">
+                    <template #default="scope">
+                      <el-button
+                        type="text"
+                        size="small"
+                        @click.prevent="deleteNode(scope.$index)"
+                      >
+                        删除
+                      </el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+                <el-button
+                  type="text"
+                  class="app-node-add-class"
+                  style="width: 100%"
+                  @click="onAddNode"
+                  >添加 Master 节点</el-button
+                >
+              </el-form-item>
+
               <div style="margin-top: 25px" />
               <el-form-item label="Node 节点配置">
                 <el-table
@@ -270,17 +323,55 @@
                   class="app-node-add-class"
                   style="width: 100%"
                   @click="onAddNode"
-                  >添加节点</el-button
+                  >添加 Node</el-button
                 >
               </el-form-item>
-              <div class="app-pixiu-describe">
-                Kubernetes
-                的节点选择，根据实际需要添加节点名，地址，用户名称，和对应密码。选择之后，可以根据实际情况调整。
-              </div>
+
+              <el-card class="app-docs" style="margin-left: 140px">
+                <div>
+                  <el-icon
+                    style="
+                      vertical-align: middle;
+                      font-size: 18px;
+                      margin-left: -20px;
+                      margin-right: 8px;
+                      margin-top: -25px;
+                    "
+                    ><WarningFilled
+                  /></el-icon>
+                  <div
+                    style="
+                      vertical-align: middle;
+                      margin-top: -27px;
+                      margin-left: 10px;
+                    "
+                  >
+                    Kubernetes
+                    的节点选择，根据实际需要添加节点名，地址，用户名称，和对应密码。选择之后，可以根据实际情况调整。
+                  </div>
+                </div>
+              </el-card>
+
               <div style="margin-top: 25px" />
             </div>
 
-            <div v-if="data.active == 2">333</div>
+            <div v-if="data.active == 2">
+              <el-form-item label="公网 apiserver 地址">
+                <el-switch v-model="data.clusterForm.enable_public_ip" />
+              </el-form-item>
+              <div v-if="data.clusterForm.enable_public_ip">
+                <el-form-item style="width: 30%">
+                  <el-input
+                    style="margin-top: -10px"
+                    v-model="data.clusterForm.public_apiserver_ip"
+                    placeholder="公网地址，格式如: 10.0.0.8"
+                  />
+                </el-form-item>
+              </div>
+              <div class="app-pixiu-describe" style="margin-top: -12px">
+                启用公网apiserver时，填入外部的公网 IP 地址
+              </div>
+            </div>
 
             <div v-if="data.active == 3">444</div>
 
@@ -328,6 +419,7 @@ const data = reactive({
     name: "",
     create_ns: true, // 创建 pixiu 的系统命名空间
     enable_pixiu_eventer: false, // 启用高性能事件收集器
+    enable_ha_kubernetes: false, // 高可用 k8s 集群
     cloud_type: "1", // 导入集群的类型为 1
     region: "无锡",
     description: "",
@@ -338,6 +430,10 @@ const data = reactive({
     service_cidr: "",
     // pod 网络相关设置
     pod_cidr: "",
+
+    // 启用公网 ip
+    enable_public_ip: true,
+    public_apiserver_ip: "",
   },
 
   // k8s service 的选项
