@@ -235,21 +235,18 @@
 
               <div style="margin-top: 25px" />
               <el-form-item label="Node 节点配置">
-                <el-card
-                  style="width: 90%; height: auto; background-color: #f2f2f2"
-                >
                   <el-table
                     :data="nodeTableData"
                     style="
                       width: 100%;
                       background-color: #f3f4f7;
-                      margin-top: -20px;
+                      margin-top: 2px;
                     "
                     max-height="400"
                     :header-cell-style="{
                       background: '#f4f3f9',
                       color: '#606266',
-                      height: '40px',
+                      height: '35px',
                     }"
                   >
                     <el-table-column prop="name" label="主机名" width="160px" />
@@ -278,7 +275,6 @@
                     @click="onAddNode"
                     >添加节点</el-button
                   >
-                </el-card>
               </el-form-item>
               <div class="app-pixiu-describe">
                 Kubernetes
