@@ -18,7 +18,7 @@
     >
       <el-step title="集群信息" />
       <el-step title="新增节点" />
-      <el-step title="节点配置" />
+      <el-step title="集群配置" />
       <el-step title="组件选项" />
       <el-step title="确认" />
     </el-steps>
@@ -242,7 +242,7 @@
                 />
               </el-form-item>
               <div class="app-pixiu-describe" style="margin-top: -12px">
-                启用高可用 Kubernetes 集群。
+                启用高可用 Kubernetes 集群时，推荐 master 节点数为 3
               </div>
 
               <div style="margin-top: 25px" />
@@ -355,7 +355,23 @@
               <div style="margin-top: 25px" />
             </div>
 
-            <div v-if="data.active == 2">333</div>
+            <div v-if="data.active == 2">
+              <el-form-item label="公网 apiserver 地址">
+                <el-switch v-model="data.clusterForm.enable_public_ip" />
+              </el-form-item>
+              <div v-if="data.clusterForm.enable_public_ip">
+                <el-form-item style="width: 30%">
+                  <el-input
+                    style="margin-top: -10px"
+                    v-model="data.clusterForm.public_apiserver_ip"
+                    placeholder="公网地址，格式如: 10.0.0.8"
+                  />
+                </el-form-item>
+              </div>
+              <div class="app-pixiu-describe" style="margin-top: -12px">
+                启用公网apiserver时，填入外部的公网 IP 地址
+              </div>
+            </div>
 
             <div v-if="data.active == 3">444</div>
 
@@ -414,6 +430,10 @@ const data = reactive({
     service_cidr: "",
     // pod 网络相关设置
     pod_cidr: "",
+
+    // 启用公网 ip
+    enable_public_ip: true,
+    public_apiserver_ip: "",
   },
 
   // k8s service 的选项
