@@ -245,7 +245,7 @@
                       background-color: #f3f4f7;
                       margin-top: -20px;
                     "
-                    max-height="250"
+                    max-height="400"
                     :header-cell-style="{
                       background: '#f4f3f9',
                       color: '#606266',
