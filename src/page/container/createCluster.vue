@@ -271,15 +271,16 @@
                   </el-table>
                   <el-button
                     type="text"
-                    style="margin-top: 10px; margin-bottom: -10px"
+                    class="app-node-add-class"
+                    style="width: 100%"
                     @click="onAddNode"
-                    >添加节点</el-button
-                  >
+                    >添加节点</el-button>
               </el-form-item>
               <div class="app-pixiu-describe">
                 Kubernetes
                 的节点选择，根据实际需要添加节点名，地址，用户名称，和对应密码。选择之后，可以根据实际情况调整。
               </div>
+              <div style="margin-top: 25px" />
             </div>
 
             <div v-if="data.active == 2">333</div>
@@ -566,5 +567,14 @@ const backToContainer = () => {
   margin-left: 140px;
   font-size: 12px;
   color: #888888;
+}
+
+
+.app-node-add-class {
+    line-height: 50px;
+    border: 1px dashed #ddd;
+    margin-top: 10px;
+    font-size: 12px;
+    text-align: center;
 }
 </style>
