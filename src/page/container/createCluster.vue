@@ -222,7 +222,63 @@
               </el-form-item>
             </div>
 
-            <div v-if="data.active == 1">222</div>
+            <div v-if="data.active == 1">
+              <el-form-item label="集群类型">
+                <el-radio-group v-model="data.clusterForm.cloud_type">
+                  <el-radio-button label="1">自建集群</el-radio-button>
+                  <el-radio-button disabled label="0">标准集群</el-radio-button>
+                </el-radio-group>
+              </el-form-item>
+              <div class="app-pixiu-describe" style="margin-top: -5px">
+                集群的 Master， Etcd 和 Node 均由 Pixiu 进行创建和管理。
+              </div>
+
+              <div style="margin-top: 25px" />
+              <el-form-item label="Node 节点配置">
+                <el-table
+                  :data="nodeTableData"
+                  style="
+                    width: 100%;
+                    background-color: #f3f4f7;
+                    margin-top: 2px;
+                  "
+                  max-height="400"
+                  :header-cell-style="{
+                    background: '#f4f3f9',
+                    color: '#606266',
+                    height: '35px',
+                  }"
+                >
+                  <el-table-column prop="name" label="主机名" width="160px" />
+                  <el-table-column prop="address" label="地址" width="120px" />
+                  <el-table-column prop="user" label="用户名" width="180px" />
+                  <el-table-column prop="password" label="密码" />
+                  <el-table-column fixed="right" label="操作" width="120px">
+                    <template #default="scope">
+                      <el-button
+                        type="text"
+                        size="small"
+                        @click.prevent="deleteNode(scope.$index)"
+                      >
+                        删除
+                      </el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+                <el-button
+                  type="text"
+                  class="app-node-add-class"
+                  style="width: 100%"
+                  @click="onAddNode"
+                  >添加节点</el-button
+                >
+              </el-form-item>
+              <div class="app-pixiu-describe">
+                Kubernetes
+                的节点选择，根据实际需要添加节点名，地址，用户名称，和对应密码。选择之后，可以根据实际情况调整。
+              </div>
+              <div style="margin-top: 25px" />
+            </div>
 
             <div v-if="data.active == 2">333</div>
 
@@ -389,6 +445,28 @@ const data = reactive({
   ],
 });
 
+const nodeTableData = ref([
+  {
+    name: "kube-master",
+    address: "192.168.0.1",
+    user: "root",
+    password: "root123456",
+  },
+]);
+
+const deleteNode = (index) => {
+  nodeTableData.value.splice(index, 1);
+};
+
+const onAddNode = () => {
+  nodeTableData.value.push({
+    name: "node1",
+    address: "192.168.0.1",
+    user: "root",
+    password: "root123456",
+  });
+};
+
 onMounted(() => {
   newServiceNetwork(data.serviceNetworkForm);
   newPodNetwork(data.podNetworkForm);
@@ -486,5 +564,13 @@ const backToContainer = () => {
   margin-left: 140px;
   font-size: 12px;
   color: #888888;
+}
+
+.app-node-add-class {
+  line-height: 50px;
+  border: 1px dashed #ddd;
+  margin-top: 12px;
+  font-size: 12px;
+  text-align: center;
 }
 </style>
