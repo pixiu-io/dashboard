@@ -238,9 +238,50 @@
                 <el-card
                   style="width: 90%; height: 100px; background-color: #f2f2f2"
                 >
+                  <el-table
+                    :data="nodeTableData"
+                    style="
+                      width: 100%;
+                      background-color: #f3f4f7;
+                      margin-top: -20px;
+                    "
+                    max-height="250"
+                    :header-cell-style="{
+                      background: '#f4f3f9',
+                      color: '#606266',
+                      height: '40px',
+                    }"
+                  >
+                    <el-table-column prop="name" label="主机名" width="100px" />
+                    <el-table-column
+                      prop="address"
+                      label="地址"
+                      width="100px"
+                    />
+                    <el-table-column prop="user" label="用户名" width="120" />
+                    <el-table-column prop="password" label="密码" />
+                    <el-table-column fixed="right" label="操作" width="120px">
+                      <template #default="scope">
+                        <el-button
+                          link
+                          type="primary"
+                          size="small"
+                          @click.prevent="deleteNode(scope.$index)"
+                        >
+                          删除
+                        </el-button>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                  <el-button style="width: 100%" @click="onAddNode"
+                    >新增节点</el-button
+                  >
                 </el-card>
-
               </el-form-item>
+              <div class="app-pixiu-describe">
+                Kubernetes
+                的节点选择，根据实际需要添加节点名，地址，用户名称，和对应密码。选择之后，可以根据实际情况调整。
+              </div>
             </div>
 
             <div v-if="data.active == 2">333</div>
@@ -407,6 +448,21 @@ const data = reactive({
     },
   ],
 });
+
+const nodeTableData = ref([]);
+
+const deleteNode = (index) => {
+  nodeTableData.value.splice(index, 1);
+};
+
+const onAddNode = () => {
+  nodeTableData.value.push({
+    name: "node1",
+    address: "192.168.0.1",
+    user: "root",
+    password: "root123456",
+  });
+};
 
 onMounted(() => {
   newServiceNetwork(data.serviceNetworkForm);
