@@ -327,7 +327,7 @@
                 >
               </el-form-item>
 
-              <el-card class="app-pixiu-docs" style="margin-left: 140px">
+              <el-card class="app-docs" style="margin-left: 140px">
                 <div>
                   <el-icon
                     style="
@@ -648,26 +648,5 @@ const backToContainer = () => {
   margin-top: 12px;
   font-size: 12px;
   text-align: center;
-}
-
-.app-pixiu-docs {
-  margin-top: 20px;
-  height: 60px;
-  font-size: 12px;
-  line-height: inherit;
-  padding: 14px 20px;
-  vertical-align: middle;
-  color: #002da0;
-  border: 1px solid #d5e7ff;
-  border-radius: 0;
-  background: #d5e7ff;
-  position: relative;
-  box-sizing: border-box;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
 }
 </style>
