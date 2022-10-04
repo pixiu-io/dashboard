@@ -236,7 +236,7 @@
               <div style="margin-top: 25px" />
               <el-form-item label="Node 节点配置">
                 <el-card
-                  style="width: 90%; height: 100px; background-color: #f2f2f2"
+                  style="width: 90%; height: auto; background-color: #f2f2f2"
                 >
                   <el-table
                     :data="nodeTableData"
@@ -252,19 +252,18 @@
                       height: '40px',
                     }"
                   >
-                    <el-table-column prop="name" label="主机名" width="100px" />
+                    <el-table-column prop="name" label="主机名" width="160px" />
                     <el-table-column
                       prop="address"
                       label="地址"
-                      width="100px"
+                      width="120px"
                     />
-                    <el-table-column prop="user" label="用户名" width="120" />
+                    <el-table-column prop="user" label="用户名" width="180px" />
                     <el-table-column prop="password" label="密码" />
                     <el-table-column fixed="right" label="操作" width="120px">
                       <template #default="scope">
                         <el-button
-                          link
-                          type="primary"
+                          type="text"
                           size="small"
                           @click.prevent="deleteNode(scope.$index)"
                         >
@@ -273,8 +272,11 @@
                       </template>
                     </el-table-column>
                   </el-table>
-                  <el-button style="width: 100%" @click="onAddNode"
-                    >新增节点</el-button
+                  <el-button
+                    type="text"
+                    style="margin-top: 10px; margin-bottom: -10px"
+                    @click="onAddNode"
+                    >添加节点</el-button
                   >
                 </el-card>
               </el-form-item>
@@ -449,7 +451,14 @@ const data = reactive({
   ],
 });
 
-const nodeTableData = ref([]);
+const nodeTableData = ref([
+  {
+    name: "kube-master",
+    address: "192.168.0.1",
+    user: "root",
+    password: "root123456",
+  },
+]);
 
 const deleteNode = (index) => {
   nodeTableData.value.splice(index, 1);
