@@ -350,6 +350,8 @@
                 <el-form-item label="用户名"> root </el-form-item>
                 <el-form-item label="密码">
                   <el-input
+                    show-password
+                    clearable
                     style="width: 280px"
                     v-model="data.clusterForm.ssh_password"
                   />
