@@ -402,7 +402,8 @@
               <div class="app-pixiu-describe" style="margin-top: -12px">
                 指定 kubernetes 集群的 ApiServer
                 地址，指定时需要在云平台上开启该地址到 master 节点的 6443 端口 4
-                层转发。非高可用时不指定时，默认使用 master 节点的内网地址。
+                层转发。非高可用时可不指定，不指定时默认使用 master
+                节点的内网地址。
               </div>
 
               <div style="margin-top: 25px" />
@@ -414,6 +415,25 @@
               </el-form-item>
               <div class="app-pixiu-describe" style="margin-top: -12px">
                 默认使用 iptables 模式，ipvs 的转发性能更高。选择之后无法修改。
+              </div>
+
+              <div style="margin-top: 25px" />
+              <el-form-item label="组件选项">
+                <el-checkbox-group
+                  v-model="data.clusterForm.install_components"
+                >
+                  <el-checkbox-button
+                    v-for="city in availableComponents"
+                    :key="city"
+                    :label="city"
+                  >
+                    {{ city }}
+                  </el-checkbox-button>
+                </el-checkbox-group>
+              </el-form-item>
+              <div class="app-pixiu-describe" style="margin-top: -12px">
+                如果当前无法评估是否需要安装，
+                可在集群创建完成后在集群内进行安装
               </div>
 
               <el-card class="app-docs" style="margin-left: 140px">
@@ -439,13 +459,12 @@
                   </div>
                 </div>
               </el-card>
-
               <div style="margin-top: 25px" />
             </div>
 
-            <div v-if="data.active == 3">444</div>
+            <div v-if="data.active == 3">Continue 下一步</div>
 
-            <div v-if="data.active == 4">555</div>
+            <div v-if="data.active == 4">DONE</div>
 
             <div style="display: flex; justify-content: center">
               <el-space>
@@ -512,6 +531,9 @@ const data = reactive({
     login_type: "no_password",
     ssh_user: "root",
     ssh_password: "",
+
+    // 安装组件
+    install_components: ["Prometheus 监控服务", "Nginx Ingress"],
   },
 
   // k8s service 的选项
@@ -618,6 +640,13 @@ const data = reactive({
     },
   ],
 });
+
+const availableComponents = [
+  "Prometheus 监控服务",
+  "Nginx Ingress",
+  "Pixiu Autoscaler",
+  "Operator 生命周期管理组件",
+];
 
 const nodeTableData = ref([
   {
