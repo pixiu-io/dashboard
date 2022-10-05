@@ -327,6 +327,37 @@
                 >
               </el-form-item>
 
+              <el-form-item label="登陆方式">
+                <el-radio-group v-model="data.clusterForm.login_type">
+                  <el-radio-button label="no_password"
+                    >免密登陆</el-radio-button
+                  >
+                  <el-radio-button label="password">密码登陆</el-radio-button>
+                  <el-radio-button disabled label="key"
+                    >密钥登陆</el-radio-button
+                  >
+                </el-radio-group>
+              </el-form-item>
+
+              <div class="app-pixiu-describe" style="margin-top: -12px">
+                <div v-if="data.clusterForm.login_type === 'no_password'">
+                  pixiu 节点和待部署节点已经手动开通免密码登陆
+                </div>
+              </div>
+
+              <div v-if="data.clusterForm.login_type === 'password'">
+                <div style="margin-top: 25px" />
+                <el-form-item label="用户名"> root </el-form-item>
+                <el-form-item label="密码">
+                  <el-input
+                    show-password
+                    clearable
+                    style="width: 280px"
+                    v-model="data.clusterForm.ssh_password"
+                  />
+                </el-form-item>
+              </div>
+
               <el-card class="app-docs" style="margin-left: 140px">
                 <div>
                   <el-icon
@@ -356,7 +387,7 @@
             </div>
 
             <div v-if="data.active == 2">
-              <el-form-item label="公网 apiserver 地址">
+              <el-form-item label="ApiServer 地址">
                 <el-switch v-model="data.clusterForm.enable_public_ip" />
               </el-form-item>
               <div v-if="data.clusterForm.enable_public_ip">
@@ -364,18 +395,76 @@
                   <el-input
                     style="margin-top: -10px"
                     v-model="data.clusterForm.public_apiserver_ip"
-                    placeholder="公网地址，格式如: 10.0.0.8"
+                    placeholder="请输入 kubernetes apiserver 地址"
                   />
                 </el-form-item>
               </div>
               <div class="app-pixiu-describe" style="margin-top: -12px">
-                启用公网apiserver时，填入外部的公网 IP 地址
+                指定 kubernetes 集群的 ApiServer
+                地址，指定时需要在云平台上开启该地址到 master 节点的 6443 端口 4
+                层转发。非高可用时可不指定，不指定时默认使用 master
+                节点的内网地址。
               </div>
+
+              <div style="margin-top: 25px" />
+              <el-form-item label="Kube-proxy 模式">
+                <el-radio-group v-model="data.clusterForm.kube_proxy">
+                  <el-radio-button label="iptables">iptables</el-radio-button>
+                  <el-radio-button disabled label="ipvs">ipvs</el-radio-button>
+                </el-radio-group>
+              </el-form-item>
+              <div class="app-pixiu-describe" style="margin-top: -12px">
+                默认使用 iptables 模式，ipvs 的转发性能更高。选择之后无法修改。
+              </div>
+
+              <div style="margin-top: 25px" />
+              <el-form-item label="组件选项">
+                <el-checkbox-group
+                  v-model="data.clusterForm.install_components"
+                >
+                  <el-checkbox-button
+                    v-for="city in availableComponents"
+                    :key="city"
+                    :label="city"
+                  >
+                    {{ city }}
+                  </el-checkbox-button>
+                </el-checkbox-group>
+              </el-form-item>
+              <div class="app-pixiu-describe" style="margin-top: -12px">
+                如果当前无法评估是否需要安装，
+                可在集群创建完成后在集群内进行安装
+              </div>
+
+              <el-card class="app-docs" style="margin-left: 140px">
+                <div>
+                  <el-icon
+                    style="
+                      vertical-align: middle;
+                      font-size: 18px;
+                      margin-left: -20px;
+                      margin-right: 8px;
+                      margin-top: -25px;
+                    "
+                    ><WarningFilled
+                  /></el-icon>
+                  <div
+                    style="
+                      vertical-align: middle;
+                      margin-top: -27px;
+                      margin-left: 10px;
+                    "
+                  >
+                    TODO: 其他自定义字段的添加
+                  </div>
+                </div>
+              </el-card>
+              <div style="margin-top: 25px" />
             </div>
 
-            <div v-if="data.active == 3">444</div>
+            <div v-if="data.active == 3">Continue 下一步</div>
 
-            <div v-if="data.active == 4">555</div>
+            <div v-if="data.active == 4">DONE</div>
 
             <div style="display: flex; justify-content: center">
               <el-space>
@@ -432,8 +521,19 @@ const data = reactive({
     pod_cidr: "",
 
     // 启用公网 ip
-    enable_public_ip: true,
+    enable_public_ip: false,
     public_apiserver_ip: "",
+
+    // kube-poxy 模式
+    kube_proxy: "iptables",
+
+    // 部署时，登录方式
+    login_type: "no_password",
+    ssh_user: "root",
+    ssh_password: "",
+
+    // 安装组件
+    install_components: ["Prometheus 监控服务", "Nginx Ingress"],
   },
 
   // k8s service 的选项
@@ -540,6 +640,13 @@ const data = reactive({
     },
   ],
 });
+
+const availableComponents = [
+  "Prometheus 监控服务",
+  "Nginx Ingress",
+  "Pixiu Autoscaler",
+  "Operator 生命周期管理组件",
+];
 
 const nodeTableData = ref([
   {
