@@ -356,7 +356,7 @@
             </div>
 
             <div v-if="data.active == 2">
-              <el-form-item label="apiserver 地址">
+              <el-form-item label="ApiServer 地址">
                 <el-switch v-model="data.clusterForm.enable_public_ip" />
               </el-form-item>
               <div v-if="data.clusterForm.enable_public_ip">
@@ -369,8 +369,45 @@
                 </el-form-item>
               </div>
               <div class="app-pixiu-describe" style="margin-top: -12px">
-                启用公网apiserver时，填入外部的公网 IP 地址
+                指定 kubernetes 集群的 ApiServer 地址，指定时需要在云平台上开启该地址到 master 节点的 6443 端口 4 层转发。非高可用时不指定时，默认使用 master 节点的内网地址。
               </div>
+
+              <div style="margin-top: 25px" />
+              <el-form-item label="Kube-proxy 模式">
+              <el-radio-group v-model="data.clusterForm.kube_proxy">
+                  <el-radio-button label="iptables">iptables</el-radio-button>
+                  <el-radio-button disabled label="ipvs" >ipvs</el-radio-button>
+                </el-radio-group>
+              </el-form-item>
+              <div class="app-pixiu-describe" style="margin-top: -12px">
+                默认使用 iptables 模式，ipvs 的转发性能更高
+              </div>
+
+              <el-card class="app-docs" style="margin-left: 140px">
+                <div>
+                  <el-icon
+                    style="
+                      vertical-align: middle;
+                      font-size: 18px;
+                      margin-left: -20px;
+                      margin-right: 8px;
+                      margin-top: -25px;
+                    "
+                    ><WarningFilled
+                  /></el-icon>
+                  <div
+                    style="
+                      vertical-align: middle;
+                      margin-top: -27px;
+                      margin-left: 10px;
+                    "
+                  >
+                    TODO: 其他自定义字段的添加
+                  </div>
+                </div>
+              </el-card>
+
+              <div style="margin-top: 25px" />
             </div>
 
             <div v-if="data.active == 3">444</div>
@@ -432,8 +469,11 @@ const data = reactive({
     pod_cidr: "",
 
     // 启用公网 ip
-    enable_public_ip: true,
+    enable_public_ip: false,
     public_apiserver_ip: "",
+
+    // kube-poxy 模式
+    kube_proxy: "iptables"
   },
 
   // k8s service 的选项
