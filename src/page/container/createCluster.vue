@@ -645,6 +645,7 @@ const availableComponents = [
   "Prometheus 监控服务",
   "Nginx Ingress",
   "Pixiu Autoscaler",
+  "高性能 eventer",
   "Operator 生命周期管理组件",
 ];
 
