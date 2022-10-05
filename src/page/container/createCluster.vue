@@ -356,7 +356,7 @@
             </div>
 
             <div v-if="data.active == 2">
-              <el-form-item label="公网 apiserver 地址">
+              <el-form-item label="apiserver 地址">
                 <el-switch v-model="data.clusterForm.enable_public_ip" />
               </el-form-item>
               <div v-if="data.clusterForm.enable_public_ip">
@@ -364,7 +364,7 @@
                   <el-input
                     style="margin-top: -10px"
                     v-model="data.clusterForm.public_apiserver_ip"
-                    placeholder="公网地址，格式如: 10.0.0.8"
+                    placeholder="请输入 kubernetes apiserver 地址"
                   />
                 </el-form-item>
               </div>
