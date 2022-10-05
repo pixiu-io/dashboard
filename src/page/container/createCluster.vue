@@ -327,6 +327,35 @@
                 >
               </el-form-item>
 
+              <el-form-item label="登陆方式">
+                <el-radio-group v-model="data.clusterForm.login_type">
+                  <el-radio-button label="no_password"
+                    >免密登陆</el-radio-button
+                  >
+                  <el-radio-button label="password">密码登陆</el-radio-button>
+                  <el-radio-button disabled label="key"
+                    >密钥登陆</el-radio-button
+                  >
+                </el-radio-group>
+              </el-form-item>
+
+              <div class="app-pixiu-describe" style="margin-top: -12px">
+                <div v-if="data.clusterForm.login_type === 'no_password'">
+                  pixiu 节点和待部署节点已经手动开通免密码登陆
+                </div>
+              </div>
+
+              <div v-if="data.clusterForm.login_type === 'password'">
+                <div style="margin-top: 25px" />
+                <el-form-item label="用户名"> root </el-form-item>
+                <el-form-item label="密码">
+                  <el-input
+                    style="width: 280px"
+                    v-model="data.clusterForm.ssh_password"
+                  />
+                </el-form-item>
+              </div>
+
               <el-card class="app-docs" style="margin-left: 140px">
                 <div>
                   <el-icon
@@ -369,18 +398,20 @@
                 </el-form-item>
               </div>
               <div class="app-pixiu-describe" style="margin-top: -12px">
-                指定 kubernetes 集群的 ApiServer 地址，指定时需要在云平台上开启该地址到 master 节点的 6443 端口 4 层转发。非高可用时不指定时，默认使用 master 节点的内网地址。
+                指定 kubernetes 集群的 ApiServer
+                地址，指定时需要在云平台上开启该地址到 master 节点的 6443 端口 4
+                层转发。非高可用时不指定时，默认使用 master 节点的内网地址。
               </div>
 
               <div style="margin-top: 25px" />
               <el-form-item label="Kube-proxy 模式">
-              <el-radio-group v-model="data.clusterForm.kube_proxy">
+                <el-radio-group v-model="data.clusterForm.kube_proxy">
                   <el-radio-button label="iptables">iptables</el-radio-button>
-                  <el-radio-button disabled label="ipvs" >ipvs</el-radio-button>
+                  <el-radio-button disabled label="ipvs">ipvs</el-radio-button>
                 </el-radio-group>
               </el-form-item>
               <div class="app-pixiu-describe" style="margin-top: -12px">
-                默认使用 iptables 模式，ipvs 的转发性能更高
+                默认使用 iptables 模式，ipvs 的转发性能更高。选择之后无法修改。
               </div>
 
               <el-card class="app-docs" style="margin-left: 140px">
@@ -473,7 +504,12 @@ const data = reactive({
     public_apiserver_ip: "",
 
     // kube-poxy 模式
-    kube_proxy: "iptables"
+    kube_proxy: "iptables",
+
+    // 部署时，登录方式
+    login_type: "no_password",
+    ssh_user: "root",
+    ssh_password: "",
   },
 
   // k8s service 的选项
