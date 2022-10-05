@@ -113,7 +113,6 @@
 
 <script setup>
 import { reactive, getCurrentInstance, ref } from "vue";
-import { ElNotification } from 'element-plus'
 import PixiuCard from "@/components/card/index.vue";
 const { proxy } = getCurrentInstance();
 
@@ -176,10 +175,7 @@ const labelPosition = ref("left");
 
 const comfirmCreate = async () => {
   if (data.kubeconfig.length == 0) {
-    return ElNotification({
-      message: "Failed to found the kubeConfig file.",
-      type: "error",
-    });
+    return proxy.$message.error("failed to found the kubeConfig file.");
   }
 
   var configFile = data.kubeconfig[0].raw;
@@ -217,10 +213,7 @@ const cancelCreate = () => {
 
 const connectKubernetes = async () => {
   if (data.kubeconfig.length == 0) {
-    return ElNotification({
-      message: "Failed to found the kubeConfig file.",
-      type: "error",
-    });
+    return proxy.$message.error("failed to found the kubeConfig file.");
   }
 
   var configFile = data.kubeconfig[0].raw;

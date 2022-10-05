@@ -493,7 +493,6 @@
 
 <script setup>
 import { reactive, getCurrentInstance, ref, watch, onMounted } from "vue";
-import { ElNotification } from 'element-plus'
 import PixiuCard from "@/components/card/index.vue";
 const { proxy } = getCurrentInstance();
 
