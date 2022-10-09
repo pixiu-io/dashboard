@@ -71,7 +71,6 @@
         </div>
       </div>
     </el-card>
-
     <div style="margin-top: 20px">
       <el-row>
         <el-col>
@@ -190,6 +189,7 @@
           <template v-slot:empty>
             <div style="text-align: center">
               没有任何容器集群
+
               <button @click="createCloud" class="app-pixiu-btn--link">
                 [立即创建]
               </button>
@@ -327,6 +327,7 @@
 import { reactive, getCurrentInstance, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import PixiuRadioCard from "@/components/radioCard/index.vue";
+import PixiuMark from "@/components/mark/index.vue";
 const { proxy } = getCurrentInstance();
 const data = reactive({
   pageInfo: {
@@ -392,7 +393,34 @@ const changeActive = (value) => {
 };
 
 const cloudStatusFormatter = (row, column, cellValue) => {
-  return cloudStatus[cellValue];
+  return (
+    <div style="display:flex;align-items:center">
+      <el-space>
+        <PixiuMark
+          type={cellValue === 1 ? "danger" : "success"}
+          size={15}
+          // icon
+        />
+        <div>{cloudStatus[cellValue]}</div>
+      </el-space>
+    </div>
+  );
+};
+
+const formatterResource = (row, column, cellValue) => {
+  const { status, kube_version } = row;
+  return (
+    <div style="display:flex;flex-direction:column">
+      <el-space>
+        <span style="font-weight:bold">资源1:</span>
+        <span>{status}</span>
+      </el-space>
+      <el-space>
+        <span style="font-weight:bold">资源2:</span>
+        <span>{status}</span>
+      </el-space>
+    </div>
+  );
 };
 
 const formatterResource = (row, column, cellValue) => {
