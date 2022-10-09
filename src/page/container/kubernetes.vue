@@ -46,6 +46,7 @@ const data = reactive({
 
 onMounted(() => {
   data.cloud = proxy.$route.params;
+  console.log(data.cloud)
 });
 </script>
 

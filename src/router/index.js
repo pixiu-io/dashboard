@@ -62,7 +62,7 @@ const routes = [
         component: CreateCluster,
       },
       {
-        path: "kubernetes",
+        path: "kubernetes/:name",
         name: "Kubernetes",
         meta: {
           title: "kubernetes",
