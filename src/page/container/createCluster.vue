@@ -732,6 +732,16 @@ const next = () => {
 };
 
 const confirmCreate = async () => {
+  const resp = await proxy.$http({
+    method: "post",
+    url: "/clouds/build",
+    data: data.clusterForm,
+  });
+  if (resp.code != 200) {
+    return proxy.$message.error("构造 kubernetes 集群失败: " + resp.message); // 连通性检测异常
+  }
+
+  proxy.$message.success("成功构造 kubernetes 集群");
   backToContainer();
 };
 
