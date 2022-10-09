@@ -45,7 +45,26 @@ const data = reactive({
 });
 
 onMounted(() => {
-  data.cloud = proxy.$route.params;
+  data.cloud = proxy.$route.query;
+  data.items= [
+    {
+      name: "Node",
+      url: "/kubernetes/nodes?cluster="+data.cloud.cluster,
+    },
+    {
+      name: "Deployment",
+      url: "/kubernetes/deployments?cluster="+data.cloud.cluster,
+    },
+    {
+      name: "Service",
+      url: "/kubernetes/services?cluster="+data.cloud.cluster,
+    },
+    {
+      name: "ConfigMap",
+      url: "/kubernetes/config-maps?cluster="+data.cloud.cluster,
+    },
+  ]
+
 });
 </script>
 

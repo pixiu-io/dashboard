@@ -440,10 +440,9 @@ const getCloudList = async () => {
 
 const jumpRoute = (row) => {
   proxy.$router.push({
-    name: "Kubernetes",
-    params: {
-      id: row.id,
-      name: row.name,
+    name: "Node",
+    query: {
+      cluster: row.name,
     },
   });
 };
