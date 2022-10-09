@@ -731,7 +731,9 @@ const next = () => {
   if (data.active++ >= 4) data.active = 4;
 };
 
-const confirmCreate = async () => {};
+const confirmCreate = async () => {
+  backToContainer();
+};
 
 const cancelCreate = () => {
   backToContainer();
