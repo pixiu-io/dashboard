@@ -409,31 +409,15 @@ const cloudStatusFormatter = (row, column, cellValue) => {
 
 const formatterResource = (row, column, cellValue) => {
   const { status, kube_version } = row;
-  return (
-    <div style="display:flex;flex-direction:column">
-      <el-space>
-        <span style="font-weight:bold">资源1:</span>
-        <span>{status}</span>
-      </el-space>
-      <el-space>
-        <span style="font-weight:bold">资源2:</span>
-        <span>{status}</span>
-      </el-space>
-    </div>
-  );
-};
-
-const formatterResource = (row, column, cellValue) => {
-  const { status, kube_version } = row;
   console.log(status, kube_version, column);
   return (
     <div style="display:flex;flex-direction:column">
       <el-space>
-        <span style="font-weight:bold">资源1:</span>
+        <span style="font-weight:bold">CPU总量:</span>
         <span>{status}</span>
       </el-space>
       <el-space>
-        <span style="font-weight:bold">资源2:</span>
+        <span style="font-weight:bold">内存总量:</span>
         <span>{status}</span>
       </el-space>
     </div>
