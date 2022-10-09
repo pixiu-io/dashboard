@@ -140,7 +140,12 @@
             width="200"
           />
           <el-table-column prop="node_number" label="节点数" width="200" />
-          <el-table-column prop="resources" label="资源量" />
+          <el-table-column
+            prop="resources"
+            label="资源量"
+            :formatter="formatterResource"
+          />
+
           <el-table-column fixed="right" label="操作" width="200">
             <template #default="scope">
               <el-button
@@ -388,6 +393,23 @@ const changeActive = (value) => {
 
 const cloudStatusFormatter = (row, column, cellValue) => {
   return cloudStatus[cellValue];
+};
+
+const formatterResource = (row, column, cellValue) => {
+  const { status, kube_version } = row;
+  console.log(status, kube_version, column);
+  return (
+    <div style="display:flex;flex-direction:column">
+      <el-space>
+        <span style="font-weight:bold">资源1:</span>
+        <span>{status}</span>
+      </el-space>
+      <el-space>
+        <span style="font-weight:bold">资源2:</span>
+        <span>{status}</span>
+      </el-space>
+    </div>
+  );
 };
 
 const getCloudList = async () => {
