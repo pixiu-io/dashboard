@@ -130,15 +130,15 @@
             :formatter="cloudStatusFormatter"
             prop="status"
             label="状态"
-            width="200"
+            width="160"
           />
-          <el-table-column prop="cloud_type" label="集群类型" width="200" />
+          <el-table-column prop="cloud_type" label="集群类型" width="180" />
           <el-table-column
             prop="kube_version"
             label="kubernetes版本"
             width="200"
           />
-          <el-table-column prop="node_number" label="节点数" width="200" />
+          <el-table-column prop="node_number" label="节点数" width="160" />
           <el-table-column
             prop="resources"
             label="资源量"
@@ -413,11 +413,11 @@ const formatterResource = (row, column, cellValue) => {
   return (
     <div style="display:flex;flex-direction:column">
       <el-space>
-        <span style="font-weight:bold">CPU总量:</span>
+        <span style="font-weight:bold">CPU:</span>
         <span>{status}</span>
       </el-space>
       <el-space>
-        <span style="font-weight:bold">内存总量:</span>
+        <span style="font-weight:bold">内存:</span>
         <span>{status}</span>
       </el-space>
     </div>
