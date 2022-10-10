@@ -8,7 +8,7 @@
         item.children.length <= 0
       "
     >
-      <el-icon>
+      <el-icon v-if="item.icon">
         <component :is="item.icon"></component>
       </el-icon>
       <template #title>
@@ -17,7 +17,7 @@
     </el-menu-item>
     <el-sub-menu v-else :index="item.url">
       <template #title>
-        <el-icon>
+        <el-icon v-if="item.icon">
           <component :is="item.icon"></component>
         </el-icon>
         <span>{{ item.name }}</span>

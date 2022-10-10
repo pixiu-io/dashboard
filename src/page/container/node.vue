@@ -18,7 +18,11 @@
         style="margin-top: 40px; width: 100%"
         v-loading="loading"
         @selection-change="handleSelectionChange"
-        :header-cell-style="{ background: '#f4f3f9', color: '#606266', height: '40px' }"
+        :header-cell-style="{
+          background: '#f4f3f9',
+          color: '#606266',
+          height: '40px',
+        }"
       >
         <el-table-column prop="name" label="名称" width="120">
           <template #default="scope">
@@ -123,17 +127,17 @@ const data = reactive({
   nodeList: [],
 });
 
-onMounted(() => {
-  nodeList();
-});
+// onMounted(() => {
+//   nodeList();
+// });
 
 const handleSizeChange = (newSize) => {
   data.pageInfo.page_size = newSize;
-  nodeList();
+  // nodeList();
 };
 const handleCurrentChange = (newPage) => {
   data.pageInfo.page = newPage;
-  nodeList();
+  // nodeList();
 };
 
 const nodeList = async () => {
