@@ -2,8 +2,8 @@ import { ElMessage } from "element-plus";
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "http://localhost:8080", // 获取当前环境的域名配置
-  // baseURL: process.env.VUE_APP_BASE_API, //如果后端开放了cors，就可以用这个替代上面一行
+  // baseURL: "http://localhost:8080", // 获取当前环境的域名配置
+  baseURL: process.env.VUE_APP_BASE_API, //如果后端开放了cors，就可以用这个替代上面一行
   timeout: 6000, // 设置超时时间1分钟
   header: {
     "Content-Type": "application/json;charset=UTF-8",
