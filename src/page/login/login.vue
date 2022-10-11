@@ -1,74 +1,82 @@
 <template>
   <div class="login-page">
-    <div class="login-container">
-      <div class="tab-container">
-        <div class="tab-item">
-          <div selected="selected" class="u-tabs_item_3_DeFFee">
-            {{ $t(`message.user_login`) }}
+    <el-form :model="data.loginInfo" :rules="data.rules" ref="loginFormRef">
+      <div class="login-container">
+        <div class="tab-container">
+          <div class="tab-item">
+            <div selected="selected" class="u-tabs_item_3_DeFFee">
+              {{ $t(`message.user_login`) }}
+            </div>
+            <div class="change-language-container">
+              <div @click="change">
+                <el-icon class="el-input__icon">
+                  <component is="Switch" />
+                </el-icon>
+                {{ $t(`message.switch_language`) }}
+              </div>
+            </div>
           </div>
-          <div class="change-language-container" @click="change">
-            <el-icon class="el-input__icon">
-              <component is="Switch" />
-            </el-icon>
-            {{ $t(`message.switch_language`) }}
-          </div>
-        </div>
-        <el-input
-          v-model="data.loginInfo.name"
-          :placeholder="$t(`message.username`)"
-          clearable
-          maxlength="128"
-          size="large"
-          @keyup.enter.native="login"
-        >
-          <template #prefix>
-            <el-icon class="el-input__icon">
-              <component is="UserFilled" />
-            </el-icon>
-          </template>
-        </el-input>
-        <el-input
-          v-model="data.loginInfo.password"
-          :placeholder="$t(`message.password`)"
-          show-password
-          clearable
-          maxlength="128"
-          size="large"
-          @keyup.enter.native="login"
-        >
-          <template #prefix>
-            <el-icon class="el-input__icon">
-              <component is="Lock"></component>
-            </el-icon>
-          </template>
-        </el-input>
-        <div class="button-group">
-          <div class="forget-container">
-            <el-button
-              class="forget-button"
-              type="text"
-              @click="forget"
+          <el-form-item prop="name">
+            <el-input
+              v-model="data.loginInfo.name"
+              :placeholder="$t(`message.username`)"
+              clearable
+              maxlength="128"
               size="large"
+              @keyup.enter.native="login"
             >
-              {{ $t(`message.forget`) }}
-            </el-button>
+              <template #prefix>
+                <el-icon class="el-input__icon">
+                  <component is="UserFilled" />
+                </el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="password">
+            <el-input
+              v-model="data.loginInfo.password"
+              :placeholder="$t(`message.password`)"
+              show-password
+              clearable
+              maxlength="128"
+              size="large"
+              @keyup.enter.native="login"
+            >
+              <template #prefix>
+                <el-icon class="el-input__icon">
+                  <component is="Lock"></component>
+                </el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          <div class="button-group">
+            <div class="forget-container">
+              <el-button
+                class="forget-button"
+                type="text"
+                @click="forget"
+                size="large"
+              >
+                {{ $t(`message.forget`) }}
+              </el-button>
+            </div>
+            <el-button
+              class="login-button"
+              size="large"
+              @click="login"
+              :loading="data.load"
+            >
+              {{ $t(`message.login`) }}</el-button
+            >
           </div>
-          <el-button
-            class="login-button"
-            size="large"
-            @click="login"
-            :loading="data.load"
-          >
-            {{ $t(`message.login`) }}</el-button
-          >
         </div>
       </div>
-    </div>
+    </el-form>
   </div>
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance } from "vue";
+import { reactive, getCurrentInstance, ref } from "vue";
 const { proxy } = getCurrentInstance();
 const data = reactive({
   loginInfo: {
@@ -79,6 +87,14 @@ const data = reactive({
   // 图标高级
   Lock: "",
   UserFilled: "",
+  rules: {
+    name: [
+      { required: true, message: '请输入用户名', trigger: 'blur' },
+    ],
+    password: [
+      { required: true, message: '请输入密码', trigger: 'blur' }
+    ],
+  },
 });
 const forget = () => {
   proxy.$message.error("忘记密码，请联系管理员");
@@ -91,21 +107,30 @@ const change = () => {
     proxy.$i18n.locale = "zh";
   }
 };
-const login = async () => {
-  data.load = true;
+const loginFormRef = ref(null)
+const login = () => {
+  loginFormRef.value.validate(async (valid) => {
+    if (valid) {
+      data.load = true;
 
-  // 发送登陆请求
-  let res = await proxy.$http({
-    method: "post",
-    url: "/users/login",
-    data: data.loginInfo,
+      // 发送登陆请求
+      let res = await proxy.$http({
+        method: "post",
+        url: "/users/login",
+        data: data.loginInfo,
+      });
+      data.load = false;
+      if (res.code != 200) {
+        proxy.$message.error(res.message);
+        return
+      }
+      const token = res.result;
+      localStorage.setItem("token", token);
+      localStorage.setItem("account", data.loginInfo.name);
+      proxy.$message.success("登陆成功");
+      proxy.$router.push("/index");
+    }
   });
-  const token = res.result;
-  localStorage.setItem("token", token);
-  localStorage.setItem("account", data.loginInfo.name);
-  proxy.$message.success("登陆成功");
-  proxy.$router.push("/index");
-  data.load = false;
 };
 </script>
 
@@ -198,5 +223,8 @@ const login = async () => {
   background: #508ae2;
   color: #fff;
   font-size: 17px;
+}
+.el-form-item {
+  width: 100%;
 }
 </style>
