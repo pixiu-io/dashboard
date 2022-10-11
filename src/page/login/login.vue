@@ -7,7 +7,7 @@
             {{ $t(`login.user_login`) }}
           </div>
           <div class="change-language-container">
-            <div @click="change">
+            <div style="cursor: pointer" @click="change">
               <el-icon class="el-input__icon">
                 <component is="Switch" />
               </el-icon>
@@ -182,7 +182,6 @@ const login = () => {
 
 .change-language-container {
   width: 70%;
-  cursor: pointer;
   border-bottom: 1px solid #ece5e3;
   display: flex;
   justify-content: flex-end;
