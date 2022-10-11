@@ -2,7 +2,7 @@
 
 tag = latest
 releaseName = pixiu-dashboard
-dockerhubUser = cqiang1993
+dockerhubUser = jacky06
 
 ALL: run
 
@@ -16,7 +16,7 @@ build: install
 	npm run build
 
 image:
-	docker build -t ${dockerhubUser}/${releaseName}:${tag} --platform=linux/amd64,linux/arm64 -f docker/Dockerfile .
+	docker build -t ${dockerhubUser}/${releaseName}:${tag} --platform=linux -f docker/Dockerfile .
 
 push: image
 	docker push ${dockerhubUser}/${releaseName}:${tag}
