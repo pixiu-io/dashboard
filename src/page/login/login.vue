@@ -163,6 +163,7 @@ const login = () => {
 .tab-item {
   width: 100%;
   display: flex;
+  justify-content: space-between;
 }
 
 .u-tabs_item_3_DeFFee {
@@ -178,11 +179,9 @@ const login = () => {
 }
 
 .change-language-container {
-  width: 70%;
   cursor: pointer;
   border-bottom: 1px solid #ece5e3;
   display: flex;
-  justify-content: flex-end;
   align-items: center;
   color: #508ae2;
 }
