@@ -1,10 +1,4 @@
+import login from "./login";
 export default {
-  message: {
-    user_login: "用户登录",
-    username: "请输入用户名",
-    password: "请输入密码",
-    switch_language: "切换语言",
-    login: "登录",
-    forget: "忘记密码",
-  },
+  login,
 };
