@@ -1,6 +1,9 @@
 <template>
   <el-aside style="height: 100%">
     <!--  -->
+
+    <div class="cloud-title-container">cloud</div>
+
     <div class="cloud-select-container">
       <el-select
         style="width: 80%"
@@ -115,13 +118,24 @@ onMounted(() => {
   background-color: #ebe7e7;
 }
 
+.cloud-title-container {
+  font-size: 25px;
+  height: 56px;
+  line-height: 56px;
+  background-color: #f6f7fb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px rgba(0, 0, 0, 0.1) solid;
+}
+
 .cloud-select-container {
   height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: #f6f7fb;
-  border-bottom: 1px rgba(0, 0, 0, 0.1) solid;
+  /* border-bottom: 1px rgba(0, 0, 0, 0.1) solid; */
 }
 
 .el-header {
