@@ -19,7 +19,7 @@
           :model="data.loginInfo"
           :rules="data.rules"
           ref="loginFormRef"
-          style="width: 100%; height: 35%"
+          style="width: 100%; height: 30%"
         >
           <el-form-item prop="name">
             <el-input
