@@ -7,11 +7,13 @@
             <div selected="selected" class="u-tabs_item_3_DeFFee">
               {{ $t(`message.user_login`) }}
             </div>
-            <div class="change-language-container" @click="change">
-              <el-icon class="el-input__icon">
-                <component is="Switch" />
-              </el-icon>
-              {{ $t(`message.switch_language`) }}
+            <div class="change-language-container">
+              <div @click="change">
+                <el-icon class="el-input__icon">
+                  <component is="Switch" />
+                </el-icon>
+                {{ $t(`message.switch_language`) }}
+              </div>
             </div>
           </div>
           <el-form-item prop="name">
@@ -163,7 +165,6 @@ const login = () => {
 .tab-item {
   width: 100%;
   display: flex;
-  justify-content: space-between;
 }
 
 .u-tabs_item_3_DeFFee {
@@ -179,9 +180,11 @@ const login = () => {
 }
 
 .change-language-container {
+  width: 70%;
   cursor: pointer;
   border-bottom: 1px solid #ece5e3;
   display: flex;
+  justify-content: flex-end;
   align-items: center;
   color: #508ae2;
 }
