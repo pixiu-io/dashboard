@@ -1,25 +1,30 @@
 <template>
   <div class="login-page">
-    <el-form :model="data.loginInfo" :rules="data.rules" ref="loginFormRef">
-      <div class="login-container">
-        <div class="tab-container">
-          <div class="tab-item">
-            <div selected="selected" class="u-tabs_item_3_DeFFee">
-              {{ $t(`message.user_login`) }}
-            </div>
-            <div class="change-language-container">
-              <div @click="change">
-                <el-icon class="el-input__icon">
-                  <component is="Switch" />
-                </el-icon>
-                {{ $t(`message.switch_language`) }}
-              </div>
+    <div class="login-container">
+      <div class="tab-container">
+        <div class="tab-item">
+          <div selected="selected" class="u-tabs_item_3_DeFFee">
+            {{ $t(`login.user_login`) }}
+          </div>
+          <div class="change-language-container">
+            <div style="cursor: pointer" @click="change">
+              <el-icon class="el-input__icon">
+                <component is="Switch" />
+              </el-icon>
+              {{ $t(`login.switch_language`) }}
             </div>
           </div>
+        </div>
+        <el-form
+          :model="data.loginInfo"
+          :rules="data.rules"
+          ref="loginFormRef"
+          style="width: 100%; height: 35%"
+        >
           <el-form-item prop="name">
             <el-input
               v-model="data.loginInfo.name"
-              :placeholder="$t(`message.username`)"
+              :placeholder="$t(`login.username`)"
               clearable
               maxlength="128"
               size="large"
@@ -35,7 +40,7 @@
           <el-form-item prop="password">
             <el-input
               v-model="data.loginInfo.password"
-              :placeholder="$t(`message.password`)"
+              :placeholder="$t(`login.password`)"
               show-password
               clearable
               maxlength="128"
@@ -49,29 +54,29 @@
               </template>
             </el-input>
           </el-form-item>
-          <div class="button-group">
-            <div class="forget-container">
-              <el-button
-                class="forget-button"
-                type="text"
-                @click="forget"
-                size="large"
-              >
-                {{ $t(`message.forget`) }}
-              </el-button>
-            </div>
+        </el-form>
+        <div class="button-group">
+          <div class="forget-container">
             <el-button
-              class="login-button"
+              class="forget-button"
+              type="text"
+              @click="forget"
               size="large"
-              @click="login"
-              :loading="data.load"
             >
-              {{ $t(`message.login`) }}</el-button
-            >
+              {{ $t(`login.forget`) }}
+            </el-button>
           </div>
+          <el-button
+            class="login-button"
+            size="large"
+            @click="login"
+            :loading="data.load"
+          >
+            {{ $t(`login.login`) }}</el-button
+          >
         </div>
       </div>
-    </el-form>
+    </div>
   </div>
 </template>
 
@@ -88,12 +93,8 @@ const data = reactive({
   Lock: "",
   UserFilled: "",
   rules: {
-    name: [
-      { required: true, message: '请输入用户名', trigger: 'blur' },
-    ],
-    password: [
-      { required: true, message: '请输入密码', trigger: 'blur' }
-    ],
+    name: [{ required: true, message: "请输入用户名", trigger: "blur" }],
+    password: [{ required: true, message: "请输入密码", trigger: "blur" }],
   },
 });
 const forget = () => {
@@ -107,7 +108,7 @@ const change = () => {
     proxy.$i18n.locale = "zh";
   }
 };
-const loginFormRef = ref(null)
+const loginFormRef = ref(null);
 const login = () => {
   loginFormRef.value.validate(async (valid) => {
     if (valid) {
@@ -122,7 +123,7 @@ const login = () => {
       data.load = false;
       if (res.code != 200) {
         proxy.$message.error(res.message);
-        return
+        return;
       }
       const token = res.result;
       localStorage.setItem("token", token);
@@ -181,7 +182,6 @@ const login = () => {
 
 .change-language-container {
   width: 70%;
-  cursor: pointer;
   border-bottom: 1px solid #ece5e3;
   display: flex;
   justify-content: flex-end;
