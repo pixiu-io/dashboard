@@ -162,7 +162,7 @@ onMounted(() => {
 
 .el-menu-vertical-no-collapse:not(.el-menu--collapse) {
   width: 180px;
-  height: calc(100% - 57px);
+  height: calc(100% - 113px);
 }
 
 .el-menu {

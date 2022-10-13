@@ -6,7 +6,7 @@
           <span
             style="font-weight: bold; font-size: 18px; vertical-align: middle"
           >
-            容器服务
+            {{ $t(`container.container.title`) }}
           </span>
           <span
             style="
@@ -16,7 +16,7 @@
               margin-right: 10px;
             "
           >
-            地域
+            {{ $t(`container.container.region`) }}
           </span>
 
           <el-select

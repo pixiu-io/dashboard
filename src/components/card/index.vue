@@ -9,12 +9,24 @@
     `"
   >
     <div class="app-pixiu-header-title">
-      {{ props.title }}
+      <el-space>
+        <div class="back-button" v-if="props.back" @click="goBack">
+          <el-icon>
+            <component is="Back"></component>
+          </el-icon>
+        </div>
+
+        <span>{{ props.title }}</span>
+      </el-space>
     </div>
   </div>
 </template>
 
 <script setup>
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
 const props = defineProps({
   title: {
     type: String,
@@ -24,7 +36,15 @@ const props = defineProps({
     type: String,
     default: "60px",
   },
+  back: {
+    type: Boolean,
+    default: false,
+  },
 });
+
+const goBack = () => {
+  router.back();
+};
 </script>
 
 <style scoped>
@@ -34,5 +54,18 @@ const props = defineProps({
   font-size: 16px;
   font-weight: 700;
   padding-left: 20px;
+}
+.back-button {
+  cursor: pointer;
+  font-size: 17px;
+  font-weight: 700;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.back-button:active {
+  background-color: rgba(1, 1, 1, 0.1);
 }
 </style>
