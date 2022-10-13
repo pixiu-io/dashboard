@@ -1,6 +1,6 @@
 <template>
   <div style="display: flex; flex-direction: column; width: 100%; height: 100%">
-    <pixiu-card title="导入标准集群" height="50px" />
+    <pixiu-card back="true" title="导入标准集群" height="50px" />
     <el-main>
       <div class="app-pixiu-content-card">
         <el-card style="margin-top: 10px; width: 75%">

@@ -8,7 +8,7 @@
       background-color: #f3f4f7;
     "
   >
-    <pixiu-card title="创建标准集群" height="50px" />
+    <pixiu-card back="true" title="创建标准集群" height="50px" />
     <el-steps
       :active="data.active"
       finish-status="success"
