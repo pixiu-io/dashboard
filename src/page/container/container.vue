@@ -132,7 +132,14 @@
             label="状态"
             width="160"
           />
-          <el-table-column prop="cloud_type" label="集群类型" width="180" />
+
+          <el-table-column
+            :formatter="cloudTypeFormatter"
+            prop="cloud_type"
+            label="集群类型"
+            width="180"
+          />
+
           <el-table-column
             prop="kube_version"
             label="kubernetes版本"
@@ -340,14 +347,6 @@ const data = reactive({
   cloudType: 1,
   loading: false,
 
-  cloudStatus: {
-    0: "运行中",
-    1: "集群异常",
-    2: "构建中",
-    3: "删除中",
-    4: "等待构建",
-  },
-
   // 触发创建页面
   createCloudVisible: false,
 
@@ -383,14 +382,30 @@ onMounted(() => {
 });
 
 const cloudStatus = {
-  0: "正常",
-  1: "异常",
-  2: "正在初始化",
+  0: "运行中",
+  1: "集群异常",
+  2: "构建中",
   3: "删除中",
+  4: "等待构建",
+};
+
+const cloudTypes = {
+  1: "标准集群",
+  2: "自建集群",
 };
 
 const changeActive = (value) => {
   data.cloudType = value;
+};
+
+const cloudTypeFormatter = (row, column, cellValue) => {
+  return (
+    <div style="display:flex;align-items:center">
+      <el-space>
+        <div>{cloudTypes[cellValue]}</div>
+      </el-space>
+    </div>
+  );
 };
 
 const cloudStatusFormatter = (row, column, cellValue) => {
