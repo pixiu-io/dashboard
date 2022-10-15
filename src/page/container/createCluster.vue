@@ -506,7 +506,7 @@ const data = reactive({
 
   clusterForm: {
     name: "",
-    create_ns: true, // 创建 pixiu 的系统命名空间
+    create_namespace: true, // 创建 pixiu 的系统命名空间
     enable_pixiu_eventer: false, // 启用高性能事件收集器
     enable_ha_kubernetes: false, // 高可用 k8s 集群
     cloud_type: "1", // 导入集群的类型为 1
