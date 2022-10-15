@@ -1,0 +1,23 @@
+{
+  "id": "",
+  "name": "",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "4676496",
+      "name": "云容器",
+      "font_class": "yunrongqi",
+      "unicode": "e70d",
+      "unicode_decimal": 59149
+    },
+    {
+      "icon_id": "13479219",
+      "name": "状态",
+      "font_class": "B",
+      "unicode": "e70a",
+      "unicode_decimal": 59146
+    }
+  ]
+}

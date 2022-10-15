@@ -41,7 +41,7 @@
 
               <div style="margin-top: 25px" />
               <el-form-item label="Kubernetes 版本">
-                <el-select v-model="data.clusterForm.kubernetes_version">
+                <el-select v-model="data.clusterForm.kubernetes.version">
                   <el-option
                     v-for="item in data.kubernetes_version_options"
                     :key="item.value"
@@ -69,7 +69,7 @@
 
               <div style="margin-top: 25px" />
               <el-form-item label="容器运行时">
-                <el-radio-group v-model="data.clusterForm.kubernetes_runtime">
+                <el-radio-group v-model="data.clusterForm.kubernetes.runtime">
                   <el-radio-button label="docker">docker</el-radio-button>
                   <el-radio-button label="containerd"
                     >containerd</el-radio-button
@@ -86,7 +86,7 @@
 
               <div style="margin-top: 25px" />
               <el-form-item label="容器网络插件">
-                <el-radio-group v-model="data.clusterForm.cni">
+                <el-radio-group v-model="data.clusterForm.kubernetes.cni">
                   <el-radio-button label="calico">calico</el-radio-button>
                   <el-radio-button label="flannel">flannel</el-radio-button>
                 </el-radio-group>
@@ -225,8 +225,8 @@
             <div v-if="data.active == 1">
               <el-form-item label="集群类型">
                 <el-radio-group v-model="data.clusterForm.cloud_type">
-                  <el-radio-button label="1">自建集群</el-radio-button>
-                  <el-radio-button disabled label="0">标准集群</el-radio-button>
+                  <el-radio-button label="2">自建集群</el-radio-button>
+                  <el-radio-button disabled label="1">标准集群</el-radio-button>
                 </el-radio-group>
               </el-form-item>
               <div class="app-pixiu-describe" style="margin-top: -5px">
@@ -394,7 +394,7 @@
                 <el-form-item style="width: 30%">
                   <el-input
                     style="margin-top: -10px"
-                    v-model="data.clusterForm.public_apiserver_ip"
+                    v-model="data.clusterForm.kubernetes.api_server"
                     placeholder="请输入 kubernetes apiserver 地址"
                   />
                 </el-form-item>
@@ -408,7 +408,9 @@
 
               <div style="margin-top: 25px" />
               <el-form-item label="Kube-proxy 模式">
-                <el-radio-group v-model="data.clusterForm.kube_proxy">
+                <el-radio-group
+                  v-model="data.clusterForm.kubernetes.proxy_mode"
+                >
                   <el-radio-button label="iptables">iptables</el-radio-button>
                   <el-radio-button disabled label="ipvs">ipvs</el-radio-button>
                 </el-radio-group>
@@ -506,26 +508,30 @@ const data = reactive({
 
   clusterForm: {
     name: "",
-    create_ns: true, // 创建 pixiu 的系统命名空间
+    alias_name: "",
+    immediate: false,
+    create_namespace: true, // 创建 pixiu 的系统命名空间
     enable_pixiu_eventer: false, // 启用高性能事件收集器
     enable_ha_kubernetes: false, // 高可用 k8s 集群
-    cloud_type: "1", // 导入集群的类型为 1
+    cloud_type: 2, // 导入集群的类型为 1
     region: "无锡",
     description: "",
-    kubernetes_version: "1.20.0",
-    kubernetes_runtime: "docker",
-    cni: "flannel", // 默认网络插件
-    // k8s service 网段
-    service_cidr: "",
-    // pod 网络相关设置
-    pod_cidr: "",
 
-    // 启用公网 ip
-    enable_public_ip: false,
-    public_apiserver_ip: "",
-
-    // kube-poxy 模式
-    kube_proxy: "iptables",
+    // k8s 的属性定义
+    kubernetes: {
+      api_server: "",
+      version: "1.20.0",
+      runtime: "docker",
+      cni: "flannel", // 默认网络插件
+      // k8s service 网段
+      service_cidr: "",
+      // pod 网络相关设置
+      pod_cidr: "",
+      // kube-poxy 模式
+      proxy_mode: "iptables",
+      masters: [],
+      nodes: [],
+    },
 
     // 部署时，登录方式
     login_type: "no_password",
@@ -698,7 +704,7 @@ const labelPosition = ref("left");
 
 // TODO: 字符串拼接优化
 const newServiceNetwork = (serviceNetwork) => {
-  data.clusterForm.service_cidr =
+  data.clusterForm.kubernetes.service_cidr =
     serviceNetwork.a_cidr +
     "." +
     serviceNetwork.b_cidr +
@@ -711,7 +717,7 @@ const newServiceNetwork = (serviceNetwork) => {
 };
 // TODO: 字符串拼接优化
 const newPodNetwork = (podNetwork) => {
-  data.clusterForm.pod_cidr =
+  data.clusterForm.kubernetes.pod_cidr =
     podNetwork.a_cidr +
     "." +
     podNetwork.b_cidr +

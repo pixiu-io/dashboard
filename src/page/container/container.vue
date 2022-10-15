@@ -132,7 +132,14 @@
             label="状态"
             width="160"
           />
-          <el-table-column prop="cloud_type" label="集群类型" width="180" />
+
+          <el-table-column
+            :formatter="cloudTypeFormatter"
+            prop="cloud_type"
+            label="集群类型"
+            width="180"
+          />
+
           <el-table-column
             prop="kube_version"
             label="kubernetes版本"
@@ -340,13 +347,6 @@ const data = reactive({
   cloudType: 1,
   loading: false,
 
-  cloudStatus: {
-    0: "正常",
-    1: "异常",
-    2: "构建中",
-    3: "删除中",
-  },
-
   // 触发创建页面
   createCloudVisible: false,
 
@@ -382,26 +382,38 @@ onMounted(() => {
 });
 
 const cloudStatus = {
-  0: "正常",
-  1: "异常",
-  2: "正在初始化",
+  0: "运行中",
+  1: "集群异常",
+  2: "构建中",
   3: "删除中",
+  4: "等待构建",
+};
+
+const cloudTypes = {
+  1: "标准集群",
+  2: "自建集群",
 };
 
 const changeActive = (value) => {
   data.cloudType = value;
 };
 
+const cloudTypeFormatter = (row, column, cellValue) => {
+  return (
+    <div style="display:flex;align-items:center">
+      <el-space>
+        <div>{cloudTypes[cellValue]}</div>
+      </el-space>
+    </div>
+  );
+};
+
 const cloudStatusFormatter = (row, column, cellValue) => {
   return (
     <div style="display:flex;align-items:center">
       <el-space>
-        <PixiuMark
-          type={cellValue === 1 ? "danger" : "success"}
-          size={15}
-          // icon
-        />
-        <div>{cloudStatus[cellValue]}</div>
+        <span class="iconfont" style="font-size: 25px">&#xe70a;</span>
+        <div style="margin-left: -2px">{cloudStatus[cellValue]}</div>
       </el-space>
     </div>
   );
@@ -568,5 +580,14 @@ const deleteCloud = async (row) => {
   margin-left: 2px;
   background-color: #fff;
   cursor: pointer;
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 26px;
+  color: #28c65a;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 </style>
