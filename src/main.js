@@ -11,6 +11,8 @@ import axios from "@/utils/http";
 import i18n from "@/utils/i18n";
 // 全局引入css
 import "../style/apps.css";
+// 引入 iconfont
+import "./assets/icon-font/iconfont.css"
 
 const app = createApp(App);
 

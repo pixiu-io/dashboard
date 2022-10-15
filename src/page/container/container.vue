@@ -412,12 +412,8 @@ const cloudStatusFormatter = (row, column, cellValue) => {
   return (
     <div style="display:flex;align-items:center">
       <el-space>
-        <PixiuMark
-          type={cellValue === 1 ? "danger" : "success"}
-          size={15}
-          // icon
-        />
-        <div>{cloudStatus[cellValue]}</div>
+        <span class="iconfont" style="font-size: 25px">&#xe70a;</span>
+        <div style="margin-left: -2px">{cloudStatus[cellValue]}</div>
       </el-space>
     </div>
   );
@@ -584,5 +580,14 @@ const deleteCloud = async (row) => {
   margin-left: 2px;
   background-color: #fff;
   cursor: pointer;
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 26px;
+  color: #28c65a;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 </style>
