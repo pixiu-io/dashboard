@@ -225,8 +225,8 @@
             <div v-if="data.active == 1">
               <el-form-item label="集群类型">
                 <el-radio-group v-model="data.clusterForm.cloud_type">
-                  <el-radio-button label=2>自建集群</el-radio-button>
-                  <el-radio-button disabled label=1>标准集群</el-radio-button>
+                  <el-radio-button label="2">自建集群</el-radio-button>
+                  <el-radio-button disabled label="1">标准集群</el-radio-button>
                 </el-radio-group>
               </el-form-item>
               <div class="app-pixiu-describe" style="margin-top: -5px">
@@ -408,7 +408,9 @@
 
               <div style="margin-top: 25px" />
               <el-form-item label="Kube-proxy 模式">
-                <el-radio-group v-model="data.clusterForm.kubernetes.proxy_mode">
+                <el-radio-group
+                  v-model="data.clusterForm.kubernetes.proxy_mode"
+                >
                   <el-radio-button label="iptables">iptables</el-radio-button>
                   <el-radio-button disabled label="ipvs">ipvs</el-radio-button>
                 </el-radio-group>
