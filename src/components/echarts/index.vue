@@ -11,14 +11,14 @@ const echarts = inject("echarts");
 //获取 dom 和 父组件数据 并定义"myChart"用于初始化图表
 const chartDom = ref();
 let myChart = null;
-defineProps({
+const props = defineProps({
   option: Object,
 });
 
 //页面成功渲染，开始绘制图表
 onMounted(() => {
   myChart = echarts.init(chartDom.value);
-  myChart.setOption(option, true);
+  myChart.setOption(props.option, true);
   let erd = elementResizeDetectorMaker();
   erd.listenTo(chartDom.value.parentNode, function (element) {
     nextTick(() => {
@@ -34,9 +34,9 @@ onBeforeUnmount(() => {
 });
 //监听图表数据时候变化，重新渲染图表
 watch(
-  () => option,
+  () => props.option,
   () => {
-    myChart.setOption(option, true);
+    myChart.setOption(props.option, true);
   },
   { deep: true }
 );

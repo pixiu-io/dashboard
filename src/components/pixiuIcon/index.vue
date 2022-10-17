@@ -1,5 +1,5 @@
 <template>
-  <el-icon :size="size" :color="color">
+  <el-icon :size="size" :color="color" :class="class" :style="style">
     <component :is="name" v-if="type === 'el'" />
     <svg
       v-if="type === 'iconfont'"
@@ -34,6 +34,14 @@ defineProps({
   type: {
     type: String,
     default: "el",
+  },
+  class: {
+    type: String,
+    default: "",
+  },
+  style: {
+    type: String,
+    default: "",
   },
 });
 </script>
