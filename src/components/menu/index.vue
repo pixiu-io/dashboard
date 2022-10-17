@@ -8,10 +8,11 @@
         item.children.length <= 0
       "
     >
-      <el-icon v-if="item.icon">
-        <component :is="item.icon" v-if="item.iconType === 'el'"></component>
-        <pixiu-icon :iconName="item.icon" v-else></pixiu-icon>
-      </el-icon>
+      <pixiu-icon
+        v-if="item.icon"
+        :iconName="item.icon"
+        :iconType="item.iconType"
+      ></pixiu-icon>
       <template #title>
         <span>{{ item.name }}</span>
       </template>
@@ -19,8 +20,10 @@
     <el-sub-menu v-else :index="item.url">
       <template #title>
         <el-icon v-if="item.icon">
-          <component :is="item.icon" v-if="item.iconType === 'el'"></component>
-          <pixiu-icon :iconName="item.icon" v-else></pixiu-icon>
+          <pixiu-icon
+            :iconName="item.icon"
+            :iconType="item.iconType"
+          ></pixiu-icon>
         </el-icon>
 
         <span>{{ item.name }}</span>

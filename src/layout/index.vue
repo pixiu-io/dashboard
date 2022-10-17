@@ -91,7 +91,7 @@ onMounted(() => {
       name: "容器服务",
       url: "/container",
       icon: "icon-yunrongqi",
-      iconType: "icon-font",
+      iconType: "iconfont",
     },
     {
       name: "DevOps",
