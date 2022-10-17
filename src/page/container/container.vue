@@ -140,11 +140,14 @@
             width="180"
           />
 
-          <el-table-column
-            prop="kube_version"
-            label="kubernetes版本"
-            width="200"
-          />
+          <el-table-column prop="kube_version"  width="200">
+            <template #header>
+                <Icon icon="Compass" desc="v0.10.1版本">
+                    kubernetes版本
+                </Icon>
+            </template>
+          </el-table-column>
+
           <el-table-column prop="node_number" label="节点数" width="160" />
           <el-table-column
             prop="resources"
@@ -335,6 +338,7 @@ import { reactive, getCurrentInstance, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import PixiuRadioCard from "@/components/radioCard/index.vue";
 import PixiuMark from "@/components/mark/index.vue";
+import Icon from "@/components/icon/icon.vue"
 const { proxy } = getCurrentInstance();
 const data = reactive({
   pageInfo: {
