@@ -1,4 +1,4 @@
-FROM node:14.20.0-alpine as builder
+FROM node:16.18.0-alpine as builder
 LABEL MAINTAINER="PIXIU"
 WORKDIR /build
 COPY . .

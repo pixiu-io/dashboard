@@ -330,7 +330,7 @@
   </el-dialog>
 </template>
 
-<script setup>
+<script setup lang="jsx">
 import { reactive, getCurrentInstance, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import PixiuRadioCard from "@/components/radioCard/index.vue";
@@ -412,7 +412,9 @@ const cloudStatusFormatter = (row, column, cellValue) => {
   return (
     <div style="display:flex;align-items:center">
       <el-space>
-        <span class="iconfont" style="font-size: 25px">&#xe70a;</span>
+        <span class="iconfont" style="font-size: 25px">
+          &#xe70a;
+        </span>
         <div style="margin-left: -2px">{cloudStatus[cellValue]}</div>
       </el-space>
     </div>

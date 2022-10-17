@@ -5,14 +5,14 @@ import "element-plus/dist/index.css";
 import zhCn from "element-plus/es/locale/lang/zh-cn";
 import router from "./router/index.js";
 import * as ElIcons from "@element-plus/icons-vue";
-import { pinia } from "@/store";
+import { pinia } from "@/stores";
 import { permissionDirective } from "@/directive";
 import axios from "@/utils/http";
 import i18n from "@/utils/i18n";
 // 全局引入css
-import "../style/apps.css";
+import "./assets/main.css";
 // 引入 iconfont
-import "./assets/icon-font/iconfont.css"
+import "./assets/icon-font/iconfont.css";
 
 const app = createApp(App);
 
