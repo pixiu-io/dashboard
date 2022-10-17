@@ -10,8 +10,8 @@
     >
       <pixiu-icon
         v-if="item.icon"
-        :iconName="item.icon"
-        :iconType="item.iconType"
+        :name="item.icon"
+        :type="item.iconType"
       ></pixiu-icon>
       <template #title>
         <span>{{ item.name }}</span>
@@ -19,12 +19,11 @@
     </el-menu-item>
     <el-sub-menu v-else :index="item.url">
       <template #title>
-        <el-icon v-if="item.icon">
-          <pixiu-icon
-            :iconName="item.icon"
-            :iconType="item.iconType"
-          ></pixiu-icon>
-        </el-icon>
+        <pixiu-icon
+          v-if="item.icon"
+          :name="item.icon"
+          :type="item.iconType"
+        ></pixiu-icon>
 
         <span>{{ item.name }}</span>
       </template>

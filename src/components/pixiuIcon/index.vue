@@ -1,16 +1,16 @@
 <template>
-  <el-icon :size="props.fontSize" :color="props.color">
-    <component :is="iconName" v-if="props.iconType === 'el'" />
+  <el-icon :size="size" :color="color">
+    <component :is="name" v-if="type === 'el'" />
     <svg
-      v-if="props.iconType === 'iconfont'"
-      :width="props.fontSize"
-      :height="props.fontSize"
+      v-if="type === 'iconfont'"
+      :width="size"
+      :height="size"
       aria-hidden="true"
     >
       <use
-        :xlink:href="iconClassName"
-        :width="props.fontSize"
-        :height="props.fontSize"
+        :xlink:href="`#${name}`"
+        :width="size"
+        :height="size"
         fill="currentColor"
       />
     </svg>
@@ -18,9 +18,8 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
-const props = defineProps({
-  iconName: {
+defineProps({
+  name: {
     type: String,
     required: true,
   },
@@ -28,18 +27,14 @@ const props = defineProps({
     type: String,
     default: "#ffffff",
   },
-  fontSize: {
+  size: {
     type: String,
     default: "16px",
   },
-  iconType: {
+  type: {
     type: String,
     default: "el",
   },
-});
-// 图标在 iconfont 中的名字
-const iconClassName = computed(() => {
-  return `#${props.iconName}`;
 });
 </script>
 

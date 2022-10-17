@@ -412,12 +412,7 @@ const cloudStatusFormatter = (row, column, cellValue) => {
   return (
     <div style="display:flex;align-items:center">
       <el-space size={8}>
-        <PixiuIcon
-          fontSize="25px"
-          iconName="icon-B"
-          color="#28c65a"
-          iconType="iconfont"
-        />
+        <PixiuIcon size="25px" name="icon-B" color="#28c65a" type="iconfont" />
         <div>{cloudStatus[cellValue]}</div>
       </el-space>
     </div>
