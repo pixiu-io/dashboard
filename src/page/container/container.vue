@@ -411,11 +411,14 @@ const cloudTypeFormatter = (row, column, cellValue) => {
 const cloudStatusFormatter = (row, column, cellValue) => {
   return (
     <div style="display:flex;align-items:center">
-      <el-space>
-        <span class="iconfont" style="font-size: 25px">
-          &#xe70a;
-        </span>
-        <div style="margin-left: -2px">{cloudStatus[cellValue]}</div>
+      <el-space size={8}>
+        <PixiuIcon
+          fontSize="25px"
+          iconName="icon-B"
+          className="icon"
+          color="#28c65a"
+        />
+        <div>{cloudStatus[cellValue]}</div>
       </el-space>
     </div>
   );
@@ -423,7 +426,6 @@ const cloudStatusFormatter = (row, column, cellValue) => {
 
 const formatterResource = (row, column, cellValue) => {
   const { status, kube_version } = row;
-  console.log(status, kube_version, column);
   return (
     <div style="display:flex;flex-direction:column">
       <el-space>

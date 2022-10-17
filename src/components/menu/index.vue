@@ -9,7 +9,8 @@
       "
     >
       <el-icon v-if="item.icon">
-        <component :is="item.icon"></component>
+        <component :is="item.icon" v-if="item.iconType === 'el'"></component>
+        <pixiu-icon :iconName="item.icon" v-else></pixiu-icon>
       </el-icon>
       <template #title>
         <span>{{ item.name }}</span>
@@ -18,8 +19,10 @@
     <el-sub-menu v-else :index="item.url">
       <template #title>
         <el-icon v-if="item.icon">
-          <component :is="item.icon"></component>
+          <component :is="item.icon" v-if="item.iconType === 'el'"></component>
+          <pixiu-icon :iconName="item.icon" v-else></pixiu-icon>
         </el-icon>
+
         <span>{{ item.name }}</span>
       </template>
       <pixiu-menu :items="item.children" />
