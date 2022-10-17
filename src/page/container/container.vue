@@ -207,22 +207,9 @@
           </template>
         </el-table>
 
-        <!-- 分页区域 -->
-        <el-pagination
-          style="
-            float: right;
-            margin-right: 40px;
-            margin-top: 20px;
-            margin-bottom: 20px;
-          "
-          :current-page="data.pageInfo.page"
-          :page-size="data.pageInfo.limit"
-          :page-sizes="[10, 20, 50]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="data.total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
+
+        <pagination :total="data.total" @onChange="onChange"></pagination>
+
       </el-card>
     </div>
   </el-main>
@@ -339,6 +326,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import PixiuRadioCard from "@/components/radioCard/index.vue";
 import PixiuMark from "@/components/mark/index.vue";
 import Icon from "@/components/icon/icon.vue"
+import Pagination from "@/components/pagination/pagination";
 const { proxy } = getCurrentInstance();
 const data = reactive({
   pageInfo: {
@@ -440,6 +428,16 @@ const formatterResource = (row, column, cellValue) => {
   );
 };
 
+//分页
+const onChange = (v) => {
+  console.log(v)
+  data.pageInfo.limit = 10
+  data.pageInfo.page = v.page
+  data.pageInfo.page_size = v.limit; //兼容原有写法
+  getCloudList()
+}
+
+
 const getCloudList = async () => {
   // TODO 考虑将loading取到全局上面来，避免过多的去写loading状态管理
   data.loading = true;
@@ -475,15 +473,6 @@ const confirmCreateCloud = () => {
   });
 };
 
-const handleSizeChange = (newSize) => {
-  data.pageInfo.page_size = newSize;
-  getCloudList();
-};
-
-const handleCurrentChange = (newPage) => {
-  this.pageInfo.page = newPage;
-  getCloudList();
-};
 
 // 删除cloud
 // TODO: 待优化
