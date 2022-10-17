@@ -1,15 +1,13 @@
 <template>
   <el-col :span="12"
-    ><div @click="abc(props.type)">
+    ><div @click="abc(type)">
       <el-row
         :class="`${
-          props.type === props.defaultType
-            ? 'pixiu-card__active'
-            : 'pixiu-card__default'
+          type === defaultType ? 'pixiu-card__active' : 'pixiu-card__default'
         }`"
       >
         <el-col
-          :span="props.span"
+          :span="span"
           style="
             height: 40px;
             display: flex;
@@ -19,13 +17,13 @@
         >
           <div
             :class="`${
-              props.type === props.defaultType
+              type === defaultType
                 ? 'pixiu-radio__active'
                 : 'pixiu-radio__default'
             }`"
           ></div>
         </el-col>
-        <el-col :span="24 - props.span">
+        <el-col :span="24 - span">
           <slot />
         </el-col>
       </el-row></div
@@ -33,7 +31,7 @@
 </template>
 
 <script setup>
-const props = defineProps({
+defineProps({
   type: Number,
   span: {
     type: Number,

@@ -1,30 +1,33 @@
 <template>
-  <el-icon
-    v-if="props.icon"
-    :color="props.type === 'danger' ? '#f56c6c' : '#67c23a'"
-    :size="props.size"
+  <!-- <el-icon
+    v-if="icon"
+    :color="type === 'danger' ? '#f56c6c' : '#67c23a'"
+    :size="size"
   >
-    <component
-      v-if="props.type === 'danger'"
-      is="CircleCloseFilled"
-    ></component>
+    <component v-if="type === 'danger'" is="CircleCloseFilled"></component>
     <component v-else is="SuccessFilled"></component>
-  </el-icon>
+  </el-icon> -->
+  <pixiu-icon
+    v-if="icon"
+    :color="type === 'danger' ? '#f56c6c' : '#67c23a'"
+    :size="size"
+    name="{{type === 'danger'? 'CircleCloseFilled' :'SuccessFilled'}}"
+  />
 
   <em
-    v-if="props.type === 'danger' && !props.icon"
-    :style="`width:${props.size}px;height: ${props.size}px;`"
+    v-if="type === 'danger' && !icon"
+    :style="`width:${size}px;height: ${size}px;`"
     class="status-circle-danger"
   ></em>
   <em
-    v-if="!props.icon && props.type !== 'danger'"
-    :style="`width:${props.size}px;height: ${props.size}px;`"
+    v-if="!icon && type !== 'danger'"
+    :style="`width:${size}px;height: ${size}px;`"
     class="status-circle-success"
   ></em>
 </template>
 
 <script setup>
-const props = defineProps({
+defineProps({
   type: {
     type: String,
     default: "success",

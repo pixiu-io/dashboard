@@ -34,7 +34,7 @@
 
 <script setup>
 import PixiuMenu from "./index.vue";
-const props = defineProps({
+defineProps({
   items: Array,
 });
 </script>

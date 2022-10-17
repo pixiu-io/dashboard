@@ -2,7 +2,7 @@
   <div
     :style="`
       width: 100%;
-      height: ${props.height};
+      height: ${height};
       background: #ffffff;
       display: flex;
       align-items: center;
@@ -10,13 +10,13 @@
   >
     <div class="app-pixiu-header-title">
       <el-space>
-        <div class="back-button" v-if="props.back" @click="goBack">
+        <div class="back-button" v-if="back" @click="goBack">
           <el-icon>
             <component is="Back"></component>
           </el-icon>
         </div>
 
-        <span>{{ props.title }}</span>
+        <span>{{ title }}</span>
       </el-space>
     </div>
   </div>
@@ -27,7 +27,7 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 
-const props = defineProps({
+defineProps({
   title: {
     type: String,
     default: "默认标题",
