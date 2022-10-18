@@ -1,7 +1,7 @@
 <template>
   <!-- 修改用户信息 -->
-  <el-dialog v-model="dialogVisable" style="color: #000000; font: 14px" width="360px" center
-    @close="dialogVisable = false">
+  <el-dialog v-model="dialogVisble" style="color: #000000; font: 14px" width="360px" center
+    @close="dialogVisble = false"  v-if="dialogVisble">
     <template #title>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">
         修改用户
@@ -22,18 +22,14 @@
           style="--el-switch-on-color: #409EFF; --el-switch-off-color: #ff4949" :active-value="1" :inactive-value="0"
           size="large" inline-prompt active-text="启用" inactive-text="禁用" />
       </el-form-item>
-
       <el-form-item label="密码" required>
         <el-input v-model="user.password" type="password" show-password />
-      </el-form-item>
-      <el-form-item label="再次输入密码" required>
-        <el-input v-model="data.confirmPassword" type="password" show-password />
       </el-form-item>
     </el-form>
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="dialogVisable = false">取消</el-button>
+        <el-button @click="dialogVisble = false">取消</el-button>
         <el-button type="primary" @click="confirmUpdateUser()">创建</el-button>
       </span>
     </template>
@@ -41,43 +37,36 @@
 </template>
 
 <script setup >
-import {toRefs, ref} from 'vue'
-const data = reactive({
-  updateUserVisible: false,
-  userForm: {
-    description: "",
-    email: "",
-    name: "",
-    password: "",
-    status: 1
-  }
-});
+import { toRefs, ref, getCurrentInstance } from 'vue'
+import { ElMessage } from "element-plus";
 
-const dialogVisable = ref(nul)
+const { proxy } = getCurrentInstance();
+const dialogVisble = ref(null)
 const props = defineProps(['user'])
-const {user} = toRefs(props)
-
+const { user } = toRefs(props)
 const confirmUpdateUser = async () => {
-  
-  console.log("--",user);
-  // const resp = await proxy.$http({
-  //   method: "put",
-  //   url: "/users/{id}",
-  // });
-  // data.updateUserVisible = false
-  // if (resp.code === 200) {
-  //   getUserList();
-  //   ElMessage({
-  //     type: "success",
-  //     message: "添加成功",
-  //   });
-  // } else {
-  //   ElMessage({
-  //     type: "error",
-  //     message: "添加失败",
-  //   });
-  // }
-}
- dialogVisable;
+console.log("====",user)
+  const resp = await proxy.$http({
+    method: "put",
+    url: "/users/" + user.value.id,
+    data: user.value,
+  });
+  dialogVisble.value = false
+  if (resp.code === 200) {
+    ElMessage({
+      type: "success",
+      message: "修改成功",
+    });
+  } else {
+    ElMessage({
+      type: "error",
+      message: "修改失败",
+    });
+  }
+};
+
+defineExpose({
+  dialogVisble
+})
 </script>
 

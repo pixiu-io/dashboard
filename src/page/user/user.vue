@@ -9,15 +9,6 @@
             </el-icon>
             添加用户
           </el-button>
-
-          <el-input placeholder="多个过滤标签用回车分隔" v-model="data.pageInfo.query" style="width: 560px; float: right" clearable
-            @input="getUserList" @clear="getUserList" :suffix-icon="Search">
-            <template #suffix>
-              <el-icon class="el-input__icon">
-                <component is="Search" />
-              </el-icon>
-            </template>
-          </el-input>
         </el-col>
       </el-row>
 
@@ -38,15 +29,18 @@
           </el-table-column>
           <el-table-column fixed="right" label="操作" width="250">
             <template #default="scope">
+              <userSetRole :userRole="data.roles" :user="data.user" ref="userSetRoleDoalog"></userSetRole>
               <el-button size="small" type="text" style="color: #006eff" @click="getRoleByUser(scope.row)"
                 v-permissions="'user:cloud:setting'">
                 分配角色
               </el-button>
-
+              
               <el-button type="text" size="small" @click="deleteUser(scope.row)"
                 style="margin-right: 10px; color: #006eff" v-permissions="'user:cloud:delete'">
                 删除
               </el-button>
+              
+              <UserEdit :user="data.user" ref="userDialog"></UserEdit>
               <el-button type="text" size="small" @click="updateUser(scope.row)"
                 style="margin-right: 10px; color: #006eff" v-permissions="'user:cloud:delete'">
                 修改
@@ -54,8 +48,6 @@
             </template>
           </el-table-column>
         </el-table>
-
- 
       </el-card>
     </div>
   </el-main>
@@ -100,80 +92,18 @@
     </template>
   </el-dialog>
 
-  <!-- 修改用户信息 -->
-  <el-dialog v-model="data.updateUserVisible" style="color: #000000; font: 14px" width="360px" center
-    @close="data.updateUserVisible = false">
-    <template #title>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">
-        修改用户
-      </div>
-    </template>
-    <el-form :label-position="labelPosition" label-width="100px" :model="data.updateForm" style="max-width: 260px">
-      <el-form-item label="名字:" required>
-        <el-input v-model="data.updateForm.name" />
-      </el-form-item>
-      <el-form-item label="描述:">
-        <el-input v-model="data.updateForm.description" required="" />
-      </el-form-item>
-      <el-form-item label="邮箱">
-        <el-input v-model="data.updateForm.email" />
-      </el-form-item>
-      <el-form-item label="状态">
-        <el-switch v-model="data.updateForm.status" class="ml-2"
-          style="--el-switch-on-color: #409EFF; --el-switch-off-color: #ff4949" :active-value="1" :inactive-value="0"
-          size="large" inline-prompt active-text="启用" inactive-text="禁用" />
-      </el-form-item>
-
-      <el-form-item label="密码">
-        <el-input v-model="data.updateForm.password" type="password" show-password />
-      </el-form-item>
-      <el-form-item label="再次输入密码">
-        <el-input v-model="data.confirmPassword" type="password" show-password />
-      </el-form-item>
-    </el-form>
-
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="data.updateUserVisible = false">取消</el-button>
-        <el-button type="primary" @click="confirmUpdateUser()">确定</el-button>
-      </span>
-    </template>
-  </el-dialog>
-
-  <!-- 分配角色 -->
-  <el-dialog v-model="data.setRoleVisible" style="color: #000000; font: 14px" width="360px" center
-    @close="data.setRoleVisible = false">
-    <template #title>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">
-        分配角色
-      </div>
-    </template>
-    <div>
-      <el-tree ref="menusRef" node-key="id" 
-      :data="data.roleList" 
-      :default-checked-keys="data.roles" 
-      check-strictly
-        default-expand-all show-checkbox>
-        <template #default="{ data: { name } }">
-          {{ name }}</template>
-      </el-tree>
-      <el-divider />
-    </div>
-
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="data.setRoleVisible = false">取消</el-button>
-        <el-button type="primary" @click="confirmSetRole()">确定</el-button>
-      </span>
-    </template>
-  </el-dialog>
 
 </template>
   
 <script setup>
 import { reactive, getCurrentInstance, onMounted, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import {userEdit} from './userEdit.vue'
+import UserEdit from './userEdit.vue'
+import  userSetRole from './userSetRole.vue'
+
+const userDialog= ref(false)
+const userSetRoleDoalog = ref(false)
+
 const { proxy } = getCurrentInstance();
 const data = reactive({
   pageInfo: {
@@ -186,13 +116,6 @@ const data = reactive({
   loading: false,
   // 触发创建页面
   createUserVisible: false,
-  updateUserVisible: false,
-  setRoleVisible: false,
-  props: { multiple: true },
-  userStatus: {
-    0: "正常",
-    1: "异常",
-  },
   userForm: {
     description: "",
     email: "",
@@ -207,15 +130,12 @@ const data = reactive({
     minRows: 8,
   },
   roleList: [],
-  roleForm: {
-    role_ids: [],
-  },
+  user: {},
   roles: [],
 });
 
 onMounted(() => {
   getUserList();
-  getRoles();
 });
 
 const getUserList = async () => {
@@ -270,8 +190,8 @@ const createUser = () => {
 };
 
 const updateUser = (user) => {
-  data.updateUserVisible = true;
-  data.updateForm = user
+  userDialog.value.dialogVisble= true;
+  data.user = user;
 };
 
 const confirmCreateUser = async () => {
@@ -296,91 +216,33 @@ const confirmCreateUser = async () => {
   }
 };
 
-const confirmUpdateUser = async () => {
-
-  console.log("--", data.userForm);
-  const resp = await proxy.$http({
-    method: "put",
-    url: "/users/" + data.updateForm.id,
-    data: data.updateForm,
-  });
-  data.updateUserVisible = false
-  if (resp.code === 200) {
-    getUserList();
-    ElMessage({
-      type: "success",
-      message: "修改成功",
-    });
-  } else {
-    ElMessage({
-      type: "error",
-      message: "修改失败",
-    });
-  }
-}
-
-const getRoles = async () => {
-  data.loading = true;
-  const res = await proxy.$http({
-    method: "get",
-    url: "/roles",
-  });
-  data.roleList = res.result
-  data.loading = false;
-}
-
-
-
 const getRoleByUser = async (user) => {
-  data.loading = true;
   data.updateForm = user
   data.roles = [];
+  data.user = user;
   const res = await proxy.$http({
     method: "get",
     url: "/users/" + data.updateForm.id + "/roles",
   });
 
-  data.loading = false;
   let roleList = res.result
   if (roleList !== null) {
     for (let i = 0; i < roleList.length; i++) {
-      if (roleList.children ) {
-        for (let j = 0; j < roleList.children.length; j ++) {
+      if (roleList.children) {
+        for (let j = 0; j < roleList.children.length; j++) {
           data.roles.push(roleList.children[i].id)
         }
       }
       data.roles.push(roleList[i].id)
     }
   }
-  console.log(data.roles);
-  data.setRoleVisible = true;
+  userSetRoleDoalog.value.dialogVisble = true;
 }
+
 const menusRef = ref(null);
 
-const confirmSetRole = async () => {
-  data.loading = true;
-  const menuIds = menusRef.value.getCheckedKeys();
-  data.roleForm["role_ids"] = menuIds
-  const res = await proxy.$http({
-    method: "post",
-    url: "/users/" + data.updateForm.id + "/roles",
-    data: data.roleForm,
-  });
-  data.setRoleVisible = false
-  if (res.code === 200) {
-    ElMessage({
-      type: "success",
-      message: "分配成功",
-    });
-  } else {
-    ElMessage({
-      type: "error",
-      message: res.message,
-    });
-  }
-  data.roles= []
-  data.loading = false;
-}
+
+
 </script>
   
 <style>
