@@ -6,10 +6,10 @@ import Node from "./container/node.vue";
 import Home from "./home/home.vue";
 import Login from "./login/login.vue";
 import Setting from "./setting/setting.vue";
-import User from "./user/user.vue";
+import User from "./user/user";
 import Role from "./user/role.vue";
-import InsertCluster from "./container/insertCluster";
-import CreateCluster from "./container/createCluster";
+import InsertCluster from "./container/insertCluster.vue";
+import CreateCluster from "./container/createCluster.vue";
 import NotFound from "./notFound/notFound.vue";
 
 export {

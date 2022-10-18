@@ -85,26 +85,31 @@ onMounted(() => {
       name: "概览",
       url: "/index",
       icon: "Menu",
+      iconType: "el",
     },
     {
       name: "容器服务",
       url: "/container",
-      icon: "Coin",
+      icon: "icon-yunrongqi",
+      iconType: "iconfont",
     },
     {
       name: "DevOps",
       url: "/cicd",
       icon: "DataLine",
+      iconType: "el",
     },
     {
       name: "用户管理",
       url: "/user",
       icon: "UserFilled",
+      iconType: "el",
     },
     {
       name: "权限管理",
       url: "/role",
       icon: "Guide",
+      iconType: "el",
     },
   ];
 });

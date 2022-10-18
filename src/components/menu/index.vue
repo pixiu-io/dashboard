@@ -8,18 +8,23 @@
         item.children.length <= 0
       "
     >
-      <el-icon v-if="item.icon">
-        <component :is="item.icon"></component>
-      </el-icon>
+      <pixiu-icon
+        v-if="item.icon"
+        :name="item.icon"
+        :type="item.iconType"
+      ></pixiu-icon>
       <template #title>
         <span>{{ item.name }}</span>
       </template>
     </el-menu-item>
     <el-sub-menu v-else :index="item.url">
       <template #title>
-        <el-icon v-if="item.icon">
-          <component :is="item.icon"></component>
-        </el-icon>
+        <pixiu-icon
+          v-if="item.icon"
+          :name="item.icon"
+          :type="item.iconType"
+        ></pixiu-icon>
+
         <span>{{ item.name }}</span>
       </template>
       <pixiu-menu :items="item.children" />
@@ -29,7 +34,7 @@
 
 <script setup>
 import PixiuMenu from "./index.vue";
-const props = defineProps({
+defineProps({
   items: Array,
 });
 </script>

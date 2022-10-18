@@ -1,18 +1,20 @@
 import { createApp } from "vue";
-import App from "./App.vue";
+import App from "@/App.vue";
 import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
 import zhCn from "element-plus/es/locale/lang/zh-cn";
 import router from "./router/index.js";
 import * as ElIcons from "@element-plus/icons-vue";
-import { pinia } from "@/store";
+import { pinia } from "@/stores";
 import { permissionDirective } from "@/directive";
 import axios from "@/utils/http";
 import i18n from "@/utils/i18n";
 // 全局引入css
-import "../style/apps.css";
+import "@/assets/main.css";
 // 引入 iconfont
-import "./assets/icon-font/iconfont.css"
+// import "./assets/icon-font/iconfont.css";
+import "@/assets/icon-font/iconfont";
+import PixiuIcon from "@/components/pixiuIcon/index.vue";
 
 const app = createApp(App);
 
@@ -28,6 +30,7 @@ app.use(ElementPlus, {
 });
 app.use(router);
 app.use(i18n);
+app.component("PixiuIcon", PixiuIcon);
 
 app.config.globalProperties.$http = axios;
 

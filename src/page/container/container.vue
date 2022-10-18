@@ -139,15 +139,11 @@
             label="集群类型"
             width="180"
           />
-
-          <el-table-column prop="kube_version"  width="200">
+          <el-table-column prop="kube_version" width="200">
             <template #header>
-                <Icon icon="Compass" desc="v0.10.1版本">
-                    kubernetes版本
-                </Icon>
+              <Icon icon="Compass" desc="v0.10.1版本"> kubernetes版本 </Icon>
             </template>
           </el-table-column>
-
           <el-table-column prop="node_number" label="节点数" width="160" />
           <el-table-column
             prop="resources"
@@ -207,9 +203,8 @@
           </template>
         </el-table>
 
-
+        <!-- 分页区域 -->
         <pagination :total="data.total" @onChange="onChange"></pagination>
-
       </el-card>
     </div>
   </el-main>
@@ -320,13 +315,13 @@
   </el-dialog>
 </template>
 
-<script setup>
+<script setup lang="jsx">
 import { reactive, getCurrentInstance, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import PixiuRadioCard from "@/components/radioCard/index.vue";
-import PixiuMark from "@/components/mark/index.vue";
-import Icon from "@/components/icon/icon.vue"
-import Pagination from "@/components/pagination/pagination";
+import Icon from "@/components/icon/icon.vue";
+import Pagination from "@/components/pagination/pagination.vue";
+
 const { proxy } = getCurrentInstance();
 const data = reactive({
   pageInfo: {
@@ -403,9 +398,9 @@ const cloudTypeFormatter = (row, column, cellValue) => {
 const cloudStatusFormatter = (row, column, cellValue) => {
   return (
     <div style="display:flex;align-items:center">
-      <el-space>
-        <span class="iconfont" style="font-size: 25px">&#xe70a;</span>
-        <div style="margin-left: -2px">{cloudStatus[cellValue]}</div>
+      <el-space size={8}>
+        <pixiu-icon size="25px" name="icon-B" color="#28c65a" type="iconfont" />
+        <div>{cloudStatus[cellValue]}</div>
       </el-space>
     </div>
   );
@@ -413,7 +408,6 @@ const cloudStatusFormatter = (row, column, cellValue) => {
 
 const formatterResource = (row, column, cellValue) => {
   const { status, kube_version } = row;
-  console.log(status, kube_version, column);
   return (
     <div style="display:flex;flex-direction:column">
       <el-space>
@@ -430,13 +424,12 @@ const formatterResource = (row, column, cellValue) => {
 
 //分页
 const onChange = (v) => {
-  console.log(v)
-  data.pageInfo.limit = 10
-  data.pageInfo.page = v.page
+  console.log(v);
+  data.pageInfo.limit = 10;
+  data.pageInfo.page = v.page;
   data.pageInfo.page_size = v.limit; //兼容原有写法
-  getCloudList()
-}
-
+  getCloudList();
+};
 
 const getCloudList = async () => {
   // TODO 考虑将loading取到全局上面来，避免过多的去写loading状态管理
@@ -472,7 +465,6 @@ const confirmCreateCloud = () => {
     name: data.cloudType == 1 ? "InsertCluster" : "CreateCluster",
   });
 };
-
 
 // 删除cloud
 // TODO: 待优化
