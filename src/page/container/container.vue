@@ -140,11 +140,11 @@
             width="180"
           />
 
-          <el-table-column
-            prop="kube_version"
-            label="kubernetes版本"
-            width="200"
-          />
+          <el-table-column prop="kube_version" width="200">
+            <template #header>
+              <Icon icon="Compass" desc="v0.10.1版本"> kubernetes版本 </Icon>
+            </template>
+          </el-table-column>
           <el-table-column prop="node_number" label="节点数" width="160" />
           <el-table-column
             prop="resources"
@@ -205,21 +205,7 @@
         </el-table>
 
         <!-- 分页区域 -->
-        <el-pagination
-          style="
-            float: right;
-            margin-right: 40px;
-            margin-top: 20px;
-            margin-bottom: 20px;
-          "
-          :current-page="data.pageInfo.page"
-          :page-size="data.pageInfo.limit"
-          :page-sizes="[10, 20, 50]"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="data.total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-        />
+        <pagination :total="data.total" @onChange="onChange"></pagination>
       </el-card>
     </div>
   </el-main>
@@ -334,7 +320,8 @@
 import { reactive, getCurrentInstance, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import PixiuRadioCard from "@/components/radioCard/index.vue";
-import PixiuMark from "@/components/mark/index.vue";
+import Icon from "@/components/icon/icon.vue";
+import Pagination from "@/components/pagination/pagination.vue";
 const { proxy } = getCurrentInstance();
 const data = reactive({
   pageInfo: {
@@ -435,6 +422,15 @@ const formatterResource = (row, column, cellValue) => {
   );
 };
 
+//分页
+const onChange = (v) => {
+  console.log(v);
+  data.pageInfo.limit = 10;
+  data.pageInfo.page = v.page;
+  data.pageInfo.page_size = v.limit; //兼容原有写法
+  getCloudList();
+};
+
 const getCloudList = async () => {
   // TODO 考虑将loading取到全局上面来，避免过多的去写loading状态管理
   data.loading = true;
@@ -468,16 +464,6 @@ const confirmCreateCloud = () => {
   proxy.$router.push({
     name: data.cloudType == 1 ? "InsertCluster" : "CreateCluster",
   });
-};
-
-const handleSizeChange = (newSize) => {
-  data.pageInfo.page_size = newSize;
-  getCloudList();
-};
-
-const handleCurrentChange = (newPage) => {
-  this.pageInfo.page = newPage;
-  getCloudList();
 };
 
 // 删除cloud

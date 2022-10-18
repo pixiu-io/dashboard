@@ -25,7 +25,7 @@ defineProps({
   },
   color: {
     type: String,
-    default: "#ffffff",
+    default: "#cccccc",
   },
   size: {
     type: String,
