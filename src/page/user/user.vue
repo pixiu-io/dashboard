@@ -40,7 +40,7 @@
                 删除
               </el-button>
               
-              <UserEdit :user="data.user" ref="userDialog"></UserEdit>
+              <UserEdit :user="data.user"  ref="userDialog"></UserEdit>
               <el-button type="text" size="small" @click="updateUser(scope.row)"
                 style="margin-right: 10px; color: #006eff" v-permissions="'user:cloud:delete'">
                 修改

@@ -4,14 +4,11 @@
     @close="dialogVisble = false" v-if="dialogVisble">
     <template #title>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">
-        分配角色
+        授权
       </div>
     </template>
     <div>
-      <el-tree ref="menusRef" node-key="id" 
-      :data="data.roleList" 
-      :default-checked-keys="userRole" 
-      check-strictly
+      <el-tree ref="menusRef" node-key="id" :data="data.menuList" :default-checked-keys="roleMenus" 
         default-expand-all show-checkbox>
         <template #default="{ data: { name } }">
           {{ name }}</template>
@@ -22,48 +19,50 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogVisble = false">取消</el-button>
-        <el-button type="primary" @click="confirmSetRole()">确定</el-button>
+        <el-button type="primary" @click="confirmSetPermission()">确定</el-button>
       </span>
     </template>
   </el-dialog>
 </template>
 
 <script setup >
-import { toRefs, ref, getCurrentInstance, reactive,onMounted } from 'vue'
+import { toRefs, ref, getCurrentInstance, reactive, onMounted } from 'vue'
 import { ElMessage } from "element-plus";
 
 const { proxy } = getCurrentInstance();
 const dialogVisble = ref(null)
-const props = defineProps(['userRole','user'])
-const { userRole,user } = toRefs(props)
+const props = defineProps(['role', 'roleMenus'])
+const { role, roleMenus } = toRefs(props)
 const menusRef = ref(null)
+
 onMounted(() => {
-  getRoles();
+  getMenus();
 });
 
 const data = reactive({
-  roleList: [],
-  roleForm: {
-    role_ids: [],
+  menuList: [],
+  menuForm: {
+    menu_ids: [],
   },
 })
 
-const getRoles = async () => {
+const getMenus = async () => {
   const res = await proxy.$http({
     method: "get",
-    url: "/roles",
+    url: "/menus",
   });
-  data.roleList = res.result
+  data.menuList = res.result
 }
 
-const confirmSetRole = async () => {
+const confirmSetPermission = async () => {
   const menuIds = menusRef.value.getCheckedKeys();
-  data.roleForm["role_ids"] = menuIds
+  data.menuForm["menu_ids"] = menuIds
   const res = await proxy.$http({
     method: "post",
-    url: "/users/" + user.value.id + "/roles",
-    data: data.roleForm,
+    url: "/roles/" + role.value.id + "/menus",
+    data: data.menuForm,
   });
+
   dialogVisble.value = false
   if (res.code === 200) {
     ElMessage({

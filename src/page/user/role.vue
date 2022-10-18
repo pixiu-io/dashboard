@@ -29,8 +29,8 @@
           <el-table-column prop="sequence" label="排序" width="180" />
           <el-table-column fixed="right" label="操作" width="250">
             <template #default="scope">
-              <userSetRole :userRole="data.roles" :user="data.user" ref="userSetRoleDoalog"></userSetRole>
-              <el-button size="small" type="text" style="color: #006eff" @click="getRoleByUser(scope.row)"
+              <RoleSetPermission :roleMenus="data.menus" :role="data.role" ref="roleSetPermissionDoalog"></RoleSetPermission>
+              <el-button size="small" type="text" style="color: #006eff" @click="getMenusByUser(scope.row)"
                 v-permissions="'user:cloud:setting'">
                 授权
               </el-button>
@@ -40,8 +40,8 @@
                 删除
               </el-button>
 
-              <UserEdit :user="data.user" ref="userDialog"></UserEdit>
-              <el-button type="text" size="small" @click="updateUser(scope.row)"
+              <roleEdit :role="data.role" :roleList="data.roleList" ref="roleDialog"></roleEdit>
+              <el-button type="text" size="small" @click="updateRole(scope.row)"
                 style="margin-right: 10px; color: #006eff" v-permissions="'user:cloud:delete'">
                 修改
               </el-button>
@@ -73,7 +73,7 @@
         <el-input-number v-model="data.roleForm.sequence" :min="1" :max="10" @change="handleChange" />
       </el-form-item>
       <el-form-item label="父角色:" >
-        <el-select v-model="data.name" clearable placeholder="请选择">
+        <el-select v-model="data.roleForm.parent_id" clearable placeholder="请选择">
           <el-option v-for="item in data.roleList" :key="item.id" :label="item.name" :value="item.id" />
         </el-select>
 
@@ -100,11 +100,11 @@
 <script setup>
 import { reactive, getCurrentInstance, onMounted, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import UserEdit from './userEdit.vue'
-import userSetRole from './userSetRole.vue'
+import roleEdit from './roleEdit.vue'
+import RoleSetPermission from './roleSetPermission.vue'
 
-const userDialog = ref(false)
-const userSetRoleDoalog = ref(false)
+const roleDialog = ref(false)
+const roleSetPermissionDoalog = ref(false)
 
 const { proxy } = getCurrentInstance();
 const data = reactive({
@@ -113,7 +113,6 @@ const data = reactive({
     page: 1,
     limit: 10, // 默认值需要是分页定义的值
   },
-  name: "",
   isActive: false,
   loading: false,
   // 触发创建页面
@@ -125,15 +124,14 @@ const data = reactive({
     sequence: "",
     status: 1
   },
-  updateForm: {},
   confirmPassword: "",
   userList: [],
   autosize: {
     minRows: 8,
   },
   roleList: [],
-  user: {},
-  roles: [],
+  role: {},
+  menus: [],
 });
 
 onMounted(() => {
@@ -191,13 +189,13 @@ const createRole = () => {
   data.createRoleVisible = true;
 };
 
-const updateUser = (user) => {
-  userDialog.value.dialogVisble = true;
-  data.user = user;
+const updateRole = (role) => {
+  roleDialog.value.dialogVisble = true;
+  data.role = role;
 };
 
 const confirmCreateRole = async () => {
-  console.log(data.roleForm);
+ 
   const resp = await proxy.$http({
     method: "post",
     url: "/roles",
@@ -219,31 +217,29 @@ const confirmCreateRole = async () => {
   }
 };
 
-const getRoleByUser = async (user) => {
-  data.updateForm = user
-  data.roles = [];
-  data.user = user;
+const getMenusByUser = async (role) => {
+  data.menus = [];
+  data.role = role;
   const res = await proxy.$http({
     method: "get",
-    url: "/users/" + data.updateForm.id + "/roles",
+    url: "/roles/" + data.role.id + "/menus",
   });
 
-  let roleList = res.result
-  if (roleList !== null) {
-    for (let i = 0; i < roleList.length; i++) {
-      if (roleList.children) {
-        for (let j = 0; j < roleList.children.length; j++) {
-          data.roles.push(roleList.children[i].id)
+  let menuList = res.result
+  if (menuList !== null) {
+    for (let i = 0; i < menuList.length; i++) {
+      data.menus.push(menuList[i].id)
+      if (menuList[i].children !== null) {
+        for (let j = 0; j < menuList[i].children.length; j++) {
+          data.menus.push(menuList[i].children[j].id)
         }
       }
-      data.roles.push(roleList[i].id)
     }
   }
-  userSetRoleDoalog.value.dialogVisble = true;
+
+ 
+  roleSetPermissionDoalog.value.dialogVisble = true;
 }
-
-const menusRef = ref(null);
-
 
 
 </script>
