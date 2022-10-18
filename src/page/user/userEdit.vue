@@ -44,8 +44,8 @@ const { proxy } = getCurrentInstance();
 const dialogVisble = ref(null)
 const props = defineProps(['user'])
 const { user } = toRefs(props)
+
 const confirmUpdateUser = async () => {
-console.log("====",user)
   const resp = await proxy.$http({
     method: "put",
     url: "/users/" + user.value.id,

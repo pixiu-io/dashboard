@@ -6,6 +6,7 @@ import {
   Login,
   Role,
   User,
+  Menu,
   Cicd,
   Container,
   Kubernetes,
@@ -108,9 +109,17 @@ const routes = [
         path: "role",
         name: "Role",
         meta: {
-          title: "权限",
+          title: "角色",
         },
         component: Role,
+      },
+      {
+        path: "menu",
+        name: "Menu",
+        meta: {
+          title: "权限",
+        },
+        component: Menu,
       },
     ],
   },
