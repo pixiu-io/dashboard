@@ -139,7 +139,6 @@
             label="集群类型"
             width="180"
           />
-
           <el-table-column prop="kube_version" width="200">
             <template #header>
               <Icon icon="Compass" desc="v0.10.1版本"> kubernetes版本 </Icon>
@@ -322,6 +321,7 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import PixiuRadioCard from "@/components/radioCard/index.vue";
 import Icon from "@/components/icon/icon.vue";
 import Pagination from "@/components/pagination/pagination.vue";
+
 const { proxy } = getCurrentInstance();
 const data = reactive({
   pageInfo: {
