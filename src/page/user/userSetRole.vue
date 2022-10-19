@@ -9,14 +9,13 @@
     </template>
     <div>
       <el-tree ref="menusRef" node-key="id" 
-      :data="data.roleList" 
+      :data="roleList" 
       :default-checked-keys="userRole" 
       check-strictly
         default-expand-all show-checkbox>
         <template #default="{ data: { name } }">
           {{ name }}</template>
       </el-tree>
-      <el-divider />
     </div>
 
     <template #footer>
@@ -29,32 +28,20 @@
 </template>
 
 <script setup >
-import { toRefs, ref, getCurrentInstance, reactive,onMounted } from 'vue'
+import { toRefs, ref, getCurrentInstance, reactive } from 'vue'
 import { ElMessage } from "element-plus";
 
 const { proxy } = getCurrentInstance();
 const dialogVisble = ref(null)
-const props = defineProps(['userRole','user'])
-const { userRole,user } = toRefs(props)
+const props = defineProps(['userRole','user',"roleList"])
+const { userRole,user,roleList} = toRefs(props)
 const menusRef = ref(null)
-onMounted(() => {
-  getRoles();
-});
 
 const data = reactive({
-  roleList: [],
   roleForm: {
     role_ids: [],
   },
 })
-
-const getRoles = async () => {
-  const res = await proxy.$http({
-    method: "get",
-    url: "/roles",
-  });
-  data.roleList = res.result
-}
 
 const confirmSetRole = async () => {
   const menuIds = menusRef.value.getCheckedKeys();

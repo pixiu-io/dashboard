@@ -29,7 +29,7 @@
           <el-table-column prop="sequence" label="排序" width="180" />
           <el-table-column fixed="right" label="操作" width="250">
             <template #default="scope">
-              <RoleSetPermission :roleMenus="data.menus" :role="data.role" ref="roleSetPermissionDoalog"></RoleSetPermission>
+              <RoleSetPermission :roleMenus="data.menus" :role="data.role" :menuList="data.menuList" ref="roleSetPermissionDoalog"></RoleSetPermission>
               <el-button size="small" type="text" style="color: #006eff" @click="getMenusByUser(scope.row)"
                 v-permissions="'user:cloud:setting'">
                 授权
@@ -113,7 +113,6 @@ const data = reactive({
     page: 1,
     limit: 10, // 默认值需要是分页定义的值
   },
-  isActive: false,
   loading: false,
   // 触发创建页面
   createRoleVisible: false,
@@ -124,32 +123,27 @@ const data = reactive({
     sequence: "",
     status: 1
   },
-  confirmPassword: "",
-  userList: [],
-  autosize: {
-    minRows: 8,
-  },
+  
   roleList: [],
   role: {},
   menus: [],
+  menuList: [],
 });
 
 onMounted(() => {
   getRoleList();
+  getMenus();
 });
 
 const getRoleList = async () => {
-  data.loading = true;
   const res = await proxy.$http({
     method: "get",
     url: "/roles",
     data: data.pageInfo,
   });
 
-  data.loading = false;
   data.roleList = res.result
 }
-
 
 const deleteRole = async (row) => {
   ElMessageBox.confirm(
@@ -217,6 +211,14 @@ const confirmCreateRole = async () => {
   }
 };
 
+const getMenus = async () => {
+  const res = await proxy.$http({
+    method: "get",
+    url: "/menus",
+  });
+  data.menuList = res.result
+}
+
 const getMenusByUser = async (role) => {
   data.menus = [];
   data.role = role;
@@ -235,7 +237,7 @@ const getMenusByUser = async (role) => {
         }
       }
     }
-  }
+  };
 
  
   roleSetPermissionDoalog.value.dialogVisble = true;

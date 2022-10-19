@@ -8,8 +8,8 @@
       </div>
     </template>
     <div>
-      <el-tree ref="menusRef" node-key="id" :data="data.menuList" :default-checked-keys="roleMenus" 
-        default-expand-all show-checkbox>
+      <el-tree ref="menusRef" node-key="id" :data="menuList" :default-checked-keys="roleMenus" default-expand-all
+        show-checkbox>
         <template #default="{ data: { name } }">
           {{ name }}</template>
       </el-tree>
@@ -31,28 +31,15 @@ import { ElMessage } from "element-plus";
 
 const { proxy } = getCurrentInstance();
 const dialogVisble = ref(null)
-const props = defineProps(['role', 'roleMenus'])
-const { role, roleMenus } = toRefs(props)
+const props = defineProps(['role', 'roleMenus', 'menuList'])
+const { role, roleMenus, menuList } = toRefs(props)
 const menusRef = ref(null)
 
-onMounted(() => {
-  getMenus();
-});
-
 const data = reactive({
-  menuList: [],
   menuForm: {
     menu_ids: [],
   },
 })
-
-const getMenus = async () => {
-  const res = await proxy.$http({
-    method: "get",
-    url: "/menus",
-  });
-  data.menuList = res.result
-}
 
 const confirmSetPermission = async () => {
   const menuIds = menusRef.value.getCheckedKeys();

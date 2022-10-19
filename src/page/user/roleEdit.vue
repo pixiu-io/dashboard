@@ -18,7 +18,7 @@
         <el-input-number v-model="role.sequence" :min="1" :max="10" @change="handleChange" />
       </el-form-item>
       <el-form-item label="父角色:">
-        <el-select v-model="role.parent_id" clearable placeholder="请选择" ref="selectRef">
+        <el-select v-model="role.parent_id" clearable placeholder="请选择" ref="selectRef" >
           <el-option v-for="item in roleList" :key="item.id" :label="item.name" :value="item.id" />
         </el-select>
 
@@ -71,5 +71,6 @@ const confirmUpdateUser = async () => {
 defineExpose({
   dialogVisble
 })
+
 </script>
 

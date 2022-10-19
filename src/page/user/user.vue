@@ -29,7 +29,7 @@
           </el-table-column>
           <el-table-column fixed="right" label="操作" width="250">
             <template #default="scope">
-              <userSetRole :userRole="data.roles" :user="data.user" ref="userSetRoleDoalog"></userSetRole>
+              <userSetRole :userRole="data.roles" :user="data.user" :roleList="data.roleList" ref="userSetRoleDoalog" ></userSetRole>
               <el-button size="small" type="text" style="color: #006eff" @click="getRoleByUser(scope.row)"
                 v-permissions="'user:cloud:setting'">
                 分配角色
@@ -215,6 +215,13 @@ const confirmCreateUser = async () => {
     });
   }
 };
+const getRoles = async () => {
+  const res = await proxy.$http({
+    method: "get",
+    url: "/roles",
+  });
+  data.roleList = res.result
+}
 
 const getRoleByUser = async (user) => {
   data.updateForm = user
@@ -236,10 +243,10 @@ const getRoleByUser = async (user) => {
       data.roles.push(roleList[i].id)
     }
   }
+  getRoles()
+
   userSetRoleDoalog.value.dialogVisble = true;
 }
-
-const menusRef = ref(null);
 
 
 
