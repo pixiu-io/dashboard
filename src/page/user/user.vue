@@ -30,7 +30,7 @@
           <el-table-column fixed="right" label="操作" width="250">
             <template #default="scope">
               <userSetRole :userRole="data.roles" :user="data.user" :roleList="data.roleList" ref="userSetRoleDoalog" ></userSetRole>
-              <el-button size="small" type="text" style="color: #006eff" @click="getRoleByUser(scope.row)"
+              <el-button size="small" type="text" style="color: #006eff" @click="handleSetRole(scope.row)"
                 v-permissions="'user:cloud:setting'">
                 分配角色
               </el-button>
@@ -40,8 +40,11 @@
                 删除
               </el-button>
               
-              <UserEdit :user="data.user"  ref="userDialog"></UserEdit>
-              <el-button type="text" size="small" @click="updateUser(scope.row)"
+              <UserEdit v-model="userDialogVisble" 
+              @getUserList="getUserList" 
+              :dialogTableValue = "dialogTableValue"
+               v-if="userDialogVisble" />
+              <el-button type="text" size="small" @click="handleDialogValue(scope.row)"
                 style="margin-right: 10px; color: #006eff" v-permissions="'user:cloud:delete'">
                 修改
               </el-button>
@@ -73,9 +76,7 @@
         <el-switch v-model="data.userForm.status" class="ml-2"
           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" :active-value="1" :inactive-value="0"
           size="large" inline-prompt active-text="启用" inactive-text="禁用" />
-
       </el-form-item>
-
       <el-form-item label="密码" required>
         <el-input v-model="data.userForm.password" type="password" show-password />
       </el-form-item>
@@ -101,7 +102,9 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import UserEdit from './userEdit.vue'
 import  userSetRole from './userSetRole.vue'
 
-const userDialog= ref(false)
+const userDialogVisble= ref(false)
+const dialogTableValue = ref({})
+
 const userSetRoleDoalog = ref(false)
 
 const { proxy } = getCurrentInstance();
@@ -189,9 +192,9 @@ const createUser = () => {
   data.createUserVisible = true;
 };
 
-const updateUser = (user) => {
-  userDialog.value.dialogVisble= true;
-  data.user = user;
+const handleDialogValue = (user) => {
+  dialogTableValue.value = JSON.parse(JSON.stringify(user))
+  userDialogVisble.value = true;
 };
 
 const confirmCreateUser = async () => {
@@ -223,10 +226,8 @@ const getRoles = async () => {
   data.roleList = res.result
 }
 
-const getRoleByUser = async (user) => {
-  data.updateForm = user
-  data.roles = [];
-  data.user = user;
+const handleSetRole = async (user) => {
+  data.updateForm= user
   const res = await proxy.$http({
     method: "get",
     url: "/users/" + data.updateForm.id + "/roles",
@@ -245,7 +246,7 @@ const getRoleByUser = async (user) => {
   }
   getRoles()
 
-  userSetRoleDoalog.value.dialogVisble = true;
+  userSetRoleDoalog.value.dialogVisble = true
 }
 
 
