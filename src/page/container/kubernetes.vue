@@ -1,7 +1,5 @@
 <template>
   <el-aside style="height: 100%">
-    <!--  -->
-
     <div class="cloud-title-container">cloud</div>
 
     <div class="cloud-select-container">

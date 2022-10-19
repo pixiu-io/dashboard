@@ -15,7 +15,6 @@
 
 <script setup>
 const props = defineProps({ icon: String, desc: String });
-console.log(props.icon);
 </script>
 
 <style scoped>
@@ -24,5 +23,6 @@ console.log(props.icon);
 }
 .icon-box {
   padding: 4px;
+  margin-top: -1px;
 }
 </style>
