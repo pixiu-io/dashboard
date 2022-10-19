@@ -28,4 +28,9 @@ export default defineConfig({
       },
     },
   },
+  server: {
+    host: 'localhost',
+    port: 8080,
+    // open: true, // 设置服务启动时是否自动打开浏览器
+  }
 });

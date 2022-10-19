@@ -141,7 +141,7 @@
           />
           <el-table-column prop="kube_version" width="200">
             <template #header>
-              <Icon icon="Compass" desc="v0.10.1版本"> kubernetes版本 </Icon>
+              <Icon icon="QuestionFilled" desc="原生 kubernetes 的版本"> kubernetes版本 </Icon>
             </template>
           </el-table-column>
           <el-table-column prop="node_number" label="节点数" width="160" />
@@ -319,7 +319,7 @@
 import { reactive, getCurrentInstance, onMounted } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import PixiuRadioCard from "@/components/radioCard/index.vue";
-import Icon from "@/components/icon/icon.vue";
+import Icon from "@/components/pixiu-tooltip/icon.vue";
 import Pagination from "@/components/pagination/pagination.vue";
 
 const { proxy } = getCurrentInstance();
