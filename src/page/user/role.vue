@@ -28,7 +28,7 @@
           <el-table-column prop="sequence" label="排序" width="180" />
           <el-table-column fixed="right" label="操作" width="250">
             <template #default="scope">
-              <el-button size="small" text style="color: #006eff" @click="getMenusByUser(scope.row)"
+              <el-button size="small" text style="color: #006eff" @click="handleSetRole(scope.row)"
                 v-permissions="'user:cloud:setting'">
                 授权
               </el-button>
@@ -56,8 +56,13 @@
   @valueChange="getRoleList"
   v-if="roleEdit.dialogVisble" />
 
-  <RoleSetPermission :roleMenus="data.menus" :role="data.role" :menuList="data.menuList" ref="roleSetPermissionDoalog">
-  </RoleSetPermission>
+  <RoleSetPermission v-model="roleSet.dialogVisble" 
+  :checkedMenus="roleSet.checkedMenus" 
+  :role="roleSet.role" 
+  :menuList="roleSet.menuList" 
+  @valueChange="getRoleList"
+  v-if="roleSet.dialogVisble" />
+ 
 
 
   <!-- 添加角色信息 -->
@@ -109,7 +114,6 @@ import { ElMessage, ElMessageBox } from "element-plus";
 import RoleEdit from './roleEdit.vue'
 import RoleSetPermission from './roleSetPermission.vue'
 
-const roleSetPermissionDoalog = ref(false)
 
 const { proxy } = getCurrentInstance();
 
@@ -120,6 +124,13 @@ const roleEdit = reactive(
     roleList: []
   },
 )
+const roleSet = reactive(
+  {
+    dialogVisble: false,
+    checkedMenus: [],
+    menuList: [],
+  },
+)
 
 const data = reactive({
   pageInfo: {
@@ -127,7 +138,6 @@ const data = reactive({
     page: 1,
     limit: 10, // 默认值需要是分页定义的值
   },
-  loading: false,
   // 触发创建页面
   createRoleVisible: false,
   roleForm: {
@@ -139,9 +149,7 @@ const data = reactive({
   },
 
   roleList: [],
-  role: {},
-  menus: [],
-  menuList: [],
+ 
 });
 
 onMounted(() => {
@@ -230,31 +238,31 @@ const getMenus = async () => {
     method: "get",
     url: "/menus",
   });
-  data.menuList = res.result
+  roleSet.menuList = res.result
 }
 
-const getMenusByUser = async (role) => {
-  data.menus = [];
-  data.role = role;
+const handleSetRole = async (role) => {
+  roleSet.checkedMenus = [];
+  roleSet.role = role;
+
   const res = await proxy.$http({
     method: "get",
-    url: "/roles/" + data.role.id + "/menus",
+    url: "/roles/" + role.id + "/menus",
   });
 
   let menuList = res.result
   if (menuList !== null) {
     for (let i = 0; i < menuList.length; i++) {
-      data.menus.push(menuList[i].id)
+      roleSet.checkedMenus.push(menuList[i].id)
       if (menuList[i].children !== null) {
         for (let j = 0; j < menuList[i].children.length; j++) {
-          data.menus.push(menuList[i].children[j].id)
+          roleSet.checkedMenus.push(menuList[i].children[j].id)
         }
       }
     }
   };
 
-
-  roleSetPermissionDoalog.value.dialogVisble = true;
+  roleSet.dialogVisble = true;
 }
 
 

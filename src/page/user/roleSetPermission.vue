@@ -1,14 +1,16 @@
 <template>
   <!-- 分配角色 -->
-  <el-dialog v-model="dialogVisble" style="color: #000000; font: 14px" width="360px" center
-    @close="dialogVisble = false" v-if="dialogVisble">
+  <el-dialog :model-value="dialogVisble" style="color: #000000; font: 14px" width="360px" center
+    @close="handleClose">
     <template #header>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">
         授权
       </div>
     </template>
     <div>
-      <el-tree ref="menusRef" node-key="id" :data="menuList" :default-checked-keys="roleMenus" default-expand-all
+      <el-tree ref="menusRef" node-key="id" :data="menuList" 
+      :default-checked-keys="checkedMenus" 
+      default-expand-all
         show-checkbox>
         <template #default="{ data: { name } }">
           {{ name }}</template>
@@ -18,7 +20,7 @@
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="dialogVisble = false">取消</el-button>
+        <el-button @click="handleClose">取消</el-button>
         <el-button type="primary" @click="confirmSetPermission()">确定</el-button>
       </span>
     </template>
@@ -26,13 +28,12 @@
 </template>
 
 <script setup >
-import { toRefs, ref, getCurrentInstance, reactive, onMounted } from 'vue'
+import { toRefs, ref, getCurrentInstance, reactive } from 'vue'
 import { ElMessage } from "element-plus";
 
 const { proxy } = getCurrentInstance();
-const dialogVisble = ref(null)
-const props = defineProps(['role', 'roleMenus', 'menuList'])
-const { role, roleMenus, menuList } = toRefs(props)
+const props = defineProps(['role', 'checkedMenus', 'menuList'])
+const { role, checkedMenus, menuList } = toRefs(props)
 const menusRef = ref(null)
 
 const data = reactive({
@@ -40,6 +41,14 @@ const data = reactive({
     menu_ids: [],
   },
 })
+
+const emits = defineEmits([
+  'update:modelValue',
+  'valueChange'
+])
+const handleClose = () => {
+  emits('update:modelValue', false)
+}
 
 const confirmSetPermission = async () => {
   const menuIds = menusRef.value.getCheckedKeys();
@@ -50,8 +59,8 @@ const confirmSetPermission = async () => {
     data: data.menuForm,
   });
 
-  dialogVisble.value = false
   if (res.code === 200) {
+    emits('valueChange');
     ElMessage({
       type: "success",
       message: "分配成功",
@@ -62,10 +71,8 @@ const confirmSetPermission = async () => {
       message: res.message,
     });
   }
+  handleClose();
 }
 
-defineExpose({
-  dialogVisble
-})
 </script>
 

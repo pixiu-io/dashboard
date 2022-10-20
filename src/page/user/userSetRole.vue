@@ -24,7 +24,7 @@
 </template>
 
 <script setup >
-import { toRefs, ref, getCurrentInstance, reactive, watch } from 'vue'
+import { toRefs, ref, getCurrentInstance, reactive, watch, defineEmits } from 'vue'
 import { ElMessage } from "element-plus";
 
 const { proxy } = getCurrentInstance();
