@@ -106,9 +106,15 @@ onMounted(() => {
       iconType: "el",
     },
     {
-      name: "权限管理",
+      name: "角色管理",
       url: "/role",
       icon: "Guide",
+      iconType: "el",
+    },
+    {
+      name: "菜单管理",
+      url: "/menu",
+      icon: "Grid",
       iconType: "el",
     },
   ];
