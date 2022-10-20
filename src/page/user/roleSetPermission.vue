@@ -2,7 +2,7 @@
   <!-- 分配角色 -->
   <el-dialog v-model="dialogVisble" style="color: #000000; font: 14px" width="360px" center
     @close="dialogVisble = false" v-if="dialogVisble">
-    <template #title>
+    <template #header>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">
         授权
       </div>

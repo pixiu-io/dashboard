@@ -28,16 +28,17 @@
           <el-table-column prop="sequence" label="排序" width="180" />
           <el-table-column fixed="right" label="操作" width="250">
             <template #default="scope">
-              <el-button size="small" type="text" style="color: #006eff" @click="getMenusByUser(scope.row)"
+              <el-button size="small" text style="color: #006eff" @click="getMenusByUser(scope.row)"
                 v-permissions="'user:cloud:setting'">
                 授权
               </el-button>
 
-              <el-button type="text" size="small" @click="deleteRole(scope.row)"
+              <el-button text size="small" @click="deleteRole(scope.row)"
                 style="margin-right: 10px; color: #006eff" v-permissions="'user:cloud:delete'">
                 删除
               </el-button>
-              <el-button type="text" size="small" @click="handleRole(scope.row)"
+              
+              <el-button text size="small" @click="handleRole(scope.row)"
                 style="margin-right: 10px; color: #006eff" v-permissions="'user:cloud:delete'">
                 修改
               </el-button>
@@ -51,7 +52,9 @@
 
   <RoleEdit v-model="roleEdit.dialogVisble" 
   :role="roleEdit.role" 
-  :roleList="data.roleList" v-if="roleEdit.dialogVisble" />
+  :roleList="data.roleList" 
+  @valueChange="getRoleList"
+  v-if="roleEdit.dialogVisble" />
 
   <RoleSetPermission :roleMenus="data.menus" :role="data.role" :menuList="data.menuList" ref="roleSetPermissionDoalog">
   </RoleSetPermission>
@@ -60,7 +63,7 @@
   <!-- 添加角色信息 -->
   <el-dialog v-model="data.createRoleVisible" style="color: #000000; font: 14px" width="360px" center
     @close="data.createRoleVisible = false">
-    <template #title>
+    <template #header>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">
         添加角色
       </div>
@@ -107,6 +110,7 @@ import RoleEdit from './roleEdit.vue'
 import RoleSetPermission from './roleSetPermission.vue'
 
 const roleSetPermissionDoalog = ref(false)
+
 const { proxy } = getCurrentInstance();
 
 const roleEdit = reactive(

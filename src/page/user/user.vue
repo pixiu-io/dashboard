@@ -14,7 +14,7 @@
 
       <el-card class="box-card">
         <el-table :data="data.userList" stripe style="margin-top: 2px; width: 100%" v-loading="loading"
-          @selection-change="handleSelectionChange">
+          >
           <el-table-column prop="id" label="用户ID" width="200" />
           <el-table-column prop="name" label="用户名" width="180" />
           <el-table-column prop="description" label="描述" width="180" />
@@ -29,17 +29,17 @@
           </el-table-column>
           <el-table-column fixed="right" label="操作" width="250">
             <template #default="scope">
-              <el-button size="small" type="text" style="color: #006eff" @click="handleSetRole(scope.row)"
+              <el-button size="small" text style="color: #006eff" @click="handleSetRole(scope.row)"
                 v-permissions="'user:cloud:setting'">
                 分配角色
               </el-button>
 
-              <el-button type="text" size="small" @click="deleteUser(scope.row)"
+              <el-button text size="small" @click="deleteUser(scope.row)"
                 style="margin-right: 10px; color: #006eff" v-permissions="'user:cloud:delete'">
                 删除
               </el-button>
 
-              <el-button type="text" size="small" @click="handleDialogValue(scope.row)"
+              <el-button text size="small" @click="handleDialogValue(scope.row)"
                 style="margin-right: 10px; color: #006eff" v-permissions="'user:cloud:delete'">
                 修改
               </el-button>
@@ -52,12 +52,13 @@
 
   <UserSetRole v-model="userSetRole.dialogVisble" :defaultCheckedRoles="userSetRole.defaultCheckedRoles"
     :user="userSetRole.user" :roleList="userSetRole.roleList" @valueChange="getRoles" v-if="userSetRole.dialogVisble" />
+
   <UserEdit v-model="userEdit.dialogVisble" @valueChange="getUserList" :dialogTableValue="userEdit.dialogTableValue"
     v-if="userEdit.dialogVisble" />
   <!-- 添加用户信息 -->
   <el-dialog v-model="data.createUserVisible" style="color: #000000; font: 14px" width="360px" center
     @close="data.createUserVisible = false">
-    <template #title>
+    <template #header>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">
         添加用户
       </div>
@@ -99,10 +100,11 @@
 <script setup>
 import { reactive, getCurrentInstance, onMounted, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import UserEdit from './component/userEdit.vue'
+import UserEdit from './userEdit.vue'
 import UserSetRole from './userSetRole.vue'
 
 
+const loading = ref(false)
 
 const userEdit = reactive(
   {

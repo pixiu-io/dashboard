@@ -1,16 +1,13 @@
 <template>
   <!-- 分配角色 -->
-  <el-dialog :model-value="dialogVisble" style="color: #000000; font: 14px" width="360px" center 
-  @close="handleClose">
-    <template #title>
+  <el-dialog :model-value="dialogVisble" style="color: #000000; font: 14px" width="360px" center @close="handleClose">
+    <template #header>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">
         分配角色
       </div>
     </template>
     <div>
-      <el-tree ref="menusRef" node-key="id" :data="roleList" 
-      :default-checked-keys="defaultCheckedRoles" 
-      check-strictly
+      <el-tree ref="menusRef" node-key="id" :data="roleList" :default-checked-keys="defaultCheckedRoles" check-strictly
         default-expand-all show-checkbox>
         <template #default="{ data: { name } }">
           {{ name }}</template>
@@ -29,7 +26,6 @@
 <script setup >
 import { toRefs, ref, getCurrentInstance, reactive, watch } from 'vue'
 import { ElMessage } from "element-plus";
-import { number } from '@intlify/core-base';
 
 const { proxy } = getCurrentInstance();
 const props = defineProps(['defaultCheckedRoles', 'user', "roleList"])
@@ -38,7 +34,7 @@ const { defaultCheckedRoles, user, roleList } = toRefs(props)
 const menusRef = ref(null)
 const data = reactive({
   roleForm: {
-    role_ids: [number],
+    role_ids: [],
   },
 })
 

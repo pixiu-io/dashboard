@@ -67,18 +67,18 @@
             <template #default="scope">
               <RoleSetPermission :roleMenus="data.menus" :role="data.role" :menuList="data.menuList"
                 ref="roleSetPermissionDoalog"></RoleSetPermission>
-              <el-button size="small" type="text" style="color: #006eff" @click="getMenusByUser2(scope.row)"
+              <el-button size="small" text style="color: #006eff" @click="getMenusByUser2(scope.row)"
                 v-permissions="'user:cloud:setting'">
                 授权
               </el-button>
 
-              <el-button type="text" size="small" @click="deleteMenu(scope.row)"
+              <el-button text size="small" @click="deleteMenu(scope.row)"
                 style="margin-right: 10px; color: #006eff" v-permissions="'user:cloud:delete'">
                 删除
               </el-button>
 
               <roleEdit :role="data.role" :roleList="data.roleList" ref="roleDialog"></roleEdit>
-              <el-button type="text" size="small" @click="updateRole(scope.row)"
+              <el-button text size="small" @click="updateRole(scope.row)"
                 style="margin-right: 10px; color: #006eff" v-permissions="'user:cloud:delete'">
                 修改
               </el-button>

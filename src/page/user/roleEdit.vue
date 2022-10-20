@@ -1,8 +1,7 @@
 <template>
   <!-- 修改用户信息 -->
-  <el-dialog :model-value="dialogVisble" style="color: #000000; font: 14px" width="360px" center
-    @close="handleClose"  >
-    <template #title>
+  <el-dialog :model-value="dialogVisble" style="color: #000000; font: 14px" width="360px" center @close="handleClose">
+    <template #header>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">
         修改角色
       </div>
@@ -18,7 +17,7 @@
         <el-input-number v-model="role.sequence" :min="1" :max="10" @change="handleChange" />
       </el-form-item>
       <el-form-item label="父角色:">
-        <el-select v-model="role.parent_id" clearable placeholder="请选择" ref="selectRef" >
+        <el-select v-model="role.parent_id" clearable placeholder="请选择" ref="selectRef">
           <el-option v-for="item in roleList" :key="item.id" :label="item.name" :value="item.id" />
         </el-select>
 
@@ -40,7 +39,7 @@
 </template>
 
 <script setup >
-import { toRefs, ref, getCurrentInstance,watch,defineEmits } from 'vue'
+import { toRefs, getCurrentInstance, defineEmits } from 'vue'
 import { ElMessage } from "element-plus";
 
 const { proxy } = getCurrentInstance();
@@ -51,9 +50,10 @@ const { role, roleList } = toRefs(props)
 
 const emits = defineEmits([
   'update:modelValue',
+  'valueChange'
 ])
-const handleClose=() => {
-  emits("update:modeValue", false)
+const handleClose = () => {
+  emits('update:modelValue', false)
 }
 
 const confirmUpdateUser = async () => {
@@ -62,8 +62,8 @@ const confirmUpdateUser = async () => {
     url: "/roles/" + role.value.id,
     data: role.value,
   });
-  dialogVisble.value = false
   if (resp.code === 200) {
+    emits('valueChange')
     ElMessage({
       type: "success",
       message: "修改成功",
@@ -77,16 +77,4 @@ const confirmUpdateUser = async () => {
   handleClose();
 };
 
-watch(() => role, () => { 
-}, { deep: true, immediate: true })
-
-
 </script>
-
-<style scoped>
-
-.dialog-footer button:first-child {
-  margin-right: 10px;
-}
-
-</style>
