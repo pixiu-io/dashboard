@@ -1,7 +1,7 @@
 <template>
   <!-- 修改用户信息 -->
-  <el-dialog v-model="dialogVisble" style="color: #000000; font: 14px" width="360px" center
-    @close="dialogVisble = false" v-if="dialogVisble">
+  <el-dialog :model-value="dialogVisble" style="color: #000000; font: 14px" width="360px" center
+    @close="handleClose"  >
     <template #title>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">
         修改角色
@@ -32,21 +32,29 @@
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="dialogVisble = false">取消</el-button>
-        <el-button type="primary" @click="confirmUpdateUser()">创建</el-button>
+        <el-button @click="handleClose">取消</el-button>
+        <el-button type="primary" @click="confirmUpdateUser()">确认</el-button>
       </span>
     </template>
   </el-dialog>
 </template>
 
 <script setup >
-import { toRefs, ref, getCurrentInstance } from 'vue'
+import { toRefs, ref, getCurrentInstance,watch,defineEmits } from 'vue'
 import { ElMessage } from "element-plus";
 
 const { proxy } = getCurrentInstance();
-const dialogVisble = ref(null)
+
+
 const props = defineProps(['role', 'roleList'])
 const { role, roleList } = toRefs(props)
+
+const emits = defineEmits([
+  'update:modelValue',
+])
+const handleClose=() => {
+  emits("update:modeValue", false)
+}
 
 const confirmUpdateUser = async () => {
   const resp = await proxy.$http({
@@ -66,11 +74,19 @@ const confirmUpdateUser = async () => {
       message: "修改失败",
     });
   }
+  handleClose();
 };
 
-defineExpose({
-  dialogVisble
-})
+watch(() => role, () => { 
+}, { deep: true, immediate: true })
+
 
 </script>
 
+<style scoped>
+
+.dialog-footer button:first-child {
+  margin-right: 10px;
+}
+
+</style>

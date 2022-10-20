@@ -13,8 +13,7 @@
       </el-row>
 
       <el-card class="box-card">
-        <el-table :data="data.roleList" stripe style="margin-top: 2px; width: 100%" v-loading="loading"
-          @selection-change="handleSelectionChange" row-key="id">
+        <el-table :data="data.roleList" stripe style="margin-top: 2px; width: 100%" row-key="id">
           <el-table-column prop="id" label="角色ID" width="200" />
           <el-table-column prop="name" label="角色名" width="180" />
           <el-table-column prop="memo" label="描述" width="180" />
@@ -29,7 +28,6 @@
           <el-table-column prop="sequence" label="排序" width="180" />
           <el-table-column fixed="right" label="操作" width="250">
             <template #default="scope">
-              <RoleSetPermission :roleMenus="data.menus" :role="data.role" :menuList="data.menuList" ref="roleSetPermissionDoalog"></RoleSetPermission>
               <el-button size="small" type="text" style="color: #006eff" @click="getMenusByUser(scope.row)"
                 v-permissions="'user:cloud:setting'">
                 授权
@@ -39,9 +37,7 @@
                 style="margin-right: 10px; color: #006eff" v-permissions="'user:cloud:delete'">
                 删除
               </el-button>
-
-              <roleEdit :role="data.role" :roleList="data.roleList" ref="roleDialog"></roleEdit>
-              <el-button type="text" size="small" @click="updateRole(scope.row)"
+              <el-button type="text" size="small" @click="handleRole(scope.row)"
                 style="margin-right: 10px; color: #006eff" v-permissions="'user:cloud:delete'">
                 修改
               </el-button>
@@ -52,6 +48,13 @@
       </el-card>
     </div>
   </el-main>
+
+  <RoleEdit v-model="roleEdit.dialogVisble" 
+  :role="roleEdit.role" 
+  :roleList="data.roleList" v-if="roleEdit.dialogVisble" />
+
+  <RoleSetPermission :roleMenus="data.menus" :role="data.role" :menuList="data.menuList" ref="roleSetPermissionDoalog">
+  </RoleSetPermission>
 
 
   <!-- 添加角色信息 -->
@@ -72,7 +75,7 @@
       <el-form-item label="排序值:">
         <el-input-number v-model="data.roleForm.sequence" :min="1" :max="10" @change="handleChange" />
       </el-form-item>
-      <el-form-item label="父角色:" >
+      <el-form-item label="父角色:">
         <el-select v-model="data.roleForm.parent_id" clearable placeholder="请选择">
           <el-option v-for="item in data.roleList" :key="item.id" :label="item.name" :value="item.id" />
         </el-select>
@@ -100,13 +103,20 @@
 <script setup>
 import { reactive, getCurrentInstance, onMounted, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import roleEdit from './roleEdit.vue'
+import RoleEdit from './roleEdit.vue'
 import RoleSetPermission from './roleSetPermission.vue'
 
-const roleDialog = ref(false)
 const roleSetPermissionDoalog = ref(false)
-
 const { proxy } = getCurrentInstance();
+
+const roleEdit = reactive(
+  {
+    dialogVisble: false,
+    role: {},
+    roleList: []
+  },
+)
+
 const data = reactive({
   pageInfo: {
     query: "",
@@ -123,7 +133,7 @@ const data = reactive({
     sequence: "",
     status: 1
   },
-  
+
   roleList: [],
   role: {},
   menus: [],
@@ -157,13 +167,13 @@ const deleteRole = async (row) => {
     }
   )
     .then(() => {
-      const res =proxy
+      const res = proxy
         .$http({
           method: "delete",
           url: "/roles/" + row.id,
         })
         .then(() => {
-            getRoleList();
+          getRoleList();
           ElMessage({
             type: "success",
             message: "删除成功",
@@ -183,13 +193,13 @@ const createRole = () => {
   data.createRoleVisible = true;
 };
 
-const updateRole = (role) => {
-  roleDialog.value.dialogVisble = true;
-  data.role = role;
+const handleRole = (role) => {
+  roleEdit.dialogVisble = true;
+  roleEdit.role = JSON.parse(JSON.stringify(role));
 };
 
 const confirmCreateRole = async () => {
- 
+
   const resp = await proxy.$http({
     method: "post",
     url: "/roles",
@@ -239,7 +249,7 @@ const getMenusByUser = async (role) => {
     }
   };
 
- 
+
   roleSetPermissionDoalog.value.dialogVisble = true;
 }
 

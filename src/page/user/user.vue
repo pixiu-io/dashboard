@@ -29,21 +29,16 @@
           </el-table-column>
           <el-table-column fixed="right" label="操作" width="250">
             <template #default="scope">
-              <userSetRole :userRole="data.roles" :user="data.user" :roleList="data.roleList" ref="userSetRoleDoalog" ></userSetRole>
               <el-button size="small" type="text" style="color: #006eff" @click="handleSetRole(scope.row)"
                 v-permissions="'user:cloud:setting'">
                 分配角色
               </el-button>
-              
+
               <el-button type="text" size="small" @click="deleteUser(scope.row)"
                 style="margin-right: 10px; color: #006eff" v-permissions="'user:cloud:delete'">
                 删除
               </el-button>
-              
-              <UserEdit v-model="userDialogVisble" 
-              @getUserList="getUserList" 
-              :dialogTableValue = "dialogTableValue"
-               v-if="userDialogVisble" />
+
               <el-button type="text" size="small" @click="handleDialogValue(scope.row)"
                 style="margin-right: 10px; color: #006eff" v-permissions="'user:cloud:delete'">
                 修改
@@ -54,6 +49,11 @@
       </el-card>
     </div>
   </el-main>
+
+  <UserSetRole v-model="userSetRole.dialogVisble" :defaultCheckedRoles="userSetRole.defaultCheckedRoles"
+    :user="userSetRole.user" :roleList="userSetRole.roleList" @valueChange="getRoles" v-if="userSetRole.dialogVisble" />
+  <UserEdit v-model="userEdit.dialogVisble" @valueChange="getUserList" :dialogTableValue="userEdit.dialogTableValue"
+    v-if="userEdit.dialogVisble" />
   <!-- 添加用户信息 -->
   <el-dialog v-model="data.createUserVisible" style="color: #000000; font: 14px" width="360px" center
     @close="data.createUserVisible = false">
@@ -99,13 +99,27 @@
 <script setup>
 import { reactive, getCurrentInstance, onMounted, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import UserEdit from './userEdit.vue'
-import  userSetRole from './userSetRole.vue'
+import UserEdit from './component/userEdit.vue'
+import UserSetRole from './userSetRole.vue'
 
-const userDialogVisble= ref(false)
-const dialogTableValue = ref({})
 
-const userSetRoleDoalog = ref(false)
+
+const userEdit = reactive(
+  {
+    dialogVisble: false,
+    dialogTableValue: {},
+  },
+)
+const userSetRole = reactive(
+  {
+    dialogVisble: false,
+    dialogTableValue: {},
+    defaultCheckedRoles: [],
+    updateForm: {},
+    roleList: [],
+    user: {},
+  },
+)
 
 const { proxy } = getCurrentInstance();
 const data = reactive({
@@ -115,7 +129,6 @@ const data = reactive({
     limit: 10, // 默认值需要是分页定义的值
   },
 
-  isActive: false,
   loading: false,
   // 触发创建页面
   createUserVisible: false,
@@ -132,24 +145,21 @@ const data = reactive({
   autosize: {
     minRows: 8,
   },
-  roleList: [],
-  user: {},
-  roles: [],
+
 });
 
 onMounted(() => {
   getUserList();
+  getRoles();
 });
 
 const getUserList = async () => {
-  data.loading = true;
   const res = await proxy.$http({
     method: "get",
     url: "/users",
     data: data.pageInfo,
   });
 
-  data.loading = false;
   data.userList = res.result
 }
 
@@ -193,8 +203,8 @@ const createUser = () => {
 };
 
 const handleDialogValue = (user) => {
-  dialogTableValue.value = JSON.parse(JSON.stringify(user))
-  userDialogVisble.value = true;
+  userEdit.dialogTableValue = JSON.parse(JSON.stringify(user))
+  userEdit.dialogVisble = true;
 };
 
 const confirmCreateUser = async () => {
@@ -223,33 +233,31 @@ const getRoles = async () => {
     method: "get",
     url: "/roles",
   });
-  data.roleList = res.result
+  userSetRole.roleList = res.result
 }
 
 const handleSetRole = async (user) => {
-  data.updateForm= user
+  userSetRole.user = user
+  userSetRole.defaultCheckedRoles = []
   const res = await proxy.$http({
     method: "get",
-    url: "/users/" + data.updateForm.id + "/roles",
+    url: "/users/" + userSetRole.user.id + "/roles",
   });
 
+  // 提取role id
   let roleList = res.result
   if (roleList !== null) {
     for (let i = 0; i < roleList.length; i++) {
-      if (roleList.children) {
-        for (let j = 0; j < roleList.children.length; j++) {
-          data.roles.push(roleList.children[i].id)
+      if (roleList[i].children !== null) {
+        for (let j = 0; j < roleList[i].children.length; j++) {
+          userSetRole.defaultCheckedRoles.push(roleList[i].children[j].id)
         }
       }
-      data.roles.push(roleList[i].id)
+      userSetRole.defaultCheckedRoles.push(roleList[i].id)
     }
   }
-  getRoles()
-
-  userSetRoleDoalog.value.dialogVisble = true
+  userSetRole.dialogVisble = true
 }
-
-
 
 </script>
   
