@@ -1,8 +1,8 @@
-import { fileURLToPath, URL } from 'node:url'
+import { fileURLToPath, URL } from "node:url";
 
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import vueJsx from '@vitejs/plugin-vue-jsx'
+import { defineConfig } from "vite";
+import vue from "@vitejs/plugin-vue";
+import vueJsx from "@vitejs/plugin-vue-jsx";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -14,7 +14,8 @@ export default defineConfig({
     },
   },
   build: {
-    rollupOptions: { // 分文件打包，减小单个js文件的大小
+    rollupOptions: {
+      // 分文件打包，减小单个js文件的大小
       output: {
         manualChunks(id) {
           if (id.includes("node_modules")) {
@@ -29,8 +30,10 @@ export default defineConfig({
     },
   },
   server: {
-    host: 'localhost',
+    host: "localhost",
     port: 8080,
+    hmr: true,
+    usePolling: true,
     // open: true, // 设置服务启动时是否自动打开浏览器
-  }
+  },
 });

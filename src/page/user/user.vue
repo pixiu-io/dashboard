@@ -3,7 +3,12 @@
     <div style="margin-top: 20px">
       <el-row>
         <el-col>
-          <el-button type="primary" @click="createUser" style="margin-left: 1px" v-permissions="'user:cloud:add'">
+          <el-button
+            type="primary"
+            @click="createUser"
+            style="margin-left: 1px"
+            v-permissions="'user:cloud:add'"
+          >
             <el-icon style="vertical-align: middle; margin-right: 4px">
               <component is="Plus" />
             </el-icon>
@@ -13,8 +18,12 @@
       </el-row>
 
       <el-card class="box-card">
-        <el-table :data="data.userList" stripe style="margin-top: 2px; width: 100%" v-loading="loading"
-          >
+        <el-table
+          :data="data.userList"
+          stripe
+          style="margin-top: 2px; width: 100%"
+          v-loading="loading"
+        >
           <el-table-column prop="id" label="用户ID" width="200" />
           <el-table-column prop="name" label="用户名" width="180" />
           <el-table-column prop="description" label="描述" width="180" />
@@ -22,25 +31,52 @@
           <el-table-column prop="email" label="Email" width="160" />
           <el-table-column prop="status" label="状态" width="160">
             <template #default="scope">
-              <el-switch v-model="scope.row.status" class="ml-2"
-                style="--el-switch-on-color: #409EFF; --el-switch-off-color: #ff4949" :active-value="1"
-                :inactive-value="0" size="small" inline-prompt active-text="启用" inactive-text="禁用" width="45px" />
+              <el-switch
+                v-model="scope.row.status"
+                class="ml-2"
+                style="
+                  --el-switch-on-color: #409eff;
+                  --el-switch-off-color: #ff4949;
+                "
+                :active-value="1"
+                :inactive-value="0"
+                size="small"
+                inline-prompt
+                active-text="启用"
+                inactive-text="禁用"
+                width="45px"
+              />
             </template>
           </el-table-column>
           <el-table-column fixed="right" label="操作" width="250">
             <template #default="scope">
-              <el-button size="small" text style="color: #006eff" @click="handleSetRole(scope.row)"
-                v-permissions="'user:cloud:setting'">
+              <el-button
+                size="small"
+                text
+                style="color: #006eff"
+                @click="handleSetRole(scope.row)"
+                v-permissions="'user:cloud:setting'"
+              >
                 分配角色
               </el-button>
 
-              <el-button text size="small" @click="deleteUser(scope.row)"
-                style="margin-right: 10px; color: #006eff" v-permissions="'user:cloud:delete'">
+              <el-button
+                text
+                size="small"
+                @click="deleteUser(scope.row)"
+                style="margin-right: 10px; color: #006eff"
+                v-permissions="'user:cloud:delete'"
+              >
                 删除
               </el-button>
 
-              <el-button text size="small" @click="handleDialogValue(scope.row)"
-                style="margin-right: 10px; color: #006eff" v-permissions="'user:cloud:delete'">
+              <el-button
+                text
+                size="small"
+                @click="handleDialogValue(scope.row)"
+                style="margin-right: 10px; color: #006eff"
+                v-permissions="'user:cloud:delete'"
+              >
                 修改
               </el-button>
             </template>
@@ -50,20 +86,40 @@
     </div>
   </el-main>
 
-  <UserSetRole v-model="userSetRole.dialogVisble" :defaultCheckedRoles="userSetRole.defaultCheckedRoles"
-    :user="userSetRole.user" :roleList="userSetRole.roleList" @valueChange="getRoles" v-if="userSetRole.dialogVisble" />
+  <UserSetRole
+    v-model="userSetRole.dialogVisble"
+    :defaultCheckedRoles="userSetRole.defaultCheckedRoles"
+    :user="userSetRole.user"
+    :roleList="userSetRole.roleList"
+    @valueChange="getRoles"
+    v-if="userSetRole.dialogVisble"
+  />
 
-  <UserEdit v-model="userEdit.dialogVisble" @valueChange="getUserList" :dialogTableValue="userEdit.dialogTableValue"
-    v-if="userEdit.dialogVisble" />
+  <UserEdit
+    v-model="userEdit.dialogVisble"
+    @valueChange="getUserList"
+    :dialogTableValue="userEdit.dialogTableValue"
+    v-if="userEdit.dialogVisble"
+  />
   <!-- 添加用户信息 -->
-  <el-dialog v-model="data.createUserVisible" style="color: #000000; font: 14px" width="360px" center
-    @close="data.createUserVisible = false">
+  <el-dialog
+    v-model="data.createUserVisible"
+    style="color: #000000; font: 14px"
+    width="360px"
+    center
+    @close="data.createUserVisible = false"
+  >
     <template #header>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">
         添加用户
       </div>
     </template>
-    <el-form :label-position="labelPosition" label-width="100px" :model="data.userForm" style="max-width: 260px">
+    <el-form
+      :label-position="labelPosition"
+      label-width="100px"
+      :model="data.userForm"
+      style="max-width: 260px"
+    >
       <el-form-item label="名字:" required>
         <el-input v-model="data.userForm.name" />
       </el-form-item>
@@ -74,15 +130,31 @@
         <el-input v-model="data.userForm.email" />
       </el-form-item>
       <el-form-item label="状态">
-        <el-switch v-model="data.userForm.status" class="ml-2"
-          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" :active-value="1" :inactive-value="0"
-          size="large" inline-prompt active-text="启用" inactive-text="禁用" />
+        <el-switch
+          v-model="data.userForm.status"
+          class="ml-2"
+          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+          :active-value="1"
+          :inactive-value="0"
+          size="large"
+          inline-prompt
+          active-text="启用"
+          inactive-text="禁用"
+        />
       </el-form-item>
       <el-form-item label="密码" required>
-        <el-input v-model="data.userForm.password" type="password" show-password />
+        <el-input
+          v-model="data.userForm.password"
+          type="password"
+          show-password
+        />
       </el-form-item>
       <el-form-item label="再次输入密码" required>
-        <el-input v-model="data.confirmPassword" type="password" show-password />
+        <el-input
+          v-model="data.confirmPassword"
+          type="password"
+          show-password
+        />
       </el-form-item>
     </el-form>
 
@@ -93,35 +165,28 @@
       </span>
     </template>
   </el-dialog>
-
-
 </template>
-  
+
 <script setup>
 import { reactive, getCurrentInstance, onMounted, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import UserEdit from './userEdit.vue'
-import UserSetRole from './userSetRole.vue'
+import UserEdit from "./userEdit.vue";
+import UserSetRole from "./userSetRole.vue";
 
+const loading = ref(false);
 
-const loading = ref(false)
-
-const userEdit = reactive(
-  {
-    dialogVisble: false,
-    dialogTableValue: {},
-  },
-)
-const userSetRole = reactive(
-  {
-    dialogVisble: false,
-    dialogTableValue: {},
-    defaultCheckedRoles: [],
-    updateForm: {},
-    roleList: [],
-    user: {},
-  },
-)
+const userEdit = reactive({
+  dialogVisble: false,
+  dialogTableValue: {},
+});
+const userSetRole = reactive({
+  dialogVisble: false,
+  dialogTableValue: {},
+  defaultCheckedRoles: [],
+  updateForm: {},
+  roleList: [],
+  user: {},
+});
 
 const { proxy } = getCurrentInstance();
 const data = reactive({
@@ -139,7 +204,7 @@ const data = reactive({
     email: "",
     name: "",
     password: "",
-    status: 1
+    status: 1,
   },
   updateForm: {},
   confirmPassword: "",
@@ -147,7 +212,6 @@ const data = reactive({
   autosize: {
     minRows: 8,
   },
-
 });
 
 onMounted(() => {
@@ -162,9 +226,8 @@ const getUserList = async () => {
     data: data.pageInfo,
   });
 
-  data.userList = res.result
-}
-
+  data.userList = res.result;
+};
 
 const deleteUser = async (row) => {
   ElMessageBox.confirm(
@@ -197,7 +260,7 @@ const deleteUser = async (row) => {
           });
         });
     })
-    .catch(() => { }); // 取消
+    .catch(() => {}); // 取消
 };
 
 const createUser = () => {
@@ -205,7 +268,7 @@ const createUser = () => {
 };
 
 const handleDialogValue = (user) => {
-  userEdit.dialogTableValue = JSON.parse(JSON.stringify(user))
+  userEdit.dialogTableValue = JSON.parse(JSON.stringify(user));
   userEdit.dialogVisble = true;
 };
 
@@ -216,7 +279,7 @@ const confirmCreateUser = async () => {
     url: "/users",
     data: data.userForm,
   });
-  data.createUserVisible = false
+  data.createUserVisible = false;
   if (resp.code === 200) {
     getUserList();
     ElMessage({
@@ -235,34 +298,33 @@ const getRoles = async () => {
     method: "get",
     url: "/roles",
   });
-  userSetRole.roleList = res.result
-}
+  userSetRole.roleList = res.result;
+};
 
 const handleSetRole = async (user) => {
-  userSetRole.user = user
-  userSetRole.defaultCheckedRoles = []
+  userSetRole.user = user;
+  userSetRole.defaultCheckedRoles = [];
   const res = await proxy.$http({
     method: "get",
     url: "/users/" + userSetRole.user.id + "/roles",
   });
 
   // 提取role id
-  let roleList = res.result
+  let roleList = res.result;
   if (roleList !== null) {
     for (let i = 0; i < roleList.length; i++) {
       if (roleList[i].children !== null) {
         for (let j = 0; j < roleList[i].children.length; j++) {
-          userSetRole.defaultCheckedRoles.push(roleList[i].children[j].id)
+          userSetRole.defaultCheckedRoles.push(roleList[i].children[j].id);
         }
       }
-      userSetRole.defaultCheckedRoles.push(roleList[i].id)
+      userSetRole.defaultCheckedRoles.push(roleList[i].id);
     }
   }
-  userSetRole.dialogVisble = true
-}
-
+  userSetRole.dialogVisble = true;
+};
 </script>
-  
+
 <style>
 .box-card {
   margin-top: 20px;
@@ -294,7 +356,7 @@ const handleSetRole = async (user) => {
   align-items: flex-start;
 }
 
-.example-showcase .el-dropdown+.el-dropdown {
+.example-showcase .el-dropdown + .el-dropdown {
   margin-left: 15px;
 }
 
@@ -330,4 +392,3 @@ const handleSetRole = async (user) => {
   cursor: pointer;
 }
 </style>
-  
