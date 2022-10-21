@@ -1,23 +1,24 @@
 <template>
   <el-main>
     <div style="margin-top: 20px">
-      <el-row>
-        <el-col>
-          <el-button
-            type="primary"
-            @click="createRole()"
-            style="margin-left: 1px"
-            v-permissions="'user:cloud:add'"
-          >
-            <el-icon style="vertical-align: middle; margin-right: 4px">
-              <component is="Plus" />
-            </el-icon>
-            添加角色
-          </el-button>
-        </el-col>
-      </el-row>
+      角色列表
 
       <el-card class="box-card">
+        <el-row>
+          <el-col>
+            <el-button
+              type="primary"
+              @click="createRole()"
+              style="margin-left: 1px; margin-bottom: 10px"
+              v-permissions="'user:cloud:add'"
+            >
+              <el-icon style="vertical-align: middle; margin-right: 4px">
+                <component is="Plus" />
+              </el-icon>
+              添加角色
+            </el-button>
+          </el-col>
+        </el-row>
         <el-table
           :data="data.roleList"
           stripe
