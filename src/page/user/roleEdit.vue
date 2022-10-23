@@ -86,6 +86,9 @@ const handleClose = () => {
 };
 
 const confirmUpdateUser = async () => {
+  if (role.value.parent_id === "") {
+    role.value.parent_id = 0;
+  }
   const resp = await proxy.$http({
     method: "put",
     url: "/roles/" + role.value.id,

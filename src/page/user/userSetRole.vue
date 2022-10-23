@@ -63,9 +63,8 @@ watch(
 );
 
 const confirmSetRole = async () => {
-  const menuIds = menusRef.value.getCheckedKeys();
-  data.roleForm["role_ids"] = menuIds;
-
+  const roleIds = menusRef.value.getCheckedKeys();
+  data.roleForm["role_ids"] = roleIds;
   const res = await proxy.$http({
     method: "post",
     url: "/users/" + user.value.id + "/roles",

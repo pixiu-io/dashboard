@@ -1,23 +1,23 @@
 <template>
   <el-main>
     <div style="margin-top: 20px">
-      <el-row>
-        <el-col>
-          <el-button
-            type="primary"
-            @click="createUser"
-            style="margin-left: 1px"
-            v-permissions="'user:cloud:add'"
-          >
-            <el-icon style="vertical-align: middle; margin-right: 4px">
-              <component is="Plus" />
-            </el-icon>
-            添加用户
-          </el-button>
-        </el-col>
-      </el-row>
-
+      用户列表
       <el-card class="box-card">
+        <el-row>
+          <el-col>
+            <el-button
+              type="primary"
+              @click="createUser"
+              style="margin-left: 1px; margin-bottom: 10px"
+              v-permissions="'user:cloud:add'"
+            >
+              <el-icon style="vertical-align: middle; margin-right: 4px">
+                <component is="Plus" />
+              </el-icon>
+              添加用户
+            </el-button>
+          </el-col>
+        </el-row>
         <el-table
           :data="data.userList"
           stripe
@@ -45,6 +45,7 @@
                 active-text="启用"
                 inactive-text="禁用"
                 width="45px"
+                @change="changeStatus(scope.row)"
               />
             </template>
           </el-table-column>
@@ -82,6 +83,8 @@
             </template>
           </el-table-column>
         </el-table>
+        <!-- 分页区域 -->
+        <pagination :total="data.total" @onChange="onChange"></pagination>
       </el-card>
     </div>
   </el-main>
@@ -172,6 +175,7 @@ import { reactive, getCurrentInstance, onMounted, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import UserEdit from "./userEdit.vue";
 import UserSetRole from "./userSetRole.vue";
+import Pagination from "@/components/pagination/pagination.vue";
 
 const loading = ref(false);
 
@@ -219,6 +223,33 @@ onMounted(() => {
   getRoles();
 });
 
+//分页
+const onChange = (v) => {
+  data.pageInfo.limit = 10;
+  data.pageInfo.page = v.page;
+  getUserList();
+};
+
+const changeStatus = async (user) => {
+  const res = await proxy.$http({
+    method: "put",
+    url: `/users/${user.id}/status/${user.status}`,
+  });
+
+  if (res.code === 200) {
+    getUserList();
+    ElMessage({
+      type: "success",
+      message: "更新成功",
+    });
+  } else {
+    ElMessage({
+      type: "error",
+      message: "更新失败",
+    });
+  }
+};
+
 const getUserList = async () => {
   const res = await proxy.$http({
     method: "get",
@@ -226,7 +257,8 @@ const getUserList = async () => {
     data: data.pageInfo,
   });
 
-  data.userList = res.result;
+  data.userList = res.result.users;
+  data.total = res.result.total;
 };
 
 const deleteUser = async (row) => {
@@ -273,7 +305,6 @@ const handleDialogValue = (user) => {
 };
 
 const confirmCreateUser = async () => {
-  console.log(data.userForm);
   const resp = await proxy.$http({
     method: "post",
     url: "/users",
@@ -298,7 +329,7 @@ const getRoles = async () => {
     method: "get",
     url: "/roles",
   });
-  userSetRole.roleList = res.result;
+  userSetRole.roleList = res.result.roles;
 };
 
 const handleSetRole = async (user) => {

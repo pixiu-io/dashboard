@@ -82,6 +82,10 @@
 
 <script setup>
 import { reactive, getCurrentInstance, ref } from "vue";
+import usePermissions from "../../stores/usePermission";
+
+const useStore = usePermissions();
+
 const { proxy } = getCurrentInstance();
 const data = reactive({
   loginInfo: {
@@ -125,9 +129,12 @@ const login = () => {
         proxy.$message.error(res.message);
         return;
       }
+
       const token = res.result;
       localStorage.setItem("token", token);
       localStorage.setItem("account", data.loginInfo.name);
+      // 持久化权限
+      useStore.getPermission();
       proxy.$message.success("登陆成功");
       proxy.$router.push("/index");
     }
@@ -144,6 +151,7 @@ const login = () => {
   width: 100%;
   height: 100%;
 }
+
 .login-container {
   width: 450px;
   height: 380px;
@@ -155,6 +163,7 @@ const login = () => {
   align-items: center;
   justify-content: center;
 }
+
 .tab-container {
   height: 80%;
   width: 80%;
@@ -163,6 +172,7 @@ const login = () => {
   justify-content: space-between;
   align-items: flex-start;
 }
+
 .tab-item {
   width: 100%;
   display: flex;
@@ -196,6 +206,7 @@ const login = () => {
   border-color: #e0e6ed;
   border-top: 2px solid #508ae2;
 }
+
 .u-tabs_head_3_DeFFee {
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -205,25 +216,30 @@ const login = () => {
   border-bottom: 1px solid #ece5e3;
   width: 100%;
 }
+
 .button-group {
   width: 100%;
   height: 40%;
 }
+
 .forget-container {
   display: flex;
   width: 100%;
   justify-content: flex-end;
 }
+
 .forget-button {
   font-size: inherit;
   color: #6383dc;
 }
+
 .login-button {
   width: 100%;
   background: #508ae2;
   color: #fff;
   font-size: 17px;
 }
+
 .el-form-item {
   width: 100%;
 }

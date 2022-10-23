@@ -1,29 +1,27 @@
 <template>
   <el-main>
     <div style="margin-top: 20px">
-      <el-row>
-        <el-col>
-          <el-button
-            type="primary"
-            @click="createRole()"
-            style="margin-left: 1px"
-            v-permissions="'user:cloud:add'"
-          >
-            <el-icon style="vertical-align: middle; margin-right: 4px">
-              <component is="Plus" />
-            </el-icon>
-            添加菜单权限
-          </el-button>
-        </el-col>
-      </el-row>
-
+      菜单权限列表
       <el-card class="box-card">
+        <el-row>
+          <el-col>
+            <el-button
+              type="primary"
+              @click="createRole()"
+              style="margin-left: 1px; margin-bottom: 10px"
+              v-permissions="'user:cloud:add'"
+            >
+              <el-icon style="vertical-align: middle; margin-right: 4px">
+                <component is="Plus" />
+              </el-icon>
+              添加菜单权限
+            </el-button>
+          </el-col>
+        </el-row>
         <el-table
           :data="data.menuList"
           stripe
           style="margin-top: 2px; width: 100%"
-          v-loading="loading"
-          @selection-change="handleSelectionChange"
           row-key="id"
         >
           <el-table-column prop="id" label="菜单ID" width="180" />
@@ -93,29 +91,15 @@
                 active-text="启用"
                 inactive-text="禁用"
                 width="45px"
+                @change="changeStatus(scope.row)"
               />
             </template>
           </el-table-column>
+
           <el-table-column prop="sequence" label="排序" width="80" />
           <el-table-column prop="gmt_create" label="创建时间" width="220" />
           <el-table-column fixed="right" label="操作" width="250">
             <template #default="scope">
-              <RoleSetPermission
-                :roleMenus="data.menus"
-                :role="data.role"
-                :menuList="data.menuList"
-                ref="roleSetPermissionDoalog"
-              ></RoleSetPermission>
-              <el-button
-                size="small"
-                text
-                style="color: #006eff"
-                @click="getMenusByUser2(scope.row)"
-                v-permissions="'user:cloud:setting'"
-              >
-                授权
-              </el-button>
-
               <el-button
                 text
                 size="small"
@@ -125,16 +109,10 @@
               >
                 删除
               </el-button>
-
-              <roleEdit
-                :role="data.role"
-                :roleList="data.roleList"
-                ref="roleDialog"
-              ></roleEdit>
               <el-button
                 text
                 size="small"
-                @click="updateRole(scope.row)"
+                @click="handleEdit(scope.row)"
                 style="margin-right: 10px; color: #006eff"
                 v-permissions="'user:cloud:delete'"
               >
@@ -143,10 +121,19 @@
             </template>
           </el-table-column>
         </el-table>
+        <!-- 分页区域 -->
+        <pagination :total="data.total" @onChange="onChange"></pagination>
       </el-card>
     </div>
   </el-main>
 
+  <MenuEdit
+    v-model="menuEdit.dialogVisble"
+    @valueChange="getMenusList"
+    :menu="menuEdit.menu"
+    :menuList="menuEdit.menuList"
+    v-if="menuEdit.dialogVisble"
+  />
   <!-- 添加菜单按钮信息 -->
   <el-dialog
     v-model="data.createMenuVisible"
@@ -154,8 +141,9 @@
     width="460px"
     center
     @close="data.createMenuVisible = false"
+    v-if="data.createMenuVisible"
   >
-    <template #title>
+    <template #header>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">
         添加菜单权限
       </div>
@@ -182,16 +170,11 @@
         <el-tree-select
           ref="selectRef"
           v-model="data.menuForm.parent_id"
-          :data="data.menuList"
+          :data="menuEdit.menuList"
+          :props="{ value: 'id', label: 'name' }"
           check-strictly
           clearable
-          :render-after-expand="false"
-          node-key="id"
-        >
-          <template #default="{ data: { name } }">
-            {{ name }}
-          </template>
-        </el-tree-select>
+        />
       </el-form-item>
 
       <el-form-item label="描述:">
@@ -208,7 +191,12 @@
       <el-form-item label="URL:">
         <el-input v-model="data.menuForm.url" />
       </el-form-item>
-      <el-form-item label="Method:">
+
+      <el-form-item
+        label="请求方式:"
+        v-model="data.menuForm.menu_type"
+        v-if="data.menuForm.menu_type == 3 || data.menuForm.menu_type == 2"
+      >
         <el-select
           v-model="data.menuForm.method"
           clearable
@@ -222,10 +210,19 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="图标:">
+
+      <el-form-item
+        label="图标:"
+        v-model="data.menuForm.menu_type"
+        v-if="data.menuForm.menu_type == 1"
+      >
         <el-input v-model="data.menuForm.icon" required="" />
       </el-form-item>
-      <el-form-item label="Code:">
+      <el-form-item
+        label="Code:"
+        v-model="data.menuForm.menu_type"
+        v-if="data.menuForm.menu_type == 3 || data.menuForm.menu_type == 2"
+      >
         <el-input v-model="data.menuForm.code" required="" />
       </el-form-item>
       <el-form-item label="状态:">
@@ -246,7 +243,7 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="data.createMenuVisible = false">取消</el-button>
-        <el-button type="primary" @click="confirmCreateMenus">创建</el-button>
+        <el-button type="primary" @click="confirmCreateMenus">确定</el-button>
       </span>
     </template>
   </el-dialog>
@@ -255,16 +252,18 @@
 <script setup>
 import { reactive, getCurrentInstance, onMounted, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
-import roleEdit from "./roleEdit.vue";
-import RoleSetPermission from "./roleSetPermission.vue";
+import MenuEdit from "./menuEdit.vue";
+import Pagination from "@/components/pagination/pagination.vue";
 
-const name = ref(null);
+const menuEdit = reactive({
+  dialogVisble: false,
+  menu: {},
+  menuList: [],
+});
+
 const selectRef = ref(null);
 
-const roleDialog = ref(false);
-const roleSetPermissionDoalog = ref(false);
-
-let methodOptions = [
+const methodOptions = [
   {
     value: "GET",
     label: "GET",
@@ -286,7 +285,6 @@ let methodOptions = [
 const { proxy } = getCurrentInstance();
 const data = reactive({
   pageInfo: {
-    query: "",
     page: 1,
     limit: 10, // 默认值需要是分页定义的值
   },
@@ -295,7 +293,7 @@ const data = reactive({
   createMenuVisible: false,
   menuForm: {
     memo: "",
-    parent_id: 0,
+    parent_id: null,
     name: "",
     sequence: "",
     status: 1,
@@ -304,6 +302,7 @@ const data = reactive({
     code: "",
     method: "",
   },
+  total: 0,
   name: "",
   roleList: [],
   menus: [],
@@ -312,6 +311,7 @@ const data = reactive({
 
 onMounted(() => {
   getMenusList();
+  getMenusByMenuType();
 });
 
 const deleteMenu = async (row) => {
@@ -352,14 +352,16 @@ const createRole = () => {
   data.createMenuVisible = true;
 };
 
-const updateRole = (role) => {
-  roleDialog.value.dialogVisble = true;
-  data.role = role;
+const handleEdit = (menu) => {
+  if (menu.parent_id == 0) {
+    menu.parent_id = "";
+  }
+  menuEdit.dialogVisble = true;
+  menuEdit.menu = JSON.parse(JSON.stringify(menu));
 };
 
 const confirmCreateMenus = async () => {
   data.menuForm.menu_type = parseInt(data.menuForm.menu_type);
-  console.log(data.menuForm);
   const resp = await proxy.$http({
     method: "post",
     url: "/menus",
@@ -380,12 +382,50 @@ const confirmCreateMenus = async () => {
   }
 };
 
+const changeStatus = async (menu) => {
+  const res = await proxy.$http({
+    method: "put",
+    url: `/menus/${menu.id}/status/${menu.status}`,
+  });
+
+  if (res.code === 200) {
+    getMenusList();
+    ElMessage({
+      type: "success",
+      message: "更新成功",
+    });
+  } else {
+    ElMessage({
+      type: "error",
+      message: "更新失败",
+    });
+  }
+};
 const getMenusList = async () => {
   const res = await proxy.$http({
     method: "get",
     url: "/menus",
+    data: data.pageInfo,
   });
-  data.menuList = res.result;
+  data.menuList = res.result.menus;
+  data.total = res.result.total;
+};
+
+//分页
+const onChange = (v) => {
+  console.log(v);
+  data.pageInfo.limit = 10;
+  data.pageInfo.page = v.page;
+  getMenusList();
+};
+
+const getMenusByMenuType = async () => {
+  const res = await proxy.$http({
+    method: "get",
+    url: "/menus",
+    data: { menu_type: 1 },
+  });
+  menuEdit.menuList = res.result.menus;
 };
 </script>
 

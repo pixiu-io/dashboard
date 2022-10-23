@@ -1,28 +1,30 @@
 <template>
   <el-main>
     <div style="margin-top: 20px">
-      <el-row>
-        <el-col>
-          <el-button
-            type="primary"
-            @click="createRole()"
-            style="margin-left: 1px"
-            v-permissions="'user:cloud:add'"
-          >
-            <el-icon style="vertical-align: middle; margin-right: 4px">
-              <component is="Plus" />
-            </el-icon>
-            添加角色
-          </el-button>
-        </el-col>
-      </el-row>
+      角色列表
 
       <el-card class="box-card">
+        <el-row>
+          <el-col>
+            <el-button
+              type="primary"
+              @click="createRole()"
+              style="margin-left: 1px; margin-bottom: 10px"
+              v-permissions="'user:cloud:add'"
+            >
+              <el-icon style="vertical-align: middle; margin-right: 4px">
+                <component is="Plus" />
+              </el-icon>
+              添加角色
+            </el-button>
+          </el-col>
+        </el-row>
         <el-table
           :data="data.roleList"
           stripe
           style="margin-top: 2px; width: 100%"
           row-key="id"
+          v-loading="loading"
         >
           <el-table-column prop="id" label="角色ID" width="200" />
           <el-table-column prop="name" label="角色名" width="180" />
@@ -44,6 +46,7 @@
                 active-text="启用"
                 inactive-text="禁用"
                 width="45px"
+                @change="changeStatus(scope.row)"
               />
             </template>
           </el-table-column>
@@ -182,6 +185,7 @@ import RoleSetPermission from "./roleSetPermission.vue";
 
 const { proxy } = getCurrentInstance();
 
+const loading = ref(false);
 const roleEdit = reactive({
   dialogVisble: false,
   role: {},
@@ -203,7 +207,7 @@ const data = reactive({
   createRoleVisible: false,
   roleForm: {
     memo: "",
-    parent_id: 0,
+    parent_id: null,
     name: "",
     sequence: "",
     status: 1,
@@ -224,9 +228,27 @@ const getRoleList = async () => {
     data: data.pageInfo,
   });
 
-  data.roleList = res.result;
+  data.roleList = res.result.roles;
 };
+const changeStatus = async (role) => {
+  const res = await proxy.$http({
+    method: "put",
+    url: `/roles/${role.id}/status/${role.status}`,
+  });
 
+  if (res.code === 200) {
+    getRoleList();
+    ElMessage({
+      type: "success",
+      message: "更新成功",
+    });
+  } else {
+    ElMessage({
+      type: "error",
+      message: "更新失败",
+    });
+  }
+};
 const deleteRole = async (row) => {
   ElMessageBox.confirm(
     "此操作将删除 " + row.name + "角色 . 是否继续?",
@@ -266,6 +288,9 @@ const createRole = () => {
 };
 
 const handleRole = (role) => {
+  if (role.parent_id == 0) {
+    role.parent_id = "";
+  }
   roleEdit.dialogVisble = true;
   roleEdit.role = JSON.parse(JSON.stringify(role));
 };
@@ -296,7 +321,7 @@ const getMenus = async () => {
     method: "get",
     url: "/menus",
   });
-  roleSet.menuList = res.result;
+  roleSet.menuList = res.result.menus;
 };
 
 const handleSetRole = async (role) => {
