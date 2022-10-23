@@ -124,7 +124,7 @@ const methodOptions = [
     label: "PUT",
   },
 ];
-const props = defineProps(["menu", "menuList", "options"]);
+const props = defineProps(["menu", "menuList"]);
 const { menu, menuList } = toRefs(props);
 
 const emits = defineEmits(["update:modelValue", "valueChange"]);
@@ -134,6 +134,11 @@ const handleClose = () => {
 };
 
 const handleUptdaeMenus = async () => {
+  if (menu.value.parent_id === "") {
+    menu.value.parent_id = 0;
+  }
+
+  menu.value.menu_type = parseInt(menu.value.menu_type);
   const resp = await proxy.$http({
     method: "put",
     url: "/menus/" + menu.value.id,

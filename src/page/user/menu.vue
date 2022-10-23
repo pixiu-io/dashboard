@@ -91,6 +91,7 @@
                 active-text="启用"
                 inactive-text="禁用"
                 width="45px"
+                @change="changeStatus(scope.row)"
               />
             </template>
           </el-table-column>
@@ -120,6 +121,8 @@
             </template>
           </el-table-column>
         </el-table>
+        <!-- 分页区域 -->
+        <pagination :total="data.total" @onChange="onChange"></pagination>
       </el-card>
     </div>
   </el-main>
@@ -128,7 +131,7 @@
     v-model="menuEdit.dialogVisble"
     @valueChange="getMenusList"
     :menu="menuEdit.menu"
-    :menuList="data.menuList"
+    :menuList="menuEdit.menuList"
     v-if="menuEdit.dialogVisble"
   />
   <!-- 添加菜单按钮信息 -->
@@ -167,7 +170,7 @@
         <el-tree-select
           ref="selectRef"
           v-model="data.menuForm.parent_id"
-          :data="data.menuList"
+          :data="menuEdit.menuList"
           :props="{ value: 'id', label: 'name' }"
           check-strictly
           clearable
@@ -250,10 +253,12 @@
 import { reactive, getCurrentInstance, onMounted, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import MenuEdit from "./menuEdit.vue";
+import Pagination from "@/components/pagination/pagination.vue";
 
 const menuEdit = reactive({
   dialogVisble: false,
   menu: {},
+  menuList: [],
 });
 
 const selectRef = ref(null);
@@ -280,7 +285,6 @@ const methodOptions = [
 const { proxy } = getCurrentInstance();
 const data = reactive({
   pageInfo: {
-    query: "",
     page: 1,
     limit: 10, // 默认值需要是分页定义的值
   },
@@ -289,7 +293,7 @@ const data = reactive({
   createMenuVisible: false,
   menuForm: {
     memo: "",
-    parent_id: 0,
+    parent_id: null,
     name: "",
     sequence: "",
     status: 1,
@@ -298,6 +302,7 @@ const data = reactive({
     code: "",
     method: "",
   },
+  total: 0,
   name: "",
   roleList: [],
   menus: [],
@@ -306,6 +311,7 @@ const data = reactive({
 
 onMounted(() => {
   getMenusList();
+  getMenusByMenuType();
 });
 
 const deleteMenu = async (row) => {
@@ -347,6 +353,9 @@ const createRole = () => {
 };
 
 const handleEdit = (menu) => {
+  if (menu.parent_id == 0) {
+    menu.parent_id = "";
+  }
   menuEdit.dialogVisble = true;
   menuEdit.menu = JSON.parse(JSON.stringify(menu));
 };
@@ -373,12 +382,50 @@ const confirmCreateMenus = async () => {
   }
 };
 
+const changeStatus = async (menu) => {
+  const res = await proxy.$http({
+    method: "put",
+    url: `/menus/${menu.id}/status/${menu.status}`,
+  });
+
+  if (res.code === 200) {
+    getMenusList();
+    ElMessage({
+      type: "success",
+      message: "更新成功",
+    });
+  } else {
+    ElMessage({
+      type: "error",
+      message: "更新失败",
+    });
+  }
+};
 const getMenusList = async () => {
   const res = await proxy.$http({
     method: "get",
     url: "/menus",
+    data: data.pageInfo,
   });
-  data.menuList = res.result;
+  data.menuList = res.result.menus;
+  data.total = res.result.total;
+};
+
+//分页
+const onChange = (v) => {
+  console.log(v);
+  data.pageInfo.limit = 10;
+  data.pageInfo.page = v.page;
+  getMenusList();
+};
+
+const getMenusByMenuType = async () => {
+  const res = await proxy.$http({
+    method: "get",
+    url: "/menus",
+    data: { menu_type: 1 },
+  });
+  menuEdit.menuList = res.result.menus;
 };
 </script>
 

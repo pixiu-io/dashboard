@@ -58,8 +58,12 @@ const handleClose = () => {
 };
 
 const confirmSetPermission = async () => {
-  const menuIds = menusRef.value.getCheckedKeys();
+  const menuIds = menusRef.value
+    .getCheckedKeys()
+    .concat(menusRef.value.getHalfCheckedKeys());
+  const a = menusRef.value.getHalfCheckedKeys;
   data.menuForm["menu_ids"] = menuIds;
+
   const res = await proxy.$http({
     method: "post",
     url: "/roles/" + role.value.id + "/menus",
