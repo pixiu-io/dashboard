@@ -1,28 +1,31 @@
 <template>
   <el-main>
+    <el-card style="margin-top: -20px; margin-left: -20px; margin-right: -20px">
+      <span style="font-weight: bold; font-size: 18px; vertical-align: middle"> 用户列表 </span>
+    </el-card>
     <div style="margin-top: 20px">
-      用户列表
+      <el-row>
+        <el-col>
+          <el-button
+            v-permissions="'user:cloud:add'"
+            type="primary"
+            style="margin-left: 1px"
+            @click="createUser"
+          >
+            <el-icon style="vertical-align: middle; margin-right: 4px">
+              <component :is="'Plus'" />
+            </el-icon>
+            添加用户
+          </el-button>
+        </el-col>
+      </el-row>
+
       <el-card class="box-card">
-        <el-row>
-          <el-col>
-            <el-button
-              type="primary"
-              @click="createUser"
-              style="margin-left: 1px; margin-bottom: 10px"
-              v-permissions="'user:cloud:add'"
-            >
-              <el-icon style="vertical-align: middle; margin-right: 4px">
-                <component is="Plus" />
-              </el-icon>
-              添加用户
-            </el-button>
-          </el-col>
-        </el-row>
         <el-table
+          v-loading="loading"
           :data="data.userList"
           stripe
           style="margin-top: 2px; width: 100%"
-          v-loading="loading"
         >
           <el-table-column prop="id" label="用户ID" width="200" />
           <el-table-column prop="name" label="用户名" width="180" />
@@ -34,10 +37,7 @@
               <el-switch
                 v-model="scope.row.status"
                 class="ml-2"
-                style="
-                  --el-switch-on-color: #409eff;
-                  --el-switch-off-color: #ff4949;
-                "
+                style="--el-switch-on-color: #409eff; --el-switch-off-color: #ff4949"
                 :active-value="1"
                 :inactive-value="0"
                 size="small"
@@ -52,31 +52,31 @@
           <el-table-column fixed="right" label="操作" width="250">
             <template #default="scope">
               <el-button
+                v-permissions="'user:cloud:setting'"
                 size="small"
                 text
                 style="color: #006eff"
                 @click="handleSetRole(scope.row)"
-                v-permissions="'user:cloud:setting'"
               >
                 分配角色
               </el-button>
 
               <el-button
+                v-permissions="'user:cloud:delete'"
                 text
                 size="small"
-                @click="deleteUser(scope.row)"
                 style="margin-right: 10px; color: #006eff"
-                v-permissions="'user:cloud:delete'"
+                @click="deleteUser(scope.row)"
               >
                 删除
               </el-button>
 
               <el-button
+                v-permissions="'user:cloud:delete'"
                 text
                 size="small"
-                @click="handleDialogValue(scope.row)"
                 style="margin-right: 10px; color: #006eff"
-                v-permissions="'user:cloud:delete'"
+                @click="handleDialogValue(scope.row)"
               >
                 修改
               </el-button>
@@ -84,25 +84,25 @@
           </el-table-column>
         </el-table>
         <!-- 分页区域 -->
-        <pagination :total="data.total" @onChange="onChange"></pagination>
+        <pagination :total="data.total" @on-change="onChange"></pagination>
       </el-card>
     </div>
   </el-main>
 
   <UserSetRole
-    v-model="userSetRole.dialogVisble"
-    :defaultCheckedRoles="userSetRole.defaultCheckedRoles"
-    :user="userSetRole.user"
-    :roleList="userSetRole.roleList"
-    @valueChange="getRoles"
     v-if="userSetRole.dialogVisble"
+    v-model="userSetRole.dialogVisble"
+    :default-checked-roles="userSetRole.defaultCheckedRoles"
+    :user="userSetRole.user"
+    :role-list="userSetRole.roleList"
+    @value-change="getRoles"
   />
 
   <UserEdit
-    v-model="userEdit.dialogVisble"
-    @valueChange="getUserList"
-    :dialogTableValue="userEdit.dialogTableValue"
     v-if="userEdit.dialogVisble"
+    v-model="userEdit.dialogVisble"
+    :dialog-table-value="userEdit.dialogTableValue"
+    @value-change="getUserList"
   />
   <!-- 添加用户信息 -->
   <el-dialog
@@ -113,9 +113,7 @@
     @close="data.createUserVisible = false"
   >
     <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">
-        添加用户
-      </div>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">添加用户</div>
     </template>
     <el-form
       :label-position="labelPosition"
@@ -146,18 +144,10 @@
         />
       </el-form-item>
       <el-form-item label="密码" required>
-        <el-input
-          v-model="data.userForm.password"
-          type="password"
-          show-password
-        />
+        <el-input v-model="data.userForm.password" type="password" show-password />
       </el-form-item>
       <el-form-item label="再次输入密码" required>
-        <el-input
-          v-model="data.confirmPassword"
-          type="password"
-          show-password
-        />
+        <el-input v-model="data.confirmPassword" type="password" show-password />
       </el-form-item>
     </el-form>
 
@@ -171,11 +161,11 @@
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance, onMounted, ref } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-import UserEdit from "./userEdit.vue";
-import UserSetRole from "./userSetRole.vue";
-import Pagination from "@/components/pagination/pagination.vue";
+import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import UserEdit from './userEdit.vue';
+import UserSetRole from './userSetRole.vue';
+import Pagination from '@/components/pagination/pagination.vue';
 
 const loading = ref(false);
 
@@ -195,7 +185,7 @@ const userSetRole = reactive({
 const { proxy } = getCurrentInstance();
 const data = reactive({
   pageInfo: {
-    query: "",
+    query: '',
     page: 1,
     limit: 10, // 默认值需要是分页定义的值
   },
@@ -204,14 +194,14 @@ const data = reactive({
   // 触发创建页面
   createUserVisible: false,
   userForm: {
-    description: "",
-    email: "",
-    name: "",
-    password: "",
+    description: '',
+    email: '',
+    name: '',
+    password: '',
     status: 1,
   },
   updateForm: {},
-  confirmPassword: "",
+  confirmPassword: '',
   userList: [],
   autosize: {
     minRows: 8,
@@ -223,7 +213,7 @@ onMounted(() => {
   getRoles();
 });
 
-//分页
+// 分页
 const onChange = (v) => {
   data.pageInfo.limit = 10;
   data.pageInfo.page = v.page;
@@ -232,28 +222,28 @@ const onChange = (v) => {
 
 const changeStatus = async (user) => {
   const res = await proxy.$http({
-    method: "put",
+    method: 'put',
     url: `/users/${user.id}/status/${user.status}`,
   });
 
   if (res.code === 200) {
     getUserList();
     ElMessage({
-      type: "success",
-      message: "更新成功",
+      type: 'success',
+      message: '更新成功',
     });
   } else {
     ElMessage({
-      type: "error",
-      message: "更新失败",
+      type: 'error',
+      message: '更新失败',
     });
   }
 };
 
 const getUserList = async () => {
   const res = await proxy.$http({
-    method: "get",
-    url: "/users",
+    method: 'get',
+    url: '/users',
     data: data.pageInfo,
   });
 
@@ -262,32 +252,28 @@ const getUserList = async () => {
 };
 
 const deleteUser = async (row) => {
-  ElMessageBox.confirm(
-    "此操作将删除 " + row.name + "用户 . 是否继续?",
-    "提示",
-    {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
-      type: "warning",
-      draggable: true,
-    }
-  )
+  ElMessageBox.confirm(`此操作将删除 ${row.name}用户 . 是否继续?`, '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+    draggable: true,
+  })
     .then(() => {
       proxy
         .$http({
-          method: "delete",
-          url: "/users/" + row.id,
+          method: 'delete',
+          url: `/users/${row.id}`,
         })
         .then((res) => {
           getUserList();
           ElMessage({
-            type: "success",
-            message: "删除成功",
+            type: 'success',
+            message: '删除成功',
           });
         })
         .catch((err) => {
           ElMessage({
-            type: "error",
+            type: 'error',
             message: err,
           });
         });
@@ -306,28 +292,28 @@ const handleDialogValue = (user) => {
 
 const confirmCreateUser = async () => {
   const resp = await proxy.$http({
-    method: "post",
-    url: "/users",
+    method: 'post',
+    url: '/users',
     data: data.userForm,
   });
   data.createUserVisible = false;
   if (resp.code === 200) {
     getUserList();
     ElMessage({
-      type: "success",
-      message: "添加成功",
+      type: 'success',
+      message: '添加成功',
     });
   } else {
     ElMessage({
-      type: "error",
-      message: "添加失败",
+      type: 'error',
+      message: '添加失败',
     });
   }
 };
 const getRoles = async () => {
   const res = await proxy.$http({
-    method: "get",
-    url: "/roles",
+    method: 'get',
+    url: '/roles',
   });
   userSetRole.roleList = res.result.roles;
 };
@@ -336,12 +322,12 @@ const handleSetRole = async (user) => {
   userSetRole.user = user;
   userSetRole.defaultCheckedRoles = [];
   const res = await proxy.$http({
-    method: "get",
-    url: "/users/" + userSetRole.user.id + "/roles",
+    method: 'get',
+    url: `/users/${userSetRole.user.id}/roles`,
   });
 
   // 提取role id
-  let roleList = res.result;
+  const roleList = res.result;
   if (roleList !== null) {
     for (let i = 0; i < roleList.length; i++) {
       if (roleList[i].children !== null) {

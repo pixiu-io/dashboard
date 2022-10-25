@@ -1,26 +1,13 @@
 <template>
   <el-col :span="12"
     ><div @click="abc(type)">
-      <el-row
-        :class="`${
-          type === defaultType ? 'pixiu-card__active' : 'pixiu-card__default'
-        }`"
-      >
+      <el-row :class="`${type === defaultType ? 'pixiu-card__active' : 'pixiu-card__default'}`">
         <el-col
           :span="span"
-          style="
-            height: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-          "
+          style="height: 40px; display: flex; justify-content: center; align-items: center"
         >
           <div
-            :class="`${
-              type === defaultType
-                ? 'pixiu-radio__active'
-                : 'pixiu-radio__default'
-            }`"
+            :class="`${type === defaultType ? 'pixiu-radio__active' : 'pixiu-radio__default'}`"
           ></div>
         </el-col>
         <el-col :span="24 - span">
@@ -32,17 +19,23 @@
 
 <script setup>
 defineProps({
-  type: Number,
+  type: {
+    type: Number,
+    default: 0,
+  },
   span: {
     type: Number,
     default: 4,
   },
-  defaultType: Number,
+  defaultType: {
+    type: Number,
+    default: 0,
+  },
 });
-const emits = defineEmits(["click"]);
+const emits = defineEmits(['click']);
 
 const abc = (value) => {
-  emits("click", value);
+  emits('click', value);
 };
 </script>
 

@@ -8,9 +8,7 @@
     @close="handleClose"
   >
     <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">
-        授权
-      </div>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">授权</div>
     </template>
     <div>
       <el-tree
@@ -29,20 +27,31 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="handleClose">取消</el-button>
-        <el-button type="primary" @click="confirmSetPermission()"
-          >确定</el-button
-        >
+        <el-button type="primary" @click="confirmSetPermission()">确定</el-button>
       </span>
     </template>
   </el-dialog>
 </template>
 
 <script setup>
-import { toRefs, ref, getCurrentInstance, reactive } from "vue";
-import { ElMessage } from "element-plus";
+import { toRefs, ref, getCurrentInstance, reactive } from 'vue';
+import { ElMessage } from 'element-plus';
 
 const { proxy } = getCurrentInstance();
-const props = defineProps(["role", "checkedMenus", "menuList"]);
+const props = defineProps({
+  role: {
+    type: Object,
+    default: () => {},
+  },
+  checkedMenus: {
+    type: Array,
+    default: () => [],
+  },
+  menuList: {
+    type: Array,
+    default: () => [],
+  },
+});
 const { role, checkedMenus, menuList } = toRefs(props);
 const menusRef = ref(null);
 
@@ -52,33 +61,31 @@ const data = reactive({
   },
 });
 
-const emits = defineEmits(["update:modelValue", "valueChange"]);
+const emits = defineEmits(['update:modelValue', 'valueChange']);
 const handleClose = () => {
-  emits("update:modelValue", false);
+  emits('update:modelValue', false);
 };
 
 const confirmSetPermission = async () => {
-  const menuIds = menusRef.value
-    .getCheckedKeys()
-    .concat(menusRef.value.getHalfCheckedKeys());
+  const menuIds = menusRef.value.getCheckedKeys().concat(menusRef.value.getHalfCheckedKeys());
   const a = menusRef.value.getHalfCheckedKeys;
-  data.menuForm["menu_ids"] = menuIds;
+  data.menuForm.menu_ids = menuIds;
 
   const res = await proxy.$http({
-    method: "post",
-    url: "/roles/" + role.value.id + "/menus",
+    method: 'post',
+    url: `/roles/${role.value.id}/menus`,
     data: data.menuForm,
   });
 
   if (res.code === 200) {
-    emits("valueChange");
+    emits('valueChange');
     ElMessage({
-      type: "success",
-      message: "分配成功",
+      type: 'success',
+      message: '分配成功',
     });
   } else {
     ElMessage({
-      type: "error",
+      type: 'error',
       message: res.message,
     });
   }

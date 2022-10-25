@@ -8,15 +8,9 @@
     @close="handleClose"
   >
     <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">
-        修改用户
-      </div>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">修改用户</div>
     </template>
-    <el-form
-      label-width="100px"
-      :model="userForm.value"
-      style="max-width: 260px"
-    >
+    <el-form label-width="100px" :model="userForm.value" style="max-width: 260px">
       <el-form-item label="名字:" required>
         <el-input v-model="userForm.value.name" disabled />
       </el-form-item>
@@ -51,18 +45,18 @@
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance, watch } from "vue";
-import { ElMessage } from "element-plus";
+import { reactive, getCurrentInstance, watch } from 'vue';
+import { ElMessage } from 'element-plus';
 
 const { proxy } = getCurrentInstance();
-const emits = defineEmits(["update:modelValue", "valueChange"]);
+const emits = defineEmits(['update:modelValue', 'valueChange']);
 
 const userForm = reactive({
   id: 0,
-  description: "",
-  email: "",
-  name: "",
-  password: "",
+  description: '',
+  email: '',
+  name: '',
+  password: '',
   status: 1,
 });
 
@@ -74,26 +68,26 @@ const props = defineProps({
 });
 
 const handleClose = () => {
-  emits("update:modelValue", false);
+  emits('update:modelValue', false);
 };
 
 const confirmUpdateUser = async () => {
   const resp = await proxy.$http({
-    method: "put",
-    url: "/users/" + userForm.value.id,
+    method: 'put',
+    url: `/users/${userForm.value.id}`,
     data: userForm.value,
   });
 
   if (resp.code === 200) {
-    emits("valueChange");
+    emits('valueChange');
     ElMessage({
-      type: "success",
-      message: "修改成功",
+      type: 'success',
+      message: '修改成功',
     });
   } else {
     ElMessage({
-      type: "error",
-      message: "修改失败",
+      type: 'error',
+      message: '修改失败',
     });
   }
   handleClose();
@@ -104,7 +98,7 @@ watch(
   () => {
     userForm.value = props.dialogTableValue;
   },
-  { deep: true, immediate: true }
+  { deep: true, immediate: true },
 );
 </script>
 

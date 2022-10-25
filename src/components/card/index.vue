@@ -10,12 +10,11 @@
   >
     <div class="app-pixiu-header-title">
       <el-space>
-        <div class="back-button" v-if="back" @click="goBack">
+        <div v-if="back" class="back-button" @click="goBack">
           <el-icon>
-            <component is="Back"></component>
+            <component :is="'Back'"></component>
           </el-icon>
         </div>
-
         <span>{{ title }}</span>
       </el-space>
     </div>
@@ -23,18 +22,18 @@
 </template>
 
 <script setup>
-import { useRouter } from "vue-router";
+import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
 defineProps({
   title: {
     type: String,
-    default: "默认标题",
+    default: '默认标题',
   },
   height: {
     type: String,
-    default: "60px",
+    default: '60px',
   },
   back: {
     type: Boolean,

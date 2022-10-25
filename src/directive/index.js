@@ -1,3 +1,3 @@
-import permissionDirective from "./permission";
+import permissionDirective from './permission';
 
 export { permissionDirective };

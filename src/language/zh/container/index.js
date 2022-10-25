@@ -1,7 +1,7 @@
-import container from "./container";
-import createCluster from "./createCluster";
-import insertCluster from "./insertCluster";
-import kubernetes from "./kubernetes";
+import container from './container';
+import createCluster from './createCluster';
+import insertCluster from './insertCluster';
+import kubernetes from './kubernetes';
 
 export default {
   container,
