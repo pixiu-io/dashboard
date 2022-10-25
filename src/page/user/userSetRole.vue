@@ -8,9 +8,7 @@
     @close="handleClose"
   >
     <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">
-        分配角色
-      </div>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">分配角色</div>
     </template>
     <div>
       <el-tree
@@ -36,11 +34,24 @@
 </template>
 
 <script setup>
-import { toRefs, ref, getCurrentInstance, reactive, watch } from "vue";
-import { ElMessage } from "element-plus";
+import { toRefs, ref, getCurrentInstance, reactive, watch } from 'vue';
+import { ElMessage } from 'element-plus';
 
 const { proxy } = getCurrentInstance();
-const props = defineProps(["defaultCheckedRoles", "user", "roleList"]);
+const props = defineProps({
+  user: {
+    type: Object,
+    default: () => {},
+  },
+  defaultCheckedRoles: {
+    type: Array,
+    default: () => [],
+  },
+  roleList: {
+    type: Array,
+    default: () => [],
+  },
+});
 const { defaultCheckedRoles, user, roleList } = toRefs(props);
 
 const menusRef = ref(null);
@@ -50,35 +61,35 @@ const data = reactive({
   },
 });
 
-const emits = defineEmits(["update:modelValue", "valueChange"]);
+const emits = defineEmits(['update:modelValue', 'valueChange']);
 
 const handleClose = () => {
-  emits("update:modelValue", false);
+  emits('update:modelValue', false);
 };
 
 watch(
   () => user,
   () => {},
-  { deep: true, immediate: true }
+  { deep: true, immediate: true },
 );
 
 const confirmSetRole = async () => {
   const roleIds = menusRef.value.getCheckedKeys();
-  data.roleForm["role_ids"] = roleIds;
+  data.roleForm.role_ids = roleIds;
   const res = await proxy.$http({
-    method: "post",
-    url: "/users/" + user.value.id + "/roles",
+    method: 'post',
+    url: `/users/${user.value.id}/roles`,
     data: data.roleForm,
   });
   if (res.code === 200) {
-    emits("valueChange");
+    emits('valueChange');
     ElMessage({
-      type: "success",
-      message: "分配成功",
+      type: 'success',
+      message: '分配成功',
     });
   } else {
     ElMessage({
-      type: "error",
+      type: 'error',
       message: res.message,
     });
   }

@@ -1,12 +1,4 @@
 <template>
-  <!-- <el-icon
-    v-if="icon"
-    :color="type === 'danger' ? '#f56c6c' : '#67c23a'"
-    :size="size"
-  >
-    <component v-if="type === 'danger'" is="CircleCloseFilled"></component>
-    <component v-else is="SuccessFilled"></component>
-  </el-icon> -->
   <pixiu-icon
     v-if="icon"
     :color="type === 'danger' ? '#f56c6c' : '#67c23a'"
@@ -30,7 +22,7 @@
 defineProps({
   type: {
     type: String,
-    default: "success",
+    default: 'success',
   },
   size: {
     type: Number,

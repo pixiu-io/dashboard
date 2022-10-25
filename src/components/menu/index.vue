@@ -1,29 +1,17 @@
 <template>
-  <template v-for="item in items">
+  <template v-for="item in items" :key="item.id">
     <el-menu-item
+      v-if="item.children === undefined || item.children === null || item.children.length <= 0"
       :index="item.url"
-      v-if="
-        item.children === undefined ||
-        item.children === null ||
-        item.children.length <= 0
-      "
     >
-      <pixiu-icon
-        v-if="item.icon"
-        :name="item.icon"
-        :type="item.iconType"
-      ></pixiu-icon>
+      <pixiu-icon v-if="item.icon" :name="item.icon" :type="item.iconType"></pixiu-icon>
       <template #title>
         <span>{{ item.name }}</span>
       </template>
     </el-menu-item>
     <el-sub-menu v-else :index="item.url">
       <template #title>
-        <pixiu-icon
-          v-if="item.icon"
-          :name="item.icon"
-          :type="item.iconType"
-        ></pixiu-icon>
+        <pixiu-icon v-if="item.icon" :name="item.icon" :type="item.iconType"></pixiu-icon>
 
         <span>{{ item.name }}</span>
       </template>
@@ -33,9 +21,13 @@
 </template>
 
 <script setup>
-import PixiuMenu from "./index.vue";
+import PixiuMenu from './index.vue';
+
 defineProps({
-  items: Array,
+  items: {
+    type: Array,
+    default: () => [],
+  },
 });
 </script>
 

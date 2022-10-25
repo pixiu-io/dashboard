@@ -1,5 +1,5 @@
-import login from "./login";
-import container from "./container";
+import login from './login';
+import container from './container';
 
 export default {
   login,
