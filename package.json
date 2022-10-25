@@ -7,6 +7,7 @@
     "build": "vite build --mode=prod",
     "preview": "vite preview --port 4173",
     "test:unit": "vitest --environment jsdom",
+    "prettier": "prettier -c .prettierrc.js",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
   "dependencies": {
