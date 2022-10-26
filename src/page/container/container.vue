@@ -353,7 +353,6 @@ const formatterResource = (row, column, cellValue) => {
 
 //分页
 const onChange = (v) => {
-  console.log(v);
   data.pageInfo.limit = 10;
   data.pageInfo.page = v.page;
   data.pageInfo.page_size = v.limit; //兼容原有写法

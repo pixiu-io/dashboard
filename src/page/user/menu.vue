@@ -383,7 +383,6 @@ const getMenusList = async () => {
 
 // 分页
 const onChange = (v) => {
-  console.log(v);
   data.pageInfo.limit = 10;
   data.pageInfo.page = v.page;
   getMenusList();

@@ -1,3 +1,7 @@
 import permissionDirective from './permission';
 
-export { permissionDirective };
+const setupDirective = (app) => {
+  app.directive('permissions', permissionDirective);
+};
+
+export default setupDirective;

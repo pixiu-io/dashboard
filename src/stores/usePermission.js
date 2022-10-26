@@ -1,41 +1,25 @@
 import { defineStore } from 'pinia';
+import { ref } from 'vue';
 import axiosIntance from '../utils/http';
 
-const usePermissions = defineStore('permissions', {
-  state: () => ({
-    permissions: [
-      'user:cloud:add',
-      'user:cloud:delete',
-      'user:cloud:setting',
-      'user:cloud:start',
-      'user:cloud:detail',
-    ],
-  }),
-  getters: {},
-  actions: {
-    // 获取权限列表
-    async getPermission() {
-      console.log('获取权限。。。。');
+const usePermissions = defineStore(
+  'permissions',
+  () => {
+    const permissions = ref([]);
+    const getPermission = async () => {
       const res = await axiosIntance({
         method: 'get',
         url: '/users/permissions',
       });
-
-      // if (res.code == 200) {
-      //   this.permissions = res.result;
-      //   console.log(res.result);
-      // }
+      permissions.value = res.result;
+    };
+    return { permissions, getPermission };
+  },
+  {
+    persist: {
+      storage: localStorage,
     },
   },
-  persist: {
-    enabled: true,
-    strategies: [
-      {
-        key: 'permissions',
-        storage: localStorage,
-      },
-    ],
-  },
-});
+);
 
 export default usePermissions;
