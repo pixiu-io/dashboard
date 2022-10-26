@@ -72,9 +72,6 @@
 
 <script setup>
 import { reactive, getCurrentInstance, ref } from 'vue';
-import usePermissions from '../../stores/usePermission';
-
-const useStore = usePermissions();
 
 const { proxy } = getCurrentInstance();
 const data = reactive({
@@ -123,8 +120,7 @@ const login = () => {
       const token = res.result;
       localStorage.setItem('token', token);
       localStorage.setItem('account', data.loginInfo.name);
-      // 持久化权限
-      useStore.getPermission();
+
       proxy.$message.success('登陆成功');
       proxy.$router.push('/index');
     }
