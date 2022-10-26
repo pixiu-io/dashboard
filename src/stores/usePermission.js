@@ -11,7 +11,9 @@ const usePermissions = defineStore(
         method: 'get',
         url: '/users/permissions',
       });
-      permissions.value = res.result;
+      if (res.code === 200) {
+        permissions.value = res.result;
+      }
     };
     return { permissions, getPermission };
   },
