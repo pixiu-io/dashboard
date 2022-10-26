@@ -1,4 +1,4 @@
-import { pinia, usePermissions } from "@/stores";
+import { pinia, usePermissions } from '@/stores';
 
 const permissionsStore = usePermissions(pinia);
 

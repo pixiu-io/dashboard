@@ -1,18 +1,8 @@
 <template>
-  <el-icon :size="size" :color="color" :class="class" :style="style">
+  <el-icon :size="size" :color="color" :class="className" :style="style">
     <component :is="name" v-if="type === 'el'" />
-    <svg
-      v-if="type === 'iconfont'"
-      :width="size"
-      :height="size"
-      aria-hidden="true"
-    >
-      <use
-        :xlink:href="`#${name}`"
-        :width="size"
-        :height="size"
-        fill="currentColor"
-      />
+    <svg v-if="type === 'iconfont'" :width="size" :height="size" aria-hidden="true">
+      <use :xlink:href="`#${name}`" :width="size" :height="size" fill="currentColor" />
     </svg>
   </el-icon>
 </template>
@@ -25,23 +15,23 @@ defineProps({
   },
   color: {
     type: String,
-    default: "#cccccc",
+    default: '#cccccc',
   },
   size: {
     type: String,
-    default: "16px",
+    default: '16px',
   },
   type: {
     type: String,
-    default: "el",
+    default: 'el',
   },
-  class: {
+  className: {
     type: String,
-    default: "",
+    default: '',
   },
   style: {
     type: String,
-    default: "",
+    default: '',
   },
 });
 </script>

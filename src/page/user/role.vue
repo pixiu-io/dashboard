@@ -1,30 +1,32 @@
 <template>
   <el-main>
+    <el-card style="margin-top: -20px; margin-left: -20px; margin-right: -20px">
+      <span style="font-weight: bold; font-size: 18px; vertical-align: middle"> 角色列表 </span>
+    </el-card>
     <div style="margin-top: 20px">
-      角色列表
+      <el-row>
+        <el-col>
+          <el-button
+            v-permissions="'user:cloud:add'"
+            type="primary"
+            style="margin-left: 1px"
+            @click="createRole()"
+          >
+            <el-icon style="vertical-align: middle; margin-right: 4px">
+              <component :is="'Plus'" />
+            </el-icon>
+            添加角色
+          </el-button>
+        </el-col>
+      </el-row>
 
       <el-card class="box-card">
-        <el-row>
-          <el-col>
-            <el-button
-              type="primary"
-              @click="createRole()"
-              style="margin-left: 1px; margin-bottom: 10px"
-              v-permissions="'user:cloud:add'"
-            >
-              <el-icon style="vertical-align: middle; margin-right: 4px">
-                <component is="Plus" />
-              </el-icon>
-              添加角色
-            </el-button>
-          </el-col>
-        </el-row>
         <el-table
+          v-loading="loading"
           :data="data.roleList"
           stripe
           style="margin-top: 2px; width: 100%"
           row-key="id"
-          v-loading="loading"
         >
           <el-table-column prop="id" label="角色ID" width="200" />
           <el-table-column prop="name" label="角色名" width="180" />
@@ -35,10 +37,7 @@
               <el-switch
                 v-model="scope.row.status"
                 class="ml-2"
-                style="
-                  --el-switch-on-color: #409eff;
-                  --el-switch-off-color: #ff4949;
-                "
+                style="--el-switch-on-color: #409eff; --el-switch-off-color: #ff4949"
                 :active-value="1"
                 :inactive-value="0"
                 size="small"
@@ -54,31 +53,31 @@
           <el-table-column fixed="right" label="操作" width="250">
             <template #default="scope">
               <el-button
+                v-permissions="'user:cloud:setting'"
                 size="small"
                 text
                 style="color: #006eff"
                 @click="handleSetRole(scope.row)"
-                v-permissions="'user:cloud:setting'"
               >
                 授权
               </el-button>
 
               <el-button
+                v-permissions="'user:cloud:delete'"
                 text
                 size="small"
-                @click="deleteRole(scope.row)"
                 style="margin-right: 10px; color: #006eff"
-                v-permissions="'user:cloud:delete'"
+                @click="deleteRole(scope.row)"
               >
                 删除
               </el-button>
 
               <el-button
+                v-permissions="'user:cloud:delete'"
                 text
                 size="small"
-                @click="handleRole(scope.row)"
                 style="margin-right: 10px; color: #006eff"
-                v-permissions="'user:cloud:delete'"
+                @click="handleRole(scope.row)"
               >
                 修改
               </el-button>
@@ -90,20 +89,20 @@
   </el-main>
 
   <RoleEdit
+    v-if="roleEdit.dialogVisble"
     v-model="roleEdit.dialogVisble"
     :role="roleEdit.role"
-    :roleList="data.roleList"
-    @valueChange="getRoleList"
-    v-if="roleEdit.dialogVisble"
+    :role-list="data.roleList"
+    @value-change="getRoleList"
   />
 
   <RoleSetPermission
-    v-model="roleSet.dialogVisble"
-    :checkedMenus="roleSet.checkedMenus"
-    :role="roleSet.role"
-    :menuList="roleSet.menuList"
-    @valueChange="getRoleList"
     v-if="roleSet.dialogVisble"
+    v-model="roleSet.dialogVisble"
+    :checked-menus="roleSet.checkedMenus"
+    :role="roleSet.role"
+    :menu-list="roleSet.menuList"
+    @value-change="getRoleList"
   />
 
   <!-- 添加角色信息 -->
@@ -115,9 +114,7 @@
     @close="data.createRoleVisible = false"
   >
     <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">
-        添加角色
-      </div>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">添加角色</div>
     </template>
     <el-form
       :label-position="labelPosition"
@@ -140,11 +137,7 @@
         />
       </el-form-item>
       <el-form-item label="父角色:">
-        <el-select
-          v-model="data.roleForm.parent_id"
-          clearable
-          placeholder="请选择"
-        >
+        <el-select v-model="data.roleForm.parent_id" clearable placeholder="请选择">
           <el-option
             v-for="item in data.roleList"
             :key="item.id"
@@ -178,10 +171,10 @@
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance, onMounted, ref } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-import RoleEdit from "./roleEdit.vue";
-import RoleSetPermission from "./roleSetPermission.vue";
+import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import RoleEdit from './roleEdit.vue';
+import RoleSetPermission from './roleSetPermission.vue';
 
 const { proxy } = getCurrentInstance();
 
@@ -199,17 +192,17 @@ const roleSet = reactive({
 
 const data = reactive({
   pageInfo: {
-    query: "",
+    query: '',
     page: 1,
     limit: 10, // 默认值需要是分页定义的值
   },
   // 触发创建页面
   createRoleVisible: false,
   roleForm: {
-    memo: "",
+    memo: '',
     parent_id: null,
-    name: "",
-    sequence: "",
+    name: '',
+    sequence: '',
     status: 1,
   },
 
@@ -223,8 +216,8 @@ onMounted(() => {
 
 const getRoleList = async () => {
   const res = await proxy.$http({
-    method: "get",
-    url: "/roles",
+    method: 'get',
+    url: '/roles',
     data: data.pageInfo,
   });
 
@@ -232,50 +225,46 @@ const getRoleList = async () => {
 };
 const changeStatus = async (role) => {
   const res = await proxy.$http({
-    method: "put",
+    method: 'put',
     url: `/roles/${role.id}/status/${role.status}`,
   });
 
   if (res.code === 200) {
     getRoleList();
     ElMessage({
-      type: "success",
-      message: "更新成功",
+      type: 'success',
+      message: '更新成功',
     });
   } else {
     ElMessage({
-      type: "error",
-      message: "更新失败",
+      type: 'error',
+      message: '更新失败',
     });
   }
 };
 const deleteRole = async (row) => {
-  ElMessageBox.confirm(
-    "此操作将删除 " + row.name + "角色 . 是否继续?",
-    "提示",
-    {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
-      type: "warning",
-      draggable: true,
-    }
-  )
+  ElMessageBox.confirm(`此操作将删除 ${row.name}角色 . 是否继续?`, '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+    draggable: true,
+  })
     .then(() => {
       const res = proxy
         .$http({
-          method: "delete",
-          url: "/roles/" + row.id,
+          method: 'delete',
+          url: `/roles/${row.id}`,
         })
         .then(() => {
           getRoleList();
           ElMessage({
-            type: "success",
-            message: "删除成功",
+            type: 'success',
+            message: '删除成功',
           });
         })
         .catch((err) => {
           ElMessage({
-            type: "error",
+            type: 'error',
             message: err,
           });
         });
@@ -289,7 +278,7 @@ const createRole = () => {
 
 const handleRole = (role) => {
   if (role.parent_id == 0) {
-    role.parent_id = "";
+    role.parent_id = '';
   }
   roleEdit.dialogVisble = true;
   roleEdit.role = JSON.parse(JSON.stringify(role));
@@ -297,20 +286,20 @@ const handleRole = (role) => {
 
 const confirmCreateRole = async () => {
   const resp = await proxy.$http({
-    method: "post",
-    url: "/roles",
+    method: 'post',
+    url: '/roles',
     data: data.roleForm,
   });
   data.createRoleVisible = false;
   if (resp.code === 200) {
     getRoleList();
     ElMessage({
-      type: "success",
-      message: "添加成功",
+      type: 'success',
+      message: '添加成功',
     });
   } else {
     ElMessage({
-      type: "error",
+      type: 'error',
       message: resp.message,
     });
   }
@@ -318,8 +307,8 @@ const confirmCreateRole = async () => {
 
 const getMenus = async () => {
   const res = await proxy.$http({
-    method: "get",
-    url: "/menus",
+    method: 'get',
+    url: '/menus',
   });
   roleSet.menuList = res.result.menus;
 };
@@ -329,11 +318,11 @@ const handleSetRole = async (role) => {
   roleSet.role = role;
 
   const res = await proxy.$http({
-    method: "get",
-    url: "/roles/" + role.id + "/menus",
+    method: 'get',
+    url: `/roles/${role.id}/menus`,
   });
 
-  let menuList = res.result;
+  const menuList = res.result;
   if (menuList !== null) {
     for (let i = 0; i < menuList.length; i++) {
       roleSet.checkedMenus.push(menuList[i].id);

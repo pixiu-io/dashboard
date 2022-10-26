@@ -4,25 +4,19 @@
     <el-main>
       <div class="app-pixiu-content-card">
         <el-card style="margin-top: 10px; width: 75%">
-          <el-form
-            :label-position="labelPosition"
-            label-width="120px"
-            :model="data.clusterForm"
-          >
+          <el-form :label-position="labelPosition" label-width="120px" :model="data.clusterForm">
             <div style="margin-top: 20px" />
             <el-form-item label="集群名称" style="width: 50%">
-              <el-input
-                v-model="data.clusterForm.name"
-                placeholder="请输入集群名称"
-              />
+              <el-input v-model="data.clusterForm.name" placeholder="请输入集群名称" />
             </el-form-item>
 
             <div style="margin-top: 30px" />
             <el-form-item label="所在地域" style="width: 100%">
               <el-radio-group v-model="data.clusterForm.region">
                 <el-radio-button
+                  v-for="(item, index) in data.regionOptions"
+                  :key="index"
                   :label="item.label"
-                  v-for="item in data.regionOptions"
                 />
               </el-radio-group>
             </el-form-item>
@@ -43,9 +37,7 @@
                 <el-icon class="el-icon--upload">
                   <upload-filled />
                 </el-icon>
-                <div class="el-upload__text">
-                  将 kubeconfig 拖到此处，或 <em>点击上传</em>
-                </div>
+                <div class="el-upload__text">将 kubeconfig 拖到此处，或 <em>点击上传</em></div>
               </el-upload>
 
               <el-row>
@@ -82,16 +74,11 @@
 
             <div style="margin-top: 18px" />
             <el-form-item label="创建系统空间">
-              <el-radio v-model="data.clusterForm.create_ns" label="enabled"
-                >是</el-radio
-              >
-              <el-radio v-model="data.clusterForm.create_ns" disabled
-                >否</el-radio
-              >
+              <el-radio v-model="data.clusterForm.create_ns" label="enabled">是</el-radio>
+              <el-radio v-model="data.clusterForm.create_ns" disabled>否</el-radio>
             </el-form-item>
             <div class="app-pixiu-describe" style="margin-top: -12px">
-              在 kubernetes 集群中创建 pixiu-system 命名空间，用于运行 pixiu
-              的系统组件和配置
+              在 kubernetes 集群中创建 pixiu-system 命名空间，用于运行 pixiu 的系统组件和配置
             </div>
 
             <div style="margin-top: 40px" />
@@ -112,8 +99,9 @@
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance, ref } from "vue";
-import PixiuCard from "@/components/card/index.vue";
+import { reactive, getCurrentInstance, ref } from 'vue';
+import PixiuCard from '@/components/card/index.vue';
+
 const { proxy } = getCurrentInstance();
 
 const data = reactive({
@@ -123,10 +111,10 @@ const data = reactive({
   },
 
   clusterForm: {
-    name: "",
-    region: "无锡",
-    description: "",
-    create_ns: "enabled", // 创建 pixiu 的系统命名空间
+    name: '',
+    region: '无锡',
+    description: '',
+    create_ns: 'enabled', // 创建 pixiu 的系统命名空间
     enable_pixiu_eventer: false, // 启用高性能事件收集器
     cloud_type: 1, // 导入集群的类型为 1
 
@@ -137,73 +125,69 @@ const data = reactive({
   // 后续从后端获取
   regionOptions: [
     {
-      value: "无锡",
-      label: "无锡",
+      value: '无锡',
+      label: '无锡',
     },
     {
-      value: "宿迁",
-      label: "宿迁",
+      value: '宿迁',
+      label: '宿迁',
     },
     {
-      value: "杭州",
-      label: "杭州",
+      value: '杭州',
+      label: '杭州',
     },
     {
-      value: "泗阳",
-      label: "泗阳",
+      value: '泗阳',
+      label: '泗阳',
     },
     {
-      value: "苏州",
-      label: "苏州",
+      value: '苏州',
+      label: '苏州',
     },
     {
-      value: "南京",
-      label: "南京",
+      value: '南京',
+      label: '南京',
     },
     {
-      value: "上海",
-      label: "上海",
+      value: '上海',
+      label: '上海',
     },
     {
-      value: "北京",
-      label: "北京",
+      value: '北京',
+      label: '北京',
     },
   ],
 });
 
-const labelPosition = ref("left");
+const labelPosition = ref('left');
 
 const comfirmCreate = async () => {
   if (data.kubeconfig.length == 0) {
-    return proxy.$message.error("failed to found the kubeConfig file.");
+    return proxy.$message.error('failed to found the kubeConfig file.');
   }
 
-  var configFile = data.kubeconfig[0].raw;
-  var fileFormData = new FormData();
-  fileFormData.append("kubeconfig", configFile, configFile.name);
-  fileFormData.append(
-    "clusterData",
-    new Blob([JSON.stringify(data.clusterForm)]),
-    { type: "application/json" }
-  );
+  const configFile = data.kubeconfig[0].raw;
+  const fileFormData = new FormData();
+  fileFormData.append('kubeconfig', configFile, configFile.name);
+  fileFormData.append('clusterData', new Blob([JSON.stringify(data.clusterForm)]), {
+    type: 'application/json',
+  });
 
-  var requestConfig = {
+  const requestConfig = {
     headers: {
-      "Content-Type": "multipart/form-data",
+      'Content-Type': 'multipart/form-data',
     },
   };
   const resp = await proxy.$http({
-    method: "post",
-    url: "/clouds",
+    method: 'post',
+    url: '/clouds',
     data: fileFormData,
     config: requestConfig,
   });
   if (resp.code != 200) {
-    return proxy.$message.error(
-      "集群 " + data.clusterForm.name + " 导入失败: " + resp.message
-    );
+    return proxy.$message.error(`集群 ${data.clusterForm.name} 导入失败: ${resp.message}`);
   }
-  proxy.$message.success("集群 " + data.clusterForm.name + " 导入成功");
+  proxy.$message.success(`集群 ${data.clusterForm.name} 导入成功`);
   backToContainer();
 };
 
@@ -213,36 +197,36 @@ const cancelCreate = () => {
 
 const connectKubernetes = async () => {
   if (data.kubeconfig.length == 0) {
-    return proxy.$message.error("failed to found the kubeConfig file.");
+    return proxy.$message.error('failed to found the kubeConfig file.');
   }
 
-  var configFile = data.kubeconfig[0].raw;
-  var fileFormData = new FormData();
-  fileFormData.append("kubeconfig", configFile, configFile.name);
-  var requestConfig = {
+  const configFile = data.kubeconfig[0].raw;
+  const fileFormData = new FormData();
+  fileFormData.append('kubeconfig', configFile, configFile.name);
+  const requestConfig = {
     headers: {
-      "Content-Type": "multipart/form-data",
+      'Content-Type': 'multipart/form-data',
     },
   };
 
   const resp = await proxy.$http({
-    method: "post",
-    url: "/clouds/ping",
+    method: 'post',
+    url: '/clouds/ping',
     data: fileFormData,
     config: requestConfig,
   });
 
   if (resp.code != 200) {
-    return proxy.$message.error("kubernetes 集群连接异常"); // 连通性检测异常
+    return proxy.$message.error('kubernetes 集群连接异常'); // 连通性检测异常
   }
-  proxy.$message.success("kubernetes 集群连接正常");
+  proxy.$message.success('kubernetes 集群连接正常');
   data.clusterForm.allowCreated = false;
 };
 
 // 回到 container 页面
 const backToContainer = () => {
   proxy.$router.push({
-    name: "Container",
+    name: 'Container',
   });
 };
 
@@ -250,9 +234,7 @@ const handleChange = (file, files) => {
   data.kubeconfig = files;
 };
 
-const beforeRemove = (file, files) => {
-  return proxy.$confirm(`确定移除 ${file.name}？`);
-};
+const beforeRemove = (file, files) => proxy.$confirm(`确定移除 ${file.name}？`);
 </script>
 
 <style scoped="scoped">

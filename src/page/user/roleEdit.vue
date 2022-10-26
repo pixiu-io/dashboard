@@ -8,9 +8,7 @@
     @close="handleClose"
   >
     <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">
-        修改角色
-      </div>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">修改角色</div>
     </template>
     <el-form
       :label-position="labelPosition"
@@ -25,26 +23,11 @@
         <el-input v-model="role.memo" required="" />
       </el-form-item>
       <el-form-item label="排序值:">
-        <el-input-number
-          v-model="role.sequence"
-          :min="1"
-          :max="10"
-          @change="handleChange"
-        />
+        <el-input-number v-model="role.sequence" :min="1" :max="10" @change="handleChange" />
       </el-form-item>
       <el-form-item label="父角色:">
-        <el-select
-          v-model="role.parent_id"
-          clearable
-          placeholder="请选择"
-          ref="selectRef"
-        >
-          <el-option
-            v-for="item in roleList"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id"
-          />
+        <el-select ref="selectRef" v-model="role.parent_id" clearable placeholder="请选择">
+          <el-option v-for="item in roleList" :key="item.id" :label="item.name" :value="item.id" />
         </el-select>
       </el-form-item>
       <el-form-item label="状态:">
@@ -72,38 +55,47 @@
 </template>
 
 <script setup>
-import { toRefs, getCurrentInstance } from "vue";
-import { ElMessage } from "element-plus";
+import { toRefs, getCurrentInstance } from 'vue';
+import { ElMessage } from 'element-plus';
 
 const { proxy } = getCurrentInstance();
 
-const props = defineProps(["role", "roleList"]);
+const props = defineProps({
+  role: {
+    type: Object,
+    default: () => {},
+  },
+  roleList: {
+    type: Array,
+    default: () => [],
+  },
+});
 const { role, roleList } = toRefs(props);
 
-const emits = defineEmits(["update:modelValue", "valueChange"]);
+const emits = defineEmits(['update:modelValue', 'valueChange']);
 const handleClose = () => {
-  emits("update:modelValue", false);
+  emits('update:modelValue', false);
 };
 
 const confirmUpdateUser = async () => {
-  if (role.value.parent_id === "") {
+  if (role.value.parent_id === '') {
     role.value.parent_id = 0;
   }
   const resp = await proxy.$http({
-    method: "put",
-    url: "/roles/" + role.value.id,
+    method: 'put',
+    url: `/roles/${role.value.id}`,
     data: role.value,
   });
   if (resp.code === 200) {
-    emits("valueChange");
+    emits('valueChange');
     ElMessage({
-      type: "success",
-      message: "修改成功",
+      type: 'success',
+      message: '修改成功',
     });
   } else {
     ElMessage({
-      type: "error",
-      message: "修改失败",
+      type: 'error',
+      message: '修改失败',
     });
   }
   handleClose();

@@ -3,27 +3,16 @@
     <el-card style="margin-top: -20px; margin-left: -20px; margin-right: -20px">
       <el-row>
         <el-col>
-          <span
-            style="font-weight: bold; font-size: 18px; vertical-align: middle"
-          >
+          <span style="font-weight: bold; font-size: 18px; vertical-align: middle">
             {{ $t(`container.container.title`) }}
           </span>
           <span
-            style="
-              font-size: 12px;
-              margin-left: 10px;
-              vertical-align: middle;
-              margin-right: 10px;
-            "
+            style="font-size: 12px; margin-left: 10px; vertical-align: middle; margin-right: 10px"
           >
             {{ $t(`container.container.region`) }}
           </span>
 
-          <el-select
-            v-model="data.value"
-            placeholder="Select"
-            style="width: 100px"
-          >
+          <el-select v-model="data.value" placeholder="Select" style="width: 100px">
             <el-option
               v-for="item in data.options"
               :key="item.value"
@@ -44,7 +33,7 @@
           >
             管理指南
             <el-icon style="vertical-align: middle; margin-right: 10px">
-              <component is="Edit" />
+              <component :is="'Edit'" />
             </el-icon>
           </span>
         </el-col>
@@ -64,9 +53,7 @@
           ><WarningFilled
         /></el-icon>
 
-        <div
-          style="vertical-align: middle; margin-top: -27px; margin-left: 10px"
-        >
+        <div style="vertical-align: middle; margin-top: -27px; margin-left: 10px">
           Kubernetnes 节点能力全面升级，支持更多集群版本。
         </div>
       </div>
@@ -75,29 +62,29 @@
       <el-row>
         <el-col>
           <el-button
-            type="primary"
-            @click="createCloud"
-            style="margin-left: 1px"
             v-permissions="'user:cloud:add'"
+            type="primary"
+            style="margin-left: 1px"
+            @click="createCloud"
           >
             <el-icon style="vertical-align: middle; margin-right: 4px">
-              <component is="Plus" />
+              <component :is="'Plus'" />
             </el-icon>
             新建集群
           </el-button>
 
           <el-input
-            placeholder="多个过滤标签用回车分隔"
             v-model="data.pageInfo.query"
+            placeholder="多个过滤标签用回车分隔"
             style="width: 560px; float: right"
             clearable
+            :suffix-icon="Search"
             @input="getCloudList"
             @clear="getCloudList"
-            :suffix-icon="Search"
           >
             <template #suffix>
               <el-icon class="el-input__icon">
-                <component is="Search" />
+                <component :is="'Search'" />
               </el-icon>
             </template>
           </el-input>
@@ -106,21 +93,17 @@
 
       <el-card class="box-card">
         <el-table
+          v-loading="loading"
           :data="data.cloudList"
           stripe
           style="margin-top: 2px; width: 100%"
-          v-loading="loading"
           @selection-change="handleSelectionChange"
         >
           <!-- <el-table-column type="selection" width="38" /> -->
 
           <el-table-column prop="name" label="名称/ID" width="200">
             <template #default="scope">
-              <el-link
-                style="color: #006eff"
-                type="primary"
-                @click="jumpRoute(scope.row)"
-              >
+              <el-link style="color: #006eff" type="primary" @click="jumpRoute(scope.row)">
                 {{ scope.row.name }}
               </el-link>
             </template>
@@ -145,30 +128,26 @@
             </template>
           </el-table-column>
           <el-table-column prop="node_number" label="节点数" width="160" />
-          <el-table-column
-            prop="resources"
-            label="资源量"
-            :formatter="formatterResource"
-          />
+          <el-table-column prop="resources" label="资源量" :formatter="formatterResource" />
 
           <el-table-column fixed="right" label="操作" width="200">
             <template #default="scope">
               <el-button
+                v-permissions="'user:cloud:setting'"
                 size="small"
                 type="text"
                 style="color: #006eff"
                 @click="handleEdit(scope.row)"
-                v-permissions="'user:cloud:setting'"
               >
                 设置
               </el-button>
 
               <el-button
+                v-permissions="'user:cloud:delete'"
                 type="text"
                 size="small"
-                @click="deleteCloud(scope.row)"
                 style="margin-right: 10px; color: #006eff"
-                v-permissions="'user:cloud:delete'"
+                @click="deleteCloud(scope.row)"
               >
                 删除
               </el-button>
@@ -180,31 +159,25 @@
                 </span>
                 <template #dropdown>
                   <el-dropdown-menu class="dropdown-buttons">
-                    <el-dropdown-item style="color: #006eff">
-                      启动
-                    </el-dropdown-item>
-                    <el-dropdown-item style="color: #006eff">
-                      详情
-                    </el-dropdown-item>
+                    <el-dropdown-item style="color: #006eff"> 启动 </el-dropdown-item>
+                    <el-dropdown-item style="color: #006eff"> 详情 </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
             </template>
           </el-table-column>
 
-          <template v-slot:empty>
+          <template #empty>
             <div style="text-align: center">
               没有任何容器集群
 
-              <button @click="createCloud" class="app-pixiu-btn--link">
-                [立即创建]
-              </button>
+              <button class="app-pixiu-btn--link" @click="createCloud">[立即创建]</button>
             </div>
           </template>
         </el-table>
 
         <!-- 分页区域 -->
-        <pagination :total="data.total" @onChange="onChange"></pagination>
+        <pagination :total="data.total" @on-change="onChange"></pagination>
       </el-card>
     </div>
   </el-main>
@@ -217,27 +190,12 @@
     @close="data.createCloudVisible = false"
   >
     <template #title>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">
-        选择集群类型
-      </div>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">选择集群类型</div>
     </template>
     <el-row :gutter="20">
-      <pixiu-radio-card
-        :type="1"
-        :defaultType="data.cloudType"
-        @click="changeActive"
-        :span="2"
+      <pixiu-radio-card :type="1" :default-type="data.cloudType" :span="2" @click="changeActive"
         ><div>
-          <div
-            style="
-              margin-top: 10px;
-              font: 14px;
-              font-weight: 700;
-              color: #000000;
-            "
-          >
-            标准集群
-          </div>
+          <div style="margin-top: 10px; font: 14px; font-weight: 700; color: #000000">标准集群</div>
 
           <div
             style="
@@ -251,38 +209,19 @@
             可以将用户本地基础设施的 Kubernetes 集群或者其他云厂商的 Kubernetes
             集群注册到容器服务进行统一管理。
           </div>
-          <div style="margin-top: 20px; color: #000 !important">
-            多云管理，灵活接入各种计算资源
-          </div>
+          <div style="margin-top: 20px; color: #000 !important">多云管理，灵活接入各种计算资源</div>
           <div style="margin-top: 8px; color: #000 !important">
             对接现有 DevOps 系统，实现多云发布
           </div>
-          <div style="margin-top: 8px; color: #000 !important">
-            完全兼容开源 Kubernetes 集群
-          </div>
-          <div
-            style="
-              margin-top: 20px;
-              color: #000 !important;
-              margin-bottom: 50px;
-            "
-          >
+          <div style="margin-top: 8px; color: #000 !important">完全兼容开源 Kubernetes 集群</div>
+          <div style="margin-top: 20px; color: #000 !important; margin-bottom: 50px">
             生态开源 多云管理
           </div>
         </div></pixiu-radio-card
       >
 
-      <pixiu-radio-card
-        :type="2"
-        :defaultType="data.cloudType"
-        @click="changeActive"
-        :span="2"
-      >
-        <div
-          style="margin-top: 10px; font: 14px; font-weight: 700; color: #000000"
-        >
-          自建集群
-        </div>
+      <pixiu-radio-card :type="2" :default-type="data.cloudType" :span="2" @click="changeActive">
+        <div style="margin-top: 10px; font: 14px; font-weight: 700; color: #000000">自建集群</div>
 
         <div style="margin-top: 20px; font: 12px; color: #00000066">
           默认集群类型，完全兼容开源 Kubernetes
@@ -292,15 +231,9 @@
         <div style="margin-top: 20px; color: #000 !important">
           标准原生 Kubernets 集群、丰富的自定义接口
         </div>
-        <div style="margin-top: 8px; color: #000 !important">
-          适用于高稳定性、定制化集群业务
-        </div>
-        <div style="margin-top: 8px; color: #000 !important">
-          灵活的集群网络、容器调度
-        </div>
-        <div
-          style="margin-top: 20px; color: #000 !important; margin-bottom: 50px"
-        >
+        <div style="margin-top: 8px; color: #000 !important">适用于高稳定性、定制化集群业务</div>
+        <div style="margin-top: 8px; color: #000 !important">灵活的集群网络、容器调度</div>
+        <div style="margin-top: 20px; color: #000 !important; margin-bottom: 50px">
           标准K8s集群 支持原生节点
         </div>
       </pixiu-radio-card>
@@ -316,16 +249,16 @@
 </template>
 
 <script setup lang="jsx">
-import { reactive, getCurrentInstance, onMounted } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-import PixiuRadioCard from "@/components/radioCard/index.vue";
-import Icon from "@/components/pixiu-tooltip/icon.vue";
-import Pagination from "@/components/pagination/pagination.vue";
+import { reactive, getCurrentInstance, onMounted } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import PixiuRadioCard from '@/components/radioCard/index.vue';
+import Icon from '@/components/pixiuTooltip/index.vue';
+import Pagination from '@/components/pagination/pagination.vue';
 
 const { proxy } = getCurrentInstance();
 const data = reactive({
   pageInfo: {
-    query: "",
+    query: '',
     page: 1,
     limit: 10, // 默认值需要是分页定义的值
   },
@@ -342,24 +275,24 @@ const data = reactive({
   autosize: {
     minRows: 8,
   },
-  value: "无锡",
+  value: '无锡',
   options: [
     {
-      value: "无锡",
-      label: "无锡",
+      value: '无锡',
+      label: '无锡',
     },
     {
-      value: "宿迁",
-      label: "宿迁",
+      value: '宿迁',
+      label: '宿迁',
     },
     {
-      value: "杭州",
-      label: "杭州",
+      value: '杭州',
+      label: '杭州',
       disabled: true,
     },
     {
-      value: "泗阳",
-      label: "泗阳",
+      value: '泗阳',
+      label: '泗阳',
     },
   ],
 });
@@ -369,42 +302,38 @@ onMounted(() => {
 });
 
 const cloudStatus = {
-  0: "运行中",
-  1: "集群异常",
-  2: "构建中",
-  3: "删除中",
-  4: "等待构建",
+  0: '运行中',
+  1: '集群异常',
+  2: '构建中',
+  3: '删除中',
+  4: '等待构建',
 };
 
 const cloudTypes = {
-  1: "标准集群",
-  2: "自建集群",
+  1: '标准集群',
+  2: '自建集群',
 };
 
 const changeActive = (value) => {
   data.cloudType = value;
 };
 
-const cloudTypeFormatter = (row, column, cellValue) => {
-  return (
-    <div style="display:flex;align-items:center">
-      <el-space>
-        <div>{cloudTypes[cellValue]}</div>
-      </el-space>
-    </div>
-  );
-};
+const cloudTypeFormatter = (row, column, cellValue) => (
+  <div style="display:flex;align-items:center">
+    <el-space>
+      <div>{cloudTypes[cellValue]}</div>
+    </el-space>
+  </div>
+);
 
-const cloudStatusFormatter = (row, column, cellValue) => {
-  return (
-    <div style="display:flex;align-items:center">
-      <el-space size={8}>
-        <pixiu-icon size="25px" name="icon-B" color="#28c65a" type="iconfont" />
-        <div>{cloudStatus[cellValue]}</div>
-      </el-space>
-    </div>
-  );
-};
+const cloudStatusFormatter = (row, column, cellValue) => (
+  <div style="display:flex;align-items:center">
+    <el-space size={8}>
+      <pixiu-icon size="25px" name="icon-B" color="#28c65a" type="iconfont" />
+      <div>{cloudStatus[cellValue]}</div>
+    </el-space>
+  </div>
+);
 
 const formatterResource = (row, column, cellValue) => {
   const { status, kube_version } = row;
@@ -435,8 +364,8 @@ const getCloudList = async () => {
   // TODO 考虑将loading取到全局上面来，避免过多的去写loading状态管理
   data.loading = true;
   const res = await proxy.$http({
-    method: "get",
-    url: "/clouds",
+    method: 'get',
+    url: '/clouds',
     data: data.pageInfo,
   });
   data.loading = false;
@@ -447,7 +376,7 @@ const getCloudList = async () => {
 
 const jumpRoute = (row) => {
   proxy.$router.push({
-    name: "Node",
+    name: 'Node',
     query: {
       cluster: row.name,
     },
@@ -462,39 +391,35 @@ const createCloud = () => {
 // 根据选择的类型跳转到不同操作页面
 const confirmCreateCloud = () => {
   proxy.$router.push({
-    name: data.cloudType == 1 ? "InsertCluster" : "CreateCluster",
+    name: data.cloudType == 1 ? 'InsertCluster' : 'CreateCluster',
   });
 };
 
 // 删除cloud
 // TODO: 待优化
 const deleteCloud = async (row) => {
-  ElMessageBox.confirm(
-    "此操作将永久删除 " + row.name + " 集群. 是否继续?",
-    "提示",
-    {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
-      type: "warning",
-      draggable: true,
-    }
-  )
+  ElMessageBox.confirm('此操作将永久删除 ' + row.name + ' 集群. 是否继续?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+    draggable: true,
+  })
     .then(() => {
       proxy
         .$http({
-          method: "delete",
-          url: "/clouds/" + row.id,
+          method: 'delete',
+          url: '/clouds/' + row.id,
         })
         .then((res) => {
           getCloudList();
           ElMessage({
-            type: "success",
-            message: "删除成功",
+            type: 'success',
+            message: '删除成功',
           });
         })
         .catch((err) => {
           ElMessage({
-            type: "error",
+            type: 'error',
             message: err,
           });
         });
@@ -568,7 +493,7 @@ const deleteCloud = async (row) => {
 }
 
 .iconfont {
-  font-family: "iconfont" !important;
+  font-family: 'iconfont' !important;
   font-size: 26px;
   color: #28c65a;
   font-style: normal;

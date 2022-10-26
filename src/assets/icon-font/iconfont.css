@@ -1,10 +1,10 @@
 @font-face {
-  font-family: "iconfont"; /* Project id  */
+  font-family: 'iconfont'; /* Project id  */
   src: url('iconfont.ttf?t=1665843262552') format('truetype');
 }
 
 .iconfont {
-  font-family: "iconfont" !important;
+  font-family: 'iconfont' !important;
   font-size: 16px;
   font-style: normal;
   -webkit-font-smoothing: antialiased;
@@ -12,10 +12,9 @@
 }
 
 .icon-yunrongqi:before {
-  content: "\e70d";
+  content: '\e70d';
 }
 
 .icon-B:before {
-  content: "\e70a";
+  content: '\e70a';
 }
-

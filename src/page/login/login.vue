@@ -9,16 +9,16 @@
           <div class="change-language-container">
             <div style="cursor: pointer" @click="change">
               <el-icon class="el-input__icon">
-                <component is="Switch" />
+                <component :is="'Switch'" />
               </el-icon>
               {{ $t(`login.switch_language`) }}
             </div>
           </div>
         </div>
         <el-form
+          ref="loginFormRef"
           :model="data.loginInfo"
           :rules="data.rules"
-          ref="loginFormRef"
           style="width: 100%; height: 30%"
         >
           <el-form-item prop="name">
@@ -28,11 +28,11 @@
               clearable
               maxlength="128"
               size="large"
-              @keyup.enter.native="login"
+              @keyup.enter="login"
             >
               <template #prefix>
                 <el-icon class="el-input__icon">
-                  <component is="UserFilled" />
+                  <component :is="'UserFilled'" />
                 </el-icon>
               </template>
             </el-input>
@@ -45,11 +45,11 @@
               clearable
               maxlength="128"
               size="large"
-              @keyup.enter.native="login"
+              @keyup.enter="login"
             >
               <template #prefix>
                 <el-icon class="el-input__icon">
-                  <component is="Lock"></component>
+                  <component :is="'Lock'"></component>
                 </el-icon>
               </template>
             </el-input>
@@ -57,21 +57,11 @@
         </el-form>
         <div class="button-group">
           <div class="forget-container">
-            <el-button
-              class="forget-button"
-              type="text"
-              @click="forget"
-              size="large"
-            >
+            <el-button class="forget-button" type="text" size="large" @click="forget">
               {{ $t(`login.forget`) }}
             </el-button>
           </div>
-          <el-button
-            class="login-button"
-            size="large"
-            @click="login"
-            :loading="data.load"
-          >
+          <el-button class="login-button" size="large" :loading="data.load" @click="login">
             {{ $t(`login.login`) }}</el-button
           >
         </div>
@@ -81,35 +71,35 @@
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance, ref } from "vue";
-import usePermissions from "../../stores/usePermission";
+import { reactive, getCurrentInstance, ref } from 'vue';
+import usePermissions from '../../stores/usePermission';
 
 const useStore = usePermissions();
 
 const { proxy } = getCurrentInstance();
 const data = reactive({
   loginInfo: {
-    name: "",
-    password: "",
+    name: '',
+    password: '',
   },
   load: false,
   // 图标高级
-  Lock: "",
-  UserFilled: "",
+  Lock: '',
+  UserFilled: '',
   rules: {
-    name: [{ required: true, message: "请输入用户名", trigger: "blur" }],
-    password: [{ required: true, message: "请输入密码", trigger: "blur" }],
+    name: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+    password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
   },
 });
 const forget = () => {
-  proxy.$message.error("忘记密码，请联系管理员");
+  proxy.$message.error('忘记密码，请联系管理员');
 };
 
 const change = () => {
-  if (proxy.$i18n.locale === "zh") {
-    proxy.$i18n.locale = "en";
+  if (proxy.$i18n.locale === 'zh') {
+    proxy.$i18n.locale = 'en';
   } else {
-    proxy.$i18n.locale = "zh";
+    proxy.$i18n.locale = 'zh';
   }
 };
 const loginFormRef = ref(null);
@@ -119,9 +109,9 @@ const login = () => {
       data.load = true;
 
       // 发送登陆请求
-      let res = await proxy.$http({
-        method: "post",
-        url: "/users/login",
+      const res = await proxy.$http({
+        method: 'post',
+        url: '/users/login',
         data: data.loginInfo,
       });
       data.load = false;
@@ -131,12 +121,12 @@ const login = () => {
       }
 
       const token = res.result;
-      localStorage.setItem("token", token);
-      localStorage.setItem("account", data.loginInfo.name);
+      localStorage.setItem('token', token);
+      localStorage.setItem('account', data.loginInfo.name);
       // 持久化权限
       useStore.getPermission();
-      proxy.$message.success("登陆成功");
-      proxy.$router.push("/index");
+      proxy.$message.success('登陆成功');
+      proxy.$router.push('/index');
     }
   });
 };

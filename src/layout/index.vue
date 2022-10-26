@@ -19,33 +19,25 @@
     <el-container>
       <!-- 左边侧边栏 -->
       <el-aside>
-        <el-col
-          @mouseenter="mouseEnter"
-          @mouseleave="mouseLeave"
-          style="height: 100%"
-        >
+        <el-col style="height: 100%" @mouseenter="mouseEnter" @mouseleave="mouseLeave">
           <el-menu
             active-text-color="#ffd04b"
             background-color="rgb(51, 55, 68)"
             border-right="none"
             :default-active="data.activeIndex"
             text-color="#fff"
-            @open="handleOpen"
-            @close="handleClose"
             router
             class="el-menu-vertical-no-collapse"
             :collapse="data.isCollapse"
+            @open="handleOpen"
+            @close="handleClose"
           >
             <pixiu-menu :items="data.menus" />
             <el-menu-item class="expand-icon">
               <el-icon @click="toggleCollapse">
-                <component
-                  :is="`${data.isCollapse ? 'Expand' : 'Fold'}`"
-                ></component>
+                <component :is="`${data.isCollapse ? 'Expand' : 'Fold'}`"></component>
               </el-icon>
-              <template #title>
-                <dev style="margin-left: 20px">体验调研</dev></template
-              >
+              <template #title> <dev style="margin-left: 20px">体验调研</dev></template>
             </el-menu-item>
           </el-menu>
         </el-col>
@@ -60,19 +52,20 @@
 </template>
 
 <script setup>
-import PixiuHeader from "@/components/header/index.vue";
-import PixiuMenu from "@/components/menu/index.vue";
-import { reactive, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { reactive, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import PixiuHeader from '@/components/header/index.vue';
+import PixiuMenu from '@/components/menu/index.vue';
+
 const router = useRouter();
 
-let data = reactive({
+const data = reactive({
   activeIndex: router.currentRoute.value.fullPath
     ? router.currentRoute.value.fullPath
-    : localStorage.getItem("activeIndex") ?? "/index",
-  headInput: "",
+    : localStorage.getItem('activeIndex') ?? '/index',
+  headInput: '',
 
-  inputWidth: "200px",
+  inputWidth: '200px',
 
   isCollapse: true, // 真则为在边栏，假则不在边栏
   manualCollapse: false, // 手动控制侧边栏是否开启，默认为 false
@@ -82,40 +75,40 @@ let data = reactive({
 onMounted(() => {
   data.menus = [
     {
-      name: "概览",
-      url: "/index",
-      icon: "Menu",
-      iconType: "el",
+      name: '概览',
+      url: '/index',
+      icon: 'Menu',
+      iconType: 'el',
     },
     {
-      name: "容器服务",
-      url: "/container",
-      icon: "icon-yunrongqi",
-      iconType: "iconfont",
+      name: '容器服务',
+      url: '/container',
+      icon: 'icon-yunrongqi',
+      iconType: 'iconfont',
     },
     {
-      name: "DevOps",
-      url: "/cicd",
-      icon: "DataLine",
-      iconType: "el",
+      name: 'DevOps',
+      url: '/cicd',
+      icon: 'DataLine',
+      iconType: 'el',
     },
     {
-      name: "用户管理",
-      url: "/user",
-      icon: "UserFilled",
-      iconType: "el",
+      name: '用户管理',
+      url: '/user',
+      icon: 'UserFilled',
+      iconType: 'el',
     },
     {
-      name: "角色管理",
-      url: "/role",
-      icon: "Guide",
-      iconType: "el",
+      name: '角色管理',
+      url: '/role',
+      icon: 'Guide',
+      iconType: 'el',
     },
     {
-      name: "菜单管理",
-      url: "/menu",
-      icon: "Grid",
-      iconType: "el",
+      name: '菜单管理',
+      url: '/menu',
+      icon: 'Grid',
+      iconType: 'el',
     },
   ];
 });

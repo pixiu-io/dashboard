@@ -3,17 +3,8 @@
     <div class="cloud-title-container">cloud</div>
 
     <div class="cloud-select-container">
-      <el-select
-        style="width: 80%"
-        v-model="data.cloud.cluster"
-        @change="changeClouds"
-      >
-        <el-option
-          v-for="item in data.clouds"
-          :value="item.id"
-          :key="item.id"
-          :label="item.id"
-        />
+      <el-select v-model="data.cloud.cluster" style="width: 80%" @change="changeClouds">
+        <el-option v-for="item in data.clouds" :key="item.id" :value="item.id" :label="item.id" />
       </el-select>
     </div>
     <el-menu
@@ -35,51 +26,52 @@
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance, onMounted, watch } from "vue";
-import PixiuMenu from "@/components/menu/index.vue";
+import { reactive, getCurrentInstance, onMounted, watch } from 'vue';
+import PixiuMenu from '@/components/menu/index.vue';
+
 const { proxy } = getCurrentInstance();
 
 const data = reactive({
   cloud: {},
   clouds: [
     {
-      id: "tencent",
+      id: 'tencent',
     },
     {
-      id: "huawei",
+      id: 'huawei',
     },
   ],
-  path: "",
+  path: '',
   items: [
     {
       id: 1,
-      name: "Node",
-      url: "/kubernetes/nodes",
+      name: 'Node',
+      url: '/kubernetes/nodes',
     },
-    { id: 2, name: "Deployment", url: "/kubernetes/deployments" },
+    { id: 2, name: 'Deployment', url: '/kubernetes/deployments' },
     {
       id: 3,
-      name: "Service",
-      url: "/kubernetes/services",
+      name: 'Service',
+      url: '/kubernetes/services',
     },
     {
       id: 4,
-      name: "ConfigMap",
-      url: "/kubernetes/config-maps",
+      name: 'ConfigMap',
+      url: '/kubernetes/config-maps',
     },
   ],
 });
 
 const changeClouds = (value) => {
-  let query = proxy.$route.query;
-  let path = proxy.$route.path;
+  const { query } = proxy.$route;
+  const { path } = proxy.$route;
   data.items.map((item) => {
-    let url = item.url.split("?")[0];
-    item.url = url + `?cluster=${value}`;
+    const url = item.url.split('?')[0];
+    item.url = `${url}?cluster=${value}`;
   });
-  data.path = path + `?cluster=${value}`;
+  data.path = `${path}?cluster=${value}`;
 
-  let newQuery = JSON.parse(JSON.stringify(query));
+  const newQuery = JSON.parse(JSON.stringify(query));
   newQuery.cluster = value;
   proxy.$router.push({ path, query: newQuery });
 };
@@ -95,8 +87,8 @@ const changeClouds = (value) => {
 onMounted(() => {
   data.cloud = proxy.$route.query;
   data.items.map((item) => {
-    let url = item.url.split("?")[0];
-    item.url = url + `?cluster=${data.cloud.cluster}`;
+    const url = item.url.split('?')[0];
+    item.url = `${url}?cluster=${data.cloud.cluster}`;
   });
   data.path = proxy.$route.fullPath;
 });

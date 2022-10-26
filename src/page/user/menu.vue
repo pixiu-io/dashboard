@@ -1,40 +1,37 @@
 <template>
   <el-main>
+    <el-card style="margin-top: -20px; margin-left: -20px; margin-right: -20px">
+      <span style="font-weight: bold; font-size: 18px; vertical-align: middle"> 菜单权限列表 </span>
+    </el-card>
     <div style="margin-top: 20px">
-      菜单权限列表
+      <el-row>
+        <el-col>
+          <el-button
+            v-permissions="'user:cloud:add'"
+            type="primary"
+            style="margin-left: 1px"
+            @click="createRole()"
+          >
+            <el-icon style="vertical-align: middle; margin-right: 4px">
+              <component :is="'Plus'" />
+            </el-icon>
+            添加菜单权限
+          </el-button>
+        </el-col>
+      </el-row>
       <el-card class="box-card">
-        <el-row>
-          <el-col>
-            <el-button
-              type="primary"
-              @click="createRole()"
-              style="margin-left: 1px; margin-bottom: 10px"
-              v-permissions="'user:cloud:add'"
-            >
-              <el-icon style="vertical-align: middle; margin-right: 4px">
-                <component is="Plus" />
-              </el-icon>
-              添加菜单权限
-            </el-button>
-          </el-col>
-        </el-row>
-        <el-table
-          :data="data.menuList"
-          stripe
-          style="margin-top: 2px; width: 100%"
-          row-key="id"
-        >
+        <el-table :data="data.menuList" stripe style="margin-top: 2px; width: 100%" row-key="id">
           <el-table-column prop="id" label="菜单ID" width="180" />
           <el-table-column prop="name" label="菜单名称" width="120" />
           <el-table-column prop="menu_type" label="类型" width="80">
             <template #default="scope">
-              <span style="font-size: 13px" v-if="scope.row.menu_type === 1">
+              <span v-if="scope.row.menu_type === 1" style="font-size: 13px">
                 <el-tag class="ml-2" type="success" effect="dark">菜单</el-tag>
               </span>
-              <span style="font-size: 13px" v-if="scope.row.menu_type === 2">
+              <span v-if="scope.row.menu_type === 2" style="font-size: 13px">
                 <el-tag class="ml-2" type="warning" effect="dark">按钮</el-tag>
               </span>
-              <span style="font-size: 13px" v-if="scope.row.menu_type === 3">
+              <span v-if="scope.row.menu_type === 3" style="font-size: 13px">
                 <el-tag class="ml-2" effect="dark">API</el-tag>
               </span>
             </template>
@@ -45,45 +42,28 @@
 
           <el-table-column prop="method" label="请求方式" width="200">
             <template #default="scope">
-              <span
-                style="font-size: 13px"
-                text="bold"
-                v-if="scope.row.method === 'GET'"
-              >
+              <span v-if="scope.row.method === 'GET'" style="font-size: 13px" text="bold">
                 <el-tag class="ml-2">{{ scope.row.method }}</el-tag>
               </span>
-              <span style="font-size: 13px" v-if="scope.row.method === 'POST'">
-                <el-tag class="ml-2" type="success">{{
-                  scope.row.method
-                }}</el-tag>
+              <span v-if="scope.row.method === 'POST'" style="font-size: 13px">
+                <el-tag class="ml-2" type="success">{{ scope.row.method }}</el-tag>
               </span>
-              <span
-                style="font-size: 13px"
-                v-if="scope.row.method === 'DELETE'"
-              >
-                <el-tag class="ml-2" type="danger">{{
-                  scope.row.method
-                }}</el-tag>
+              <span v-if="scope.row.method === 'DELETE'" style="font-size: 13px">
+                <el-tag class="ml-2" type="danger">{{ scope.row.method }}</el-tag>
               </span>
-              <span style="font-size: 13px" v-if="scope.row.method === 'PUT'">
-                <el-tag class="ml-2" type="warning">{{
-                  scope.row.method
-                }}</el-tag>
+              <span v-if="scope.row.method === 'PUT'" style="font-size: 13px">
+                <el-tag class="ml-2" type="warning">{{ scope.row.method }}</el-tag>
               </span>
             </template>
           </el-table-column>
 
-          <el-table-column prop="icon" label="图标" width="180">
-          </el-table-column>
+          <el-table-column prop="icon" label="图标" width="180"> </el-table-column>
           <el-table-column prop="status" label="状态" width="80">
             <template #default="scope">
               <el-switch
                 v-model="scope.row.status"
                 class="ml-2"
-                style="
-                  --el-switch-on-color: #409eff;
-                  --el-switch-off-color: #ff4949;
-                "
+                style="--el-switch-on-color: #409eff; --el-switch-off-color: #ff4949"
                 :active-value="1"
                 :inactive-value="0"
                 size="small"
@@ -101,20 +81,20 @@
           <el-table-column fixed="right" label="操作" width="250">
             <template #default="scope">
               <el-button
+                v-permissions="'user:cloud:delete'"
                 text
                 size="small"
-                @click="deleteMenu(scope.row)"
                 style="margin-right: 10px; color: #006eff"
-                v-permissions="'user:cloud:delete'"
+                @click="deleteMenu(scope.row)"
               >
                 删除
               </el-button>
               <el-button
+                v-permissions="'user:cloud:delete'"
                 text
                 size="small"
-                @click="handleEdit(scope.row)"
                 style="margin-right: 10px; color: #006eff"
-                v-permissions="'user:cloud:delete'"
+                @click="handleEdit(scope.row)"
               >
                 修改
               </el-button>
@@ -122,31 +102,29 @@
           </el-table-column>
         </el-table>
         <!-- 分页区域 -->
-        <pagination :total="data.total" @onChange="onChange"></pagination>
+        <pagination :total="data.total" @on-change="onChange"></pagination>
       </el-card>
     </div>
   </el-main>
 
   <MenuEdit
-    v-model="menuEdit.dialogVisble"
-    @valueChange="getMenusList"
-    :menu="menuEdit.menu"
-    :menuList="menuEdit.menuList"
     v-if="menuEdit.dialogVisble"
+    v-model="menuEdit.dialogVisble"
+    :menu="menuEdit.menu"
+    :menu-list="menuEdit.menuList"
+    @value-change="getMenusList"
   />
   <!-- 添加菜单按钮信息 -->
   <el-dialog
+    v-if="data.createMenuVisible"
     v-model="data.createMenuVisible"
     style="color: #000000; font: 14px"
     width="460px"
     center
     @close="data.createMenuVisible = false"
-    v-if="data.createMenuVisible"
   >
     <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">
-        添加菜单权限
-      </div>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">添加菜单权限</div>
     </template>
 
     <el-form
@@ -193,15 +171,11 @@
       </el-form-item>
 
       <el-form-item
-        label="请求方式:"
-        v-model="data.menuForm.menu_type"
         v-if="data.menuForm.menu_type == 3 || data.menuForm.menu_type == 2"
+        v-model="data.menuForm.menu_type"
+        label="请求方式:"
       >
-        <el-select
-          v-model="data.menuForm.method"
-          clearable
-          placeholder="Select"
-        >
+        <el-select v-model="data.menuForm.method" clearable placeholder="Select">
           <el-option
             v-for="item in methodOptions"
             :key="item.value"
@@ -212,16 +186,16 @@
       </el-form-item>
 
       <el-form-item
-        label="图标:"
-        v-model="data.menuForm.menu_type"
         v-if="data.menuForm.menu_type == 1"
+        v-model="data.menuForm.menu_type"
+        label="图标:"
       >
         <el-input v-model="data.menuForm.icon" required="" />
       </el-form-item>
       <el-form-item
-        label="Code:"
-        v-model="data.menuForm.menu_type"
         v-if="data.menuForm.menu_type == 3 || data.menuForm.menu_type == 2"
+        v-model="data.menuForm.menu_type"
+        label="Code:"
       >
         <el-input v-model="data.menuForm.code" required="" />
       </el-form-item>
@@ -250,10 +224,10 @@
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance, onMounted, ref } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-import MenuEdit from "./menuEdit.vue";
-import Pagination from "@/components/pagination/pagination.vue";
+import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import MenuEdit from './menuEdit.vue';
+import Pagination from '@/components/pagination/pagination.vue';
 
 const menuEdit = reactive({
   dialogVisble: false,
@@ -265,20 +239,20 @@ const selectRef = ref(null);
 
 const methodOptions = [
   {
-    value: "GET",
-    label: "GET",
+    value: 'GET',
+    label: 'GET',
   },
   {
-    value: "POST",
-    label: "POST",
+    value: 'POST',
+    label: 'POST',
   },
   {
-    value: "DELETE",
-    label: "DELETE",
+    value: 'DELETE',
+    label: 'DELETE',
   },
   {
-    value: "PUT",
-    label: "PUT",
+    value: 'PUT',
+    label: 'PUT',
   },
 ];
 
@@ -292,18 +266,18 @@ const data = reactive({
   // 触发创建页面
   createMenuVisible: false,
   menuForm: {
-    memo: "",
+    memo: '',
     parent_id: null,
-    name: "",
-    sequence: "",
+    name: '',
+    sequence: '',
     status: 1,
     menu_type: 1,
-    icon: "",
-    code: "",
-    method: "",
+    icon: '',
+    code: '',
+    method: '',
   },
   total: 0,
-  name: "",
+  name: '',
   roleList: [],
   menus: [],
   menuList: [],
@@ -315,32 +289,28 @@ onMounted(() => {
 });
 
 const deleteMenu = async (row) => {
-  ElMessageBox.confirm(
-    "此操作将删除 " + row.name + "菜单 . 是否继续?",
-    "提示",
-    {
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
-      type: "warning",
-      draggable: true,
-    }
-  )
+  ElMessageBox.confirm(`此操作将删除 ${row.name}菜单 . 是否继续?`, '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+    draggable: true,
+  })
     .then(() => {
       const res = proxy
         .$http({
-          method: "delete",
-          url: "/menus/" + row.id,
+          method: 'delete',
+          url: `/menus/${row.id}`,
         })
         .then(() => {
           getMenusList();
           ElMessage({
-            type: "success",
-            message: "删除成功",
+            type: 'success',
+            message: '删除成功',
           });
         })
         .catch((err) => {
           ElMessage({
-            type: "error",
+            type: 'error',
             message: err,
           });
         });
@@ -354,7 +324,7 @@ const createRole = () => {
 
 const handleEdit = (menu) => {
   if (menu.parent_id == 0) {
-    menu.parent_id = "";
+    menu.parent_id = '';
   }
   menuEdit.dialogVisble = true;
   menuEdit.menu = JSON.parse(JSON.stringify(menu));
@@ -363,20 +333,20 @@ const handleEdit = (menu) => {
 const confirmCreateMenus = async () => {
   data.menuForm.menu_type = parseInt(data.menuForm.menu_type);
   const resp = await proxy.$http({
-    method: "post",
-    url: "/menus",
+    method: 'post',
+    url: '/menus',
     data: data.menuForm,
   });
   data.createMenuVisible = false;
   if (resp.code === 200) {
     getMenusList();
     ElMessage({
-      type: "success",
-      message: "添加成功",
+      type: 'success',
+      message: '添加成功',
     });
   } else {
     ElMessage({
-      type: "error",
+      type: 'error',
       message: resp.message,
     });
   }
@@ -384,34 +354,34 @@ const confirmCreateMenus = async () => {
 
 const changeStatus = async (menu) => {
   const res = await proxy.$http({
-    method: "put",
+    method: 'put',
     url: `/menus/${menu.id}/status/${menu.status}`,
   });
 
   if (res.code === 200) {
     getMenusList();
     ElMessage({
-      type: "success",
-      message: "更新成功",
+      type: 'success',
+      message: '更新成功',
     });
   } else {
     ElMessage({
-      type: "error",
-      message: "更新失败",
+      type: 'error',
+      message: '更新失败',
     });
   }
 };
 const getMenusList = async () => {
   const res = await proxy.$http({
-    method: "get",
-    url: "/menus",
+    method: 'get',
+    url: '/menus',
     data: data.pageInfo,
   });
   data.menuList = res.result.menus;
   data.total = res.result.total;
 };
 
-//分页
+// 分页
 const onChange = (v) => {
   console.log(v);
   data.pageInfo.limit = 10;
@@ -421,8 +391,8 @@ const onChange = (v) => {
 
 const getMenusByMenuType = async () => {
   const res = await proxy.$http({
-    method: "get",
-    url: "/menus",
+    method: 'get',
+    url: '/menus',
     data: { menu_type: 1 },
   });
   menuEdit.menuList = res.result.menus;
