@@ -114,6 +114,7 @@ const login = () => {
         url: '/users/login',
         data: data.loginInfo,
       });
+
       data.load = false;
       if (res.code != 200) {
         proxy.$message.error(res.message);
@@ -123,6 +124,7 @@ const login = () => {
       const token = res.result;
       localStorage.setItem('token', token);
       localStorage.setItem('account', data.loginInfo.name);
+
       // 持久化权限
       useStore.getPermission();
       proxy.$message.success('登陆成功');

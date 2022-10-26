@@ -5,8 +5,8 @@ const instance = axios.create({
   baseURL: import.meta.env.VITE_BASE_API, // 如果后端开放了cors，就可以用这个替代上面一行
   timeout: 6000, // 设置超时时间1分钟
   header: {
-    'Content-Type': 'application/json;charset=UTF-8',
-  }, // 基础的请求头
+    'Content-Type': 'application/json;charset=UTF-8', // 基础的请求头
+  },
 });
 
 // 请求中间件
@@ -24,24 +24,25 @@ instance.interceptors.request.use(
 
 // 返回结果中间件
 instance.interceptors.response.use(
-  (response) => response.data,
-  (error) => {
-    if (error.response) {
-      const { status } = error.response;
-      switch (status) {
-        case 401:
-          ElMessage({
-            message: error.response.data,
-            type: 'error',
-          });
+  (response) => {
+    const res = response.data;
+    switch (res.code) {
+      case 401:
+        ElMessage({
+          message: res.message,
+          type: 'error',
+        });
+        localStorage.clear();
+        // 跳转到登陆界面
+        // TODO: 跳转异常，需要处理
+        router.push('/');
+        break;
 
-          localStorage.clear();
-          // 跳转到登陆界面
-          router.push('/');
-
-          break;
-      }
+      default:
+        return res;
     }
+  },
+  (error) => {
     return Promise.reject(error);
   },
 );
