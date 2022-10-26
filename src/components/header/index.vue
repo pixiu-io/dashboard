@@ -4,7 +4,7 @@
     <!-- <img src="../../../static/huawei.logo.png" /> -->
     <span style="font-size: large; margin-left: 30px">貔貅云</span>
 
-    <el-button type="text" style="margin-left: 35px; background-color: rgb(40, 43, 51)">
+    <el-button link style="margin-left: 35px; background-color: rgb(40, 43, 51)">
       <el-icon style="vertical-align: middle; margin-right: 0px; font-size: large">
         <component :is="'HomeFilled'"></component>
       </el-icon>
@@ -35,15 +35,7 @@
   </div>
 
   <div style="display: flex; align-items: center">
-    <el-input
-      v-model="headInput"
-      class="header-input"
-      placeholder="搜索产品、文档..."
-      :suffix-icon="Search"
-      clearable
-      @blur="handleLost"
-      @focus="inputContext"
-    >
+    <el-input v-model="headInput" class="header-input" placeholder="搜索产品、文档..." clearable>
       <template #suffix>
         <el-icon class="el-input__icon" style="cursor: pointer">
           <component :is="'search'" />
@@ -151,8 +143,6 @@ onMounted(() => {
 });
 
 const headInput = ref('');
-
-const inputContext = () => {};
 
 const handleMessage = () => {
   data.showMessage = true;

@@ -37,7 +37,7 @@
               <el-icon @click="toggleCollapse">
                 <component :is="`${data.isCollapse ? 'Expand' : 'Fold'}`"></component>
               </el-icon>
-              <template #title> <dev style="margin-left: 20px">体验调研</dev></template>
+              <template #title> <span style="margin-left: 20px">体验调研</span></template>
             </el-menu-item>
           </el-menu>
         </el-col>
