@@ -36,11 +36,9 @@ instance.interceptors.response.use(
         localStorage.clear();
         // 跳转到登陆界面
         router.push('/login');
-        break;
-
-      default:
-        return res;
     }
+
+    return res;
   },
   (error) => {
     return Promise.reject(error);
