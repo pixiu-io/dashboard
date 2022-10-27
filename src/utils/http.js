@@ -36,6 +36,7 @@ instance.interceptors.response.use(
       });
 
       if (data.code === 401) {
+        localStorage.clear();
         router.push('/login');
       }
       return Promise.reject(data);
@@ -46,9 +47,7 @@ instance.interceptors.response.use(
       message: error.message,
       type: 'error',
     });
-    if (error.code === 401) {
-      router.push('/login');
-    }
+
     return Promise.reject(error);
   },
 );
