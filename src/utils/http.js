@@ -1,5 +1,6 @@
 import { ElMessage } from 'element-plus';
 import axios from 'axios';
+import router from '../router/index';
 
 const instance = axios.create({
   baseURL: import.meta.env.VITE_BASE_API, // 如果后端开放了cors，就可以用这个替代上面一行
@@ -34,13 +35,10 @@ instance.interceptors.response.use(
         });
         localStorage.clear();
         // 跳转到登陆界面
-        // TODO: 跳转异常，需要处理
-        router.push('/');
-        break;
-
-      default:
-        return res;
+        router.push('/login');
     }
+
+    return res;
   },
   (error) => {
     return Promise.reject(error);
