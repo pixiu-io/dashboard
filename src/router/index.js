@@ -152,4 +152,4 @@ const setupRouter = (app) => {
   app.use(router);
 };
 
-export default setupRouter;
+export { setupRouter, router };

@@ -7,13 +7,13 @@ const usePermissions = defineStore(
   () => {
     const permissions = ref([]);
     const getPermission = async () => {
-      const res = await axiosIntance({
-        method: 'get',
-        url: '/users/permissions',
-      });
-      if (res.code === 200) {
-        permissions.value = res.result;
-      }
+      try {
+        const result = await axiosIntance({
+          method: 'get',
+          url: '/users/permissions',
+        });
+        permissions.value = result;
+      } catch (error) {}
     };
     return { permissions, getPermission };
   },

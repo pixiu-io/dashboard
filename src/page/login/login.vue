@@ -104,25 +104,19 @@ const login = () => {
   loginFormRef.value.validate(async (valid) => {
     if (valid) {
       data.load = true;
-
-      // 发送登陆请求
-      const res = await proxy.$http({
-        method: 'post',
-        url: '/users/login',
-        data: data.loginInfo,
-      });
+      try {
+        // 发送登陆请求
+        const result = await proxy.$http({
+          method: 'post',
+          url: '/users/login',
+          data: data.loginInfo,
+        });
+        localStorage.setItem('token', result);
+        localStorage.setItem('account', data.loginInfo.name);
+        proxy.$message.success('登陆成功');
+        proxy.$router.push('/index');
+      } catch (err) {}
       data.load = false;
-      if (res.code != 200) {
-        proxy.$message.error(res.message);
-        return;
-      }
-
-      const token = res.result;
-      localStorage.setItem('token', token);
-      localStorage.setItem('account', data.loginInfo.name);
-
-      proxy.$message.success('登陆成功');
-      proxy.$router.push('/index');
     }
   });
 };

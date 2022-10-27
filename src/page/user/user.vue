@@ -165,7 +165,7 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import UserEdit from './userEdit.vue';
 import UserSetRole from './userSetRole.vue';
-import Pagination from '@/components/pagination/pagination.vue';
+import Pagination from '@/components/pagination/index.vue';
 
 const loading = ref(false);
 

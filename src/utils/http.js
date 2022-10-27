@@ -1,12 +1,13 @@
 import { ElMessage } from 'element-plus';
 import axios from 'axios';
+import { router } from '@/router/index';
 
 const instance = axios.create({
   baseURL: import.meta.env.VITE_BASE_API, // 如果后端开放了cors，就可以用这个替代上面一行
   timeout: 6000, // 设置超时时间1分钟
   header: {
-    'Content-Type': 'application/json;charset=UTF-8',
-  }, // 基础的请求头
+    'Content-Type': 'application/json;charset=UTF-8', // 基础的请求头
+  },
 });
 
 // 请求中间件
@@ -24,23 +25,29 @@ instance.interceptors.request.use(
 
 // 返回结果中间件
 instance.interceptors.response.use(
-  (response) => response.data,
-  (error) => {
-    if (error.response) {
-      const { status } = error.response;
-      switch (status) {
-        case 401:
-          ElMessage({
-            message: error.response.data,
-            type: 'error',
-          });
+  (response) => {
+    const { data } = response;
+    if (data.code === 200) {
+      return data.result;
+    } else {
+      ElMessage({
+        message: data.message,
+        type: 'error',
+      });
 
-          localStorage.clear();
-          // 跳转到登陆界面
-          router.push('/');
-
-          break;
+      if (data.code === 401) {
+        router.push('/login');
       }
+      return Promise.reject(data);
+    }
+  },
+  (error) => {
+    ElMessage({
+      message: error.message,
+      type: 'error',
+    });
+    if (error.code === 401) {
+      router.push('/login');
     }
     return Promise.reject(error);
   },
@@ -60,6 +67,7 @@ const axiosIntance = ({ method, url, data, config }) => {
   if (method === 'put') {
     return instance.put(url, data, { ...config });
   }
+  console.error(`UnKnown Method:${method}`);
   return false;
 };
 

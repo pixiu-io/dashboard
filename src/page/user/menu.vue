@@ -227,7 +227,7 @@
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import MenuEdit from './menuEdit.vue';
-import Pagination from '@/components/pagination/pagination.vue';
+import Pagination from '@/components/pagination/index.vue';
 
 const menuEdit = reactive({
   dialogVisble: false,

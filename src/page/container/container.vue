@@ -253,7 +253,7 @@ import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import PixiuRadioCard from '@/components/radioCard/index.vue';
 import Icon from '@/components/pixiuTooltip/index.vue';
-import Pagination from '@/components/pagination/pagination.vue';
+import Pagination from '@/components/pagination/index.vue';
 
 const { proxy } = getCurrentInstance();
 const data = reactive({
@@ -362,15 +362,17 @@ const onChange = (v) => {
 const getCloudList = async () => {
   // TODO 考虑将loading取到全局上面来，避免过多的去写loading状态管理
   data.loading = true;
-  const res = await proxy.$http({
-    method: 'get',
-    url: '/clouds',
-    data: data.pageInfo,
-  });
-  data.loading = false;
+  try {
+    const result = await proxy.$http({
+      method: 'get',
+      url: '/clouds',
+      data: data.pageInfo,
+    });
+    data.cloudList = result.data;
+    data.total = result.total;
+  } catch (error) {}
 
-  data.cloudList = res.result.data;
-  data.total = res.result.total;
+  data.loading = false;
 };
 
 const jumpRoute = (row) => {

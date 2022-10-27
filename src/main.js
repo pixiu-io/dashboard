@@ -8,7 +8,7 @@ import * as ElIcons from '@element-plus/icons-vue';
 import setupPinia from '@/stores';
 import setupDirective from './directive';
 import setupI18n from '@/utils/i18n';
-import setupRouter from './router/index.js';
+import { setupRouter } from './router/index.js';
 import axios from '@/utils/http';
 // 全局引入css
 import '@/assets/main.css';
