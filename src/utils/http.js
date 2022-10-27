@@ -2,6 +2,7 @@ import { ElMessage } from 'element-plus';
 import axios from 'axios';
 import { router } from '@/router/index';
 
+
 const instance = axios.create({
   baseURL: import.meta.env.VITE_BASE_API, // 如果后端开放了cors，就可以用这个替代上面一行
   timeout: 6000, // 设置超时时间1分钟

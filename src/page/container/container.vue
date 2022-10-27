@@ -373,6 +373,7 @@ const getCloudList = async () => {
   } catch (error) {}
 
   data.loading = false;
+
 };
 
 const jumpRoute = (row) => {
