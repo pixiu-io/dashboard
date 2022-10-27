@@ -357,7 +357,7 @@ const onChange = (v) => {
   data.pageInfo.limit = 10;
   data.pageInfo.page = v.page;
   data.pageInfo.page_size = v.limit; //兼容原有写法
-  getCloudList();
+  // getCloudList();
 };
 
 const getCloudList = async () => {
@@ -370,8 +370,12 @@ const getCloudList = async () => {
   });
   data.loading = false;
 
-  data.cloudList = res.result.data;
-  data.total = res.result.total;
+  if (res.code == 200) {
+    data.cloudList = res.result.data;
+    data.total = res.result.total;
+  } else if (res.code != 401) {
+    return proxy.$http.message.error(res.message);
+  }
 };
 
 const jumpRoute = (row) => {
