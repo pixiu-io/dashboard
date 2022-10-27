@@ -227,7 +227,7 @@
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import MenuEdit from './menuEdit.vue';
-import Pagination from '@/components/pagination/pagination.vue';
+import Pagination from '@/components/pagination/index.vue';
 
 const menuEdit = reactive({
   dialogVisble: false,
@@ -383,7 +383,6 @@ const getMenusList = async () => {
 
 // 分页
 const onChange = (v) => {
-  console.log(v);
   data.pageInfo.limit = 10;
   data.pageInfo.page = v.page;
   getMenusList();

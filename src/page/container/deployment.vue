@@ -46,7 +46,6 @@ const data = reactive({
 });
 
 onMounted(() => {
-  console.log('dddd');
   getDeployments();
 });
 

@@ -253,7 +253,7 @@ import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import PixiuRadioCard from '@/components/radioCard/index.vue';
 import Icon from '@/components/pixiuTooltip/index.vue';
-import Pagination from '@/components/pagination/pagination.vue';
+import Pagination from '@/components/pagination/index.vue';
 
 const { proxy } = getCurrentInstance();
 const data = reactive({
@@ -353,29 +353,27 @@ const formatterResource = (row, column, cellValue) => {
 
 //分页
 const onChange = (v) => {
-  console.log(v);
   data.pageInfo.limit = 10;
   data.pageInfo.page = v.page;
   data.pageInfo.page_size = v.limit; //兼容原有写法
-  // getCloudList();
+  getCloudList();
 };
 
 const getCloudList = async () => {
   // TODO 考虑将loading取到全局上面来，避免过多的去写loading状态管理
   data.loading = true;
-  const res = await proxy.$http({
-    method: 'get',
-    url: '/clouds',
-    data: data.pageInfo,
-  });
+  try {
+    const result = await proxy.$http({
+      method: 'get',
+      url: '/clouds',
+      data: data.pageInfo,
+    });
+    data.cloudList = result.data;
+    data.total = result.total;
+  } catch (error) {}
+
   data.loading = false;
 
-  if (res.code == 200) {
-    data.cloudList = res.result.data;
-    data.total = res.result.total;
-  } else if (res.code != 401) {
-    return proxy.$http.message.error(res.message);
-  }
 };
 
 const jumpRoute = (row) => {

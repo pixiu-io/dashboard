@@ -4,7 +4,7 @@ export default [
     method: 'POST',
     response: (options) => ({
       code: 200,
-      token: '12313',
+      result: '12313',
     }),
   },
 ];
