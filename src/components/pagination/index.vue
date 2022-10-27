@@ -26,8 +26,6 @@ const emit = defineEmits(['onChange']);
 const onChange = () => {
   emit('onChange', page);
 };
-// 初始化回调,页面进入的时候需要回调一次！
-onChange();
 </script>
 
 <style scoped></style>

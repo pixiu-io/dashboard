@@ -1,8 +1,10 @@
 import { createPinia } from 'pinia';
-import { createPersistedState } from 'pinia-plugin-persistedstate';
-import usePermissions from './usePermission';
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 
 const pinia = createPinia();
-pinia.use(createPersistedState);
+pinia.use(piniaPluginPersistedstate);
+const setupPinia = (app) => {
+  app.use(pinia);
+};
 
-export { pinia, usePermissions };
+export default setupPinia;

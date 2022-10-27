@@ -148,4 +148,8 @@ router.beforeEach((to, from) => {
   }
 });
 
-export default router;
+const setupRouter = (app) => {
+  app.use(router);
+};
+
+export { setupRouter, router };

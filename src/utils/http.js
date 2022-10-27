@@ -1,6 +1,7 @@
 import { ElMessage } from 'element-plus';
 import axios from 'axios';
-import router from '../router/index';
+import { router } from '@/router/index';
+
 
 const instance = axios.create({
   baseURL: import.meta.env.VITE_BASE_API, // 如果后端开放了cors，就可以用这个替代上面一行
@@ -26,21 +27,29 @@ instance.interceptors.request.use(
 // 返回结果中间件
 instance.interceptors.response.use(
   (response) => {
-    const res = response.data;
-    switch (res.code) {
-      case 401:
-        ElMessage({
-          message: res.message,
-          type: 'error',
-        });
-        localStorage.clear();
-        // 跳转到登陆界面
-        router.push('/login');
-    }
+    const { data } = response;
+    if (data.code === 200) {
+      return data.result;
+    } else {
+      ElMessage({
+        message: data.message,
+        type: 'error',
+      });
 
-    return res;
+      if (data.code === 401) {
+        router.push('/login');
+      }
+      return Promise.reject(data);
+    }
   },
   (error) => {
+    ElMessage({
+      message: error.message,
+      type: 'error',
+    });
+    if (error.code === 401) {
+      router.push('/login');
+    }
     return Promise.reject(error);
   },
 );

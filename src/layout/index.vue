@@ -37,7 +37,7 @@
               <el-icon @click="toggleCollapse">
                 <component :is="`${data.isCollapse ? 'Expand' : 'Fold'}`"></component>
               </el-icon>
-              <template #title> <dev style="margin-left: 20px">体验调研</dev></template>
+              <template #title> <span style="margin-left: 20px">体验调研</span></template>
             </el-menu-item>
           </el-menu>
         </el-col>
@@ -56,6 +56,9 @@ import { reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import PixiuHeader from '@/components/header/index.vue';
 import PixiuMenu from '@/components/menu/index.vue';
+import usePermissions from '@/stores/usePermission';
+
+const useStore = usePermissions();
 
 const router = useRouter();
 
@@ -112,6 +115,9 @@ onMounted(() => {
     },
   ];
 });
+
+// 持久化权限
+useStore.getPermission();
 
 // 点击之后进行手动切换
 const toggleCollapse = () => {
