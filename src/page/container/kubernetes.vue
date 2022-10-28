@@ -1,12 +1,13 @@
 <template>
   <el-aside style="height: 100%">
-    <div class="cloud-title-container">cloud</div>
+    <div class="cloud-title-container">控制台</div>
 
     <div class="cloud-select-container">
       <el-select v-model="data.cloud.cluster" style="width: 80%" @change="changeClouds">
         <el-option v-for="item in data.clouds" :key="item.id" :value="item.id" :label="item.id" />
       </el-select>
     </div>
+
     <el-menu
       :default-active="data.path"
       active-text-color="#ffd04b"
@@ -33,14 +34,7 @@ const { proxy } = getCurrentInstance();
 
 const data = reactive({
   cloud: {},
-  clouds: [
-    {
-      id: 'tencent',
-    },
-    {
-      id: 'huawei',
-    },
-  ],
+  clouds: [],
   path: '',
   items: [
     {
@@ -84,6 +78,19 @@ const changeClouds = (value) => {
 //   { immediate: true }
 // );
 
+const getCloudList = async () => {
+  try {
+    const result = await proxy.$http({
+      method: 'get',
+      url: '/clouds',
+    });
+
+    for (let item of result) {
+      data.clouds.push({ id: item.name });
+    }
+  } catch (error) {}
+};
+
 onMounted(() => {
   data.cloud = proxy.$route.query;
   data.items.map((item) => {
@@ -91,6 +98,7 @@ onMounted(() => {
     item.url = `${url}?cluster=${data.cloud.cluster}`;
   });
   data.path = proxy.$route.fullPath;
+  getCloudList();
 });
 </script>
 
