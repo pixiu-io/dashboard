@@ -1,10 +1,16 @@
 <template>
-  <el-aside style="height: 100%">
+  <el-aside>
     <div class="cloud-title-container">控制台</div>
 
     <div class="cloud-select-container">
       <el-select v-model="data.cloud.cluster" style="width: 80%" @change="changeClouds">
         <el-option v-for="item in data.clouds" :key="item.id" :value="item.id" :label="item.id" />
+      </el-select>
+    </div>
+
+    <div class="cloud-select-container">
+      <el-select v-model="data.namespace" style="width: 80%">
+        <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
       </el-select>
     </div>
 
@@ -35,6 +41,8 @@ const { proxy } = getCurrentInstance();
 const data = reactive({
   cloud: {},
   clouds: [],
+  namespace: 'default',
+  namespaces: ['default', 'kube-system'],
   path: '',
   items: [
     {
@@ -117,23 +125,23 @@ onMounted(() => {
 }
 
 .cloud-title-container {
-  font-size: 25px;
-  height: 56px;
-  line-height: 56px;
-  background-color: #f6f7fb;
+  font-size: 16px;
+  color: #4c4e58;
+  margin-left: 20px;
+  height: 50px;
+  line-height: 50px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  /* justify-content: center; */
   border-bottom: 1px rgba(0, 0, 0, 0.1) solid;
 }
 
 .cloud-select-container {
-  height: 56px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #f6f7fb;
-  /* border-bottom: 1px rgba(0, 0, 0, 0.1) solid; */
+  border-bottom: 1px rgba(0, 0, 0, 0.1) solid;
 }
 
 .el-header {
@@ -155,12 +163,13 @@ onMounted(() => {
 
 .el-aside {
   height: 100%;
-  width: 180px !important;
+  background-color: #f6f7fb;
+  width: 200px;
 }
 
 .el-menu-vertical-no-collapse:not(.el-menu--collapse) {
   width: 180px;
-  height: calc(100% - 113px);
+  height: calc(100% - 180px);
 }
 
 .el-menu {
