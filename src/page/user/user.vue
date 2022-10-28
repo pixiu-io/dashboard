@@ -7,7 +7,7 @@
       <el-row>
         <el-col>
           <el-button
-            v-permissions="'user:cloud:add'"
+            v-permissions="'cloud:user:add'"
             type="primary"
             style="margin-left: 1px"
             @click="createUser"
@@ -52,7 +52,7 @@
           <el-table-column fixed="right" label="操作" width="250">
             <template #default="scope">
               <el-button
-                v-permissions="'user:cloud:setting'"
+                v-permissions="'cloud:role:set'"
                 size="small"
                 text
                 style="color: #006eff"
@@ -62,7 +62,7 @@
               </el-button>
 
               <el-button
-                v-permissions="'user:cloud:delete'"
+                v-permissions="'cloud:user:delete'"
                 text
                 size="small"
                 style="margin-right: 10px; color: #006eff"
@@ -72,7 +72,7 @@
               </el-button>
 
               <el-button
-                v-permissions="'user:cloud:delete'"
+                v-permissions="'cloud:user:edit'"
                 text
                 size="small"
                 style="margin-right: 10px; color: #006eff"
@@ -108,7 +108,7 @@
   <el-dialog
     v-model="data.createUserVisible"
     style="color: #000000; font: 14px"
-    width="360px"
+    width="390px"
     center
     @close="data.createUserVisible = false"
   >
@@ -116,18 +116,20 @@
       <div style="text-align: left; font-weight: bold; padding-left: 5px">添加用户</div>
     </template>
     <el-form
+      ref="userFormRef"
       :label-position="labelPosition"
-      label-width="100px"
+      :rules="userFormRules"
+      label-width="110px"
       :model="data.userForm"
-      style="max-width: 260px"
+      style="max-width: 290px"
     >
-      <el-form-item label="名字:" required>
+      <el-form-item label="名字:" required prop="name">
         <el-input v-model="data.userForm.name" />
       </el-form-item>
-      <el-form-item label="描述:">
+      <el-form-item label="描述:" prop="description">
         <el-input v-model="data.userForm.description" required="" />
       </el-form-item>
-      <el-form-item label="邮箱">
+      <el-form-item label="邮箱" prop="email">
         <el-input v-model="data.userForm.email" />
       </el-form-item>
       <el-form-item label="状态">
@@ -143,11 +145,11 @@
           inactive-text="禁用"
         />
       </el-form-item>
-      <el-form-item label="密码" required>
+      <el-form-item label="密码" required prop="password">
         <el-input v-model="data.userForm.password" type="password" show-password />
       </el-form-item>
-      <el-form-item label="再次输入密码" required>
-        <el-input v-model="data.confirmPassword" type="password" show-password />
+      <el-form-item label="再次输入密码" prop="confirmPassword">
+        <el-input v-model="data.userForm.confirmPassword" type="password" show-password />
       </el-form-item>
     </el-form>
 
@@ -168,7 +170,7 @@ import UserSetRole from './userSetRole.vue';
 import Pagination from '@/components/pagination/index.vue';
 
 const loading = ref(false);
-
+const userFormRef = ref(null);
 const userEdit = reactive({
   dialogVisble: false,
   dialogTableValue: {},
@@ -180,6 +182,47 @@ const userSetRole = reactive({
   updateForm: {},
   roleList: [],
   user: {},
+});
+const validatePass = (rule, value, callback) => {
+  if (value === '') {
+    callback(new Error('请输入密码'));
+  } else {
+    if (data.userForm.confirmPassword !== '') {
+      if (!userFormRef.value) return;
+      userFormRef.value.validateField('confirmPassword', () => null);
+    }
+    callback();
+  }
+};
+const validatePass2 = (rule, value, callback) => {
+  if (value === '') {
+    callback(new Error('请再次输入密码'));
+  } else if (value !== data.userForm.password) {
+    callback(new Error('两次密码不匹配'));
+  } else {
+    callback();
+  }
+};
+
+const validateEmail = (rule, value, callback) => {
+  const regEmail =
+    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  if (value) {
+    if (regEmail.test(value)) {
+      return callback();
+    }
+    callback(new Error('请输入正确的邮箱'));
+  }
+};
+
+const userFormRules = reactive({
+  name: [{ required: true, message: '请输入名字', trigger: 'blur' }],
+  password: [
+    { required: true, validator: validatePass, trigger: 'blur' },
+    { min: 6, max: 12, message: '密码长度在6到12位之间', trigger: 'blur' },
+  ],
+  confirmPassword: [{ required: true, validator: validatePass2, trigger: 'blur' }],
+  email: [{ validator: validateEmail, trigger: 'blur' }],
 });
 
 const { proxy } = getCurrentInstance();
@@ -199,9 +242,9 @@ const data = reactive({
     name: '',
     password: '',
     status: 1,
+    confirmPassword: '',
   },
   updateForm: {},
-  confirmPassword: '',
   userList: [],
   autosize: {
     minRows: 8,
@@ -247,8 +290,8 @@ const getUserList = async () => {
     data: data.pageInfo,
   });
 
-  data.userList = res.result.users;
-  data.total = res.result.total;
+  data.userList = res.users;
+  data.total = res.total;
 };
 
 const deleteUser = async (row) => {
@@ -264,7 +307,7 @@ const deleteUser = async (row) => {
           method: 'delete',
           url: `/users/${row.id}`,
         })
-        .then((res) => {
+        .then(() => {
           getUserList();
           ElMessage({
             type: 'success',
@@ -291,31 +334,37 @@ const handleDialogValue = (user) => {
 };
 
 const confirmCreateUser = async () => {
-  const resp = await proxy.$http({
-    method: 'post',
-    url: '/users',
-    data: data.userForm,
+  console.log('=====', userFormRef.value);
+  userFormRef.value.validate((valid) => {
+    if (valid) {
+      try {
+        proxy
+          .$http({
+            method: 'post',
+            url: '/users',
+            data: data.userForm,
+          })
+          .then(() => {
+            data.createUserVisible = false;
+            getUserList();
+            ElMessage({
+              type: 'success',
+              message: '添加成功',
+            });
+          });
+      } catch (err) {}
+    } else {
+      ElMessage.error('请正确填写');
+    }
   });
-  data.createUserVisible = false;
-  if (resp.code === 200) {
-    getUserList();
-    ElMessage({
-      type: 'success',
-      message: '添加成功',
-    });
-  } else {
-    ElMessage({
-      type: 'error',
-      message: '添加失败',
-    });
-  }
 };
+
 const getRoles = async () => {
   const res = await proxy.$http({
     method: 'get',
     url: '/roles',
   });
-  userSetRole.roleList = res.result.roles;
+  userSetRole.roleList = res.roles;
 };
 
 const handleSetRole = async (user) => {
@@ -327,7 +376,7 @@ const handleSetRole = async (user) => {
   });
 
   // 提取role id
-  const roleList = res.result;
+  const roleList = res;
   if (roleList !== null) {
     for (let i = 0; i < roleList.length; i++) {
       if (roleList[i].children !== null) {

@@ -7,7 +7,7 @@
       <el-row>
         <el-col>
           <el-button
-            v-permissions="'user:cloud:add'"
+            v-permissions="'cloud:role:add'"
             type="primary"
             style="margin-left: 1px"
             @click="createRole()"
@@ -36,6 +36,7 @@
             <template #default="scope">
               <el-switch
                 v-model="scope.row.status"
+                v-permissions="'role:status:edit'"
                 class="ml-2"
                 style="--el-switch-on-color: #409eff; --el-switch-off-color: #ff4949"
                 :active-value="1"
@@ -53,7 +54,7 @@
           <el-table-column fixed="right" label="操作" width="250">
             <template #default="scope">
               <el-button
-                v-permissions="'user:cloud:setting'"
+                v-permissions="'role:resource:add'"
                 size="small"
                 text
                 style="color: #006eff"
@@ -63,7 +64,7 @@
               </el-button>
 
               <el-button
-                v-permissions="'user:cloud:delete'"
+                v-permissions="'cloud:role:del'"
                 text
                 size="small"
                 style="margin-right: 10px; color: #006eff"
@@ -73,7 +74,7 @@
               </el-button>
 
               <el-button
-                v-permissions="'user:cloud:delete'"
+                v-permissions="'cloud:role:edit'"
                 text
                 size="small"
                 style="margin-right: 10px; color: #006eff"
@@ -221,7 +222,7 @@ const getRoleList = async () => {
     data: data.pageInfo,
   });
 
-  data.roleList = res.result.roles;
+  data.roleList = res.roles;
 };
 const changeStatus = async (role) => {
   const res = await proxy.$http({
@@ -285,24 +286,21 @@ const handleRole = (role) => {
 };
 
 const confirmCreateRole = async () => {
-  const resp = await proxy.$http({
-    method: 'post',
-    url: '/roles',
-    data: data.roleForm,
-  });
-  data.createRoleVisible = false;
-  if (resp.code === 200) {
-    getRoleList();
-    ElMessage({
-      type: 'success',
-      message: '添加成功',
-    });
-  } else {
-    ElMessage({
-      type: 'error',
-      message: resp.message,
-    });
-  }
+  try {
+    await proxy
+      .$http({
+        method: 'post',
+        url: '/roles',
+        data: data.roleForm,
+      })
+      .then(() => {
+        getRoleList();
+        ElMessage({
+          type: 'success',
+          message: '添加成功',
+        });
+      });
+  } catch (err) {}
 };
 
 const getMenus = async () => {
@@ -310,7 +308,7 @@ const getMenus = async () => {
     method: 'get',
     url: '/menus',
   });
-  roleSet.menuList = res.result.menus;
+  roleSet.menuList = res.menus;
 };
 
 const handleSetRole = async (role) => {
@@ -322,7 +320,7 @@ const handleSetRole = async (role) => {
     url: `/roles/${role.id}/menus`,
   });
 
-  const menuList = res.result;
+  const menuList = res;
   if (menuList !== null) {
     for (let i = 0; i < menuList.length; i++) {
       roleSet.checkedMenus.push(menuList[i].id);
