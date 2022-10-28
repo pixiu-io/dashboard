@@ -8,7 +8,7 @@
       </el-select>
     </div>
 
-    <div class="cloud-select-container">
+    <div class="namespace-select-container">
       <el-select v-model="data.namespace" style="width: 80%">
         <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
       </el-select>
@@ -111,19 +111,6 @@ onMounted(() => {
 </script>
 
 <style scoped="scoped">
-.modules-header-cf-header-container {
-  height: 100%;
-  width: 100%;
-  font-weight: 400;
-  font-style: normal;
-  /* position: fixed; */
-  min-width: 1120px;
-  z-index: 1002;
-  top: 0;
-  left: 0;
-  background-color: #ebe7e7;
-}
-
 .cloud-title-container {
   font-size: 16px;
   color: #4c4e58;
@@ -137,6 +124,14 @@ onMounted(() => {
 }
 
 .cloud-select-container {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px rgba(0, 0, 0, 0.1) solid;
+}
+
+.namespace-select-container {
   height: 60px;
   display: flex;
   align-items: center;
