@@ -607,9 +607,7 @@ onMounted(() => {
 // 监听子属性变化 demo
 watch(
   () => data.active,
-  (newActive, oldActive) => {
-    console.log('newActive', newActive, 'oldActive', oldActive);
-  },
+  (newActive, oldActive) => {},
 );
 
 // 监听整个 serviceNetworkForm
