@@ -142,23 +142,21 @@ const handleUptdaeMenus = async () => {
   }
 
   menu.value.menu_type = parseInt(menu.value.menu_type);
-  const resp = await proxy.$http({
-    method: 'put',
-    url: `/menus/${menu.value.id}`,
-    data: menu.value,
-  });
-  if (resp.code === 200) {
-    emits('valueChange');
-    ElMessage({
-      type: 'success',
-      message: '修改成功',
-    });
-  } else {
-    ElMessage({
-      type: 'error',
-      message: '修改失败',
-    });
-  }
-  handleClose();
+  try {
+    await proxy
+      .$http({
+        method: 'put',
+        url: `/menus/${menu.value.id}`,
+        data: menu.value,
+      })
+      .then(() => {
+        handleClose();
+        emits('valueChange');
+        ElMessage({
+          type: 'success',
+          message: '修改成功',
+        });
+      });
+  } catch (error) {}
 };
 </script>

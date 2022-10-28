@@ -76,23 +76,23 @@ watch(
 const confirmSetRole = async () => {
   const roleIds = menusRef.value.getCheckedKeys();
   data.roleForm.role_ids = roleIds;
-  const res = await proxy.$http({
-    method: 'post',
-    url: `/users/${user.value.id}/roles`,
-    data: data.roleForm,
-  });
-  if (res.code === 200) {
-    emits('valueChange');
-    ElMessage({
-      type: 'success',
-      message: '分配成功',
-    });
-  } else {
-    ElMessage({
-      type: 'error',
-      message: res.message,
-    });
-  }
+
+  try {
+    await proxy
+      .$http({
+        method: 'post',
+        url: `/users/${user.value.id}/roles`,
+        data: data.roleForm,
+      })
+      .then(() => {
+        emits('valueChange');
+        ElMessage({
+          type: 'success',
+          message: '分配成功',
+        });
+      });
+  } catch (error) {}
+
   handleClose();
 };
 </script>

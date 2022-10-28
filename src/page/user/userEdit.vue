@@ -72,24 +72,19 @@ const handleClose = () => {
 };
 
 const confirmUpdateUser = async () => {
-  const resp = await proxy.$http({
-    method: 'put',
-    url: `/users/${userForm.value.id}`,
-    data: userForm.value,
-  });
-
-  if (resp.code === 200) {
-    emits('valueChange');
-    ElMessage({
-      type: 'success',
-      message: '修改成功',
+  await proxy
+    .$http({
+      method: 'put',
+      url: `/users/${userForm.value.id}`,
+      data: userForm.value,
+    })
+    .then(() => {
+      emits('valueChange');
+      ElMessage({
+        type: 'success',
+        message: '修改成功',
+      });
     });
-  } else {
-    ElMessage({
-      type: 'error',
-      message: '修改失败',
-    });
-  }
   handleClose();
 };
 
