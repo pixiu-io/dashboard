@@ -81,23 +81,22 @@ const confirmUpdateUser = async () => {
   if (role.value.parent_id === '') {
     role.value.parent_id = 0;
   }
-  const resp = await proxy.$http({
-    method: 'put',
-    url: `/roles/${role.value.id}`,
-    data: role.value,
-  });
-  if (resp.code === 200) {
-    emits('valueChange');
-    ElMessage({
-      type: 'success',
-      message: '修改成功',
-    });
-  } else {
-    ElMessage({
-      type: 'error',
-      message: '修改失败',
-    });
-  }
+  try {
+    await proxy
+      .$http({
+        method: 'put',
+        url: `/roles/${role.value.id}`,
+        data: role.value,
+      })
+      .then(() => {
+        emits('valueChange');
+        ElMessage({
+          type: 'success',
+          message: '修改成功',
+        });
+      });
+  } catch (error) {}
+
   handleClose();
 };
 </script>

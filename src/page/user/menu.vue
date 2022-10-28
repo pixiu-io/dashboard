@@ -156,7 +156,7 @@
       </el-form-item>
 
       <el-form-item label="描述:">
-        <el-input v-model="data.menuForm.memo" required="" />
+        <el-input v-model="data.menuForm.memo" required />
       </el-form-item>
       <el-form-item label="排序值:">
         <el-input-number
@@ -166,7 +166,7 @@
           @change="handleChange"
         />
       </el-form-item>
-      <el-form-item label="URL:">
+      <el-form-item label="URL:" required>
         <el-input v-model="data.menuForm.url" />
       </el-form-item>
 
@@ -308,12 +308,7 @@ const deleteMenu = async (row) => {
             message: '删除成功',
           });
         })
-        .catch((err) => {
-          ElMessage({
-            type: 'error',
-            message: err,
-          });
-        });
+        .catch((err) => {});
     })
     .catch(() => {}); // 取消
 };
@@ -332,44 +327,39 @@ const handleEdit = (menu) => {
 
 const confirmCreateMenus = async () => {
   data.menuForm.menu_type = parseInt(data.menuForm.menu_type);
-  const resp = await proxy.$http({
-    method: 'post',
-    url: '/menus',
-    data: data.menuForm,
-  });
-  data.createMenuVisible = false;
-  if (resp.code === 200) {
-    getMenusList();
-    ElMessage({
-      type: 'success',
-      message: '添加成功',
-    });
-  } else {
-    ElMessage({
-      type: 'error',
-      message: resp.message,
-    });
-  }
+  try {
+    await proxy
+      .$http({
+        method: 'post',
+        url: '/menus',
+        data: data.menuForm,
+      })
+      .then(() => {
+        data.createMenuVisible = false;
+        getMenusList();
+        ElMessage({
+          type: 'success',
+          message: '添加成功',
+        });
+      });
+  } catch (error) {}
 };
 
 const changeStatus = async (menu) => {
-  const res = await proxy.$http({
-    method: 'put',
-    url: `/menus/${menu.id}/status/${menu.status}`,
-  });
-
-  if (res.code === 200) {
-    getMenusList();
-    ElMessage({
-      type: 'success',
-      message: '更新成功',
-    });
-  } else {
-    ElMessage({
-      type: 'error',
-      message: '更新失败',
-    });
-  }
+  try {
+    await proxy
+      .$http({
+        method: 'put',
+        url: `/menus/${menu.id}/status/${menu.status}`,
+      })
+      .then(() => {
+        getMenusList();
+        ElMessage({
+          type: 'success',
+          message: '更新成功',
+        });
+      });
+  } catch (error) {}
 };
 const getMenusList = async () => {
   const res = await proxy.$http({
@@ -377,8 +367,8 @@ const getMenusList = async () => {
     url: '/menus',
     data: data.pageInfo,
   });
-  data.menuList = res.result.menus;
-  data.total = res.result.total;
+  data.menuList = res.menus;
+  data.total = res.total;
 };
 
 // 分页
@@ -394,7 +384,7 @@ const getMenusByMenuType = async () => {
     url: '/menus',
     data: { menu_type: 1 },
   });
-  menuEdit.menuList = res.result.menus;
+  menuEdit.menuList = res.menus;
 };
 </script>
 
