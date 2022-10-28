@@ -71,24 +71,22 @@ const confirmSetPermission = async () => {
   const a = menusRef.value.getHalfCheckedKeys;
   data.menuForm.menu_ids = menuIds;
 
-  const res = await proxy.$http({
-    method: 'post',
-    url: `/roles/${role.value.id}/menus`,
-    data: data.menuForm,
-  });
+  try {
+    await proxy
+      .$http({
+        method: 'post',
+        url: `/roles/${role.value.id}/menus`,
+        data: data.menuForm,
+      })
+      .then(() => {
+        emits('valueChange');
+        ElMessage({
+          type: 'success',
+          message: '分配成功',
+        });
+      });
+  } catch (error) {}
 
-  if (res.code === 200) {
-    emits('valueChange');
-    ElMessage({
-      type: 'success',
-      message: '分配成功',
-    });
-  } else {
-    ElMessage({
-      type: 'error',
-      message: res.message,
-    });
-  }
   handleClose();
 };
 </script>
