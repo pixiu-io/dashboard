@@ -178,15 +178,16 @@ const comfirmCreate = async () => {
       'Content-Type': 'multipart/form-data',
     },
   };
-  const resp = await proxy.$http({
-    method: 'post',
-    url: '/clouds',
-    data: fileFormData,
-    config: requestConfig,
-  });
-  if (resp.code != 200) {
-    return proxy.$message.error(`集群 ${data.clusterForm.name} 导入失败: ${resp.message}`);
-  }
+
+  try {
+    const resp = await proxy.$http({
+      method: 'post',
+      url: '/clouds',
+      data: fileFormData,
+      config: requestConfig,
+    });
+  } catch (error) {}
+
   proxy.$message.success(`集群 ${data.clusterForm.name} 导入成功`);
   backToContainer();
 };
@@ -209,18 +210,17 @@ const connectKubernetes = async () => {
     },
   };
 
-  const resp = await proxy.$http({
-    method: 'post',
-    url: '/clouds/ping',
-    data: fileFormData,
-    config: requestConfig,
-  });
+  try {
+    const resp = await proxy.$http({
+      method: 'post',
+      url: '/clouds/ping',
+      data: fileFormData,
+      config: requestConfig,
+    });
 
-  if (resp.code != 200) {
-    return proxy.$message.error('kubernetes 集群连接异常'); // 连通性检测异常
-  }
-  proxy.$message.success('kubernetes 集群连接正常');
-  data.clusterForm.allowCreated = false;
+    proxy.$message.success('kubernetes 集群连接正常');
+    data.clusterForm.allowCreated = false;
+  } catch (error) {}
 };
 
 // 回到 container 页面

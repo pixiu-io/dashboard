@@ -334,7 +334,6 @@ const handleDialogValue = (user) => {
 };
 
 const confirmCreateUser = async () => {
-  console.log('=====', userFormRef.value);
   userFormRef.value.validate((valid) => {
     if (valid) {
       try {
