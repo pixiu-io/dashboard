@@ -16,4 +16,4 @@ const i18n = createI18n({
 const setupI18n = (app) => {
   app.use(i18n);
 };
-export default setupI18n;
+export { setupI18n, i18n };
