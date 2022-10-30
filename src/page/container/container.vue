@@ -12,9 +12,9 @@
             {{ $t(`container.container.region`) }}
           </span>
 
-          <el-select v-model="data.value" placeholder="Select" style="width: 100px">
+          <el-select v-model="cloudStore.defaultOption" placeholder="Select" style="width: 100px">
             <el-option
-              v-for="item in data.options"
+              v-for="item in cloudStore.options"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -65,7 +65,7 @@
             v-permissions="'user:cloud:add'"
             type="primary"
             style="margin-left: 1px"
-            @click="createCloud"
+            @click="cloudStore.createCloud"
           >
             <el-icon style="vertical-align: middle; margin-right: 4px">
               <component :is="'Plus'" />
@@ -74,13 +74,12 @@
           </el-button>
 
           <el-input
-            v-model="data.pageInfo.query"
+            v-model="cloudStore.pageInfo.query"
             placeholder="多个过滤标签用回车分隔"
             style="width: 560px; float: right"
             clearable
-            :suffix-icon="Search"
-            @input="getCloudList"
-            @clear="getCloudList"
+            @input="cloudStore.getCloudList"
+            @clear="cloudStore.getCloudList"
           >
             <template #suffix>
               <el-icon class="el-input__icon">
@@ -93,8 +92,8 @@
 
       <el-card class="box-card">
         <el-table
-          v-loading="loading"
-          :data="data.cloudList"
+          v-loading="cloudStore.loading"
+          :data="cloudStore.cloudList"
           stripe
           style="margin-top: 2px; width: 100%"
           @selection-change="handleSelectionChange"
@@ -103,7 +102,11 @@
 
           <el-table-column prop="name" label="名称/ID" width="200">
             <template #default="scope">
-              <el-link style="color: #006eff" type="primary" @click="jumpRoute(scope.row)">
+              <el-link
+                style="color: #006eff"
+                type="primary"
+                @click="cloudStore.jumpRoute(scope.row)"
+              >
                 {{ scope.row.name }}
               </el-link>
             </template>
@@ -147,7 +150,7 @@
                 type="text"
                 size="small"
                 style="margin-right: 10px; color: #006eff"
-                @click="deleteCloud(scope.row)"
+                @click="cloudStore.deleteCloud(scope.row)"
               >
                 删除
               </el-button>
@@ -177,35 +180,31 @@
         </el-table>
 
         <!-- 分页区域 -->
-        <pagination :total="data.total" @on-change="onChange"></pagination>
+        <pagination :total="cloudStore.total" @on-change="cloudStore.onChange"></pagination>
       </el-card>
     </div>
   </el-main>
 
   <el-dialog
-    v-model="data.createCloudVisible"
+    v-model="cloudStore.createCloudVisible"
     style="color: #000000; font: 14px"
     width="1200px"
     center
-    @close="data.createCloudVisible = false"
+    @close="cloudStore.closeModal"
   >
     <template #title>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">选择集群类型</div>
     </template>
     <el-row :gutter="20">
-      <pixiu-radio-card :type="1" :default-type="data.cloudType" :span="2" @click="changeActive"
+      <pixiu-radio-card
+        :type="1"
+        :default-type="cloudStore.cloudType"
+        :span="2"
+        @click="cloudStore.changeActive"
         ><div>
           <div style="margin-top: 10px; font: 14px; font-weight: 700; color: #000000">标准集群</div>
 
-          <div
-            style="
-              margin-top: 20px;
-              font: 12px;
-              color: #00000066;
-              /* padding-left: 10px;
-              position: relative; */
-            "
-          >
+          <div style="margin-top: 20px; font: 12px; color: #00000066">
             可以将用户本地基础设施的 Kubernetes 集群或者其他云厂商的 Kubernetes
             集群注册到容器服务进行统一管理。
           </div>
@@ -220,7 +219,12 @@
         </div></pixiu-radio-card
       >
 
-      <pixiu-radio-card :type="2" :default-type="data.cloudType" :span="2" @click="changeActive">
+      <pixiu-radio-card
+        :type="2"
+        :default-type="cloudStore.cloudType"
+        :span="2"
+        @click="cloudStore.changeActive"
+      >
         <div style="margin-top: 10px; font: 14px; font-weight: 700; color: #000000">自建集群</div>
 
         <div style="margin-top: 20px; font: 12px; color: #00000066">
@@ -241,64 +245,24 @@
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="data.createCloudVisible = false">取消</el-button>
-        <el-button type="primary" @click="confirmCreateCloud">创建</el-button>
+        <el-button @click="cloudStore.closeModal">取消</el-button>
+        <el-button type="primary" @click="cloudStore.confirmCreateCloud">创建</el-button>
       </span>
     </template>
   </el-dialog>
 </template>
 
 <script setup lang="jsx">
-import { reactive, getCurrentInstance, onMounted } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { onMounted } from 'vue';
 import PixiuRadioCard from '@/components/radioCard/index.vue';
 import Icon from '@/components/pixiuTooltip/index.vue';
 import Pagination from '@/components/pagination/index.vue';
+import useCloudStore from '@/stores/useCloud';
 
-const { proxy } = getCurrentInstance();
-const data = reactive({
-  pageInfo: {
-    query: '',
-    page: 1,
-    limit: 10, // 默认值需要是分页定义的值
-  },
-
-  isActive: false,
-  cloudType: 1,
-  loading: false,
-
-  // 触发创建页面
-  createCloudVisible: false,
-
-  cloudList: [], // k8s 集群列表
-
-  autosize: {
-    minRows: 8,
-  },
-  value: '无锡',
-  options: [
-    {
-      value: '无锡',
-      label: '无锡',
-    },
-    {
-      value: '宿迁',
-      label: '宿迁',
-    },
-    {
-      value: '杭州',
-      label: '杭州',
-      disabled: true,
-    },
-    {
-      value: '泗阳',
-      label: '泗阳',
-    },
-  ],
-});
+const cloudStore = useCloudStore();
 
 onMounted(() => {
-  getCloudList();
+  cloudStore.getCloudList();
 });
 
 const cloudStatus = {
@@ -312,10 +276,6 @@ const cloudStatus = {
 const cloudTypes = {
   1: '标准集群',
   2: '自建集群',
-};
-
-const changeActive = (value) => {
-  data.cloudType = value;
 };
 
 const cloudTypeFormatter = (row, column, cellValue) => (
@@ -336,7 +296,7 @@ const cloudStatusFormatter = (row, column, cellValue) => (
 );
 
 const formatterResource = (row, column, cellValue) => {
-  const { status, kube_version } = row;
+  const { status } = row;
   return (
     <div style="display:flex;flex-direction:column">
       <el-space>
@@ -349,83 +309,6 @@ const formatterResource = (row, column, cellValue) => {
       </el-space>
     </div>
   );
-};
-
-//分页
-const onChange = (v) => {
-  data.pageInfo.limit = 10;
-  data.pageInfo.page = v.page;
-  data.pageInfo.page_size = v.limit; //兼容原有写法
-  getCloudList();
-};
-
-const getCloudList = async () => {
-  // TODO 考虑将loading取到全局上面来，避免过多的去写loading状态管理
-  data.loading = true;
-  try {
-    const result = await proxy.$http({
-      method: 'get',
-      url: '/clouds',
-      data: data.pageInfo,
-    });
-    data.cloudList = result.data;
-    data.total = result.total;
-  } catch (error) {}
-
-  data.loading = false;
-};
-
-const jumpRoute = (row) => {
-  proxy.$router.push({
-    name: 'Node',
-    query: {
-      cluster: row.name,
-    },
-  });
-};
-
-const createCloud = () => {
-  data.createCloudVisible = true;
-  data.cloudType = 1;
-};
-
-// 根据选择的类型跳转到不同操作页面
-const confirmCreateCloud = () => {
-  proxy.$router.push({
-    name: data.cloudType == 1 ? 'InsertCluster' : 'CreateCluster',
-  });
-};
-
-// 删除cloud
-// TODO: 待优化
-const deleteCloud = async (row) => {
-  ElMessageBox.confirm('此操作将永久删除 ' + row.name + ' 集群. 是否继续?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-    draggable: true,
-  })
-    .then(() => {
-      proxy
-        .$http({
-          method: 'delete',
-          url: '/clouds/' + row.id,
-        })
-        .then((res) => {
-          getCloudList();
-          ElMessage({
-            type: 'success',
-            message: '删除成功',
-          });
-        })
-        .catch((err) => {
-          ElMessage({
-            type: 'error',
-            message: err,
-          });
-        });
-    })
-    .catch(() => {}); // 取消
 };
 </script>
 

@@ -7,7 +7,7 @@
             {{ $t(`login.user_login`) }}
           </div>
           <div class="change-language-container">
-            <div style="cursor: pointer" @click="change">
+            <div style="cursor: pointer" @click="i18nStore.changeLanguage">
               <el-icon class="el-input__icon">
                 <component :is="'Switch'" />
               </el-icon>
@@ -16,19 +16,19 @@
           </div>
         </div>
         <el-form
-          ref="loginFormRef"
-          :model="data.loginInfo"
-          :rules="data.rules"
+          :ref="(el) => (loginStore.loginFormRef = el)"
+          :model="loginStore.loginInfo"
+          :rules="rules"
           style="width: 100%; height: 30%"
         >
           <el-form-item prop="name">
             <el-input
-              v-model="data.loginInfo.name"
+              v-model="loginStore.loginInfo.name"
               :placeholder="$t(`login.username`)"
               clearable
               maxlength="128"
               size="large"
-              @keyup.enter="login"
+              @keyup.enter="loginStore.loginFn"
             >
               <template #prefix>
                 <el-icon class="el-input__icon">
@@ -39,13 +39,13 @@
           </el-form-item>
           <el-form-item prop="password">
             <el-input
-              v-model="data.loginInfo.password"
+              v-model="loginStore.loginInfo.password"
               :placeholder="$t(`login.password`)"
               show-password
               clearable
               maxlength="128"
               size="large"
-              @keyup.enter="login"
+              @keyup.enter="loginStore.loginFn"
             >
               <template #prefix>
                 <el-icon class="el-input__icon">
@@ -57,11 +57,16 @@
         </el-form>
         <div class="button-group">
           <div class="forget-container">
-            <el-button class="forget-button" type="text" size="large" @click="forget">
+            <el-button class="forget-button" type="text" size="large" @click="loginStore.forgetFn">
               {{ $t(`login.forget`) }}
             </el-button>
           </div>
-          <el-button class="login-button" size="large" :loading="data.load" @click="login">
+          <el-button
+            class="login-button"
+            size="large"
+            :loading="loginStore.loading"
+            @click="loginStore.loginFn"
+          >
             {{ $t(`login.login`) }}</el-button
           >
         </div>
@@ -71,55 +76,14 @@
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance, ref } from 'vue';
-
-const { proxy } = getCurrentInstance();
-const data = reactive({
-  loginInfo: {
-    name: '',
-    password: '',
-  },
-  load: false,
-  // 图标高级
-  Lock: '',
-  UserFilled: '',
-  rules: {
-    name: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-    password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-  },
-});
-const forget = () => {
-  proxy.$message.error('忘记密码，请联系管理员');
+import useLoginStore from '@/stores/useLogin';
+import useI18nStore from '@/stores/useI18n';
+const rules = {
+  name: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+  password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
 };
-
-const change = () => {
-  if (proxy.$i18n.locale === 'zh') {
-    proxy.$i18n.locale = 'en';
-  } else {
-    proxy.$i18n.locale = 'zh';
-  }
-};
-const loginFormRef = ref(null);
-const login = () => {
-  loginFormRef.value.validate(async (valid) => {
-    if (valid) {
-      data.load = true;
-      try {
-        // 发送登陆请求
-        const result = await proxy.$http({
-          method: 'post',
-          url: '/users/login',
-          data: data.loginInfo,
-        });
-        localStorage.setItem('token', result);
-        localStorage.setItem('account', data.loginInfo.name);
-        proxy.$message.success('登陆成功');
-        proxy.$router.push('/index');
-      } catch (err) {}
-      data.load = false;
-    }
-  });
-};
+const loginStore = useLoginStore();
+const i18nStore = useI18nStore();
 </script>
 
 <style scoped>
