@@ -7,7 +7,7 @@ import * as ElIcons from '@element-plus/icons-vue';
 
 import setupPinia from '@/stores';
 import setupDirective from './directive';
-import setupI18n from '@/utils/i18n';
+import { setupI18n } from '@/utils/i18n';
 import { setupRouter } from './router/index.js';
 import axios from '@/utils/http';
 // 全局引入css
@@ -23,10 +23,10 @@ for (const name in ElIcons) {
   app.component(name, ElIcons[name]);
 } // 全局注册图标，用于处理动态图标展示
 
+setupRouter(app); // 装载路由
 setupPinia(app); // 装载状态管理
 setupDirective(app); // 装载指令集
 setupI18n(app); // 装载i18n
-setupRouter(app); // 装载路由
 
 app.use(ElementPlus, {
   locale: zhCn,
