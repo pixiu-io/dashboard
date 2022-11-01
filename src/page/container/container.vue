@@ -164,6 +164,7 @@
                   <el-dropdown-menu class="dropdown-buttons">
                     <el-dropdown-item style="color: #006eff"> 启动 </el-dropdown-item>
                     <el-dropdown-item style="color: #006eff"> 详情 </el-dropdown-item>
+                    <el-dropdown-item style="color: #006eff"> 终端 </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>

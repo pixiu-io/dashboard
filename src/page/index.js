@@ -2,6 +2,7 @@ import Cicd from './cicd/cicd.vue';
 import Container from './container/container.vue';
 import Kubernetes from './container/kubernetes.vue';
 import Deployment from './container/deployment.vue';
+import Terminal from './container/terminal.vue';
 import Node from './container/node.vue';
 import Home from './home/home.vue';
 import Login from './login/login.vue';
@@ -25,6 +26,7 @@ export {
   Kubernetes,
   Deployment,
   Node,
+  Terminal,
   InsertCluster,
   CreateCluster,
   NotFound,

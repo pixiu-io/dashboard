@@ -61,6 +61,11 @@ const data = reactive({
       name: 'ConfigMap',
       url: '/kubernetes/config-maps',
     },
+    {
+      id: 5,
+      name: 'Terminal',
+      url: '/kubernetes/terminal',
+    },
   ],
 });
 
