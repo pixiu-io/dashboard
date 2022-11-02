@@ -3,7 +3,7 @@
     <el-row :gutter="10">
       <el-col :span="3">
         <!-- 容器选择框 -->
-        <el-select size="small" v-model="containerValue" placeholder="请选择">
+        <el-select v-model="containerValue" size="small" placeholder="请选择容器">
           <el-option v-for="item in containerList" :key="item" :value="item"> </el-option>
         </el-select>
       </el-col>
@@ -87,12 +87,17 @@ const initTerm = () => {
   });
 };
 const initSocket = () => {
+  if (data.socket !== null) {
+    return;
+  }
+  const websocketAddr = import.meta.env.VITE_BASE_API.replace('http', 'ws');
   //定义websocket连接地址
   let terminalWsUrl =
-    'ws://127.0.0.1:9090/webshell/ws?namespace=kube-system&pod=kubepi-679c77b8bb-2sw96&container=kubepi';
+    websocketAddr +
+    '/clouds/webshell/ws?cloud=atm-b5870ad4&namespace=kube-system&pod=kubepi-679c77b8bb-2sw96&container=kubepi';
 
   //实例化
-  data.socket = new WebSocket(terminalWsUrl);
+  data.socket = new WebSocket(terminalWsUrl, [localStorage.getItem('token')]);
   //关闭连接时的方法
   socketOnClose();
   //建立连接时的方法
@@ -105,8 +110,13 @@ const initSocket = () => {
 
 const socketOnOpen = () => {
   data.socket.onopen = () => {
+    // 避免重复发起websocket连接
+    if (data.term !== null) {
+      return;
+    }
     //建立连接成功后，初始化虚拟终端
     initTerm();
+    data.term.writeln('contect demo pod');
   };
 };
 
@@ -120,12 +130,13 @@ const socketOnMessage = () => {
 const socketOnClose = () => {
   data.socket.onclose = () => {
     //关闭连接后打印在终端里
-    data.term.write('链接已关闭');
+    data.term.writeln('链接已关闭');
+    data.socket = null;
   };
 };
 const socketOnError = () => {
   data.socket.onerror = () => {
-    console.log('socket 链接失败');
+    proxy.$message.error(' websocket 连接失败');
   };
 };
 const closeSocket = () => {
@@ -133,7 +144,7 @@ const closeSocket = () => {
   if (data.socket === null) {
     return;
   }
-  data.term.write('链接关闭中。。。');
+  data.term.writeln('链接关闭中...');
   data.socket.close();
 };
 </script>
