@@ -1,36 +1,16 @@
 <template>
   <el-card shadow="never" style="border-radius: 1px" :body-style="{ padding: '5px' }">
     <el-row :gutter="10">
-      <el-col :span="3">
-        <!-- 容器选择框 -->
-        <el-select v-model="containerValue" size="small" placeholder="请选择容器">
-          <el-option v-for="item in containerList" :key="item" :value="item"> </el-option>
-        </el-select>
-      </el-col>
-      <el-col :span="1">
-        <!-- 连接按钮 -->
-        <el-button style="border-radius: 2px" size="small" type="primary" @click="initSocket"
-          >连接</el-button
-        >
-      </el-col>
-      <el-col :span="1">
-        <!-- 关闭连接按钮 -->
-        <el-button style="border-radius: 2px" size="small" type="danger" @click="closeSocket()"
-          >关闭</el-button
-        >
-      </el-col>
       <el-col :span="24" style="margin-top: 5px">
-        <el-card shadow="never" class="pod-body-shell-card" :body-style="{ padding: '5px' }">
-          <!-- xterm虚拟终端 -->
-          <div id="xterm"></div>
-        </el-card>
+        <!-- xterm虚拟终端 -->
+        <div id="xterm"></div>
       </el-col>
     </el-row>
   </el-card>
 </template>
 
 <script setup>
-import { onMounted, reactive, getCurrentInstance } from 'vue';
+import { onMounted, onUnmounted, reactive, getCurrentInstance } from 'vue';
 //引入xterm终端依赖
 import { Terminal } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
@@ -47,6 +27,12 @@ const data = reactive({
 
 onMounted(() => {
   data.cloud = proxy.$route.params;
+  initTerm();
+  initSocket();
+});
+
+onUnmounted(() => {
+  closeSocket();
 });
 
 const initTerm = () => {
@@ -100,24 +86,10 @@ const initSocket = () => {
   data.socket = new WebSocket(terminalWsUrl, [localStorage.getItem('token')]);
   //关闭连接时的方法
   socketOnClose();
-  //建立连接时的方法
-  socketOnOpen();
   //接收消息的方法
   socketOnMessage();
   //报错时的方法
   socketOnError();
-};
-
-const socketOnOpen = () => {
-  data.socket.onopen = () => {
-    // 避免重复发起websocket连接
-    if (data.term !== null) {
-      return;
-    }
-    //建立连接成功后，初始化虚拟终端
-    initTerm();
-    data.term.writeln('contect demo pod');
-  };
 };
 
 const socketOnMessage = () => {
@@ -130,7 +102,6 @@ const socketOnMessage = () => {
 const socketOnClose = () => {
   data.socket.onclose = () => {
     //关闭连接后打印在终端里
-    data.term.writeln('链接已关闭');
     data.socket = null;
   };
 };
@@ -144,7 +115,6 @@ const closeSocket = () => {
   if (data.socket === null) {
     return;
   }
-  data.term.writeln('链接关闭中...');
   data.socket.close();
 };
 </script>
