@@ -16,7 +16,6 @@
 
     <el-menu
       :default-active="data.path"
-      active-text-color="#ffd04b"
       background-color="#f6f7fb"
       text-color="#000"
       router
@@ -47,24 +46,52 @@ const data = reactive({
   items: [
     {
       id: 1,
-      name: 'Node',
-      url: '/kubernetes/nodes',
+      name: '工作负载',
+      children: [
+        {
+          id: 1.1,
+          name: 'Pod',
+          url: '/kubernetes/pods',
+        },
+        {
+          id: 1.2,
+          name: 'Deployment',
+          url: '/kubernetes/deployments',
+        },
+      ],
     },
-    { id: 2, name: 'Deployment', url: '/kubernetes/deployments' },
+    {
+      id: 2,
+      name: '配置中心',
+      children: [
+        {
+          id: 2.1,
+          name: 'ConfigMap',
+          url: '/kubernetes/config-maps',
+        },
+      ],
+    },
     {
       id: 3,
-      name: 'Service',
-      url: '/kubernetes/services',
+      name: '服务发现',
+      children: [
+        {
+          id: 3.1,
+          name: 'Service',
+          url: '/kubernetes/services',
+        },
+      ],
     },
     {
       id: 4,
-      name: 'ConfigMap',
-      url: '/kubernetes/config-maps',
-    },
-    {
-      id: 5,
-      name: 'Terminal',
-      url: '/kubernetes/terminal',
+      name: '测试',
+      children: [
+        {
+          id: 4.1,
+          name: 'Terminal',
+          url: '/kubernetes/terminal',
+        },
+      ],
     },
   ],
 });
@@ -73,11 +100,12 @@ const changeClouds = (value) => {
   const { query } = proxy.$route;
   const { path } = proxy.$route;
   data.items.map((item) => {
-    const url = item.url.split('?')[0];
-    item.url = `${url}?cluster=${value}`;
+    item.children.map((childrenItem) => {
+      const url = childrenItem.url.split('?')[0];
+      childrenItem.url = `${url}?cluster=${data.cloud.cluster}`;
+    });
   });
   data.path = `${path}?cluster=${value}`;
-
   const newQuery = JSON.parse(JSON.stringify(query));
   newQuery.cluster = value;
   proxy.$router.push({ path, query: newQuery });
@@ -106,11 +134,8 @@ const getCloudList = async () => {
 
 onMounted(() => {
   data.cloud = proxy.$route.query;
-  data.items.map((item) => {
-    const url = item.url.split('?')[0];
-    item.url = `${url}?cluster=${data.cloud.cluster}`;
-  });
   data.path = proxy.$route.fullPath;
+  changeClouds(data.cloud.cluster);
   getCloudList();
 });
 </script>
