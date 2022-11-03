@@ -9,7 +9,7 @@
         <span>{{ item.name }}</span>
       </template>
     </el-menu-item>
-    <el-sub-menu v-else :index="item.url">
+    <el-sub-menu v-else :index="item.id">
       <template #title>
         <pixiu-icon v-if="item.icon" :name="item.icon" :type="item.iconType"></pixiu-icon>
 
