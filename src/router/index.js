@@ -11,6 +11,7 @@ import {
   Container,
   Kubernetes,
   Deployment,
+  Terminal,
   Node,
   InsertCluster,
   CreateCluster,
@@ -86,6 +87,14 @@ const routes = [
               title: 'deployment',
             },
             component: Deployment,
+          },
+          {
+            path: 'terminal',
+            name: 'Terminal',
+            meta: {
+              title: 'terminal',
+            },
+            component: Terminal,
           },
         ],
       },
