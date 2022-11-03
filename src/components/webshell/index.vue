@@ -93,6 +93,7 @@ const initSocket = () => {
 
   //实例化
   data.socket = new WebSocket(terminalWsUrl, [localStorage.getItem('token')]);
+  
   //关闭连接时的方法
   socketOnClose();
   //接收消息的方法

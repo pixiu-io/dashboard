@@ -4,6 +4,7 @@
 </template>
 
 <script setup>
+
 import WebShell from '@/components/webshell/index.vue';
 
 const webshellOptipons = {
