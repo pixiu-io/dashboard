@@ -50,13 +50,13 @@ const data = reactive({
       children: [
         {
           id: 1.1,
-          name: 'Pod',
-          url: '/kubernetes/pods',
+          name: 'Deployment',
+          url: '/kubernetes/deployments',
         },
         {
           id: 1.2,
-          name: 'Deployment',
-          url: '/kubernetes/deployments',
+          name: 'Pod',
+          url: '/kubernetes/pods',
         },
       ],
     },
@@ -84,11 +84,11 @@ const data = reactive({
     },
     {
       id: 4,
-      name: '测试',
+      name: 'Pixiu Shell',
       children: [
         {
           id: 4.1,
-          name: 'Terminal',
+          name: 'Pixiu Shell',
           url: '/kubernetes/terminal',
         },
       ],
