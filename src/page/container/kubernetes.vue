@@ -2,18 +2,20 @@
   <el-aside>
     <div class="cloud-title-container">控制台</div>
 
+    <div class="namespace-title-container">集群</div>
     <div class="cloud-select-container">
       <el-select v-model="data.cloud.cluster" style="width: 80%" @change="changeClouds">
         <el-option v-for="item in data.clouds" :key="item.id" :value="item.id" :label="item.id" />
       </el-select>
     </div>
-
+    <div class="namespace-title-container">命名空间</div>
     <div class="namespace-select-container">
       <el-select v-model="data.namespace" style="width: 80%">
         <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
       </el-select>
     </div>
 
+    <div class="app-title-container">应用中心</div>
     <el-menu
       :default-active="data.path"
       background-color="#f6f7fb"
@@ -40,8 +42,8 @@ const { proxy } = getCurrentInstance();
 const data = reactive({
   cloud: {},
   clouds: [],
-  namespace: 'default',
-  namespaces: ['default', 'kube-system'],
+  namespace: '',
+  namespaces: [],
   path: '',
   items: [
     {
@@ -50,13 +52,13 @@ const data = reactive({
       children: [
         {
           id: 1.1,
-          name: 'Pod',
-          url: '/kubernetes/pods',
+          name: 'Deployment',
+          url: '/kubernetes/deployments',
         },
         {
           id: 1.2,
-          name: 'Deployment',
-          url: '/kubernetes/deployments',
+          name: 'Pod',
+          url: '/kubernetes/pods',
         },
       ],
     },
@@ -84,11 +86,11 @@ const data = reactive({
     },
     {
       id: 4,
-      name: '测试',
+      name: 'Pixiu Shell',
       children: [
         {
           id: 4.1,
-          name: 'Terminal',
+          name: 'Pixiu Shell',
           url: '/kubernetes/terminal',
         },
       ],
@@ -132,11 +134,30 @@ const getCloudList = async () => {
   } catch (error) {}
 };
 
+const getNamespaceList = async () => {
+  try {
+    const result = await proxy.$http({
+      method: 'get',
+      url: '/clouds/v1/' + data.cloud.cluster + '/namespaces',
+    });
+
+    for (let item of result) {
+      data.namespaces.push(item.metadata.name);
+    }
+    // 判断是否为空
+    if (data.namespaces.length > 0) {
+      data.namespace = data.namespaces[0];
+    }
+  } catch (error) {}
+};
+
 onMounted(() => {
   data.cloud = proxy.$route.query;
   data.path = proxy.$route.fullPath;
+
   changeClouds(data.cloud.cluster);
   getCloudList();
+  getNamespaceList();
 });
 </script>
 
@@ -158,7 +179,25 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px rgba(0, 0, 0, 0.1) solid;
+  border-bottom: 0px rgba(0, 0, 0, 0.1) solid;
+}
+
+.namespace-title-container {
+  font-size: 15px;
+  margin-top: 6px;
+  margin-left: 10px;
+  margin-bottom: -10px;
+  color: #4c4e58;
+  height: 20px;
+  padding: 10px;
+}
+
+.app-title-container {
+  margin-top: 10px;
+  font-size: 15px;
+  color: #4c4e58;
+  height: 20px;
+  padding: 10px;
 }
 
 .namespace-select-container {
@@ -194,7 +233,7 @@ onMounted(() => {
 
 .el-menu-vertical-no-collapse:not(.el-menu--collapse) {
   width: 180px;
-  height: calc(100% - 180px);
+  height: calc(100% - 300px);
 }
 
 .el-menu {

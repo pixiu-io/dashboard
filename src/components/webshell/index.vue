@@ -26,7 +26,7 @@ const data = reactive({
 });
 
 const props = defineProps({
-  webshellOptipons: {
+  webshelloptions: {
     type: Object,
     default() {
       return {};
@@ -89,11 +89,11 @@ const initSocket = () => {
   //定义websocket连接地址
   let terminalWsUrl =
     websocketAddr +
-    `/clouds/webshell/ws?cloud=${props.webshellOptipons.cloud}&namespace=${props.webshellOptipons.namespace}&pod=${props.webshellOptipons.pod}&container=${props.webshellOptipons.container}`;
+    `/clouds/webshell/ws?cloud=${props.webshelloptions.cloud}&namespace=${props.webshelloptions.namespace}&pod=${props.webshelloptions.pod}&container=${props.webshelloptions.container}`;
 
   //实例化
   data.socket = new WebSocket(terminalWsUrl, [localStorage.getItem('token')]);
-  
+
   //关闭连接时的方法
   socketOnClose();
   //接收消息的方法
