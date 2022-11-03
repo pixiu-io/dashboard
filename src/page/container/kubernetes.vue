@@ -42,8 +42,8 @@ const { proxy } = getCurrentInstance();
 const data = reactive({
   cloud: {},
   clouds: [],
-  namespace: 'default',
-  namespaces: ['default', 'kube-system'],
+  namespace: '',
+  namespaces: [],
   path: '',
   items: [
     {
@@ -134,11 +134,30 @@ const getCloudList = async () => {
   } catch (error) {}
 };
 
+const getNamespaceList = async () => {
+  try {
+    const result = await proxy.$http({
+      method: 'get',
+      url: '/clouds/v1/' + data.cloud.cluster + '/namespaces',
+    });
+
+    for (let item of result) {
+      data.namespaces.push(item.metadata.name);
+    }
+    // 判断是否为空
+    if (data.namespaces.length > 0) {
+      data.namespace = data.namespaces[0];
+    }
+  } catch (error) {}
+};
+
 onMounted(() => {
   data.cloud = proxy.$route.query;
   data.path = proxy.$route.fullPath;
+
   changeClouds(data.cloud.cluster);
   getCloudList();
+  getNamespaceList();
 });
 </script>
 
