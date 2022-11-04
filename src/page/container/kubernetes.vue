@@ -2,21 +2,22 @@
   <el-aside>
     <div class="cloud-title-container">控制台</div>
 
+    <div class="namespace-title-container">集群</div>
     <div class="cloud-select-container">
       <el-select v-model="data.cloud.cluster" style="width: 80%" @change="changeClouds">
         <el-option v-for="item in data.clouds" :key="item.id" :value="item.id" :label="item.id" />
       </el-select>
     </div>
-
+    <div class="namespace-title-container">命名空间</div>
     <div class="namespace-select-container">
       <el-select v-model="data.namespace" style="width: 80%">
         <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
       </el-select>
     </div>
 
+    <div class="app-title-container">应用中心</div>
     <el-menu
       :default-active="data.path"
-      active-text-color="#ffd04b"
       background-color="#f6f7fb"
       text-color="#000"
       router
@@ -41,30 +42,58 @@ const { proxy } = getCurrentInstance();
 const data = reactive({
   cloud: {},
   clouds: [],
-  namespace: 'default',
-  namespaces: ['default', 'kube-system'],
+  namespace: '',
+  namespaces: [],
   path: '',
   items: [
     {
       id: 1,
-      name: 'Node',
-      url: '/kubernetes/nodes',
+      name: '工作负载',
+      children: [
+        {
+          id: 1.1,
+          name: 'Deployment',
+          url: '/kubernetes/deployments',
+        },
+        {
+          id: 1.2,
+          name: 'Pod',
+          url: '/kubernetes/pods',
+        },
+      ],
     },
-    { id: 2, name: 'Deployment', url: '/kubernetes/deployments' },
+    {
+      id: 2,
+      name: '配置中心',
+      children: [
+        {
+          id: 2.1,
+          name: 'ConfigMap',
+          url: '/kubernetes/config-maps',
+        },
+      ],
+    },
     {
       id: 3,
-      name: 'Service',
-      url: '/kubernetes/services',
+      name: '服务发现',
+      children: [
+        {
+          id: 3.1,
+          name: 'Service',
+          url: '/kubernetes/services',
+        },
+      ],
     },
     {
       id: 4,
-      name: 'ConfigMap',
-      url: '/kubernetes/config-maps',
-    },
-    {
-      id: 5,
-      name: 'Terminal',
-      url: '/kubernetes/terminal',
+      name: 'Pixiu Shell',
+      children: [
+        {
+          id: 4.1,
+          name: 'Pixiu Shell',
+          url: '/kubernetes/terminal',
+        },
+      ],
     },
   ],
 });
@@ -73,11 +102,12 @@ const changeClouds = (value) => {
   const { query } = proxy.$route;
   const { path } = proxy.$route;
   data.items.map((item) => {
-    const url = item.url.split('?')[0];
-    item.url = `${url}?cluster=${value}`;
+    item.children.map((childrenItem) => {
+      const url = childrenItem.url.split('?')[0];
+      childrenItem.url = `${url}?cluster=${data.cloud.cluster}`;
+    });
   });
   data.path = `${path}?cluster=${value}`;
-
   const newQuery = JSON.parse(JSON.stringify(query));
   newQuery.cluster = value;
   proxy.$router.push({ path, query: newQuery });
@@ -104,14 +134,30 @@ const getCloudList = async () => {
   } catch (error) {}
 };
 
+const getNamespaceList = async () => {
+  try {
+    const result = await proxy.$http({
+      method: 'get',
+      url: '/clouds/v1/' + data.cloud.cluster + '/namespaces',
+    });
+
+    for (let item of result) {
+      data.namespaces.push(item.metadata.name);
+    }
+    // 判断是否为空
+    if (data.namespaces.length > 0) {
+      data.namespace = data.namespaces[0];
+    }
+  } catch (error) {}
+};
+
 onMounted(() => {
   data.cloud = proxy.$route.query;
-  data.items.map((item) => {
-    const url = item.url.split('?')[0];
-    item.url = `${url}?cluster=${data.cloud.cluster}`;
-  });
   data.path = proxy.$route.fullPath;
+
+  changeClouds(data.cloud.cluster);
   getCloudList();
+  getNamespaceList();
 });
 </script>
 
@@ -133,7 +179,25 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px rgba(0, 0, 0, 0.1) solid;
+  border-bottom: 0px rgba(0, 0, 0, 0.1) solid;
+}
+
+.namespace-title-container {
+  font-size: 15px;
+  margin-top: 6px;
+  margin-left: 10px;
+  margin-bottom: -10px;
+  color: #4c4e58;
+  height: 20px;
+  padding: 10px;
+}
+
+.app-title-container {
+  margin-top: 10px;
+  font-size: 15px;
+  color: #4c4e58;
+  height: 20px;
+  padding: 10px;
 }
 
 .namespace-select-container {
@@ -169,7 +233,7 @@ onMounted(() => {
 
 .el-menu-vertical-no-collapse:not(.el-menu--collapse) {
   width: 180px;
-  height: calc(100% - 180px);
+  height: calc(100% - 300px);
 }
 
 .el-menu {
