@@ -54,18 +54,18 @@ const data = reactive({
       children: [
         {
           id: 1.1,
-          name: 'Pod',
-          url: '/kubernetes/pods',
-        },
-        {
-          id: 1.2,
           name: 'Deployment',
           url: '/kubernetes/deployments',
         },
         {
-          id: 1.3,
+          id: 1.2,
           name: 'Statsfulset',
           url: '/kubernetes/statsfulsets',
+        },
+        {
+          id: 1.3,
+          name: 'Pod',
+          url: '/kubernetes/pods',
         },
       ],
     },
@@ -203,7 +203,7 @@ onMounted(() => {
 .cloud-title-container {
   font-size: 16px;
   color: #4c4e58;
-  margin-left: 20px;
+  padding-left: 20px;
   height: 50px;
   line-height: 50px;
   display: flex;
