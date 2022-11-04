@@ -87,13 +87,8 @@ const data = reactive({
     {
       id: 4,
       name: 'Pixiu Shell',
-      children: [
-        {
-          id: 4.1,
-          name: 'Pixiu Shell',
-          url: '/kubernetes/terminal',
-        },
-      ],
+      name: 'Pixiu Shell',
+      url: '/kubernetes/terminal',
     },
   ],
 });
@@ -102,10 +97,18 @@ const changeClouds = (value) => {
   const { query } = proxy.$route;
   const { path } = proxy.$route;
   data.items.map((item) => {
-    item.children.map((childrenItem) => {
-      const url = childrenItem.url.split('?')[0];
-      childrenItem.url = `${url}?cluster=${data.cloud.cluster}`;
-    });
+    // 如果菜单中不存在children,不改变url
+    if (item.children !== undefined) {
+      // 改变子集目录的url
+      item.children.map((childrenItem) => {
+        const url = childrenItem.url.split('?')[0];
+        childrenItem.url = `${url}?cluster=${data.cloud.cluster}`;
+      });
+    } else {
+      // 改变父级目录的url
+      const url = item.url.split('?')[0];
+      item.url = `${url}?cluster=${data.cloud.cluster}`;
+    }
   });
   data.path = `${path}?cluster=${value}`;
   const newQuery = JSON.parse(JSON.stringify(query));
