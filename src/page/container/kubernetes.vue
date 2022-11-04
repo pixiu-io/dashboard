@@ -49,45 +49,80 @@ const data = reactive({
     {
       id: 1,
       name: '工作负载',
+      icon: 'icon-xitongfuzai',
+      iconType: 'iconfont',
       children: [
         {
           id: 1.1,
+          name: 'Pod',
+          url: '/kubernetes/pods',
+        },
+        {
+          id: 1.2,
           name: 'Deployment',
           url: '/kubernetes/deployments',
         },
         {
-          id: 1.2,
-          name: 'Pod',
-          url: '/kubernetes/pods',
+          id: 1.3,
+          name: 'Statsfulset',
+          url: '/kubernetes/statsfulsets',
         },
       ],
     },
     {
       id: 2,
-      name: '配置中心',
+      name: '配置',
+      icon: 'icon-peizhiguanli',
+      iconType: 'iconfont',
       children: [
         {
           id: 2.1,
           name: 'ConfigMap',
-          url: '/kubernetes/config-maps',
+          url: '/kubernetes/comfig-map',
         },
       ],
     },
     {
-      id: 3,
+      id: 4,
       name: '服务发现',
+      icon: 'icon-fuwu',
+      iconType: 'iconfont',
       children: [
         {
-          id: 3.1,
+          id: 4.1,
           name: 'Service',
           url: '/kubernetes/services',
         },
       ],
     },
     {
-      id: 4,
+      id: 3,
+      name: '存储',
+      icon: 'icon-yingpan',
+      iconType: 'iconfont',
+      children: [
+        {
+          id: 3.1,
+          name: 'PV ',
+          url: '/kubernetes/storage-pv',
+        },
+        {
+          id: 3.2,
+          name: 'PVC',
+          url: '/kubernetes/storage-pvc',
+        },
+        {
+          id: 3.3,
+          name: 'SC',
+          url: '/kubernetes/storage-sc',
+        },
+      ],
+    },
+    {
+      id: 5,
       name: 'Pixiu Shell',
-      name: 'Pixiu Shell',
+      icon: 'icon-a-kuozhanicon_huaban1fuben33',
+      iconType: 'iconfont',
       url: '/kubernetes/terminal',
     },
   ],
