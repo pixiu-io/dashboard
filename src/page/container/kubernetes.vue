@@ -97,15 +97,15 @@ const changeClouds = (value) => {
   const { query } = proxy.$route;
   const { path } = proxy.$route;
   data.items.map((item) => {
-    // 如果菜单中不存在children,不改变url
+    // 如果父级中不存在children,改变父级url
     if (item.children !== undefined) {
-      // 改变子集目录的url
+      // 子级url拼接集群名称
       item.children.map((childrenItem) => {
         const url = childrenItem.url.split('?')[0];
         childrenItem.url = `${url}?cluster=${data.cloud.cluster}`;
       });
     } else {
-      // 改变父级目录的url
+      // 父级url拼接集群名称
       const url = item.url.split('?')[0];
       item.url = `${url}?cluster=${data.cloud.cluster}`;
     }
