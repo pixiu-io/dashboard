@@ -113,6 +113,12 @@ onMounted(() => {
       icon: 'Grid',
       iconType: 'el',
     },
+    {
+      name: '貔貅商店',
+      url: '/app',
+      icon: 'Grid',
+      iconType: 'el',
+    },
   ];
 });
 
