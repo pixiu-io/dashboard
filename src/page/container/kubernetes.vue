@@ -177,11 +177,18 @@ const getNamespaceList = async () => {
     for (let item of result) {
       data.namespaces.push(item.metadata.name);
     }
-    // 判断是否为空
+  } catch (error) {}
+};
+
+const getNamespace = async () => {
+  const ns = localStorage.getItem('namespace');
+  if (!ns) {
     if (data.namespaces.length > 0) {
       data.namespace = data.namespaces[0];
     }
-  } catch (error) {}
+  } else {
+    data.namespace = ns;
+  }
 };
 
 onMounted(() => {
@@ -189,8 +196,10 @@ onMounted(() => {
   data.path = proxy.$route.fullPath;
 
   changeClouds(data.cloud.cluster);
+
   getCloudList();
   getNamespaceList();
+  getNamespace();
 });
 </script>
 
