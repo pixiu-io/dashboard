@@ -10,7 +10,7 @@
     </div>
     <div class="namespace-title-container">命名空间</div>
     <div class="namespace-select-container">
-      <el-select v-model="data.namespace" style="width: 80%">
+      <el-select v-model="data.namespace" style="width: 80%" @change="changeNamespace">
         <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
       </el-select>
     </div>
@@ -42,7 +42,7 @@ const { proxy } = getCurrentInstance();
 const data = reactive({
   cloud: {},
   clouds: [],
-  namespace: '',
+  namespace: 'default',
   namespaces: [],
   path: '',
   items: [
@@ -54,18 +54,18 @@ const data = reactive({
       children: [
         {
           id: 1.1,
-          name: 'Pod',
-          url: '/kubernetes/pods',
-        },
-        {
-          id: 1.2,
           name: 'Deployment',
           url: '/kubernetes/deployments',
         },
         {
-          id: 1.3,
+          id: 1.2,
           name: 'Statsfulset',
           url: '/kubernetes/statsfulsets',
+        },
+        {
+          id: 1.3,
+          name: 'Pod',
+          url: '/kubernetes/pods',
         },
       ],
     },
@@ -93,6 +93,11 @@ const data = reactive({
           name: 'Service',
           url: '/kubernetes/services',
         },
+        {
+          id: 4.2,
+          name: 'Ingress',
+          url: '/kubernetes/ingress',
+        },
       ],
     },
     {
@@ -103,18 +108,8 @@ const data = reactive({
       children: [
         {
           id: 3.1,
-          name: 'PV ',
+          name: 'Storage class',
           url: '/kubernetes/storage-pv',
-        },
-        {
-          id: 3.2,
-          name: 'PVC',
-          url: '/kubernetes/storage-pvc',
-        },
-        {
-          id: 3.3,
-          name: 'SC',
-          url: '/kubernetes/storage-sc',
         },
       ],
     },
@@ -124,6 +119,24 @@ const data = reactive({
       icon: 'icon-a-kuozhanicon_huaban1fuben33',
       iconType: 'iconfont',
       url: '/kubernetes/terminal',
+    },
+    {
+      id: 6,
+      name: '貔貅商店',
+      icon: 'Shop',
+      iconType: 'el',
+      children: [
+        {
+          id: 6.1,
+          name: 'Operator',
+          url: '/kubernetes/operator',
+        },
+        {
+          id: 6.2,
+          name: 'Helm',
+          url: '/kubernetes/helm',
+        },
+      ],
     },
   ],
 });
@@ -182,11 +195,18 @@ const getNamespaceList = async () => {
     for (let item of result) {
       data.namespaces.push(item.metadata.name);
     }
-    // 判断是否为空
-    if (data.namespaces.length > 0) {
-      data.namespace = data.namespaces[0];
-    }
   } catch (error) {}
+};
+
+const changeNamespace = async (val) => {
+  localStorage.setItem('namespace', val);
+};
+
+const getNamespace = async () => {
+  const namespace = localStorage.getItem('namespace');
+  if (namespace) {
+    data.namespace = namespace;
+  }
 };
 
 onMounted(() => {
@@ -194,8 +214,10 @@ onMounted(() => {
   data.path = proxy.$route.fullPath;
 
   changeClouds(data.cloud.cluster);
+
   getCloudList();
   getNamespaceList();
+  getNamespace();
 });
 </script>
 
@@ -203,7 +225,7 @@ onMounted(() => {
 .cloud-title-container {
   font-size: 16px;
   color: #4c4e58;
-  margin-left: 20px;
+  padding-left: 20px;
   height: 50px;
   line-height: 50px;
   display: flex;
