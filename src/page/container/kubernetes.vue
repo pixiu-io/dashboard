@@ -93,6 +93,11 @@ const data = reactive({
           name: 'Service',
           url: '/kubernetes/services',
         },
+        {
+          id: 4.2,
+          name: 'Ingress',
+          url: '/kubernetes/ingress',
+        },
       ],
     },
     {
@@ -103,18 +108,8 @@ const data = reactive({
       children: [
         {
           id: 3.1,
-          name: 'PV ',
+          name: 'Storage class',
           url: '/kubernetes/storage-pv',
-        },
-        {
-          id: 3.2,
-          name: 'PVC',
-          url: '/kubernetes/storage-pvc',
-        },
-        {
-          id: 3.3,
-          name: 'SC',
-          url: '/kubernetes/storage-sc',
         },
       ],
     },
