@@ -10,7 +10,7 @@
     </div>
     <div class="namespace-title-container">命名空间</div>
     <div class="namespace-select-container">
-      <el-select v-model="data.namespace" style="width: 80%">
+      <el-select v-model="data.namespace" style="width: 80%" @change="changeNamespace">
         <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
       </el-select>
     </div>
@@ -42,7 +42,7 @@ const { proxy } = getCurrentInstance();
 const data = reactive({
   cloud: {},
   clouds: [],
-  namespace: '',
+  namespace: 'default',
   namespaces: [],
   path: '',
   items: [
@@ -180,14 +180,14 @@ const getNamespaceList = async () => {
   } catch (error) {}
 };
 
+const changeNamespace = async (val) => {
+  localStorage.setItem('namespace', val);
+};
+
 const getNamespace = async () => {
-  const ns = localStorage.getItem('namespace');
-  if (!ns) {
-    if (data.namespaces.length > 0) {
-      data.namespace = data.namespaces[0];
-    }
-  } else {
-    data.namespace = ns;
+  const namespace = localStorage.getItem('namespace');
+  if (namespace) {
+    data.namespace = namespace;
   }
 };
 
