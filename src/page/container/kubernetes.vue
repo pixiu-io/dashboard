@@ -120,6 +120,24 @@ const data = reactive({
       iconType: 'iconfont',
       url: '/kubernetes/terminal',
     },
+    {
+      id: 6,
+      name: '貔貅商店',
+      icon: 'Shop',
+      iconType: 'el',
+      children: [
+        {
+          id: 6.1,
+          name: 'Operator',
+          url: '/kubernetes/operator',
+        },
+        {
+          id: 6.2,
+          name: 'Helm',
+          url: '/kubernetes/helm',
+        },
+      ],
+    },
   ],
 });
 
