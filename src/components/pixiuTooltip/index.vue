@@ -1,7 +1,13 @@
 <template>
   <div class="index">
     <slot> </slot>
-    <el-tooltip class="box-item" effect="dark" :content="desc" placement="top">
+    <el-tooltip
+      class="box-item"
+      effect="dark"
+      :content="desc"
+      placement="top"
+      :raw-content="rawContent"
+    >
       <pixiu-icon :name="icon" size="16px" type="el" class-name="icon-box" color="#909399" />
     </el-tooltip>
   </div>
@@ -12,6 +18,10 @@ const props = defineProps({
   icon: {
     type: String,
     default: '',
+  },
+  rawContent: {
+    type: Boolean,
+    default: false,
   },
   desc: { type: String, default: '' },
 });

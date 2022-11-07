@@ -14,7 +14,7 @@
 
           <el-select v-model="cloudStore.defaultOption" placeholder="Select" style="width: 102px">
             <template #prefix>
-              <pixiu-icon size="20px" name="icon-diyu" type="iconfont"></pixiu-icon>
+              <pixiu-icon size="20px" name="icon-diyufenbu" type="iconfont"></pixiu-icon>
             </template>
             <el-option
               v-for="item in cloudStore.options"
