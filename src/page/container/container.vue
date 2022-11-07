@@ -274,6 +274,14 @@ const cloudStatus = {
   4: '等待构建',
 };
 
+const cloudStatusColor = {
+  0: '#00FF00', // 绿色
+  1: '#FF0000', // 红色
+  2: '#0000FF', // 蓝色
+  3: '#FF00FF', // 牡丹红
+  4: '#FFFF00', // 黄色
+};
+
 const cloudTypes = {
   1: '标准集群',
   2: '自建集群',
@@ -290,7 +298,12 @@ const cloudTypeFormatter = (row, column, cellValue) => (
 const cloudStatusFormatter = (row, column, cellValue) => (
   <div style="display:flex;align-items:center">
     <el-space size={8}>
-      <pixiu-icon size="25px" name="icon-B" color="#28c65a" type="iconfont" />
+      <pixiu-icon
+        size="25px"
+        name="icon-B"
+        type="iconfont"
+        color={cloudStatusColor[cellValue]}
+      ></pixiu-icon>
       <div>{cloudStatus[cellValue]}</div>
     </el-space>
   </div>
