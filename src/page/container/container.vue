@@ -269,20 +269,40 @@ onMounted(() => {
   cloudStore.getCloudList();
 });
 
-const cloudStatus = {
-  0: '运行中',
-  1: '集群异常',
-  2: '构建中',
-  3: '删除中',
-  4: '等待构建',
-};
+// const cloudStatus = {
+//   0: '运行中',
+//   1: '集群异常',
+//   2: '构建中',
+//   3: '删除中',
+//   4: '等待构建',
+// };
 
-const cloudStatusColor = {
-  0: '#00FF00', // 绿色
-  1: '#FF0000', // 红色
-  2: '#0000FF', // 蓝色
-  3: '#FF00FF', // 牡丹红
-  4: '#FFFF00', // 黄色
+const cloudStatus = {
+  0: {
+    icon: 'icon-B',
+    text: '运行中',
+    color: '#00FF00', // 绿色
+  },
+  1: {
+    icon: 'icon-yichang',
+    text: '集群异常',
+    color: '#FF0000', // 红色
+  },
+  2: {
+    icon: 'icon-dlf-shujuhugoujian',
+    text: '构建中',
+    color: '#0000FF', // 蓝色
+  },
+  3: {
+    icon: 'icon-shanchu',
+    text: ' 删除中',
+    color: '#FF00FF', // 牡丹红
+  },
+  4: {
+    icon: 'icon-icon-',
+    text: '等待构建',
+    color: '#FFFF00', // 黄色
+  },
 };
 
 const cloudTypes = {
@@ -303,11 +323,11 @@ const cloudStatusFormatter = (row, column, cellValue) => (
     <el-space size={8}>
       <pixiu-icon
         size="25px"
-        name="icon-B"
+        name={cloudStatus[cellValue].icon}
         type="iconfont"
-        color={cloudStatusColor[cellValue]}
+        color={cloudStatus[cellValue].color}
       ></pixiu-icon>
-      <div>{cloudStatus[cellValue]}</div>
+      <div>{cloudStatus[cellValue].text}</div>
     </el-space>
   </div>
 );
