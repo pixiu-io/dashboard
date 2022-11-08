@@ -7,12 +7,15 @@
             {{ $t(`container.container.title`) }}
           </span>
           <span
-            style="font-size: 12px; margin-left: 10px; vertical-align: middle; margin-right: 10px"
+            style="font-size: 15px; margin-left: 10px; vertical-align: middle; margin-right: 10px"
           >
             {{ $t(`container.container.region`) }}
           </span>
 
-          <el-select v-model="cloudStore.defaultOption" placeholder="Select" style="width: 100px">
+          <el-select v-model="cloudStore.defaultOption" placeholder="Select" style="width: 102px">
+            <template #prefix>
+              <pixiu-icon size="20px" name="icon-diyufenbu" type="iconfont"></pixiu-icon>
+            </template>
             <el-option
               v-for="item in cloudStore.options"
               :key="item.value"
@@ -266,12 +269,40 @@ onMounted(() => {
   cloudStore.getCloudList();
 });
 
+// const cloudStatus = {
+//   0: '运行中',
+//   1: '集群异常',
+//   2: '构建中',
+//   3: '删除中',
+//   4: '等待构建',
+// };
+
 const cloudStatus = {
-  0: '运行中',
-  1: '集群异常',
-  2: '构建中',
-  3: '删除中',
-  4: '等待构建',
+  0: {
+    icon: 'icon-B',
+    text: '运行中',
+    color: '#00FF00', // 绿色
+  },
+  1: {
+    icon: 'icon-yichang',
+    text: '集群异常',
+    color: '#FF0000', // 红色
+  },
+  2: {
+    icon: 'icon-dlf-shujuhugoujian',
+    text: '构建中',
+    color: '#0000FF', // 蓝色
+  },
+  3: {
+    icon: 'icon-shanchu',
+    text: ' 删除中',
+    color: '#FF00FF', // 牡丹红
+  },
+  4: {
+    icon: 'icon-icon-',
+    text: '等待构建',
+    color: '#FFFF00', // 黄色
+  },
 };
 
 const cloudTypes = {
@@ -290,8 +321,13 @@ const cloudTypeFormatter = (row, column, cellValue) => (
 const cloudStatusFormatter = (row, column, cellValue) => (
   <div style="display:flex;align-items:center">
     <el-space size={8}>
-      <pixiu-icon size="25px" name="icon-B" color="#28c65a" type="iconfont" />
-      <div>{cloudStatus[cellValue]}</div>
+      <pixiu-icon
+        size="25px"
+        name={cloudStatus[cellValue].icon}
+        type="iconfont"
+        color={cloudStatus[cellValue].color}
+      ></pixiu-icon>
+      <div>{cloudStatus[cellValue].text}</div>
     </el-space>
   </div>
 );
