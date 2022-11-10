@@ -8,7 +8,7 @@
       background-color: #f3f4f7;
     "
   >
-    <pixiu-card back="true" title="创建Deployment" height="50px" />
+    <pixiu-card ref="cardRef" back="true" title="创建Deployment" height="50px" />
     <div class="app-pixiu-content-card">
       <el-steps
         finish-status="success"
@@ -23,9 +23,9 @@
       <el-main>
         <div class="app-pixiu-content-card">
           <el-card style="width: 97%">
-            <step1 v-if="activeKey === 1" @next="stepTwo" />
-            <step2 v-if="activeKey === 2" />
-            <step3 v-if="activeKey === 3" />
+            <step1 v-if="activeKey === 1" @next="stepTwo" @pre="stepOnePre" />
+            <step2 v-if="activeKey === 2" @next="stepThree" @pre="stepOne" />
+            <step3 v-if="activeKey === 3" @next="submit" @pre="stepTwo" />
           </el-card>
         </div>
       </el-main>
@@ -35,18 +35,47 @@
 
 <script setup>
 import PixiuCard from '@/components/card/index.vue';
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 import Step1 from './component/step/stepOne.vue';
 import Step2 from './component/step/stepTwo.vue';
 import Step3 from './component/step/stepThree.vue';
 
 const activeKey = ref(1);
+const cardRef = ref(null);
 
-const stepOne = () => (activeKey.value = 1);
+const data = reactive({
+  container: {},
+  volume: [],
+  advanced: {},
+});
 
-const stepTwo = () => (activeKey.value = 2);
+// 页面一下一步,activeKey加一加载下一步
+const stepOne = (volumeIn) => {
+  activeKey.value = 1;
+  Object.assign(data, volumeIn);
+};
 
-const stepThree = () => (activeKey.value = 3);
+// 页面二下一步,activeKey加一加载步骤二
+const stepTwo = (containerIn) => {
+  Object.assign(data.container, containerIn);
+  activeKey.value = 2;
+  console.log('containerData=', data);
+};
+
+const stepThree = (volumeData) => {
+  data.volume.push(volumeData);
+  activeKey.value = 3;
+};
+
+// 页面一点击取消，调用card组件的goBack方法
+const stepOnePre = () => {
+  cardRef.value.goBack();
+};
+
+const submit = (advancedData) => {
+  Object.assign(data.advanced, advancedData);
+  console.log('data', data);
+};
 </script>
 .app-pixiu-content-card { display: flex; justify-content: space-around; }
 <style scoped="scoped"></style>
