@@ -1,7 +1,7 @@
 <template>
   <el-form :model="form" label-width="120px">
     <el-form-item label="挂载方式">
-      <el-select v-model="form.mountType" @change="addVolume" placeholder="请选择挂载方式">
+      <el-select v-model="form.mountType" placeholder="请选择挂载方式" @change="addVolume">
         <el-option label="添加临时卷" value="emptyDir" />
         <el-option label="添加新的pvc" value="newpvc" />
         <el-option label="使用现有pvc" value="persistentVolumeClaim" />
@@ -9,7 +9,7 @@
         <el-option label="配置映射卷" value="configMap" />
       </el-select>
     </el-form-item>
-    <div v-for="(item, index) in volumeList" :key="index">
+    <div v-for="(item, index) in form.volumeList" :key="index">
       <el-card style="background-color: #f2f2f2">
         <el-row gutter="24">
           <el-col :span="10">
@@ -43,10 +43,10 @@
             <el-col :span="24">
               <el-select v-model="item.configMapName" placeholder="选择配置文件">
                 <el-option
+                  v-for="(configMap, index2) in testConfigMaps"
+                  :key="index2"
                   :label="configMap"
                   :value="configMap"
-                  v-for="(configMap, index) in testConfigMaps"
-                  :key="index"
                 />
               </el-select>
             </el-col>
@@ -55,17 +55,13 @@
           <el-row gutter="24">
             <el-col :span="12">
               <el-input
-                v-model.number="item.cmContainerPath"
+                v-model="item.containerPath"
                 placeholder="容器路径"
                 style="width: 80%"
               ></el-input>
             </el-col>
             <el-col :span="12">
-              <el-input
-                v-model.number="item.cmSubPath"
-                placeholder="子路径"
-                style="width: 80%"
-              ></el-input>
+              <el-input v-model="item.cmSubPath" placeholder="子路径" style="width: 80%"></el-input>
             </el-col>
           </el-row>
         </div>
@@ -92,17 +88,13 @@
           <el-row gutter="24">
             <el-col :span="12">
               <el-input
-                v-model.number="item.cmContainerPath"
+                v-model="item.containerPath"
                 placeholder="容器路径"
                 style="width: 80%"
               ></el-input>
             </el-col>
             <el-col :span="12">
-              <el-input
-                v-model.number="item.cmSubPath"
-                placeholder="子路径"
-                style="width: 80%"
-              ></el-input>
+              <el-input v-model="item.cmSubPath" placeholder="子路径" style="width: 80%"></el-input>
             </el-col>
           </el-row>
         </div>
@@ -111,12 +103,12 @@
         <div v-if="item.mountType === 'persistentVolumeClaim'">
           <el-col>
             <!-- 测试数据，需要删除 -->
-            <el-select v-model="item.hostPathType" placeholder="请选择pvc">
+            <el-select v-model="item.pvcName" placeholder="请选择pvc">
               <el-option
-                :label="pvc"
-                :value="pvc"
                 v-for="(pvc, pvcIndex) in testPvcs"
                 :key="pvcIndex"
+                :label="pvc"
+                :value="pvc"
               />
             </el-select>
           </el-col>
@@ -124,17 +116,13 @@
           <el-row gutter="24">
             <el-col :span="12">
               <el-input
-                v-model.number="item.cmContainerPath"
+                v-model="item.containerPath"
                 placeholder="容器路径"
                 style="width: 80%"
               ></el-input>
             </el-col>
             <el-col :span="12">
-              <el-input
-                v-model.number="item.cmSubPath"
-                placeholder="子路径"
-                style="width: 80%"
-              ></el-input>
+              <el-input v-model="item.cmSubPath" placeholder="子路径" style="width: 80%"></el-input>
             </el-col>
           </el-row>
         </div>
@@ -153,7 +141,7 @@
   </el-form>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { reactive } from 'vue';
 
 // 测试数据，后面需要从接口获取configmap列表
@@ -162,50 +150,53 @@ const testConfigMaps = ['test-mysql-conf', 'test-application', 'test-es-config']
 
 const testPvcs = ['test-mysql-data', 'test-es-data', 'tast-kafka-data'];
 
-const volumeList = reactive([
-  {
-    name: 'volume',
-    mountType: '',
-    configMapName: '',
-    cmContainerPath: '',
-    cmSubPath: '',
-    path: '',
-    mode: 644,
-    optional: false,
-
-    hostPath: '',
-    hostPathType: '',
-
-    pvcName: '',
-  },
-]);
-
 const form = reactive({
   mountType: '',
+  volumeList: [],
 });
 
 const addVolume = () => {
-  volumeList.push({
-    name: '',
-    mountType: form.mountType,
-    path: '',
-    mode: 644,
-    configMapName: '',
-    cmContainerPath: '',
-    cmSubPath: '',
-    optional: false,
+  if (form.volumeList.length == 0) {
+    form.volumeList = [
+      {
+        name: 'volume',
+        configMapName: '',
+        mountType: form.mountType,
+        containerPath: '',
+        cmSubPath: '',
+        path: '',
+        mode: 644,
+        optional: false,
 
-    hostPath: '',
-    hostPathType: '',
+        hostPath: '',
+        hostPathType: '',
 
-    pvcName: '',
-  });
+        pvcName: '',
+      },
+    ];
+  } else {
+    form.volumeList.push({
+      name: '',
+      mountType: form.mountType,
+      path: '',
+      mode: 644,
+      configMapName: '',
+      containerPath: '',
+      cmSubPath: '',
+      optional: false,
+
+      hostPath: '',
+      hostPathType: '',
+
+      pvcName: '',
+    });
+  }
 };
 
 const deleteVolume = (item) => {
-  const index = volumeList.indexOf(item);
+  const index = form.volumeList.indexOf(item);
   if (index !== -1) {
-    volumeList.splice(index, 1);
+    form.volumeList.splice(index, 1);
   }
 };
 
@@ -213,6 +204,6 @@ const deleteVolume = (item) => {
 const emit = defineEmits(['next', 'pre']);
 const pre = () => emit('pre');
 const onSubmit = () => {
-  emit('next', volumeList);
+  emit('next', form);
 };
 </script>

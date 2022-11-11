@@ -1,5 +1,5 @@
 <template>
-  <div>three</div>
+  <div>镜像拉取策略 主机网络 重启策略 DNS策略</div>
   <div style="display: flex; justify-content: center">
     <el-space size="{8}">
       <div>

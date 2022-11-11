@@ -1,5 +1,5 @@
 <template>
-  <el-form :model="form" label-width="120px" ref="formRef" :rules="formRules">
+  <el-form ref="formRef" :model="form" label-width="120px" :rules="formRules">
     <el-form-item label="名称:" prop="name">
       <el-col :span="10"> <el-input v-model="form.name" placeholder="无状态控制器名称" /></el-col>
       <el-col :span="2" class="text-center">
@@ -18,14 +18,14 @@
         <div v-for="(item, index) in form.envList" :key="index">
           <el-row>
             <el-col :span="6">
-              <el-form-item label="key" :prop="'envList.' + index + '.key'">
-                <el-input placeholder="key" class="el-select_box" v-model="item.key"
+              <el-form-item label="name" :prop="'envList.' + index + '.name'">
+                <el-input v-model="item.name" placeholder="key" class="el-select_box"
               /></el-form-item>
             </el-col>
             =
             <el-col :span="6">
               <el-form-item label="value" :prop="'envList.' + index + '.value'">
-                <el-input placeholder="value" class="el-select_box" v-model="item.value"
+                <el-input v-model="item.value" placeholder="value" class="el-select_box"
               /></el-form-item>
             </el-col>
 
@@ -40,16 +40,16 @@
         </el-row>
       </el-collapse-item>
       <el-collapse-item title="主机调度" name="host">
-        <el-radio-group v-model="radioStats" @change="handleRadioChange">
+        <el-radio-group v-model="radioStats">
           <el-radio label="nodeName" size="large">指定主机运行</el-radio>
           <el-radio label="nodeSelector" size="large">标签选择器</el-radio>
         </el-radio-group>
         <el-card
-          style="width: 100%; height: 70px; background-color: #f2f2f2"
           v-if="radioStats === 'nodeName'"
+          style="width: 100%; height: 70px; background-color: #f2f2f2"
         >
           <el-form-item label="选择主机">
-            <el-select placeholder="请选择运行主机" v-model="form.nodeName">
+            <el-select v-model="form.nodeName" placeholder="请选择运行主机">
               <el-option
                 v-for="(item, index) in TestNode"
                 :key="index"
@@ -60,12 +60,21 @@
           </el-form-item>
         </el-card>
         <el-card
-          style="width: 100%; height: 70px; background-color: #f2f2f2"
           v-if="radioStats === 'nodeSelector'"
+          style="width: 100%; height: 70px; background-color: #f2f2f2"
         >
-          <el-form-item label="节点选择器">
-            <el-input v-model="form.nodeSelector" min="0" />
-          </el-form-item>
+          <el-row>
+            <el-space spacer="=">
+              <el-col>
+                <el-form-item label="name">
+                  <el-input v-model="form.nodeSelector.name" /> </el-form-item
+              ></el-col>
+              <el-col>
+                <el-form-item label="value">
+                  <el-input v-model="form.nodeSelector.value" /> </el-form-item
+              ></el-col>
+            </el-space>
+          </el-row>
         </el-card>
       </el-collapse-item>
       <el-collapse-item title="健康检查" name="check">
@@ -82,7 +91,7 @@
         </el-row>
 
         <div v-if="form.check !== 'nocheck'">
-          <el-row :gutter="24" v-if="form.check === 'httpcheck'">
+          <el-row v-if="form.check === 'httpcheck'" :gutter="24">
             <el-col :span="24">
               <el-card style="width: 85%; height: 70px; background-color: #f2f2f2">
                 <el-form-item label="请求路径">
@@ -159,22 +168,20 @@
       <el-collapse-item title="缩放/升级策略" name="scale">
         <el-row :gutter="24">
           <el-col :span="6">
-            <el-radio-group v-model="form.scalePolicy" class="ml-4">
+            <el-radio-group v-model="form.type" class="ml-4">
               <div style="display: flex; flex-direction: column">
-                <el-radio label="scaleRollout" size="large"
-                  >滚动: 先启动新 Pod,再停止旧 Pod。</el-radio
-                >
-                <el-radio label="scaleRolloutStop" size="large"
+                <el-radio label="RollingUpdate" size="large"
                   >滚动: 先停止旧 Pod,再启动新 Pod。</el-radio
                 >
-                <el-radio label="scaleRolloutDestory" size="large"
-                  >删除所有 Pod,然后重新开始。</el-radio
+                <el-radio label="startFirst" size="large"
+                  >滚动: 先启动新 Pod,再停止旧 Pod。</el-radio
                 >
+                <el-radio label="Recreate" size="large">删除所有 Pod,然后重新开始。</el-radio>
                 <el-radio label="scaleCustom" size="large">自定义</el-radio>
               </div>
             </el-radio-group>
           </el-col>
-          <el-col :span="8" v-if="form.scalePolicy === 'scaleCustom'">
+          <el-col v-if="form.type === 'scaleCustom'" :span="8">
             <el-card style="width: 90%; height: 70px; background-color: #f2f2f2">
               <el-form-item label="最大可用">
                 <el-input v-model="form.maxUnavailable" min="0">
@@ -183,7 +190,7 @@
               </el-form-item>
             </el-card>
           </el-col>
-          <el-col :span="8" v-if="form.scalePolicy === 'scaleCustom'">
+          <el-col v-if="form.type === 'scaleCustom'" :span="8">
             <el-card style="width: 90%; height: 70px; background-color: #f2f2f2">
               <el-form-item label="最大不可用">
                 <el-input v-model="form.maxSurge" min="0">
@@ -192,26 +199,6 @@
               </el-form-item>
             </el-card>
           </el-col>
-        </el-row>
-        <el-row :gutter="24">
-          <el-col :span="12">
-            <el-card style="width: 70%; height: 70px; background-color: #f2f2f2">
-              <el-form-item label="最短准备时间">
-                <el-input v-model="form.scaleLeadTime" min="0">
-                  <template #append>秒</template>
-                </el-input>
-              </el-form-item>
-            </el-card></el-col
-          >
-          <el-col :span="12">
-            <el-card style="width: 70%; height: 70px; background-color: #f2f2f2">
-              <el-form-item label="进度截止时间">
-                <el-input v-model="form.scaleDeadline" min="0">
-                  <template #append>秒</template>
-                </el-input>
-              </el-form-item>
-            </el-card></el-col
-          >
         </el-row>
       </el-collapse-item>
     </el-collapse>
@@ -239,22 +226,17 @@ const form = reactive({
   replicas: 1,
   image: '',
   env: '',
-  envList: [
-    {
-      key: '',
-      value: '',
-    },
-  ],
+  envList: [],
   nodeName: '',
-  nodeSelector: '',
+  nodeSelector: {
+    name: '',
+    value: '',
+  },
   check: 'nocheck',
   // 缩放/升级策略
-  scalePolicy: 'scaleRollout',
-  scaleNum: 1,
-  scaleLeadTime: 1,
-  scaleDeadline: 600,
-  maxUnavailable: 1,
-  maxSurge: 2,
+  type: 'RollingUpdate',
+  maxUnavailable: '25%',
+  maxSurge: '25%',
   // 健康检查相关
   path: '',
   port: 0,
@@ -270,15 +252,20 @@ const TestNode = ['test-k8s-node1', 'test-k8s-node2', 'test-k8s-node3'];
 
 const radioStats = ref();
 
-const handleRadioChange = () => {
-  console.log(radioStats.value);
-};
-
 const addEnv = () => {
-  form.envList.push({
-    key: '',
-    value: '',
-  });
+  if (form.envList.length == 0) {
+    form.envList = [
+      {
+        name: '',
+        value: '',
+      },
+    ];
+  } else {
+    form.envList.push({
+      key: '',
+      value: '',
+    });
+  }
 };
 
 const deleEnv = (item) => {
@@ -289,12 +276,7 @@ const deleEnv = (item) => {
 };
 
 const resetEnv = () => {
-  form.envList = [
-    {
-      key: '',
-      value: '',
-    },
-  ];
+  form.envList = [];
 };
 
 // 数据检验规则
@@ -310,6 +292,11 @@ const pre = () => emit('pre');
 const onSubmit = () => {
   formRef.value.validate((valid) => {
     if (valid) {
+      if (form.type === 'startFirst') {
+        // 先启动新pod，后停止旧pod
+        form.maxUnavailable = 0;
+        form.maxSurge = 100;
+      }
       emit('next', form);
     }
   });
