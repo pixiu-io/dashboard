@@ -16,6 +16,7 @@ import {
   InsertCluster,
   CreateCluster,
   NotFound,
+  Operator,
 } from '@/page';
 
 const routes = [
@@ -87,6 +88,14 @@ const routes = [
               title: 'deployment',
             },
             component: Deployment,
+          },
+          {
+            path: 'operator',
+            name: 'Operator',
+            meta: {
+              title: 'operator',
+            },
+            component: Operator,
           },
           {
             path: 'terminal',
