@@ -1,6 +1,7 @@
 import Cicd from './cicd/cicd.vue';
 import Container from './container/container.vue';
 import Kubernetes from './container/kubernetes.vue';
+import Operator from './container/operator.vue';
 import Deployment from './container/deployment/deployment.vue';
 import DeploymentCreate from './container/deployment/create.vue';
 import Terminal from './container/terminal.vue';
@@ -14,7 +15,6 @@ import Role from './user/role.vue';
 import InsertCluster from './container/insertCluster.vue';
 import CreateCluster from './container/createCluster.vue';
 import NotFound from './notFound/notFound.vue';
-
 export {
   Home,
   Login,
@@ -31,5 +31,6 @@ export {
   InsertCluster,
   CreateCluster,
   NotFound,
+  Operator,
   DeploymentCreate,
 };
