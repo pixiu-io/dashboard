@@ -44,6 +44,10 @@ defineProps({
 const goBack = () => {
   router.back();
 };
+
+defineExpose({
+  goBack,
+});
 </script>
 
 <style scoped>

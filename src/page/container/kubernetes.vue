@@ -150,12 +150,12 @@ const changeClouds = (value) => {
       // 子级url拼接集群名称
       item.children.map((childrenItem) => {
         const url = childrenItem.url.split('?')[0];
-        childrenItem.url = `${url}?cluster=${data.cloud.cluster}`;
+        childrenItem.url = `${url}?cluster=${data.cloud.cluster}&namespace=${data.namespace}`;
       });
     } else {
       // 父级url拼接集群名称
       const url = item.url.split('?')[0];
-      item.url = `${url}?cluster=${data.cloud.cluster}`;
+      item.url = `${url}?cluster=${data.cloud.cluster}&namespace=${data.namespace}`;
     }
   });
   data.path = `${path}?cluster=${value}`;
