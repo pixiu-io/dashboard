@@ -90,11 +90,16 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 
 const { proxy } = getCurrentInstance();
 
+const router = useRouter();
+
 const data = reactive({
+  cluster: '',
+  namespace: '',
   pageInfo: {
     page: 1,
     limit: 10,
@@ -105,7 +110,14 @@ const data = reactive({
   deploymentList: [],
 });
 
+const createDeployment = () => {
+  const url = `/kubernetes/deployment_create?cluster=${data.cluster}&namespace=${data.namespace}`;
+  router.push(url);
+};
+
 onMounted(() => {
+  data.cluster = proxy.$route.query.cluster;
+  data.namespace = proxy.$route.query.namespace;
   getDeployments();
 });
 
