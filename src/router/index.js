@@ -11,6 +11,7 @@ import {
   Container,
   Kubernetes,
   Deployment,
+  DeploymentCreate,
   Terminal,
   Node,
   InsertCluster,
@@ -105,9 +106,16 @@ const routes = [
             },
             component: Terminal,
           },
+          {
+            path: 'deployment_create',
+            name: 'DeploymentCreate',
+            meta: {
+              title: 'DeploymentCreate',
+            },
+            component: DeploymentCreate,
+          },
         ],
       },
-
       {
         path: 'cicd',
         name: 'Cicd',
