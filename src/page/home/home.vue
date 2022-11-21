@@ -4,22 +4,22 @@
     <div>
       <div style="display: flex; margin-top: 20px; height: 100px; margin-left: 20px">
         <transition name="el-zoom-in-top">
-          <div class="transition-box">820<br />集群总数</div>
+          <div class="transition-box"><CountTo :value="800" /><br />集群总数</div>
         </transition>
         <transition name="el-zoom-in-center">
-          <div class="transition-box">80<br />节点总数</div>
+          <div class="transition-box"><count-to :value="80" /><br />节点总数</div>
         </transition>
         <transition name="el-zoom-in-center">
-          <div class="transition-box">67<br />流水线总数</div>
+          <div class="transition-box"><count-to :value="67" /> <br />流水线总数</div>
         </transition>
         <transition name="el-zoom-in-center">
-          <div class="transition-box">660<br />服务总数</div>
+          <div class="transition-box"><count-to :value="660" /><br />服务总数</div>
         </transition>
         <transition name="el-zoom-in-center">
-          <div class="transition-box">890<br />实例总数</div>
+          <div class="transition-box"><count-to :value="890" /><br />实例总数</div>
         </transition>
         <transition name="el-zoom-in-bottom">
-          <div class="transition-box">9<br />告警总数</div>
+          <div class="transition-box"><count-to :value="9" /><br />告警总数</div>
         </transition>
       </div>
     </div>
@@ -55,6 +55,7 @@
 <script setup>
 import { reactive } from 'vue';
 import MyEcharts from '@/components/echarts/index.vue';
+import CountTo from '@/components/pixiucount/index.vue';
 
 const option = reactive({
   // title: {

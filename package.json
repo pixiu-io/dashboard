@@ -17,6 +17,7 @@
     "echarts": "^5.3.3",
     "element-plus": "^2.1.8",
     "element-resize-detector": "^1.2.4",
+    "gsap": "^3.11.3",
     "normalize.css": "^8.0.1",
     "pinia": "^2.0.22",
     "pinia-plugin-persist": "^1.0.0",
