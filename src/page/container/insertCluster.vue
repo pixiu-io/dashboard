@@ -182,7 +182,7 @@ const comfirmCreate = async () => {
   try {
     const resp = await proxy.$http({
       method: 'post',
-      url: '/clouds',
+      url: '/load/cloud',
       data: fileFormData,
       config: requestConfig,
     });
