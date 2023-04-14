@@ -29,6 +29,8 @@ instance.interceptors.response.use(
     const { data } = response;
     if (data.code === 200) {
       return data.result;
+    } else if (typeof data.code === 'undefined') {
+      return data;
     } else {
       ElMessage({
         message: data.message,
