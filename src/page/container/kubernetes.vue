@@ -205,6 +205,7 @@ const getNamespaceList = async () => {
 
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
+  data.namespace = val;
 };
 
 const getNamespace = async () => {

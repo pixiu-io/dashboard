@@ -44,7 +44,7 @@
         <el-table-column prop="status.availableReplicas" label="状态" />
         <el-table-column prop="create_at" label="创建时间" width="300" sortable />
 
-        <el-table-column fixed="right" label="操作" width="210">
+        <el-table-column fixed="right" label="操作" width="260">
           <template #default="scope">
             <el-button
               size="small"
@@ -135,11 +135,11 @@ const getDeployments = async () => {
   data.loading = true;
   const res = await proxy.$http({
     method: 'get',
-    url: '/proxy/pixiu/atm-dda388fd/apis/apps/v1/namespaces/kube-system/deployments',
+    url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments`,
     data: data.pageInfo,
   });
-  data.loading = false;
 
+  data.loading = false;
   data.deploymentList = res.items;
 };
 </script>
