@@ -35,11 +35,11 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column prop="metadata.name" label="名称" width="300" sortable>
-          <!-- <template #default="scope">
+          <template #default="scope">
             <el-link style="color: #006eff" type="primary" @click="jumpRoute(scope.row)">
-              {{ scope.row.name }}
+              {{ scope.row.metadata.name }}
             </el-link>
-          </template> -->
+          </template>
         </el-table-column>
         <el-table-column prop="status.availableReplicas" label="状态" />
         <el-table-column prop="create_at" label="创建时间" width="300" sortable />
@@ -95,7 +95,6 @@ import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 
 const { proxy } = getCurrentInstance();
-
 const router = useRouter();
 
 const data = reactive({
@@ -122,6 +121,16 @@ onMounted(() => {
   getDeployments();
 });
 
+const jumpRoute = (row) => {
+  router.push({
+    name: 'DeploymentDetail',
+    query: {
+      name: row.metadata.name,
+      namespace: data.namespace,
+    },
+  });
+};
+
 const getDeployments = async () => {
   data.loading = true;
   const res = await proxy.$http({
@@ -132,8 +141,6 @@ const getDeployments = async () => {
   data.loading = false;
 
   data.deploymentList = res.items;
-
-  console.log(data.deploymentList);
 };
 </script>
 
