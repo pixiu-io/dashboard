@@ -24,7 +24,7 @@
       </el-row>
       <el-table
         v-loading="loading"
-        :data="data.nodeList"
+        :data="data.deploymentList"
         stripe
         style="margin-top: 40px; width: 100%"
         :header-cell-style="{
@@ -34,21 +34,22 @@
         }"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column prop="name" label="名称" width="300" sortable>
-          <template #default="scope">
+        <el-table-column prop="metadata.name" label="名称" width="300" sortable>
+          <!-- <template #default="scope">
             <el-link style="color: #006eff" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.name }}
             </el-link>
-          </template>
+          </template> -->
         </el-table-column>
-        <el-table-column prop="status" label="状态" />
+        <el-table-column prop="status.availableReplicas" label="状态" />
         <el-table-column prop="create_at" label="创建时间" width="300" sortable />
-        <el-table-column fixed="right" label="操作" width="200">
+
+        <el-table-column fixed="right" label="操作" width="210">
           <template #default="scope">
             <el-button
               size="small"
               type="text"
-              style="color: #006eff"
+              style="margin-right: -20px; color: #006eff"
               @click="editDeployment(scope.row)"
             >
               设置
@@ -58,7 +59,7 @@
               v-permissions="'user:cloud:delete'"
               type="text"
               size="small"
-              style="margin-right: 10px; color: #006eff"
+              style="margin-right: 2px; color: #006eff"
               @click="editReplicas(scope.row)"
             >
               调整副本数
@@ -125,12 +126,14 @@ const getDeployments = async () => {
   data.loading = true;
   const res = await proxy.$http({
     method: 'get',
-    url: '/clouds',
+    url: '/proxy/pixiu/atm-dda388fd/apis/apps/v1/namespaces/kube-system/deployments',
     data: data.pageInfo,
   });
   data.loading = false;
 
-  data.deploymentList = res.result.data;
+  data.deploymentList = res.items;
+
+  console.log(data.deploymentList);
 };
 </script>
 
