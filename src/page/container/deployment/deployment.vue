@@ -124,7 +124,7 @@
         <el-input v-model="data.deploymentRepcliasFrom.origin" disabled />
       </el-form-item>
       <el-form-item label="新副本数">
-        <el-input v-model="data.deploymentRepcliasFrom.target" placeholder="输入新的副本数" />
+        <el-input v-model="data.deploymentRepcliasFrom.target" placeholder="请输入新副本数" />
       </el-form-item>
     </el-form>
 
@@ -162,7 +162,7 @@ const data = reactive({
   deploymentRepcliasFrom: {
     name: '',
     origin: '',
-    target: '',
+    target: 0,
   },
 });
 
@@ -250,6 +250,7 @@ const deleteDeployment = (row) => {
 
 const handleDeploymentScaleDialog = (row) => {
   data.deploymentRepcliasFrom.name = row.metadata.name;
+  data.deploymentRepcliasFrom.target = '';
   data.deploymentRepcliasFrom.origin = row.spec.replicas;
   data.deploymentReplicasDialog = true;
 };
@@ -257,7 +258,7 @@ const handleDeploymentScaleDialog = (row) => {
 const closeDeploymentScaleDialog = (row) => {
   data.deploymentRepcliasFrom.name = '';
   data.deploymentRepcliasFrom.origin = '';
-  data.deploymentRepcliasFrom.target = '';
+  data.deploymentRepcliasFrom.target = 0;
 
   data.deploymentReplicasDialog = false;
 };
@@ -269,10 +270,14 @@ const confirmDeploymentScale = () => {
       url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${data.deploymentRepcliasFrom.name}/scale`,
       data: {
         spec: {
-          replicas: 3,
+          replicas: Number(data.deploymentRepcliasFrom.target),
+        },
+        header: {
+          'Content-Type': 'application/merge-patch+json',
         },
       },
     });
+
     closeDeploymentScaleDialog();
   } catch (error) {
     console.log('ddddd');
