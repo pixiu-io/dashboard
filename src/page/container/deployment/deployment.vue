@@ -272,6 +272,8 @@ const confirmDeploymentScale = () => {
         spec: {
           replicas: Number(data.deploymentRepcliasFrom.target),
         },
+      },
+      config: {
         header: {
           'Content-Type': 'application/merge-patch+json',
         },
