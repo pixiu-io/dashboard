@@ -320,6 +320,7 @@ const formatterDeploymentLabel = (row, colume, cellValue) => {
 }
 .el-main {
   background-color: #f3f4f7;
+}
 .pixiu-button {
   height: 30px;
   width: 70px;
