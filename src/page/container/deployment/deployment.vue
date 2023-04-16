@@ -287,7 +287,7 @@ const confirmDeploymentScale = () => {
 };
 
 const formatterDeploymentSelector = (row, colume, cellValue) => {
-  console.log(row.spec.selector.matchLabels);
+  // console.log(row.spec.selector.matchLabels);
 };
 
 const formatterDeploymentLabel = (row, colume, cellValue) => {
