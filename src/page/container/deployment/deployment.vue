@@ -1,12 +1,12 @@
 <template>
-  <el-main>
+  <el-main style="min-height: calc(100vh - 100px)">
     <div style="margin-top: 20px">
       <el-row>
         <el-col>
-          <el-button type="primary" style="margin-left: 1px" @click="createDeployment">
+          <!-- <el-button type="primary" style="margin-left: 1px" @click="createDeployment">
             创建
-          </el-button>
-
+          </el-button> -->
+          <button class="pixiu-button" @click="createDeployment">新建</button>
           <el-input
             v-model="data.pageInfo.query"
             placeholder="名称搜索关键字"
@@ -320,5 +320,13 @@ const formatterDeploymentLabel = (row, colume, cellValue) => {
 }
 .el-main {
   background-color: #f3f4f7;
+.pixiu-button {
+  height: 30px;
+  width: 70px;
+  border-radius: 0%;
+  color: white;
+  border: none;
+  background-color: #0052d9;
+  cursor: pointer;
 }
 </style>
