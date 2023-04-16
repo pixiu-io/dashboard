@@ -67,6 +67,11 @@ const data = reactive({
           name: 'Pod',
           url: '/kubernetes/pods',
         },
+        {
+          id: 1.4,
+          name: 'Helm Release',
+          url: '/kubernetes/helms',
+        },
       ],
     },
     {
@@ -200,6 +205,7 @@ const getNamespaceList = async () => {
 
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
+  data.namespace = val;
 };
 
 const getNamespace = async () => {

@@ -12,6 +12,7 @@ import {
   Kubernetes,
   Deployment,
   DeploymentCreate,
+  DeploymentDetail,
   Terminal,
   Node,
   InsertCluster,
@@ -91,6 +92,22 @@ const routes = [
             component: Deployment,
           },
           {
+            path: 'deployment_create',
+            name: 'DeploymentCreate',
+            meta: {
+              title: 'DeploymentCreate',
+            },
+            component: DeploymentCreate,
+          },
+          {
+            path: 'deployments',
+            name: 'DeploymentDetail',
+            meta: {
+              title: 'DeploymentDetail',
+            },
+            component: DeploymentDetail,
+          },
+          {
             path: 'operator',
             name: 'Operator',
             meta: {
@@ -105,14 +122,6 @@ const routes = [
               title: 'terminal',
             },
             component: Terminal,
-          },
-          {
-            path: 'deployment_create',
-            name: 'DeploymentCreate',
-            meta: {
-              title: 'DeploymentCreate',
-            },
-            component: DeploymentCreate,
           },
         ],
       },

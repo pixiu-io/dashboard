@@ -18,6 +18,14 @@ instance.interceptors.request.use(
     if (config.method === 'POST') {
       config.data = JSON.stringify(config.data);
     }
+
+    // TODO: 后续优化
+    if (config.method === 'patch') {
+      config.headers['Content-Type'] = 'application/merge-patch+json';
+    } else {
+      config.headers['Content-Type'] = 'application/json;charset=UTF-8';
+    }
+
     return config;
   },
   (error) => Promise.reject(error),
@@ -67,6 +75,9 @@ const axiosIntance = ({ method, url, data, config }) => {
   }
   if (method === 'put') {
     return instance.put(url, data, { ...config });
+  }
+  if (method === 'patch') {
+    return instance.patch(url, data, { ...config });
   }
   // console.error(`UnKnown Method:${method}`);
   return false;
