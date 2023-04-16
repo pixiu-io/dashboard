@@ -31,81 +31,88 @@
           </el-select>
         </el-col>
       </el-row>
+      <el-card class="box-card">
+        <el-table
+          v-loading="loading"
+          :data="data.deploymentList"
+          stripe
+          style="margin-top: 2px; width: 100%"
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column prop="metadata.name" label="名称" width="200" sortable>
+            <template #default="scope">
+              <el-link style="color: #006eff" type="primary" @click="jumpRoute(scope.row)">
+                {{ scope.row.metadata.name }}
+              </el-link>
+            </template>
+          </el-table-column>
+          <el-table-column
+            prop="spec.template.metadata.labels"
+            label="Labels"
+            :formatter="formatterDeploymentLabel"
+          />
+          <el-table-column
+            prop="spec.selector.matchLabels"
+            label="Selector"
+            :formatter="formatterDeploymentSelector"
+          />
+          <el-table-column prop="" label="运行状态" width="300" />
+          <el-table-column prop="" label="Request/Limits" width="300" />
 
-      <el-table
-        v-loading="loading"
-        :data="data.deploymentList"
-        stripe
-        style="margin-top: 40px; width: 100%"
-        :header-cell-style="{
-          background: '#f4f3f9',
-          color: '#606266',
-          height: '40px',
-        }"
-        @selection-change="handleSelectionChange"
-      >
-        <el-table-column prop="metadata.name" label="名称" width="200" sortable>
-          <template #default="scope">
-            <el-link style="color: #006eff" type="primary" @click="jumpRoute(scope.row)">
-              {{ scope.row.metadata.name }}
-            </el-link>
+          <el-table-column fixed="right" label="操作" width="200">
+            <template #default="scope">
+              <el-button
+                size="small"
+                type="text"
+                style="margin-right: -20px; margin-left: -10px; color: #006eff"
+                @click="editDeployment(scope.row)"
+              >
+                设置
+              </el-button>
+
+              <el-button
+                type="text"
+                size="small"
+                style="margin-right: 2px; color: #006eff"
+                @click="handleDeploymentScaleDialog(scope.row)"
+              >
+                调整副本数
+              </el-button>
+
+              <el-dropdown>
+                <span class="el-dropdown-link">
+                  更多
+                  <el-icon><arrow-down /></el-icon>
+                </span>
+                <template #dropdown>
+                  <el-dropdown-menu class="dropdown-buttons">
+                    <el-dropdown-item style="color: #006eff" @click="deleteDeployment(scope.row)">
+                      删除
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </template>
+          </el-table-column>
+
+          <template #empty>
+            <div style="text-align: center">
+              选择的该命名空间的列表为空，可以切换到其他命名空间或点击创建
+            </div>
           </template>
-        </el-table-column>
-        <el-table-column
-          prop="spec.template.metadata.labels"
-          label="Labels"
-          :formatter="formatterDeploymentLabel"
+        </el-table>
+
+        <el-pagination
+          style="float: right; margin-right: 30px; margin-top: 20px; margin-bottom: 20px"
+          v-model:currentPage="data.pageInfo.page"
+          v-model:page-size="data.pageInfo.page_size"
+          :page-sizes="[10, 20, 50]"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="data.pageInfo.total"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
         />
-        <el-table-column
-          prop="spec.selector.matchLabels"
-          label="Selector"
-          :formatter="formatterDeploymentSelector"
-        />
-        <el-table-column prop="" label="运行状态" width="300" />
-        <el-table-column prop="" label="Request/Limits" width="300" />
-
-        <el-table-column fixed="right" label="操作" width="260">
-          <template #default="scope">
-            <el-button
-              size="small"
-              type="text"
-              style="margin-right: -20px; color: #006eff"
-              @click="editDeployment(scope.row)"
-            >
-              设置
-            </el-button>
-
-            <el-button
-              type="text"
-              size="small"
-              style="margin-right: 2px; color: #006eff"
-              @click="handleDeploymentScaleDialog(scope.row)"
-            >
-              调整副本数
-            </el-button>
-
-            <el-dropdown>
-              <span class="el-dropdown-link">
-                更多
-                <el-icon><arrow-down /></el-icon>
-              </span>
-              <template #dropdown>
-                <el-dropdown-menu class="dropdown-buttons">
-                  <el-dropdown-item style="color: #006eff" @click="deleteDeployment(scope.row)">
-                    删除
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-          </template>
-        </el-table-column>
-
-        <template #empty>
-          <div style="text-align: center">
-            选择的该命名空间的列表为空，可以切换到其他命名空间或点击创建
-          </div>
-        </template>
-      </el-table>
+      </el-card>
     </div>
   </el-main>
 
@@ -151,6 +158,7 @@ const data = reactive({
     page: 1,
     limit: 10,
     query: '',
+    total: 0,
   },
   loading: false,
 
@@ -165,6 +173,16 @@ const data = reactive({
     target: 0,
   },
 });
+
+const handleSizeChange = (newSize) => {
+  data.pageInfo.limit = newSize;
+  getDeployments();
+};
+
+const handleCurrentChange = (newPage) => {
+  data.pageInfo.page = newPage;
+  getDeployments();
+};
 
 const createDeployment = () => {
   const url = `/kubernetes/deployment_create?cluster=${data.cluster}&namespace=${data.namespace}`;
@@ -198,6 +216,7 @@ const getDeployments = async () => {
 
   data.loading = false;
   data.deploymentList = res.items;
+  data.pageInfo.total = data.deploymentList.length;
 };
 
 const changeNamespace = async (val) => {
@@ -282,9 +301,7 @@ const confirmDeploymentScale = () => {
     getDeployments();
     getDeployments();
     closeDeploymentScaleDialog();
-  } catch (error) {
-    console.log('ddddd');
-  }
+  } catch (error) {}
 };
 
 const formatterDeploymentSelector = (row, colume, cellValue) => {
@@ -297,6 +314,12 @@ const formatterDeploymentLabel = (row, colume, cellValue) => {
 </script>
 
 <style scoped="scoped">
+.box-card {
+  margin-top: 20px;
+  /* width: 480px; */
+}
+.el-main {
+  background-color: #f3f4f7;
 .pixiu-button {
   height: 30px;
   width: 70px;
