@@ -6,10 +6,11 @@
           <el-button type="primary" style="margin-left: 1px" @click="createDeployment">
             创建
           </el-button>
+
           <el-input
             v-model="data.pageInfo.query"
-            placeholder="请输入需要搜索的名称"
-            style="width: 480px; float: right"
+            placeholder="名称搜索关键字"
+            style="width: 420px; float: right"
             clearable
             @input="getDeployments"
             @clear="getDeployments"
@@ -20,8 +21,17 @@
               </el-icon>
             </template>
           </el-input>
+
+          <el-select
+            v-model="data.namespace"
+            style="width: 160px; float: right; margin-right: 10px"
+            @change="changeNamespace"
+          >
+            <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
+          </el-select>
         </el-col>
       </el-row>
+
       <el-table
         v-loading="loading"
         :data="data.deploymentList"
@@ -41,8 +51,10 @@
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column prop="status.availableReplicas" label="状态" />
-        <el-table-column prop="create_at" label="创建时间" width="300" sortable />
+        <el-table-column prop="status.availableReplicas" label="Labels" />
+        <el-table-column prop="" label="Selectors" width="300" />
+        <el-table-column prop="" label="运行状态" width="300" />
+        <el-table-column prop="" label="Request/Limits" width="300" />
 
         <el-table-column fixed="right" label="操作" width="260">
           <template #default="scope">
@@ -81,8 +93,7 @@
 
         <template #empty>
           <div style="text-align: center">
-            还没有 deployments，现在就
-            <button class="app-pixiu-btn--link" @click="createDeployment">立即创建</button> 一个吧
+            选择的该命名空间的列表为空，可以切换到其他命名空间或点击创建
           </div>
         </template>
       </el-table>
@@ -99,7 +110,6 @@ const router = useRouter();
 
 const data = reactive({
   cluster: '',
-  namespace: '',
   pageInfo: {
     page: 1,
     limit: 10,
@@ -107,6 +117,8 @@ const data = reactive({
   },
   loading: false,
 
+  namespace: 'default',
+  namespaces: [],
   deploymentList: [],
 });
 
@@ -117,8 +129,9 @@ const createDeployment = () => {
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
-  data.namespace = proxy.$route.query.namespace;
+
   getDeployments();
+  getNamespaceList();
 });
 
 const jumpRoute = (row) => {
@@ -141,6 +154,26 @@ const getDeployments = async () => {
 
   data.loading = false;
   data.deploymentList = res.items;
+};
+
+const changeNamespace = async (val) => {
+  localStorage.setItem('namespace', val);
+  data.namespace = val;
+
+  getDeployments();
+};
+
+const getNamespaceList = async () => {
+  try {
+    const result = await proxy.$http({
+      method: 'get',
+      url: '/proxy/pixiu/' + data.cluster + '/api/v1/namespaces',
+    });
+
+    for (let item of result.items) {
+      data.namespaces.push(item.metadata.name);
+    }
+  } catch (error) {}
 };
 </script>
 
