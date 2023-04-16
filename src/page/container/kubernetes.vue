@@ -67,6 +67,11 @@ const data = reactive({
           name: 'Pod',
           url: '/kubernetes/pods',
         },
+        {
+          id: 1.4,
+          name: 'Helm Release',
+          url: '/kubernetes/helms',
+        },
       ],
     },
     {
@@ -189,10 +194,10 @@ const getNamespaceList = async () => {
   try {
     const result = await proxy.$http({
       method: 'get',
-      url: '/clouds/v1/' + data.cloud.cluster + '/namespaces',
+      url: '/proxy/pixiu/' + data.cloud.cluster + '/api/v1/namespaces',
     });
 
-    for (let item of result) {
+    for (let item of result.items) {
       data.namespaces.push(item.metadata.name);
     }
   } catch (error) {}
@@ -200,6 +205,7 @@ const getNamespaceList = async () => {
 
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
+  data.namespace = val;
 };
 
 const getNamespace = async () => {

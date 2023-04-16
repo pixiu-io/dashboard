@@ -1,6 +1,6 @@
 <template>
   <el-main>
-    <div style="margin-top: 20px">
+    <!-- <div style="margin-top: 20px">
       <el-row>
         <el-col>
           <el-button type="primary" style="margin-left: 1px" @click="handleCreate">
@@ -75,7 +75,6 @@
         </template>
       </el-table>
 
-      <!-- 分页区域 -->
       <el-pagination
         style="float: right; margin-right: 40px; margin-top: 20px; margin-bottom: 20px"
         :current-page="data.pageInfo.page"
@@ -86,7 +85,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       />
-    </div>
+    </div> -->
   </el-main>
 </template>
 
