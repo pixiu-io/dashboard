@@ -256,11 +256,11 @@ const handleDeploymentScaleDialog = (row) => {
 };
 
 const closeDeploymentScaleDialog = (row) => {
+  data.deploymentReplicasDialog = false;
+
   data.deploymentRepcliasFrom.name = '';
   data.deploymentRepcliasFrom.origin = '';
   data.deploymentRepcliasFrom.target = 0;
-
-  data.deploymentReplicasDialog = false;
 };
 
 const confirmDeploymentScale = () => {
@@ -279,7 +279,8 @@ const confirmDeploymentScale = () => {
         },
       },
     });
-
+    getDeployments();
+    getDeployments();
     closeDeploymentScaleDialog();
   } catch (error) {
     console.log('ddddd');
