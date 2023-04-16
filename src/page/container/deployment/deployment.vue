@@ -323,7 +323,7 @@ const formatterDeploymentLabel = (row, colume, cellValue) => {
 }
 .pixiu-button {
   height: 30px;
-  width: 70px;
+  width: 75px;
   border-radius: 0%;
   color: white;
   border: none;
