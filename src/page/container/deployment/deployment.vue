@@ -64,7 +64,7 @@
               <el-button
                 size="small"
                 type="text"
-                style="margin-right: -20px; color: #006eff"
+                style="margin-right: -20px; margin-left: -10px; color: #006eff"
                 @click="editDeployment(scope.row)"
               >
                 设置
