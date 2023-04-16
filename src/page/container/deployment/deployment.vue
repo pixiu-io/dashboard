@@ -44,15 +44,23 @@
         }"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column prop="metadata.name" label="名称" width="300" sortable>
+        <el-table-column prop="metadata.name" label="名称" width="200" sortable>
           <template #default="scope">
             <el-link style="color: #006eff" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column prop="status.availableReplicas" label="Labels" />
-        <el-table-column prop="" label="Selectors" width="300" />
+        <el-table-column
+          prop="spec.template.metadata.labels"
+          label="Labels"
+          :formatter="formatterDeploymentLabel"
+        />
+        <el-table-column
+          prop="spec.selector.matchLabels"
+          label="Selector"
+          :formatter="formatterDeploymentSelector"
+        />
         <el-table-column prop="" label="运行状态" width="300" />
         <el-table-column prop="" label="Request/Limits" width="300" />
 
@@ -68,11 +76,10 @@
             </el-button>
 
             <el-button
-              v-permissions="'user:cloud:delete'"
               type="text"
               size="small"
               style="margin-right: 2px; color: #006eff"
-              @click="editReplicas(scope.row)"
+              @click="handleDeploymentScaleDialog(scope.row)"
             >
               调整副本数
             </el-button>
@@ -84,7 +91,9 @@
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
-                  <el-dropdown-item style="color: #006eff"> 删除 </el-dropdown-item>
+                  <el-dropdown-item style="color: #006eff" @click="deleteDeployment(scope.row)">
+                    删除
+                  </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -99,11 +108,39 @@
       </el-table>
     </div>
   </el-main>
+
+  <el-dialog
+    :model-value="data.deploymentReplicasDialog"
+    style="color: #000000; font: 14px"
+    width="500px"
+    center
+    @close="closeDeploymentScaleDialog"
+  >
+    <template #header>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">调整副本配置</div>
+    </template>
+    <el-form label-width="100px" style="max-width: 300px">
+      <el-form-item label="原副本数">
+        <el-input v-model="data.deploymentRepcliasFrom.origin" disabled />
+      </el-form-item>
+      <el-form-item label="新副本数">
+        <el-input v-model="data.deploymentRepcliasFrom.target" placeholder="输入新的副本数" />
+      </el-form-item>
+    </el-form>
+
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="closeDeploymentScaleDialog">取消</el-button>
+        <el-button type="primary" @click="confirmDeploymentScale">确认</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -120,6 +157,13 @@ const data = reactive({
   namespace: 'default',
   namespaces: [],
   deploymentList: [],
+
+  deploymentReplicasDialog: false,
+  deploymentRepcliasFrom: {
+    name: '',
+    origin: '',
+    target: '',
+  },
 });
 
 const createDeployment = () => {
@@ -174,6 +218,73 @@ const getNamespaceList = async () => {
       data.namespaces.push(item.metadata.name);
     }
   } catch (error) {}
+};
+
+const deleteDeployment = (row) => {
+  ElMessageBox.confirm(
+    '此操作将永久删除 Deployment ' + row.metadata.name + ' . 是否继续?',
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+      draggable: true,
+    },
+  )
+    .then(() => {
+      const res = proxy.$http({
+        method: 'delete',
+        url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${row.metadata.name}`,
+      });
+      ElMessage({
+        type: 'success',
+        message: '删除 ' + row.metadata.name + ' 成功',
+      });
+
+      // TODO：一次更新即可
+      getDeployments();
+      getDeployments();
+    })
+    .catch(() => {}); // 取消
+};
+
+const handleDeploymentScaleDialog = (row) => {
+  data.deploymentRepcliasFrom.name = row.metadata.name;
+  data.deploymentRepcliasFrom.origin = row.spec.replicas;
+  data.deploymentReplicasDialog = true;
+};
+
+const closeDeploymentScaleDialog = (row) => {
+  data.deploymentRepcliasFrom.name = '';
+  data.deploymentRepcliasFrom.origin = '';
+  data.deploymentRepcliasFrom.target = '';
+
+  data.deploymentReplicasDialog = false;
+};
+
+const confirmDeploymentScale = () => {
+  try {
+    const res = proxy.$http({
+      method: 'patch',
+      url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${data.deploymentRepcliasFrom.name}/scale`,
+      data: {
+        spec: {
+          replicas: 3,
+        },
+      },
+    });
+    closeDeploymentScaleDialog();
+  } catch (error) {
+    console.log('ddddd');
+  }
+};
+
+const formatterDeploymentSelector = (row, colume, cellValue) => {
+  console.log(row.spec.selector.matchLabels);
+};
+
+const formatterDeploymentLabel = (row, colume, cellValue) => {
+  const { status } = row;
 };
 </script>
 

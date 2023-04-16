@@ -68,6 +68,9 @@ const axiosIntance = ({ method, url, data, config }) => {
   if (method === 'put') {
     return instance.put(url, data, { ...config });
   }
+  if (method === 'patch') {
+    return instance.patch(url, data, { ...config });
+  }
   // console.error(`UnKnown Method:${method}`);
   return false;
 };
