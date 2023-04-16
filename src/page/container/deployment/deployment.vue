@@ -167,7 +167,7 @@ const getNamespaceList = async () => {
   try {
     const result = await proxy.$http({
       method: 'get',
-      url: '/proxy/pixiu/' + data.cluster + '/api/v1/namespaces',
+      url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces`,
     });
 
     for (let item of result.items) {
