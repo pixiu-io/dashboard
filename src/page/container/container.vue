@@ -142,7 +142,7 @@
                 v-permissions="'user:cloud:setting'"
                 size="small"
                 type="text"
-                style="color: #006eff"
+                style="margin-right: -20px; margin-left: -10px; color: #006eff"
                 @click="handleEdit(scope.row)"
               >
                 设置
@@ -152,7 +152,7 @@
                 v-permissions="'user:cloud:delete'"
                 type="text"
                 size="small"
-                style="margin-right: 10px; color: #006eff"
+                style="margin-right: 2px; color: #006eff"
                 @click="cloudStore.deleteCloud(scope.row)"
               >
                 删除
