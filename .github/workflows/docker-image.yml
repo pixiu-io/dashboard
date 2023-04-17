@@ -14,13 +14,13 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: echo
-      run: echo ${{ secrets.DOCKER_NAME }}  ${{ secrets.DOCKER_PASSWORD }} dddd
+      run: echo ${{ secrets.DOCKER_NAME }} ${{ variables.NAME }} ${{ secrets.DOCKER_PASSWORD }} dddd
 
     - name: Login in dockerhub
       uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
       with:
-        username: test
-        password: addd
+        username: ${{ secrets.DOCKER_NAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build and push the Docker image
       run: make image && make push
