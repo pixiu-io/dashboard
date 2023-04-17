@@ -325,4 +325,24 @@ const formatterDeploymentLabel = (row, colume, cellValue) => {
   background-color: #0052d9;
   cursor: pointer;
 }
+
+.pixiu-btn {
+  display: inline-block;
+  box-sizing: border-box;
+  min-width: 104px;
+  height: 36px;
+  padding: 0 24px;
+  color: #fff;
+  font-size: 14px;
+  line-height: 34px;
+  white-space: nowrap;
+  text-align: center;
+  text-decoration: none;
+  vertical-align: middle;
+  background-color: #0052d9;
+  border: 1px solid transparent;
+  outline: 0 none;
+  cursor: pointer;
+  box-shadow: 8px 8px 20px 0 rgba(55, 99, 170, 0.1);
+}
 </style>
