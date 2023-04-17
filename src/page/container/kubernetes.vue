@@ -312,8 +312,4 @@ onMounted(() => {
   width: 100%;
   bottom: 0;
 }
-
-.el-main {
-  background: #fff;
-}
 </style>
