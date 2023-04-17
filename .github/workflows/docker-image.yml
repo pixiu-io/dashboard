@@ -14,3 +14,6 @@ jobs:
     - uses: actions/checkout@v3
     - name: Build the Docker image
       run: make image
+
+    - name: Show image
+      run: docker images
