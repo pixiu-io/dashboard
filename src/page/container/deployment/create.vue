@@ -8,7 +8,7 @@
       background-color: #f3f4f7;
     "
   >
-    <pixiu-card ref="cardRef" back="true" title="创建Deployment" height="50px" />
+    <pixiu-card ref="cardRef" back="true" title="创建 Deployment" height="50px" />
     <div class="app-pixiu-content-card">
       <el-steps
         finish-status="success"
