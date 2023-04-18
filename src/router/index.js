@@ -14,6 +14,7 @@ import {
   DeploymentCreate,
   DeploymentDetail,
   Terminal,
+  Monitor,
   Node,
   InsertCluster,
   CreateCluster,
@@ -122,6 +123,14 @@ const routes = [
               title: 'terminal',
             },
             component: Terminal,
+          },
+          {
+            path: 'monitor',
+            name: 'Monitor',
+            meta: {
+              title: 'monitor',
+            },
+            component: Monitor,
           },
         ],
       },

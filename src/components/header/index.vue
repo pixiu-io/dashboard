@@ -56,7 +56,7 @@
       <div></div>
     </el-drawer>
 
-    <a href="https://github.com/caoyingjunz/pixiu" class="header-bottom">Github</a>
+    <a href="https://github.com/caoyingjunz/pixiu" target="_blank" class="header-bottom">Github</a>
 
     <el-dropdown>
       <span style="font-size: small; margin-right: 25px; color: #adb0bb; cursor: pointer">
