@@ -9,9 +9,9 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
+
       - name: Use Node.js 16.18.0
         uses: actions/setup-node@v3
         with:
