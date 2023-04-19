@@ -43,5 +43,6 @@ defineProps({
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-height: 23px;
 }
 </style>
