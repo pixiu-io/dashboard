@@ -19,3 +19,6 @@ jobs:
       - run: npm ci # 下载包
       - run: npm run prettier # 格式化
       - run: npm run lint # eslint检查
+
+      - name: Build the Docker image
+        run: make image
