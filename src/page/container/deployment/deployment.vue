@@ -139,7 +139,7 @@
         </el-table-column>
 
         <template #empty>
-          <div style="text-align: center; color: #ababab">
+          <div class="noResource">
             选择的该命名空间的列表为空，可以切换到其他命名空间或点击<span
               style="color: #409eff; cursor: pointer"
               @click="createDeployment"
@@ -399,5 +399,11 @@ function formatFirst(labels) {
 }
 .span_pending {
   background-color: #e6a23c;
+}
+.noResource {
+  text-align: center;
+  color: #ababab;
+  font-size: 10px;
+  color: black;
 }
 </style>
