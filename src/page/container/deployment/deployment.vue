@@ -38,27 +38,71 @@
         style="margin-top: 2px; width: 100%"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column prop="metadata.name" label="名称" width="200" sortable>
+        <el-table-column prop="metadata.name" label="名称" width="300">
           <template #default="scope">
             <el-link style="color: #006eff" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column
-          prop="spec.template.metadata.labels"
-          label="Labels"
-          :formatter="formatterDeploymentLabel"
-        />
-        <el-table-column
-          prop="spec.selector.matchLabels"
-          label="Selector"
-          :formatter="formatterDeploymentSelector"
-        />
-        <el-table-column prop="" label="运行状态" width="300" />
-        <el-table-column prop="" label="Request/Limits" width="300" />
+        <el-table-column label="Labels" width="300">
+          <template #default="scope">
+            <el-popover
+              v-if="scope.row.metadata.labels"
+              placement="right"
+              width="auto"
+              trigger="hover"
+            >
+              <div v-for="(val, key) in scope.row.metadata.labels" :key="key">
+                <el-tag style="margin: 5px 0px">{{ key + '=' + val }}</el-tag>
+              </div>
+              <template #reference>
+                <pixiu-tag :content="formatFirst(scope.row.metadata.labels)" />
+              </template>
+            </el-popover>
+            <span v-else>-</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="Selector" width="300">
+          <template #default="scope">
+            <el-popover placement="right" width="auto" trigger="hover">
+              <div v-for="(val, key) in scope.row.spec.selector.matchLabels" :key="key">
+                <el-tag style="margin: 5px 0px">{{ key + '=' + val }}</el-tag>
+              </div>
+              <template #reference>
+                <pixiu-tag :content="formatFirst(scope.row.spec.selector.matchLabels)" />
+              </template>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column label="镜像" width="300">
+          <template #default="scope">
+            <el-popover placement="right" width="auto" trigger="hover">
+              <div v-for="(val, key) in scope.row.spec.template.spec.containers" :key="key">
+                <el-tag style="margin: 5px 0px">{{ val.image }}</el-tag>
+              </div>
+              <template #reference>
+                <pixiu-tag :content="scope.row.spec.template.spec.containers[0]['image']" />
+              </template>
+            </el-popover>
+          </template>
+        </el-table-column>
+        <el-table-column prop="" label="运行状态" width="150">
+          <template #default="scope">
+            <span class="span_point" :class="addReadyClass(scope.row)" />
+            <span
+              >&nbsp;&nbsp;
+              {{
+                scope.row.status.availableReplicas == scope.row.spec.replicas ? 'ready' : 'pending'
+              }}
+              ({{
+                scope.row.status.availableReplicas > 0 ? scope.row.status.availableReplicas : 0
+              }}/{{ scope.row.spec.replicas > 0 ? scope.row.spec.replicas : 0 }})
+            </span>
+          </template>
+        </el-table-column>
 
-        <el-table-column fixed="right" label="操作" width="200">
+        <el-table-column fixed="right" label="操作" align="center" width="250">
           <template #default="scope">
             <el-button
               size="small"
@@ -95,16 +139,20 @@
         </el-table-column>
 
         <template #empty>
-          <div style="text-align: center">
-            选择的该命名空间的列表为空，可以切换到其他命名空间或点击创建
+          <div style="text-align: center; color: #ababab">
+            选择的该命名空间的列表为空，可以切换到其他命名空间或点击<span
+              style="color: #409eff; cursor: pointer"
+              @click="createDeployment"
+              >新建</span
+            >进行资源创建
           </div>
         </template>
       </el-table>
 
       <el-pagination
-        style="float: right; margin-right: 30px; margin-top: 20px; margin-bottom: 20px"
         v-model:currentPage="data.pageInfo.page"
         v-model:page-size="data.pageInfo.page_size"
+        style="float: right; margin-right: 30px; margin-top: 20px; margin-bottom: 20px"
         :page-sizes="[10, 20, 50]"
         layout="total, sizes, prev, pager, next, jumper"
         :total="data.pageInfo.total"
@@ -146,6 +194,7 @@
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import PixiuTag from '@/components/pixiuTag/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -237,6 +286,12 @@ const getNamespaceList = async () => {
   } catch (error) {}
 };
 
+function addReadyClass(row) {
+  if (row.status.availableReplicas == row.spec.replicas) {
+    return 'span_ready';
+  }
+  return 'span_pending';
+}
 const deleteDeployment = (row) => {
   ElMessageBox.confirm(
     '此操作将永久删除 Deployment ' + row.metadata.name + ' . 是否继续?',
@@ -302,13 +357,12 @@ const confirmDeploymentScale = () => {
   } catch (error) {}
 };
 
-const formatterDeploymentSelector = (row, colume, cellValue) => {
-  // console.log(row.spec.selector.matchLabels);
-};
-
-const formatterDeploymentLabel = (row, colume, cellValue) => {
-  const { status } = row;
-};
+function formatFirst(labels) {
+  for (let key in labels) {
+    console.log(key);
+    return `${key}=${labels[key]}`;
+  }
+}
 </script>
 
 <style scoped="scoped">
@@ -326,23 +380,24 @@ const formatterDeploymentLabel = (row, colume, cellValue) => {
   cursor: pointer;
 }
 
-.pixiu-btn {
-  display: inline-block;
-  box-sizing: border-box;
-  min-width: 104px;
-  height: 36px;
-  padding: 0 24px;
-  color: #fff;
-  font-size: 14px;
-  line-height: 34px;
-  white-space: nowrap;
+.span_point {
+  align-items: center;
+  border-radius: 50%;
+  display: inline-flex;
+  justify-content: center;
+  line-height: normal;
+  position: relative;
   text-align: center;
-  text-decoration: none;
   vertical-align: middle;
-  background-color: #0052d9;
-  border: 1px solid transparent;
-  outline: 0 none;
-  cursor: pointer;
-  box-shadow: 8px 8px 20px 0 rgba(55, 99, 170, 0.1);
+  overflow: hidden;
+  height: 10px;
+  min-width: 10px;
+  width: 10px;
+}
+.span_ready {
+  background-color: #67c23a;
+}
+.span_pending {
+  background-color: #e6a23c;
 }
 </style>
