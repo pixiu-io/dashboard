@@ -359,7 +359,6 @@ const confirmDeploymentScale = () => {
 
 function formatFirst(labels) {
   for (let key in labels) {
-    console.log(key);
     return `${key}=${labels[key]}`;
   }
 }
