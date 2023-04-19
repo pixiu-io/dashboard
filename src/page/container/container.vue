@@ -66,6 +66,7 @@
         <el-col>
           <el-button
             v-permissions="'user:cloud:add'"
+            class="pixiu-button"
             type="primary"
             style="margin-left: 1px"
             @click="cloudStore.createCloud"
@@ -428,5 +429,15 @@ const formatterResource = (row, column, cellValue) => {
   text-align: center;
   font-size: 10px;
   color: black;
+}
+
+.pixiu-button {
+  height: 35px;
+  width: 115px;
+  border-radius: 0%;
+  color: white;
+  border: none;
+  background-color: #0052d9;
+  cursor: pointer;
 }
 </style>
