@@ -402,7 +402,6 @@ function formatFirst(labels) {
 }
 .noResource {
   text-align: center;
-  color: #ababab;
   font-size: 10px;
   color: black;
 }
