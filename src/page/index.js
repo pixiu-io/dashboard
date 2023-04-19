@@ -6,6 +6,7 @@ import Deployment from './container/deployment/deployment.vue';
 import DeploymentCreate from './container/deployment/create.vue';
 import DeploymentDetail from './container/deployment/details.vue';
 import Terminal from './container/terminal.vue';
+import Monitor from './container/monitor.vue';
 import Node from './container/node.vue';
 import Home from './home/home.vue';
 import Login from './login/login.vue';
@@ -31,6 +32,7 @@ export {
   DeploymentDetail,
   Node,
   Terminal,
+  Monitor,
   InsertCluster,
   CreateCluster,
   NotFound,
