@@ -119,6 +119,13 @@ const data = reactive({
       ],
     },
     {
+      id: 7,
+      name: '监控中心',
+      icon: 'Monitor',
+      iconType: 'iconfont',
+      url: '/kubernetes/monitor',
+    },
+    {
       id: 5,
       name: 'Pixiu Shell',
       icon: 'icon-a-kuozhanicon_huaban1fuben33',
