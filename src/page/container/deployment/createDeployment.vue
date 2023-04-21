@@ -1,18 +1,21 @@
 <template>
+  <el-card class="title-card-container">
+    <div class="font-container">创建 Deployment</div>
+  </el-card>
+
   <div style="display: flex; flex-direction: column; width: 100%; height: 100%">
-    <!-- <pixiu-card back="true" title="导入标准集群" height="50px" /> -->
     <el-main>
       <div class="app-pixiu-content-card">
         <el-card style="margin-top: 10px; width: 75%">
           <el-form :label-position="labelPosition" label-width="120px" :model="data.clusterForm">
             <div style="margin-top: 20px" />
-            <el-form-item label="集群名称" style="width: 50%">
-              <el-input v-model="data.clusterForm.alias_name" placeholder="请输入集群名称" />
+            <el-form-item label="名称" style="width: 40%">
+              <el-input v-model="data.deploymentForm.metadata.name" />
             </el-form-item>
 
             <div style="margin-top: 30px" />
-            <el-form-item label="所在地域" style="width: 100%">
-              <el-radio-group v-model="data.clusterForm.region">
+            <el-form-item label="命名空间" style="width: 100%">
+              <el-radio-group v-model="data.deploymentForm.metadata.namespace">
                 <el-radio-button
                   v-for="(item, index) in data.regionOptions"
                   :key="index"
@@ -24,71 +27,13 @@
               处在不同地域的云产品内网不通，导入后无法更换。建议选择合适的地域，以提高使用体验。
             </div>
 
-            <div style="margin-top: 20px" />
-            <el-form-item label="KubeConfig">
-              <el-upload
-                drag
-                :on-change="handleChange"
-                :before-remove="beforeRemove"
-                :limit="1"
-                :file-list="data.kubeconfig"
-                :auto-upload="false"
-              >
-                <el-icon class="el-icon--upload">
-                  <upload-filled />
-                </el-icon>
-                <div class="el-upload__text">将 kubeconfig 拖到此处，或 <em>点击上传</em></div>
-              </el-upload>
-
-              <el-row>
-                <el-button
-                  type="text"
-                  style="margin-left: 20px; margin-top: 130px"
-                  @click="connectKubernetes"
-                  >连通检查</el-button
-                >
-              </el-row>
-            </el-form-item>
-
-            <div style="margin-top: 20px" />
-            <el-form-item label="高性能 eventer">
-              <el-switch
-                v-model="data.clusterForm.enable_pixiu_eventer"
-                active-text="启用"
-                inactive-text="关闭"
-              />
-            </el-form-item>
             <div class="app-pixiu-describe" style="margin-top: -12px">
               启用 pixiu-eventer 组件，提供高性能的 kubernetes 事件查询能力
             </div>
 
-            <div style="margin-top: 20px" />
-            <el-form-item label="集群描述" style="width: 60%">
-              <el-input
-                v-model="data.clusterForm.description"
-                placeholder="请输入 Kubernentes 集群描述"
-                type="textarea"
-                :autosize="data.autosize"
-              />
-            </el-form-item>
-
-            <div style="margin-top: 18px" />
-            <el-form-item label="创建系统空间">
-              <el-radio v-model="data.clusterForm.create_ns" label="enabled">是</el-radio>
-              <el-radio v-model="data.clusterForm.create_ns" disabled>否</el-radio>
-            </el-form-item>
-            <div class="app-pixiu-describe" style="margin-top: -12px">
-              在 kubernetes 集群中创建 pixiu-system 命名空间，用于运行 pixiu 的系统组件和配置
-            </div>
-
             <div style="margin-top: 40px" />
             <el-form-item>
-              <el-button
-                type="primary"
-                :disabled="data.clusterForm.allowCreated"
-                @click="comfirmCreate()"
-                >完成</el-button
-              >
+              <el-button type="primary" @click="comfirmCreate()">完成</el-button>
               <el-button @click="cancelCreate()">取消</el-button>
             </el-form-item>
           </el-form>
@@ -109,12 +54,14 @@ const data = reactive({
   autosize: {
     minRows: 5,
   },
+  regionOptions: [],
 
   deploymentForm: {
     kind: '',
     apiVersion: 'apps/v1',
     metadata: {
       name: '',
+      namespace: '',
       labels: {},
     },
     spec: {
@@ -226,5 +173,19 @@ const beforeRemove = (file, files) => proxy.$confirm(`确定移除 ${file.name}�
   margin-left: 120px;
   font-size: 12px;
   color: #888888;
+}
+
+.title-card-container {
+  height: 50px;
+  margin-top: -20px;
+  margin-left: -20px;
+  margin-right: -20px;
+}
+
+.font-container {
+  margin-top: -5px;
+  font-weight: bold;
+  font-size: 16px;
+  vertical-align: middle;
 }
 </style>
