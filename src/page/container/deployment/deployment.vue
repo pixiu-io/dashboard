@@ -1,5 +1,9 @@
 <template>
-  <div style="margin-top: 30px">
+  <el-card class="title-card-container">
+    <div class="font-container">Deployment</div>
+  </el-card>
+
+  <div style="margin-top: 25px">
     <el-row>
       <el-col>
         <button class="pixiu-button" @click="createDeployment">新建</button>
@@ -401,6 +405,20 @@ function formatFirst(labels) {
   text-align: center;
   font-size: 10px;
   color: black;
+}
+
+.title-card-container {
+  height: 50px;
+  margin-top: -20px;
+  margin-left: -20px;
+  margin-right: -20px;
+}
+
+.font-container {
+  margin-top: -5px;
+  font-weight: bold;
+  font-size: 16px;
+  vertical-align: middle;
 }
 
 .namespace-container {
