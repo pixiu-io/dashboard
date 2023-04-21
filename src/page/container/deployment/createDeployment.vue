@@ -110,62 +110,33 @@ const data = reactive({
     minRows: 5,
   },
 
-  clusterForm: {
-    alias_name: '',
-    region: '无锡',
-    description: '',
-    create_ns: 'enabled', // 创建 pixiu 的系统命名空间
-    enable_pixiu_eventer: false, // 启用高性能事件收集器
-    cloud_type: 1, // 导入集群的类型为 1
-
-    allowCreated: true, // 仅在前端生效
+  deploymentForm: {
+    kind: '',
+    apiVersion: 'apps/v1',
+    metadata: {
+      name: '',
+      labels: {},
+    },
+    spec: {
+      replicas: 0,
+      selector: {
+        matchLabels: {},
+      },
+      template: {
+        metadata: {
+          labels: {},
+        },
+        spec: {
+          containers: [],
+        },
+      },
+    },
   },
-  kubeconfig: [],
-
-  // 后续从后端获取
-  regionOptions: [
-    {
-      value: '无锡',
-      label: '无锡',
-    },
-    {
-      value: '宿迁',
-      label: '宿迁',
-    },
-    {
-      value: '杭州',
-      label: '杭州',
-    },
-    {
-      value: '泗阳',
-      label: '泗阳',
-    },
-    {
-      value: '苏州',
-      label: '苏州',
-    },
-    {
-      value: '南京',
-      label: '南京',
-    },
-    {
-      value: '上海',
-      label: '上海',
-    },
-    {
-      value: '北京',
-      label: '北京',
-    },
-  ],
 });
 
 const labelPosition = ref('left');
 
 const comfirmCreate = async () => {
-  if (data.kubeconfig.length == 0) {
-    return proxy.$message.error('failed to found the kubeConfig file.');
-  }
-
   const configFile = data.kubeconfig[0].raw;
   const fileFormData = new FormData();
   fileFormData.append('kubeconfig', configFile, configFile.name);
