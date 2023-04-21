@@ -44,11 +44,11 @@ instance.interceptors.response.use(
         message: data.message,
         type: 'error',
       });
-
-      if (data.code === 401) {
-        localStorage.clear();
-        location.href('/login');
-      }
+      // FIXME
+    //   if (data.code === 401) {
+    //     localStorage.clear();
+    //     location.href('/login');
+    //   }
       return Promise.reject(data);
     }
   },
