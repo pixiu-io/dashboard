@@ -1,10 +1,7 @@
 <template>
-  <div style="margin-top: 20px">
+  <div style="margin-top: 30px">
     <el-row>
       <el-col>
-        <!-- <el-button type="primary" style="margin-left: 1px" @click="createDeployment">
-            创建
-          </el-button> -->
         <button class="pixiu-button" @click="createDeployment">新建</button>
         <el-input
           v-model="data.pageInfo.query"
@@ -28,6 +25,7 @@
         >
           <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
         </el-select>
+        <!-- <dev class="namespace-container" style="width: 112px; float: right">命名空间</dev> -->
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -403,5 +401,15 @@ function formatFirst(labels) {
   text-align: center;
   font-size: 10px;
   color: black;
+}
+
+.namespace-container {
+  font-size: 14px;
+  margin-top: -2px;
+  /* margin-left: 10px; */
+  margin-right: -60px;
+  color: #4c4e58;
+  height: 20px;
+  padding: 10px;
 }
 </style>
