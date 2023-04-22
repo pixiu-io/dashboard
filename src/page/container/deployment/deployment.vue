@@ -1,10 +1,11 @@
 <template>
-  <div style="margin-top: 20px">
+  <el-card class="title-card-container">
+    <div class="font-container">Deployment</div>
+  </el-card>
+
+  <div style="margin-top: 25px">
     <el-row>
       <el-col>
-        <!-- <el-button type="primary" style="margin-left: 1px" @click="createDeployment">
-            创建
-          </el-button> -->
         <button class="pixiu-button" @click="createDeployment">新建</button>
         <el-input
           v-model="data.pageInfo.query"
@@ -28,6 +29,7 @@
         >
           <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
         </el-select>
+        <!-- <dev class="namespace-container" style="width: 112px; float: right">命名空间</dev> -->
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -141,7 +143,7 @@
         <template #empty>
           <div class="noResource">
             选择的该命名空间的列表为空，可以切换到其他命名空间或点击<span
-              style="color: #409eff; cursor: pointer"
+              style="color: #006eff; cursor: pointer"
               @click="createDeployment"
               >新建</span
             >进行资源创建
@@ -403,5 +405,29 @@ function formatFirst(labels) {
   text-align: center;
   font-size: 10px;
   color: black;
+}
+
+.title-card-container {
+  height: 50px;
+  margin-top: -20px;
+  margin-left: -20px;
+  margin-right: -20px;
+}
+
+.font-container {
+  margin-top: -5px;
+  font-weight: bold;
+  font-size: 16px;
+  vertical-align: middle;
+}
+
+.namespace-container {
+  font-size: 14px;
+  margin-top: -2px;
+  /* margin-left: 10px; */
+  margin-right: -60px;
+  color: #4c4e58;
+  height: 20px;
+  padding: 10px;
 }
 </style>
