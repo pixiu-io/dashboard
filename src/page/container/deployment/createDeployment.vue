@@ -6,7 +6,7 @@
   <div style="display: flex; flex-direction: column; width: 100%; height: 100%">
     <el-main>
       <div class="app-pixiu-content-card">
-        <el-card style="margin-top: 10px; width: 75%">
+        <el-card style="margin-top: 16px; width: 100%">
           <el-form :label-position="labelPosition" label-width="120px" :model="data.clusterForm">
             <div style="margin-top: 20px" />
             <el-form-item label="名称" style="width: 40%">
