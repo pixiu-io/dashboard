@@ -7,25 +7,32 @@
     <el-main>
       <div class="app-pixiu-content-card">
         <el-card style="margin-top: 16px; width: 100%">
-          <el-form :label-position="labelPosition" label-width="120px" :model="data.clusterForm">
+          <el-form :label-position="labelPosition" label-width="120px">
             <div style="margin-top: 20px" />
             <el-form-item label="名称" style="width: 40%">
               <el-input v-model="data.deploymentForm.metadata.name" />
+              <div class="app-pixiu-describe">
+                最长63个字符，只能包含小写字母、数字及分隔符(“-")
+              </div>
             </el-form-item>
 
-            <div style="margin-top: 30px" />
-            <el-form-item label="命名空间" style="width: 100%">
-              <el-radio-group v-model="data.deploymentForm.metadata.namespace">
-                <el-radio-button
-                  v-for="(item, index) in data.regionOptions"
-                  :key="index"
-                  :label="item.label"
-                />
-              </el-radio-group>
+            <div style="margin-top: 20px" />
+            <el-form-item label="命名空间" style="width: 20%">
+              <div class="namespace-select-container">
+                <el-select
+                  v-model="data.deploymentForm.metadata.namespace"
+                  style="width: 80%"
+                  @change="changeNamespace"
+                >
+                  <el-option
+                    v-for="item in data.namespaces"
+                    :key="item"
+                    :value="item"
+                    :label="item"
+                  />
+                </el-select>
+              </div>
             </el-form-item>
-            <div class="app-pixiu-describe">
-              处在不同地域的云产品内网不通，导入后无法更换。建议选择合适的地域，以提高使用体验。
-            </div>
 
             <div class="app-pixiu-describe" style="margin-top: -12px">
               启用 pixiu-eventer 组件，提供高性能的 kubernetes 事件查询能力
@@ -44,13 +51,16 @@
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance, ref } from 'vue';
+import { reactive, getCurrentInstance, onMounted, watch } from 'vue';
+
 import PixiuCard from '@/components/card/index.vue';
 
 const { proxy } = getCurrentInstance();
 
 const data = reactive({
   loading: false,
+  cluser: '',
+  namespaces: [],
   autosize: {
     minRows: 5,
   },
@@ -61,7 +71,7 @@ const data = reactive({
     apiVersion: 'apps/v1',
     metadata: {
       name: '',
-      namespace: '',
+      namespace: 'default',
       labels: {},
     },
     spec: {
@@ -81,28 +91,12 @@ const data = reactive({
   },
 });
 
-const labelPosition = ref('left');
-
 const comfirmCreate = async () => {
-  const configFile = data.kubeconfig[0].raw;
-  const fileFormData = new FormData();
-  fileFormData.append('kubeconfig', configFile, configFile.name);
-  fileFormData.append('clusterData', new Blob([JSON.stringify(data.clusterForm)]), {
-    type: 'application/json',
-  });
-
-  const requestConfig = {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  };
-
   try {
     const resp = await proxy.$http({
       method: 'post',
-      url: '/load/cloud',
+      url: `/proxy/pixiu/${data.cluser}/api/v1/namespaces`,
       data: fileFormData,
-      config: requestConfig,
     });
   } catch (error) {}
 
@@ -114,30 +108,35 @@ const cancelCreate = () => {
   backToContainer();
 };
 
-const connectKubernetes = async () => {
-  if (data.kubeconfig.length == 0) {
-    return proxy.$message.error('failed to found the kubeConfig file.');
+onMounted(() => {
+  data.cloud = proxy.$route.query;
+  data.path = proxy.$route.fullPath;
+
+  getNamespaceList();
+});
+
+const changeNamespace = async (val) => {
+  localStorage.setItem('namespace', val);
+  data.namespace = val;
+};
+
+const getNamespace = async () => {
+  const namespace = localStorage.getItem('namespace');
+  if (namespace) {
+    data.namespace = namespace;
   }
+};
 
-  const configFile = data.kubeconfig[0].raw;
-  const fileFormData = new FormData();
-  fileFormData.append('kubeconfig', configFile, configFile.name);
-  const requestConfig = {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  };
-
+const getNamespaceList = async () => {
   try {
-    const resp = await proxy.$http({
-      method: 'post',
-      url: '/clouds/ping',
-      data: fileFormData,
-      config: requestConfig,
+    const result = await proxy.$http({
+      method: 'get',
+      url: '/proxy/pixiu/' + data.cloud.cluster + '/api/v1/namespaces',
     });
 
-    proxy.$message.success('kubernetes 集群连接正常');
-    data.clusterForm.allowCreated = false;
+    for (let item of result.items) {
+      data.namespaces.push(item.metadata.name);
+    }
   } catch (error) {}
 };
 
@@ -170,8 +169,7 @@ const beforeRemove = (file, files) => proxy.$confirm(`确定移除 ${file.name}�
 }
 
 .app-pixiu-describe {
-  margin-left: 120px;
-  font-size: 12px;
+  font-size: 10px;
   color: #888888;
 }
 
