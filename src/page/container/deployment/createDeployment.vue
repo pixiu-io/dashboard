@@ -9,19 +9,17 @@
         <el-card style="margin-top: 16px; width: 100%">
           <el-form :label-position="labelPosition" label-width="120px">
             <div style="margin-top: 20px" />
-            <el-form-item label="名称" style="width: 40%">
+            <el-form-item label="名称" style="width: 30%">
               <el-input v-model="data.deploymentForm.metadata.name" />
               <div class="app-pixiu-describe">
                 最长63个字符，只能包含小写字母、数字及分隔符(“-")
               </div>
             </el-form-item>
 
-            <div style="margin-top: 20px" />
             <el-form-item label="命名空间" style="width: 20%">
               <div class="namespace-select-container">
                 <el-select
                   v-model="data.deploymentForm.metadata.namespace"
-                  style="width: 80%"
                   @change="changeNamespace"
                 >
                   <el-option
@@ -34,8 +32,73 @@
               </div>
             </el-form-item>
 
-            <div class="app-pixiu-describe" style="margin-top: -12px">
-              启用 pixiu-eventer 组件，提供高性能的 kubernetes 事件查询能力
+            <div style="margin-top: 20px" />
+            <el-form-item label="Labels">
+              <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button>
+            </el-form-item>
+            <div class="app-pixiu-line-describe">
+              标签键值以字母、数字开头和结尾, 且只能包含字母、数字及分隔符.
+            </div>
+
+            <el-form-item label="容器配置" style="margin-top: 20px">
+              <el-button type="text" class="app-action-btn" @click="addLabel">增加容器</el-button>
+            </el-form-item>
+
+            <el-form-item style="margin-top: -35px">
+              <el-card
+                style="width: 90%; height: 210px; background-color: #f2f2f2; margin-top: 20px"
+              >
+                <el-col style="margin-top: -10px"
+                  >名称
+                  <el-input
+                    v-model="data.containers.name"
+                    class="deploy-pixiu-incard"
+                    style="margin-left: 60px"
+                    placeholder="请输入容器的名称"
+                  />
+                </el-col>
+
+                <el-col style="margin-top: 10px"
+                  >镜像
+                  <el-input
+                    v-model="data.containers.image"
+                    style="margin-left: 60px"
+                    class="deploy-pixiu-incard"
+                  />
+                </el-col>
+
+                <el-col style="margin-top: 10px"
+                  >镜像版本
+                  <el-input
+                    v-model="data.containers.image"
+                    class="deploy-pixiu-incard"
+                    style="margin-left: 32px"
+                  />
+                </el-col>
+
+                <el-col style="margin-top: 10px"
+                  >镜像拉取策略
+                  <el-radio-group v-model="data.containers.pullpolicy" style="margin-left: 6px">
+                    <el-radio-button label="IfNotPresent">IfNotPresent</el-radio-button>
+                    <el-radio-button label="Always">Always</el-radio-button>
+                    <el-radio-button label="Never">Never</el-radio-button>
+                  </el-radio-group>
+                  <div class="container-line-describe">
+                    设置镜像拉取策略，默认使用 IfNotPresent 策略
+                  </div>
+                </el-col>
+              </el-card>
+            </el-form-item>
+
+            <el-form-item label="实例数量" style="margin-top: 20px">
+              <el-input-number
+                style="margin-top: 8px"
+                v-model="data.deploymentForm.spec.replicas"
+                :min="0"
+                @change="handleChange"
+            /></el-form-item>
+            <div class="app-pixiu-line-describe" style="margin-top: -10px">
+              Deployment replicas 设置
             </div>
 
             <div style="margin-top: 40px" />
@@ -51,7 +114,7 @@
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance, onMounted, watch } from 'vue';
+import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 
 import PixiuCard from '@/components/card/index.vue';
 
@@ -64,18 +127,23 @@ const data = reactive({
   autosize: {
     minRows: 5,
   },
-  regionOptions: [],
+
+  containers: {
+    name: '',
+    image: '',
+    pullpolicy: 'IfNotPresent',
+  },
 
   deploymentForm: {
-    kind: '',
+    kind: 'Deployment',
     apiVersion: 'apps/v1',
     metadata: {
       name: '',
       namespace: 'default',
-      labels: {},
+      labels: ref([]),
     },
     spec: {
-      replicas: 0,
+      replicas: 1,
       selector: {
         matchLabels: {},
       },
@@ -90,6 +158,10 @@ const data = reactive({
     },
   },
 });
+
+const handleChange = (value) => {
+  data.deploymentForm.spec.replicas = value;
+};
 
 const comfirmCreate = async () => {
   try {
@@ -117,7 +189,7 @@ onMounted(() => {
 
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
-  data.namespace = val;
+  data.deploymentForm.metadata.namespace = val;
 };
 
 const getNamespace = async () => {
@@ -140,18 +212,25 @@ const getNamespaceList = async () => {
   } catch (error) {}
 };
 
+const deleteLabel = (index) => {
+  nodeTableData.value.splice(index, 1);
+};
+
+const addLabel = () => {
+  nodeTableData.value.push({
+    name: 'node1',
+    address: '192.168.0.1',
+    user: 'root',
+    password: 'root123456',
+  });
+};
+
 // 回到 container 页面
 const backToContainer = () => {
   proxy.$router.push({
     name: 'Container',
   });
 };
-
-const handleChange = (file, files) => {
-  data.kubeconfig = files;
-};
-
-const beforeRemove = (file, files) => proxy.$confirm(`确定移除 ${file.name}？`);
 </script>
 
 <style scoped="scoped">
@@ -173,6 +252,18 @@ const beforeRemove = (file, files) => proxy.$confirm(`确定移除 ${file.name}�
   color: #888888;
 }
 
+.app-pixiu-line-describe {
+  margin-left: 120px;
+  margin-top: -18px;
+  font-size: 10px;
+  color: #888888;
+}
+
+.app-action-btn {
+  color: #006eff;
+  font-size: 12px;
+}
+
 .title-card-container {
   height: 50px;
   margin-top: -20px;
@@ -185,5 +276,16 @@ const beforeRemove = (file, files) => proxy.$confirm(`确定移除 ${file.name}�
   font-weight: bold;
   font-size: 16px;
   vertical-align: middle;
+}
+
+.deploy-pixiu-incard {
+  width: 200px;
+  margin-left: 5px;
+}
+
+.container-line-describe {
+  margin-left: 95px;
+  font-size: 10px;
+  color: #888888;
 }
 </style>

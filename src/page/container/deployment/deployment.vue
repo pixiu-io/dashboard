@@ -143,7 +143,7 @@
         <template #empty>
           <div class="noResource">
             选择的该命名空间的列表为空，可以切换到其他命名空间或点击<span
-              style="color: #409eff; cursor: pointer"
+              style="color: #006eff; cursor: pointer"
               @click="createDeployment"
               >新建</span
             >进行资源创建

@@ -87,42 +87,52 @@
               <div style="margin-top: 25px" />
               <el-form-item label="容器网络">
                 <el-card style="width: 90%; height: 100px; background-color: #f2f2f2">
-                  <el-col>CIDR</el-col>
+                  <el-col
+                    >CIDR
+                    <el-select
+                      v-model="data.podNetworkForm.a_cidr"
+                      style="width: 70px; margin-left: 15px"
+                    >
+                      <el-option
+                        v-for="item in data.podCidrOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
 
-                  <el-select
-                    v-model="data.podNetworkForm.a_cidr"
-                    style="width: 70px; margin-left: 30px"
-                  >
-                    <el-option
-                      v-for="item in data.podCidrOptions"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
+                    <span style="margin-left: 4px">.</span>
+
+                    <el-input v-model="data.podNetworkForm.b_cidr" class="pod-pixiu-mask" />
+
+                    <span style="margin-left: 4px">.</span>
+                    <el-input
+                      v-model="data.podNetworkForm.c_cidr"
+                      class="pod-pixiu-mask"
+                      disabled
                     />
-                  </el-select>
-                  <span style="margin-left: 4px">.</span>
 
-                  <el-input v-model="data.podNetworkForm.b_cidr" class="pod-pixiu-mask" />
-
-                  <span style="margin-left: 4px">.</span>
-                  <el-input v-model="data.podNetworkForm.c_cidr" class="pod-pixiu-mask" disabled />
-
-                  <span style="margin-left: 4px">.</span>
-                  <el-input v-model="data.podNetworkForm.d_cidr" class="pod-pixiu-mask" disabled />
-
-                  <span style="margin-left: 4px">/</span>
-                  <el-select
-                    v-model="data.podNetworkForm.pod_mask"
-                    style="width: 70px; margin-left: 4px"
-                  >
-                    <el-option
-                      v-for="item in data.podMaskOptions"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
+                    <span style="margin-left: 4px">.</span>
+                    <el-input
+                      v-model="data.podNetworkForm.d_cidr"
+                      class="pod-pixiu-mask"
+                      disabled
                     />
-                  </el-select>
-                  <div class="app-pixiu-describe" style="margin-top: 10px; margin-left: 62px">
+
+                    <span style="margin-left: 4px">/</span>
+                    <el-select
+                      v-model="data.podNetworkForm.pod_mask"
+                      style="width: 70px; margin-left: 4px"
+                    >
+                      <el-option
+                        v-for="item in data.podMaskOptions"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                  </el-col>
+                  <div class="app-pixiu-describe" style="margin-top: 10px; margin-left: 55px">
                     创建后无法更改
                   </div>
                 </el-card>
