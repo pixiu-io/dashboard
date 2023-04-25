@@ -9,14 +9,14 @@
         <el-card style="margin-top: 16px; width: 100%">
           <el-form :label-position="labelPosition" label-width="120px">
             <div style="margin-top: 20px" />
-            <el-form-item label="名称" style="width: 30%">
+            <el-form-item label="名称" style="width: 500px">
               <el-input v-model="data.deploymentForm.metadata.name" />
               <div class="app-pixiu-describe">
                 最长63个字符，只能包含小写字母、数字及分隔符(“-")
               </div>
             </el-form-item>
 
-            <el-form-item label="命名空间" style="width: 20%">
+            <el-form-item label="命名空间" style="width: 300px">
               <div class="namespace-select-container">
                 <el-select
                   v-model="data.deploymentForm.metadata.namespace"
