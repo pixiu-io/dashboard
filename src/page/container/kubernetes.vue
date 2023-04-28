@@ -70,7 +70,7 @@ const data = reactive({
         {
           id: 1.4,
           name: 'Helm Release',
-          url: '/kubernetes/helms',
+          url: '/kubernetes/release',
         },
       ],
     },

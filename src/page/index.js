@@ -4,6 +4,7 @@ import Kubernetes from './container/kubernetes.vue';
 import Operator from './container/operator.vue';
 import Deployment from './container/deployment/deployment.vue';
 import DeploymentCreate from './container/deployment/createDeployment.vue';
+import Release from './container/release/release.vue';
 import DeploymentDetail from './container/deployment/details.vue';
 import Terminal from './container/terminal.vue';
 import Monitor from './container/monitor.vue';
@@ -28,6 +29,7 @@ export {
   Container,
   Kubernetes,
   Deployment,
+  Release,
   DeploymentCreate,
   DeploymentDetail,
   Node,
