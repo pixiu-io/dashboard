@@ -7,7 +7,7 @@
           <el-form :label-position="labelPosition" label-width="120px" :model="data.clusterForm">
             <div style="margin-top: 20px" />
             <el-form-item label="集群名称" style="width: 50%">
-              <el-input v-model="data.clusterForm.name" placeholder="请输入集群名称" />
+              <el-input v-model="data.clusterForm.alias_name" placeholder="请输入集群名称" />
             </el-form-item>
 
             <div style="margin-top: 30px" />
@@ -111,7 +111,7 @@ const data = reactive({
   },
 
   clusterForm: {
-    name: '',
+    alias_name: '',
     region: '无锡',
     description: '',
     create_ns: 'enabled', // 创建 pixiu 的系统命名空间

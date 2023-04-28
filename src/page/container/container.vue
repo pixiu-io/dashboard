@@ -66,6 +66,7 @@
         <el-col>
           <el-button
             v-permissions="'user:cloud:add'"
+            class="pixiu-button"
             type="primary"
             style="margin-left: 1px"
             @click="cloudStore.createCloud"
@@ -175,10 +176,12 @@
           </el-table-column>
 
           <template #empty>
-            <div style="text-align: center">
+            <div class="noResource">
               没有任何容器集群
 
-              <button class="app-pixiu-btn--link" @click="createCloud">[立即创建]</button>
+              <button class="app-pixiu-btn--link" @click="cloudStore.createCloud">
+                [立即创建]
+              </button>
             </div>
           </template>
         </el-table>
@@ -420,5 +423,21 @@ const formatterResource = (row, column, cellValue) => {
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.noResource {
+  text-align: center;
+  font-size: 10px;
+  color: black;
+}
+
+.pixiu-button {
+  height: 35px;
+  width: 115px;
+  border-radius: 0%;
+  color: white;
+  border: none;
+  background-color: #0052d9;
+  cursor: pointer;
 }
 </style>

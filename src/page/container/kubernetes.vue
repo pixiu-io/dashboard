@@ -267,6 +267,7 @@ onMounted(() => {
 
 .app-title-container {
   margin-top: 10px;
+  margin-left: 10px;
   font-size: 15px;
   color: #4c4e58;
   height: 20px;
