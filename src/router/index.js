@@ -13,6 +13,7 @@ import {
   Deployment,
   DeploymentCreate,
   DeploymentDetail,
+  Release,
   Terminal,
   Monitor,
   Node,
@@ -91,6 +92,14 @@ const routes = [
               title: 'deployment',
             },
             component: Deployment,
+          },
+          {
+            path: 'release',
+            name: 'Release',
+            meta: {
+              title: 'release',
+            },
+            component: Release,
           },
           {
             path: 'deployment_create',
