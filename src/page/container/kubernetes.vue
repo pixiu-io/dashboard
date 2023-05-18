@@ -70,7 +70,7 @@ const data = reactive({
         {
           id: 1.4,
           name: 'Helm Release',
-          url: '/kubernetes/helms',
+          url: '/kubernetes/release',
         },
       ],
     },
@@ -117,6 +117,13 @@ const data = reactive({
           url: '/kubernetes/storage-pv',
         },
       ],
+    },
+    {
+      id: 7,
+      name: '监控中心',
+      icon: 'Monitor',
+      iconType: 'iconfont',
+      url: '/kubernetes/monitor',
     },
     {
       id: 5,
@@ -260,6 +267,7 @@ onMounted(() => {
 
 .app-title-container {
   margin-top: 10px;
+  margin-left: 10px;
   font-size: 15px;
   color: #4c4e58;
   height: 20px;
@@ -311,9 +319,5 @@ onMounted(() => {
   position: absolute;
   width: 100%;
   bottom: 0;
-}
-
-.el-main {
-  background: #fff;
 }
 </style>

@@ -9,9 +9,9 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
+
       - name: Use Node.js 16.18.0
         uses: actions/setup-node@v3
         with:
@@ -19,3 +19,6 @@ jobs:
       - run: npm ci # 下载包
       - run: npm run prettier # 格式化
       - run: npm run lint # eslint检查
+
+      - name: Build the Docker image
+        run: make image
