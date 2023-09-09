@@ -116,12 +116,12 @@
             </template>
           </el-table-column>
 
-          <el-table-column
+          <!-- <el-table-column
             :formatter="cloudStatusFormatter"
             prop="status"
             label="状态"
             width="160"
-          />
+          /> -->
 
           <el-table-column
             :formatter="cloudTypeFormatter"
@@ -321,19 +321,19 @@ const cloudTypeFormatter = (row, column, cellValue) => (
   </div>
 );
 
-const cloudStatusFormatter = (row, column, cellValue) => (
-  <div style="display:flex;align-items:center">
-    <el-space size={8}>
-      <pixiu-icon
-        size="25px"
-        name={cloudStatus[cellValue].icon}
-        type="iconfont"
-        color={cloudStatus[cellValue].color}
-      ></pixiu-icon>
-      <div>{cloudStatus[cellValue].text}</div>
-    </el-space>
-  </div>
-);
+// const cloudStatusFormatter = (row, column, cellValue) => (
+//   <div style="display:flex;align-items:center">
+//     <el-space size={8}>
+//       <pixiu-icon
+//         size="25px"
+//         name={cloudStatus[cellValue].icon}
+//         type="iconfont"
+//         color={cloudStatus[cellValue].color}
+//       ></pixiu-icon>
+//       <div>{cloudStatus[cellValue].text}</div>
+//     </el-space>
+//   </div>
+// );
 
 const formatterResource = (row, column, cellValue) => {
   const { status } = row;

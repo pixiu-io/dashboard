@@ -5,7 +5,7 @@ export const getClouds = async (data) => {
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
-      url: '/clouds',
+      url: '/pixiu/clusters',
       data,
     }),
   );
@@ -16,7 +16,7 @@ export const deleteCloudById = async (id) => {
   const [err, result] = await awaitWrap(
     http({
       method: 'delete',
-      url: `/clouds/${id}`,
+      url: `/pixiu/clusters/${id}`,
     }),
   );
   return [err, result];

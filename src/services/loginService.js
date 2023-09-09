@@ -5,7 +5,7 @@ export const loginMethod = async (data) => {
   const [err, result] = await awaitWrap(
     http({
       method: 'post',
-      url: '/users/login',
+      url: '/pixiu/users/login',
       data,
     }),
   );
