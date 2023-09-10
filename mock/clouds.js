@@ -1,6 +1,6 @@
 export default [
   {
-    url: '/clouds',
+    url: '/pixiu/clouds',
     method: 'GET',
     response: (options) => {
       return {

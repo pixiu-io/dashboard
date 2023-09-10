@@ -188,7 +188,7 @@ const getCloudList = async () => {
   try {
     const result = await proxy.$http({
       method: 'get',
-      url: '/clouds',
+      url: '/pixiu/clusters',
     });
 
     for (let item of result) {

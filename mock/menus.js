@@ -737,7 +737,7 @@ export default [
                   status: 1,
                   memo: '添加容器',
                   parent_id: 21220902,
-                  url: '/clouds',
+                  url: '/pixiu/clouds',
                   name: '添加',
                   sequence: 1,
                   menu_type: 2,
