@@ -2,7 +2,7 @@
 
 tag = latest
 releaseName = pixiu-dashboard
-dockerhubUser = jacky06
+dockerhubUser = pixiuio
 
 ALL: run
 
