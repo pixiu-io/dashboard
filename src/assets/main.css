@@ -6,3 +6,33 @@
   margin: 0;
   padding: 0;
 }
+
+.pixiu-button {
+  height: 35px;
+  width: 115px;
+  border-radius: 0%;
+  color: white;
+  border: none;
+  background-color: #0052d9;
+  cursor: pointer;
+}
+
+.pixiu-confirm-button {
+  height: 35px;
+  width: 90px;
+  border-radius: 0%;
+  color: white;
+  border: none;
+  background-color: #0052d9;
+  cursor: pointer;
+}
+
+.pixiu-cancel-button {
+  height: 35px;
+  width: 90px;
+  border-radius: 0%;
+  border: 1px solid #cfd5de;
+  color: #0052d9;
+  background-color: white;
+  cursor: pointer;
+}

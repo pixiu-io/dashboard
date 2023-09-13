@@ -258,19 +258,11 @@ function parseTime(time, cFormat) {
 .box-card {
   margin-top: 20px;
 }
+
 .noResource {
   text-align: center;
   color: #ababab;
   font-size: 10px;
   color: black;
-}
-.pixiu-button {
-  height: 30px;
-  width: 75px;
-  border-radius: 0%;
-  color: white;
-  border: none;
-  background-color: #0052d9;
-  cursor: pointer;
 }
 </style>

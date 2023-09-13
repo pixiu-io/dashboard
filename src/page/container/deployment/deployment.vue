@@ -371,15 +371,6 @@ function formatFirst(labels) {
   margin-top: 20px;
   /* width: 480px; */
 }
-.pixiu-button {
-  height: 30px;
-  width: 75px;
-  border-radius: 0%;
-  color: white;
-  border: none;
-  background-color: #0052d9;
-  cursor: pointer;
-}
 
 .span_point {
   align-items: center;

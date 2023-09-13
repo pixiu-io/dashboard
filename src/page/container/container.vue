@@ -252,8 +252,13 @@
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="cloudStore.closeModal">取消</el-button>
-        <el-button type="primary" @click="cloudStore.confirmCreateCloud">创建</el-button>
+        <el-button class="pixiu-cancel-button" @click="cloudStore.closeModal">取消</el-button>
+        <el-button
+          class="pixiu-confirm-button"
+          type="primary"
+          @click="cloudStore.confirmCreateCloud"
+          >创建</el-button
+        >
       </span>
     </template>
   </el-dialog>
@@ -428,15 +433,5 @@ const formatterResource = (row, column, cellValue) => {
   text-align: center;
   font-size: 10px;
   color: black;
-}
-
-.pixiu-button {
-  height: 35px;
-  width: 115px;
-  border-radius: 0%;
-  color: white;
-  border: none;
-  background-color: #0052d9;
-  cursor: pointer;
 }
 </style>
