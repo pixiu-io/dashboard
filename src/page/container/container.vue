@@ -116,25 +116,25 @@
             </template>
           </el-table-column>
 
-          <el-table-column
+          <!-- <el-table-column
             :formatter="cloudStatusFormatter"
             prop="status"
             label="状态"
             width="160"
-          />
+          /> -->
 
           <el-table-column
             :formatter="cloudTypeFormatter"
-            prop="cloud_type"
+            prop="cluster_type"
             label="集群类型"
             width="180"
           />
-          <el-table-column prop="kube_version" width="200">
+          <el-table-column prop="kubernetes_version" width="200">
             <template #header>
               <Icon icon="QuestionFilled" desc="原生 kubernetes 的版本"> kubernetes版本 </Icon>
             </template>
           </el-table-column>
-          <el-table-column prop="node_number" label="节点数" width="160" />
+          <el-table-column prop="nodes" label="节点数" width="200" />
           <el-table-column prop="resources" label="资源量" :formatter="formatterResource" />
 
           <el-table-column fixed="right" label="操作" width="200">
@@ -309,8 +309,8 @@ const cloudStatus = {
 };
 
 const cloudTypes = {
-  1: '标准集群',
-  2: '自建集群',
+  0: '标准',
+  1: '自建',
 };
 
 const cloudTypeFormatter = (row, column, cellValue) => (
@@ -321,31 +321,30 @@ const cloudTypeFormatter = (row, column, cellValue) => (
   </div>
 );
 
-const cloudStatusFormatter = (row, column, cellValue) => (
-  <div style="display:flex;align-items:center">
-    <el-space size={8}>
-      <pixiu-icon
-        size="25px"
-        name={cloudStatus[cellValue].icon}
-        type="iconfont"
-        color={cloudStatus[cellValue].color}
-      ></pixiu-icon>
-      <div>{cloudStatus[cellValue].text}</div>
-    </el-space>
-  </div>
-);
+// const cloudStatusFormatter = (row, column, cellValue) => (
+//   <div style="display:flex;align-items:center">
+//     <el-space size={8}>
+//       <pixiu-icon
+//         size="25px"
+//         name={cloudStatus[cellValue].icon}
+//         type="iconfont"
+//         color={cloudStatus[cellValue].color}
+//       ></pixiu-icon>
+//       <div>{cloudStatus[cellValue].text}</div>
+//     </el-space>
+//   </div>
+// );
 
 const formatterResource = (row, column, cellValue) => {
-  const { status } = row;
   return (
     <div style="display:flex;flex-direction:column">
       <el-space>
-        <span style="font-weight:bold">CPU:</span>
-        <span>{status}</span>
+        <span style="font-weight:bold;font-size: 13px">CPU:</span>
+        <span>{cellValue['cpu']}</span>
       </el-space>
       <el-space>
-        <span style="font-weight:bold">内存:</span>
-        <span>{status}</span>
+        <span style="font-weight:bold;font-size: 13px">内存:</span>
+        <span>{cellValue['memory']}</span>
       </el-space>
     </div>
   );

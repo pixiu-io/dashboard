@@ -1,6 +1,6 @@
 export default [
   {
-    url: '/users/login',
+    url: '/pixiu/users/login',
     method: 'POST',
     response: (options) => ({
       code: 200,

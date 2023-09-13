@@ -77,8 +77,8 @@
                 </el-col>
 
                 <el-col style="margin-top: 10px"
-                  >镜像拉取策略
-                  <el-radio-group v-model="data.containers.pullpolicy" style="margin-left: 6px">
+                  >拉取策略
+                  <el-radio-group v-model="data.containers.pullpolicy" style="margin-left: 30px">
                     <el-radio-button label="IfNotPresent">IfNotPresent</el-radio-button>
                     <el-radio-button label="Always">Always</el-radio-button>
                     <el-radio-button label="Never">Never</el-radio-button>

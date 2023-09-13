@@ -41,8 +41,9 @@ const useCloudStore = defineStore('cloud', () => {
     if (err) {
       return;
     }
-    cloudList.value = result.data;
-    total.value = result.total;
+
+    cloudList.value = result;
+    total.value = 10;
   };
   const changeActive = (value) => {
     cloudType.value = value;

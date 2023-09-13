@@ -199,9 +199,9 @@
 
             <div v-if="data.active == 1">
               <el-form-item label="集群类型">
-                <el-radio-group v-model="data.clusterForm.cloud_type">
-                  <el-radio-button label="2">自建集群</el-radio-button>
-                  <el-radio-button disabled label="1">标准集群</el-radio-button>
+                <el-radio-group v-model="data.clusterForm.cluster_type">
+                  <el-radio-button label="1">自建集群</el-radio-button>
+                  <el-radio-button disabled label="0">标准集群</el-radio-button>
                 </el-radio-group>
               </el-form-item>
               <div class="app-pixiu-describe" style="margin-top: -5px">
