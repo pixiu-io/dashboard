@@ -92,8 +92,8 @@
 
             <el-form-item label="实例数量" style="margin-top: 20px">
               <el-input-number
-                style="margin-top: 8px"
                 v-model="data.deploymentForm.spec.replicas"
+                style="margin-top: 8px"
                 :min="0"
                 @change="handleChange"
             /></el-form-item>
@@ -245,11 +245,6 @@ const backToContainer = () => {
 
 .el-main {
   background-color: #f3f4f7;
-}
-
-.app-pixiu-describe {
-  font-size: 10px;
-  color: #888888;
 }
 
 .app-pixiu-line-describe {
