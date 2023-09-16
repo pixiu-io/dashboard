@@ -168,14 +168,10 @@ const data = reactive({
 
 const labelPosition = ref('left');
 
-const checkKubeConfig = async () => {
+const comfirmCreate = async () => {
   if (data.clusterForm.kube_config.trim().length === 0) {
     return proxy.$message.error('未发现 Kubeconfig 文件，请完成上传后再进行操作');
   }
-};
-
-const comfirmCreate = async () => {
-  checkKubeConfig();
 
   try {
     const resp = await proxy.$http({
@@ -194,7 +190,9 @@ const cancelCreate = () => {
 };
 
 const connectKubernetes = async () => {
-  checkKubeConfig();
+  if (data.clusterForm.kube_config.trim().length === 0) {
+    return proxy.$message.error('未发现 Kubeconfig 文件，请完成上传后再进行操作');
+  }
 
   try {
     const resp = await proxy.$http({
