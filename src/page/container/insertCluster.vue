@@ -176,12 +176,13 @@ const comfirmCreate = async () => {
   try {
     const resp = await proxy.$http({
       method: 'post',
-      url: '/load/cloud',
-      data: fileFormData,
+      url: '/pixiu/clusters',
+      data: data.clusterForm,
     });
   } catch (error) {}
 
-  proxy.$message.success(`集群 ${data.clusterForm.name} 创建成功`);
+  proxy.$message.success(`Kubernetes 集群 ${data.clusterForm.alias_name} 创建成功`);
+
   backToContainer();
 };
 
