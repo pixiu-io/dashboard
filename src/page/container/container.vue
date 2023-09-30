@@ -317,7 +317,7 @@ const cloudTypes = {
 };
 
 const cloudTypeFormatter = (row, column, cellValue) => (
-  <div style="display:flex;align-items:center">
+  <div style="display:flex;align-items:center;font-size:12px">
     <el-space>
       <div>{cloudTypes[cellValue]}</div>
     </el-space>
@@ -342,11 +342,11 @@ const formatterResource = (row, column, cellValue) => {
   return (
     <div style="display:flex;flex-direction:column">
       <el-space>
-        <span style="font-weight:bold;font-size: 13px">CPU:</span>
+        <span style="font-weight:bold;font-size: 12px">CPU:</span>
         <span>{cellValue['cpu']}</span>
       </el-space>
       <el-space>
-        <span style="font-weight:bold;font-size: 13px">内存:</span>
+        <span style="font-weight:bold;font-size: 12px">内存:</span>
         <span>{cellValue['memory']}</span>
       </el-space>
     </div>
@@ -359,9 +359,11 @@ const formatterResource = (row, column, cellValue) => {
   margin-top: 20px;
   /* width: 480px; */
 }
+
 .el-main {
   background-color: #f3f4f7;
 }
+
 .app-docs {
   margin-top: 20px;
   height: 60px;
@@ -385,20 +387,6 @@ const formatterResource = (row, column, cellValue) => {
 
 .example-showcase .el-dropdown + .el-dropdown {
   margin-left: 15px;
-}
-
-.el-dropdown-link {
-  cursor: pointer;
-  color: #006eff;
-  display: flex;
-  font-size: 12px;
-  margin-top: 6px;
-}
-.dropdown-buttons {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
 }
 
 .dialog-footer button:first-child {
