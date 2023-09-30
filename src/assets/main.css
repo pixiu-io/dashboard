@@ -51,3 +51,35 @@
 .app-word-color {
   color: #006eff;
 }
+
+/* 列表内嵌样式 */
+.table-inline-word {
+  text-align: center;
+  font-size: 12px;
+  color: #000000e6;
+}
+
+.table-inline-btn {
+  border: none;
+  color: #006eff;
+  font-size: 12px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+/* 下拉按钮样式 */
+.el-dropdown-link {
+  cursor: pointer;
+  color: #006eff;
+  display: flex;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+/* 下拉后的按钮样式 */
+.dropdown-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
