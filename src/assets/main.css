@@ -51,3 +51,18 @@
 .app-word-color {
   color: #006eff;
 }
+
+/* 列表内嵌样式 */
+.table-inline-word {
+  text-align: center;
+  font-size: 12px;
+  color: #000000e6;
+}
+
+.table-inline-btn {
+  border: none;
+  color: #006eff;
+  font-size: 12px;
+  background-color: #fff;
+  cursor: pointer;
+}

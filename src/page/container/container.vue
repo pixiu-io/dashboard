@@ -176,12 +176,12 @@
           </el-table-column>
 
           <template #empty>
-            <div class="noResource">
-              没有任何容器集群
-
-              <button class="app-pixiu-btn--link" @click="cloudStore.createCloud">
-                [立即创建]
+            <div class="table-inline-word">
+              选择的该地区的集群列表为空，你可以
+              <button class="table-inline-btn" @click="cloudStore.createCloud">
+                [新建一个集群]
               </button>
+              ，或切换到其他地区
             </div>
           </template>
         </el-table>
@@ -407,19 +407,6 @@ const formatterResource = (row, column, cellValue) => {
   margin-right: 10px;
 }
 
-.app-pixiu-btn--link {
-  text-align: center;
-  height: auto;
-  padding: 0;
-  vertical-align: middle;
-  line-height: 1.5;
-  border: none;
-  color: #006eff;
-  margin-left: 2px;
-  background-color: #fff;
-  cursor: pointer;
-}
-
 .iconfont {
   font-family: 'iconfont' !important;
   font-size: 26px;
@@ -427,11 +414,5 @@ const formatterResource = (row, column, cellValue) => {
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-.noResource {
-  text-align: center;
-  font-size: 10px;
-  color: black;
 }
 </style>
