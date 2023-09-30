@@ -178,9 +178,7 @@
           <template #empty>
             <div class="table-inline-word">
               选择的该地区的集群列表为空，你可以
-              <button class="table-inline-btn" @click="cloudStore.createCloud">
-                [新建一个集群]
-              </button>
+              <button class="table-inline-btn" @click="cloudStore.createCloud">[新建]</button>
               ，或切换到其他地区
             </div>
           </template>
@@ -314,8 +312,8 @@ const cloudStatus = {
 };
 
 const cloudTypes = {
-  0: '标准',
-  1: '自建',
+  0: '标准集群',
+  1: '自建集群',
 };
 
 const cloudTypeFormatter = (row, column, cellValue) => (
