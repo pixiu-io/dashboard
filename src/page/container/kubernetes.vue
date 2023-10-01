@@ -1,6 +1,6 @@
 <template>
   <el-aside>
-    <div class="cloud-title-container">控制台</div>
+    <!-- <div class="cloud-title-container">控制台</div> -->
 
     <div class="namespace-title-container">集群</div>
     <div class="cloud-select-container">
@@ -8,12 +8,12 @@
         <el-option v-for="item in data.clouds" :key="item.id" :value="item.id" :label="item.id" />
       </el-select>
     </div>
-    <div class="namespace-title-container">命名空间</div>
+    <!-- <div class="namespace-title-container">命名空间</div>
     <div class="namespace-select-container">
       <el-select v-model="data.namespace" style="width: 80%" @change="changeNamespace">
         <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
       </el-select>
-    </div>
+    </div> -->
 
     <div class="app-title-container">应用中心</div>
     <el-menu
@@ -118,13 +118,13 @@ const data = reactive({
         },
       ],
     },
-    {
-      id: 7,
-      name: '监控中心',
-      icon: 'Monitor',
-      iconType: 'iconfont',
-      url: '/kubernetes/monitor',
-    },
+    // {
+    //   id: 7,
+    //   name: '监控中心',
+    //   icon: 'Monitor',
+    //   iconType: 'iconfont',
+    //   url: '/kubernetes/monitor',
+    // },
     {
       id: 5,
       name: 'Pixiu Shell',
@@ -257,7 +257,7 @@ onMounted(() => {
 
 .namespace-title-container {
   font-size: 15px;
-  margin-top: 6px;
+  margin-top: 10px;
   margin-left: 10px;
   margin-bottom: -10px;
   color: #4c4e58;
@@ -266,7 +266,7 @@ onMounted(() => {
 }
 
 .app-title-container {
-  margin-top: 10px;
+  margin-top: 4px;
   margin-left: 10px;
   font-size: 15px;
   color: #4c4e58;
