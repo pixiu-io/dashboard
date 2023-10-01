@@ -97,3 +97,14 @@
   align-items: center;
   justify-content: center;
 }
+
+/* 表格表头样式 */
+.pixiu-table-header {
+  font-size: 12px;
+}
+
+/* 表格内容 */
+.pixiu-table-formatter {
+  font-size: 12px;
+  color: #29292b;
+}

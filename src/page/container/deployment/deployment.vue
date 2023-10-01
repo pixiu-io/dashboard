@@ -40,14 +40,14 @@
         style="margin-top: 2px; width: 100%"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column prop="metadata.name" label="名称" width="300">
+        <el-table-column prop="metadata.name" label="名称" width="150">
           <template #default="scope">
             <el-link style="color: #006eff" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="Labels" width="300">
+        <el-table-column label="Labels" width="200">
           <template #default="scope">
             <el-popover
               v-if="scope.row.metadata.labels"
@@ -65,7 +65,7 @@
             <span v-else>-</span>
           </template>
         </el-table-column>
-        <el-table-column label="Selector" width="300">
+        <el-table-column label="Selector" width="200">
           <template #default="scope">
             <el-popover placement="right" width="auto" trigger="hover">
               <div v-for="(val, key) in scope.row.spec.selector.matchLabels" :key="key">
@@ -77,19 +77,8 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column label="镜像" width="300">
-          <template #default="scope">
-            <el-popover placement="right" width="auto" trigger="hover">
-              <div v-for="(val, key) in scope.row.spec.template.spec.containers" :key="key">
-                <el-tag style="margin: 5px 0px">{{ val.image }}</el-tag>
-              </div>
-              <template #reference>
-                <pixiu-tag :content="scope.row.spec.template.spec.containers[0]['image']" />
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column>
-        <el-table-column prop="" label="运行状态" width="150">
+
+        <el-table-column prop="" label="运行/期望Pod数量" width="150">
           <template #default="scope">
             <span class="span_point" :class="addReadyClass(scope.row)" />
             <span
@@ -103,6 +92,32 @@
             </span>
           </template>
         </el-table-column>
+
+        <el-table-column label="Resource" width="300">
+          <template #default="scope">
+            <el-popover placement="right" width="auto" trigger="hover">
+              <div v-for="(val, key) in scope.row.spec.template.spec.containers" :key="key">
+                <el-tag style="margin: 5px 0px">{{ val.image }}</el-tag>
+              </div>
+              <template #reference>
+                <pixiu-tag :content="scope.row.spec.template.spec.containers[0]['image']" />
+              </template>
+            </el-popover>
+          </template>
+        </el-table-column>
+
+        <!-- <el-table-column label="镜像" width="300">
+          <template #default="scope">
+            <el-popover placement="right" width="auto" trigger="hover">
+              <div v-for="(val, key) in scope.row.spec.template.spec.containers" :key="key">
+                <el-tag style="margin: 5px 0px">{{ val.image }}</el-tag>
+              </div>
+              <template #reference>
+                <pixiu-tag :content="scope.row.spec.template.spec.containers[0]['image']" />
+              </template>
+            </el-popover>
+          </template>
+        </el-table-column> -->
 
         <el-table-column fixed="right" label="操作" align="center" width="250">
           <template #default="scope">
