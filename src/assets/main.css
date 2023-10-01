@@ -7,32 +7,79 @@
   padding: 0;
 }
 
+*/* 通用创建按钮 */
 .pixiu-button {
   height: 35px;
   width: 115px;
   border-radius: 0%;
   color: white;
   border: none;
-  background-color: #0052d9;
+  background-color: #006eff;
   cursor: pointer;
 }
 
+/* 通用确认按钮 */
 .pixiu-confirm-button {
   height: 35px;
   width: 90px;
   border-radius: 0%;
   color: white;
   border: none;
-  background-color: #0052d9;
+  background-color: #006eff;
   cursor: pointer;
 }
 
+/* 通用取消按钮 */
 .pixiu-cancel-button {
   height: 35px;
   width: 90px;
   border-radius: 0%;
   border: 1px solid #cfd5de;
-  color: #0052d9;
+  color: #006eff;
   background-color: white;
   cursor: pointer;
+}
+
+/* 通用注释说明样式 */
+.app-pixiu-describe {
+  margin-left: 120px;
+  font-size: 12px;
+  color: #888888;
+}
+
+/* 通用字体颜色 */
+.app-word-color {
+  color: #006eff;
+}
+
+/* 列表内嵌样式 */
+.table-inline-word {
+  text-align: center;
+  font-size: 12px;
+  color: #000000e6;
+}
+
+.table-inline-btn {
+  border: none;
+  color: #006eff;
+  font-size: 12px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+/* 下拉按钮样式 */
+.el-dropdown-link {
+  cursor: pointer;
+  color: #006eff;
+  display: flex;
+  font-size: 12px;
+  margin-top: 6px;
+}
+
+/* 下拉后的按钮样式 */
+.dropdown-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }

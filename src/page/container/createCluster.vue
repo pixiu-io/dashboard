@@ -694,12 +694,6 @@ const backToContainer = () => {
   margin-left: 4px;
 }
 
-.app-pixiu-describe {
-  margin-left: 140px;
-  font-size: 12px;
-  color: #888888;
-}
-
 .app-node-add-class {
   line-height: 50px;
   border: 1px dashed #ddd;
