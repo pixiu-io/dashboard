@@ -38,6 +38,7 @@
         :data="data.deploymentList"
         stripe
         style="margin-top: 2px; width: 100%"
+        header-row-class-name="pixiu-table-header"
         @selection-change="handleSelectionChange"
       >
         <el-table-column prop="metadata.name" label="名称" width="150">

@@ -236,7 +236,7 @@ onMounted(() => {
 
 <style scoped="scoped">
 .cloud-title-container {
-  font-size: 16px;
+  font-size: 8px;
   color: #4c4e58;
   padding-left: 20px;
   height: 50px;
