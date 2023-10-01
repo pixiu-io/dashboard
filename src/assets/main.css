@@ -18,6 +18,20 @@
   cursor: pointer;
 }
 
+/* 2个字的创建样式 */
+.pixiu-two-button {
+  height: 31px;
+  min-width: 25px;
+  width: 75px;
+  border-radius: 0%;
+  font-size: 12px;
+  color: #fff;
+  text-align: center;
+  border: none;
+  background-color: #006eff;
+  cursor: pointer;
+}
+
 /* 通用确认按钮 */
 .pixiu-confirm-button {
   height: 35px;

@@ -6,7 +6,7 @@
   <div style="margin-top: 25px">
     <el-row>
       <el-col>
-        <button class="pixiu-button" @click="createDeployment">新建</button>
+        <button class="pixiu-two-button" @click="createDeployment">新建</button>
         <el-input
           v-model="data.pageInfo.query"
           placeholder="名称搜索关键字"
