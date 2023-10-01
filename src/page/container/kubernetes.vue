@@ -21,7 +21,7 @@
       background-color="#f6f7fb"
       text-color="#000"
       router
-      class="el-menu-vertical-no-collapse"
+      class="el-menu-vertical-no-collapse deployment-container"
     >
       <pixiu-menu :items="data.items" />
     </el-menu>
@@ -247,6 +247,11 @@ onMounted(() => {
   border-bottom: 1px rgba(0, 0, 0, 0.1) solid;
 }
 
+.deployment-container {
+  --el-menu-item-height: 48px;
+  --el-menu-sub-item-height: calc(var(--el-menu-item-height) - 6px);
+}
+
 .cloud-select-container {
   height: 60px;
   display: flex;
@@ -266,7 +271,7 @@ onMounted(() => {
 }
 
 .app-title-container {
-  margin-top: 4px;
+  margin-top: 18px;
   margin-left: 10px;
   font-size: 15px;
   color: #4c4e58;
