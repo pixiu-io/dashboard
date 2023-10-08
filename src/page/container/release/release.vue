@@ -105,7 +105,9 @@
         </el-table-column>
 
         <template #empty>
-          <div class="noResource">选择的该命名空间的列表为空，可以切换到其他命名空间进行查看</div>
+          <div class="table-inline-word">
+            选择的该命名空间的列表为空，可以切换到其他命名空间进行查看
+          </div>
         </template>
       </el-table>
 
@@ -257,12 +259,5 @@ function parseTime(time, cFormat) {
 <style scoped="scoped">
 .box-card {
   margin-top: 20px;
-}
-
-.noResource {
-  text-align: center;
-  color: #ababab;
-  font-size: 10px;
-  color: black;
 }
 </style>
