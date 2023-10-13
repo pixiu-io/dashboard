@@ -33,7 +33,7 @@ const useLoginStore = defineStore('login', () => {
   };
   const forgetFn = () => {
     ElMessage({
-      message: '忘记密码，请联系管理员',
+      message: '无法登录，请联系管理员',
       type: 'error',
     });
   };

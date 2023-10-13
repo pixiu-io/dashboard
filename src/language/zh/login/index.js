@@ -4,5 +4,5 @@ export default {
   password: '请输入密码',
   switch_language: 'SwitchLanguage',
   login: '登录',
-  forget: '忘记密码',
+  forget: '无法登录？',
 };
