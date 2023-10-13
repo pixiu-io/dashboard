@@ -156,7 +156,6 @@ const loginStore = useLoginStore();
   width: 100%;
   height: 100%;
   animation: background 2s;
-  background: url('@/assets/images/天气之子.png') no-repeat center;
-  background-size: cover;
+  background: #f6f6f6 url('@/assets/images/whale.jpg') no-repeat center;
 }
 </style>
