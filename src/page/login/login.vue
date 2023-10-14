@@ -4,7 +4,6 @@
       <div class="login-background"></div>
       <div class="login-form-box">
         <p class="login-title">多云管理平台</p>
-        <!-- <p class="login-sub-title">登 录</p> -->
         <el-form
           :ref="(el) => (loginStore.loginFormRef = el)"
           :model="loginStore.loginInfo"
@@ -18,7 +17,6 @@
               clearable
               maxlength="128"
               size="large"
-              color="black"
               @keyup.enter="loginStore.loginFn"
             >
               <template #prefix>
