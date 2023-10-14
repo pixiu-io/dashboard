@@ -1,10 +1,10 @@
 <template>
   <div class="login-page">
     <div class="login-container">
+      <div class="login-background"></div>
       <div class="login-form-box">
         <p class="login-title">多云管理平台</p>
-        <p class="login-sub-title">登 录</p>
-
+        <!-- <p class="login-sub-title">登 录</p> -->
         <el-form
           :ref="(el) => (loginStore.loginFormRef = el)"
           :model="loginStore.loginInfo"
@@ -18,6 +18,7 @@
               clearable
               maxlength="128"
               size="large"
+              color="black"
               @keyup.enter="loginStore.loginFn"
             >
               <template #prefix>
@@ -54,14 +55,12 @@
         >
           {{ $t(`login.login`) }}</el-button
         >
-
         <div class="link">
           <el-button type="text" size="small" @click="loginStore.forgetFn">
             {{ $t(`login.forget`) }}
           </el-button>
         </div>
       </div>
-      <div class="login-background"></div>
     </div>
   </div>
 </template>
@@ -76,7 +75,7 @@ const loginStore = useLoginStore();
 </script>
 
 <style scoped>
-@keyframes login-box {
+@keyframes bg-background {
   0% {
     left: -400px;
   }
@@ -90,7 +89,7 @@ const loginStore = useLoginStore();
   }
 }
 
-@keyframes background {
+@keyframes login-box {
   0% {
     opacity: 0;
   }
@@ -119,21 +118,30 @@ const loginStore = useLoginStore();
   border-radius: 10px;
 }
 
+.login-container .login-background {
+  display: flex;
+  width: 450px;
+  height: 100%;
+  animation: bg-background 2s;
+  background: #f6f6f6 url('@/assets/images/whale.jpg') no-repeat center;
+}
+
 .login-container .login-form-box {
   position: relative;
   display: flex;
   flex-direction: column;
-  width: calc(400px - 60px);
-  height: calc(100% - 128px);
   background-color: white;
-  padding: 64px;
+  overflow: hidden;
+  padding: 64px 154px 64px 154px;
+  width: calc(1000px - 650px);
+  height: calc(100%-128px);
   animation: login-box 2s;
 }
 
 .login-container .login-form-box .login-title {
   display: flex;
   justify-content: center;
-  margin: 0 0 40px 0;
+  margin: 0 0 90px 0;
   font-size: 32px;
 }
 
@@ -149,13 +157,5 @@ const loginStore = useLoginStore();
   bottom: 0;
   left: 0;
   margin: 10px;
-}
-
-.login-container .login-background {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  animation: background 2s;
-  background: #f6f6f6 url('@/assets/images/whale.jpg') no-repeat center;
 }
 </style>
