@@ -16,7 +16,7 @@
       <pixiu-header />
     </el-header>
 
-    <el-container>
+    <el-container style="height: calc(100vh - 50px)">
       <!-- 左边侧边栏 -->
       <el-aside>
         <el-col style="height: 100%" @mouseenter="mouseEnter" @mouseleave="mouseLeave">
