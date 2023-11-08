@@ -1,5 +1,5 @@
 <template>
-  <el-aside>
+  <el-aside style="overflow-x: hidden">
     <!-- <div class="cloud-title-container">控制台</div> -->
 
     <div class="namespace-title-container">集群</div>
