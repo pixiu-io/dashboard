@@ -100,14 +100,15 @@
           :data="cloudStore.cloudList"
           stripe
           style="margin-top: 2px; width: 100%"
+          header-row-class-name="pixiu-table-header"
           @selection-change="handleSelectionChange"
         >
           <!-- <el-table-column type="selection" width="38" /> -->
 
-          <el-table-column prop="name" label="名称/ID" width="200">
+          <el-table-column prop="name" label="名称/ID" width="180">
             <template #default="scope">
               <el-link
-                style="color: #006eff"
+                style="color: #006eff; font-size: 12px"
                 type="primary"
                 @click="cloudStore.jumpRoute(scope.row)"
               >
@@ -116,28 +117,33 @@
             </template>
           </el-table-column>
 
-          <!-- <el-table-column
+          <el-table-column
             :formatter="cloudStatusFormatter"
             prop="status"
             label="状态"
-            width="160"
-          /> -->
+            width="120"
+          />
 
           <el-table-column
             :formatter="cloudTypeFormatter"
             prop="cluster_type"
             label="集群类型"
-            width="180"
+            width="160"
           />
-          <el-table-column prop="kubernetes_version" width="200">
+          <el-table-column prop="kubernetes_version" width="180" :formatter="cloudVersionFormatter">
             <template #header>
               <Icon icon="QuestionFilled" desc="原生 kubernetes 的版本"> kubernetes版本 </Icon>
             </template>
           </el-table-column>
-          <el-table-column prop="nodes" label="节点数" width="200" />
+          <el-table-column
+            prop="nodes"
+            label="节点数"
+            width="180"
+            :formatter="cloudNodeFormatter"
+          />
           <el-table-column prop="resources" label="资源量" :formatter="formatterResource" />
 
-          <el-table-column fixed="right" label="操作" width="200">
+          <el-table-column fixed="right" label="操作" width="170">
             <template #default="scope">
               <el-button
                 v-permissions="'user:cloud:setting'"
@@ -317,26 +323,50 @@ const cloudTypes = {
 };
 
 const cloudTypeFormatter = (row, column, cellValue) => (
-  <div style="display:flex;align-items:center;font-size:12px">
+  <div class="pixiu-table-formatter">
     <el-space>
       <div>{cloudTypes[cellValue]}</div>
     </el-space>
   </div>
 );
 
-// const cloudStatusFormatter = (row, column, cellValue) => (
-//   <div style="display:flex;align-items:center">
-//     <el-space size={8}>
-//       <pixiu-icon
-//         size="25px"
-//         name={cloudStatus[cellValue].icon}
-//         type="iconfont"
-//         color={cloudStatus[cellValue].color}
-//       ></pixiu-icon>
-//       <div>{cloudStatus[cellValue].text}</div>
-//     </el-space>
-//   </div>
-// );
+const cloudVersionFormatter = (row, column, cellValue) => (
+  <div class="pixiu-table-formatter">
+    <el-space>
+      <div>{cellValue}</div>
+    </el-space>
+  </div>
+);
+
+const cloudNodeFormatter = (row, column, cellValue) => (
+  <div class="pixiu-table-formatter">
+    <el-space>
+      <div>{cellValue}台(全部正常)</div>
+    </el-space>
+  </div>
+);
+
+const cloudStatusFormatter = (row, column, cellValue) => (
+  <div class="pixiu-table-formatter">
+    <el-space>
+      <div>运行中</div>
+    </el-space>
+  </div>
+);
+
+const cloudStatus2Formatter = (row, column, cellValue) => (
+  <div style="display:flex;align-items:center">
+    <el-space size={8}>
+      <pixiu-icon
+        size="25px"
+        name={cloudStatus[cellValue].icon}
+        type="iconfont"
+        color={cloudStatus[cellValue].color}
+      ></pixiu-icon>
+      <div>{cloudStatus[cellValue].text}</div>
+    </el-space>
+  </div>
+);
 
 const formatterResource = (row, column, cellValue) => {
   return (
