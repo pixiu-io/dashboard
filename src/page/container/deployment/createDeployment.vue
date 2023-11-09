@@ -51,7 +51,7 @@
                 <el-col class="deploy-pixiu-column"
                   >容器名称
                   <el-input
-                    v-model="data.deploymentForm.spec.template.metadata.containers[0].name"
+                    v-model="data.deploymentForm.spec.template.metadata.containers"
                     class="deploy-pixiu-incard"
                     style="margin-left: 30px"
                   />
@@ -60,7 +60,7 @@
                 <el-col style="margin-top: 10px" class="deploy-pixiu-column"
                   >镜像
                   <el-input
-                    v-model="data.deploymentForm.spec.template.metadata.containers[0].image"
+                    v-model="data.deploymentForm.spec.template.metadata.containers"
                     style="margin-left: 56px"
                     class="deploy-pixiu-incard"
                   />
@@ -69,7 +69,7 @@
                 <el-col style="margin-top: 10px" class="deploy-pixiu-column"
                   >拉取策略
                   <el-radio-group
-                    v-model="data.deploymentForm.spec.template.metadata.containers[0].pullpolicy"
+                    v-model="data.deploymentForm.spec.template.metadata.containers"
                     style="margin-left: 30px"
                   >
                     <el-radio-button label="IfNotPresent">IfNotPresent</el-radio-button>
@@ -93,7 +93,7 @@
             <div class="app-pixiu-line-describe" style="margin-top: -10px">Deployment 副本设置</div>
 
             <div style="margin-top: 30px" />
-            <el-form-item style="margin-left: 25%">
+            <el-form-item style="margin-left: 30%">
               <el-button class="pixiu-cancel-button" @click="cancelCreate()">取消</el-button>
               <el-button class="pixiu-confirm-button" type="primary" @click="comfirmCreate()"
                 >确定</el-button
@@ -127,7 +127,7 @@ const data = reactive({
       namespace: '',
     },
     spec: {
-      replicas: 0,
+      replicas: 1,
       selector: {
         matchLabels: {
           app: 'nginx',
@@ -249,13 +249,13 @@ const backToContainer = () => {
 .app-pixiu-line-describe {
   margin-left: 120px;
   margin-top: -18px;
-  font-size: 10px;
+  font-size: 12px;
   color: #888888;
 }
 
 .app-pixiu-line-describe2 {
   margin-left: 2px;
-  font-size: 10px;
+  font-size: 12px;
   color: #888888;
 }
 
@@ -284,7 +284,7 @@ const backToContainer = () => {
 
 .container-line-describe {
   margin-left: 90px;
-  font-size: 10px;
+  font-size: 12px;
   color: #888888;
 }
 </style>
