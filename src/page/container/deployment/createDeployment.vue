@@ -11,8 +11,8 @@
             <div style="margin-top: 20px" />
             <el-form-item label="名称" style="width: 500px">
               <el-input v-model="data.deploymentForm.metadata.name" />
-              <div class="app-pixiu-describe">
-                最长63个字符，只能包含小写字母、数字及分隔符(“-")
+              <div class="app-pixiu-line-describe2">
+                最长63个字符，只能包含小写字母、数字及分隔符("-")
               </div>
             </el-form-item>
 
@@ -46,39 +46,32 @@
 
             <el-form-item style="margin-top: -35px">
               <el-card
-                style="width: 90%; height: 210px; background-color: #f2f2f2; margin-top: 20px"
+                style="width: 90%; height: 185px; background-color: #f2f2f2; margin-top: 20px"
               >
-                <el-col style="margin-top: -10px"
-                  >名称
+                <el-col class="deploy-pixiu-column"
+                  >容器名称
                   <el-input
-                    v-model="data.containers.name"
+                    v-model="data.deploymentForm.spec.template.metadata.containers"
                     class="deploy-pixiu-incard"
-                    style="margin-left: 60px"
-                    placeholder="请输入容器的名称"
+                    style="margin-left: 30px"
                   />
                 </el-col>
 
-                <el-col style="margin-top: 10px"
+                <el-col style="margin-top: 10px" class="deploy-pixiu-column"
                   >镜像
                   <el-input
-                    v-model="data.containers.image"
-                    style="margin-left: 60px"
+                    v-model="data.deploymentForm.spec.template.metadata.containers"
+                    style="margin-left: 56px"
                     class="deploy-pixiu-incard"
                   />
                 </el-col>
 
-                <el-col style="margin-top: 10px"
-                  >镜像版本
-                  <el-input
-                    v-model="data.containers.image"
-                    class="deploy-pixiu-incard"
-                    style="margin-left: 32px"
-                  />
-                </el-col>
-
-                <el-col style="margin-top: 10px"
+                <el-col style="margin-top: 10px" class="deploy-pixiu-column"
                   >拉取策略
-                  <el-radio-group v-model="data.containers.pullpolicy" style="margin-left: 30px">
+                  <el-radio-group
+                    v-model="data.deploymentForm.spec.template.metadata.containers"
+                    style="margin-left: 30px"
+                  >
                     <el-radio-button label="IfNotPresent">IfNotPresent</el-radio-button>
                     <el-radio-button label="Always">Always</el-radio-button>
                     <el-radio-button label="Never">Never</el-radio-button>
@@ -97,14 +90,14 @@
                 :min="0"
                 @change="handleChange"
             /></el-form-item>
-            <div class="app-pixiu-line-describe" style="margin-top: -10px">
-              Deployment replicas 设置
-            </div>
+            <div class="app-pixiu-line-describe" style="margin-top: -10px">Deployment 副本设置</div>
 
-            <div style="margin-top: 40px" />
-            <el-form-item>
-              <el-button type="primary" @click="comfirmCreate()">完成</el-button>
-              <el-button @click="cancelCreate()">取消</el-button>
+            <div style="margin-top: 30px" />
+            <el-form-item style="margin-left: 30%">
+              <el-button class="pixiu-cancel-button" @click="cancelCreate()">取消</el-button>
+              <el-button class="pixiu-confirm-button" type="primary" @click="comfirmCreate()"
+                >确定</el-button
+              >
             </el-form-item>
           </el-form>
         </el-card>
@@ -127,32 +120,33 @@ const data = reactive({
   autosize: {
     minRows: 5,
   },
-
-  containers: {
-    name: '',
-    image: '',
-    pullpolicy: 'IfNotPresent',
-  },
-
+  // deployment 创建初始对象
   deploymentForm: {
-    kind: 'Deployment',
-    apiVersion: 'apps/v1',
     metadata: {
       name: '',
-      namespace: 'default',
-      labels: ref([]),
+      namespace: '',
     },
     spec: {
       replicas: 1,
       selector: {
-        matchLabels: {},
+        matchLabels: {
+          app: 'nginx',
+        },
       },
       template: {
         metadata: {
-          labels: {},
+          labels: {
+            app: 'nginx',
+          },
         },
         spec: {
-          containers: [],
+          containers: [
+            {
+              name: '',
+              image: '',
+              imagePullPolicy: '',
+            },
+          ],
         },
       },
     },
@@ -164,15 +158,20 @@ const handleChange = (value) => {
 };
 
 const comfirmCreate = async () => {
+  console.log(data.deploymentForm);
+
   try {
     const resp = await proxy.$http({
       method: 'post',
-      url: `/proxy/pixiu/${data.cluser}/api/v1/namespaces`,
-      data: fileFormData,
+      url:
+        `/proxy/pixiu/${data.cluser}/apis/apps/v1/namespaces/` +
+        data.deploymentForm.metadata.namespace +
+        `/deployments`,
+      data: data.deploymentForm,
     });
   } catch (error) {}
 
-  proxy.$message.success(`集群 ${data.clusterForm.name} 导入成功`);
+  proxy.$message.success(`deployment ${data.deploymentForm.name} 创建成功`);
   backToContainer();
 };
 
@@ -250,13 +249,14 @@ const backToContainer = () => {
 .app-pixiu-line-describe {
   margin-left: 120px;
   margin-top: -18px;
-  font-size: 10px;
+  font-size: 12px;
   color: #888888;
 }
 
-.app-action-btn {
-  color: #006eff;
+.app-pixiu-line-describe2 {
+  margin-left: 2px;
   font-size: 12px;
+  color: #888888;
 }
 
 .title-card-container {
@@ -273,14 +273,18 @@ const backToContainer = () => {
   vertical-align: middle;
 }
 
+.deploy-pixiu-column {
+  font-size: 13px;
+  color: #606266;
+}
+
 .deploy-pixiu-incard {
-  width: 200px;
-  margin-left: 5px;
+  width: 260px;
 }
 
 .container-line-describe {
-  margin-left: 95px;
-  font-size: 10px;
+  margin-left: 90px;
+  font-size: 12px;
   color: #888888;
 }
 </style>

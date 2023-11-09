@@ -7,7 +7,7 @@
   padding: 0;
 }
 
-*/* 通用创建按钮 */
+/* 通用创建按钮 */
 .pixiu-button {
   height: 35px;
   width: 115px;
@@ -107,4 +107,10 @@
 .pixiu-table-formatter {
   font-size: 12px;
   color: #29292b;
+}
+
+/* 表单内通用按钮样式 */
+.app-action-btn {
+  color: #006eff;
+  font-size: 12px;
 }
