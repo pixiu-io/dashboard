@@ -3,11 +3,14 @@
     <div class="font-container">创建 Deployment</div>
   </el-card>
 
-  <div style="display: flex; flex-direction: column; width: 100%; height: 100%">
+  <div
+    class="deployee-class"
+    style="display: flex; flex-direction: column; width: 100%; height: 100%"
+  >
     <el-main>
       <div class="app-pixiu-content-card">
-        <el-card style="margin-top: 16px; width: 100%">
-          <el-form :label-position="labelPosition" label-width="120px">
+        <el-card style="margin-top: 8px; width: 100%; border-radius: 0px">
+          <el-form label-position="left" label-width="100px" style="margin-left: 3%; width: 80%">
             <div style="margin-top: 20px" />
             <el-form-item label="名称" style="width: 500px">
               <el-input v-model="data.deploymentForm.metadata.name" />
@@ -33,6 +36,7 @@
             </el-form-item>
 
             <div style="margin-top: 20px" />
+
             <el-form-item label="Labels">
               <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button>
             </el-form-item>
@@ -41,17 +45,32 @@
             </div>
 
             <el-form-item label="容器配置" style="margin-top: 20px">
-              <el-button type="text" class="app-action-btn" @click="addLabel">增加容器</el-button>
+              <el-button type="text" class="app-action-btn" @click="addContainer"
+                >增加容器</el-button
+              >
             </el-form-item>
 
-            <el-form-item style="margin-top: -35px">
+            <el-form-item
+              v-for="(item, index) in data.deploymentForm.spec.template.spec.containers"
+              :key="index"
+              style="margin-top: -20px"
+            >
               <el-card
-                style="width: 90%; height: 185px; background-color: #f2f2f2; margin-top: 20px"
+                style="
+                  width: 90%;
+                  height: 185px;
+                  background-color: #f2f2f2;
+                  margin-top: 20px;
+                  border-radius: 0px;
+                "
               >
+                <div style="float: right; cursor: pointer" @click="deleteContainer(index)">
+                  <el-icon><Delete /></el-icon>
+                </div>
                 <el-col class="deploy-pixiu-column"
                   >容器名称
                   <el-input
-                    v-model="data.deploymentForm.spec.template.metadata.containers"
+                    v-model="item.name"
                     class="deploy-pixiu-incard"
                     style="margin-left: 30px"
                   />
@@ -60,7 +79,7 @@
                 <el-col style="margin-top: 10px" class="deploy-pixiu-column"
                   >镜像
                   <el-input
-                    v-model="data.deploymentForm.spec.template.metadata.containers"
+                    v-model="item.image"
                     style="margin-left: 56px"
                     class="deploy-pixiu-incard"
                   />
@@ -68,13 +87,10 @@
 
                 <el-col style="margin-top: 10px" class="deploy-pixiu-column"
                   >拉取策略
-                  <el-radio-group
-                    v-model="data.deploymentForm.spec.template.metadata.containers"
-                    style="margin-left: 30px"
-                  >
-                    <el-radio-button label="IfNotPresent">IfNotPresent</el-radio-button>
-                    <el-radio-button label="Always">Always</el-radio-button>
-                    <el-radio-button label="Never">Never</el-radio-button>
+                  <el-radio-group v-model="item.imagePullPolicy" style="margin-left: 30px">
+                    <el-radio label="IfNotPresent" border>IfNotPresent</el-radio>
+                    <el-radio label="Always" border>Always</el-radio>
+                    <el-radio label="Never" border>Never</el-radio>
                   </el-radio-group>
                   <div class="container-line-describe">
                     设置镜像拉取策略，默认使用 IfNotPresent 策略
@@ -88,6 +104,7 @@
                 v-model="data.deploymentForm.spec.replicas"
                 style="margin-top: 8px"
                 :min="0"
+                size="small"
                 @change="handleChange"
             /></el-form-item>
             <div class="app-pixiu-line-describe" style="margin-top: -10px">Deployment 副本设置</div>
@@ -124,7 +141,7 @@ const data = reactive({
   deploymentForm: {
     metadata: {
       name: '',
-      namespace: '',
+      namespace: 'default',
     },
     spec: {
       replicas: 1,
@@ -144,7 +161,7 @@ const data = reactive({
             {
               name: '',
               image: '',
-              imagePullPolicy: '',
+              imagePullPolicy: 'IfNotPresent',
             },
           ],
         },
@@ -172,7 +189,7 @@ const comfirmCreate = async () => {
   } catch (error) {}
 
   proxy.$message.success(`deployment ${data.deploymentForm.name} 创建成功`);
-  backToContainer();
+  // backToContainer();
 };
 
 const cancelCreate = () => {
@@ -224,6 +241,18 @@ const addLabel = () => {
   });
 };
 
+const addContainer = () => {
+  data.deploymentForm.spec.template.spec.containers.push({
+    name: '',
+    image: '',
+    imagePullPolicy: 'IfNotPresent',
+  });
+};
+
+const deleteContainer = (index) => {
+  data.deploymentForm.spec.template.spec.containers.splice(index, 1);
+};
+
 // 回到 container 页面
 const backToContainer = () => {
   proxy.$router.push({
@@ -232,7 +261,7 @@ const backToContainer = () => {
 };
 </script>
 
-<style scoped="scoped">
+<style>
 .box-card {
   margin-top: 20px;
 }
@@ -242,12 +271,12 @@ const backToContainer = () => {
   justify-content: space-around;
 }
 
-.el-main {
+.deployee-class .el-main {
   background-color: #f3f4f7;
 }
 
 .app-pixiu-line-describe {
-  margin-left: 120px;
+  margin-left: 100px;
   margin-top: -18px;
   font-size: 12px;
   color: #888888;
@@ -264,6 +293,7 @@ const backToContainer = () => {
   margin-top: -20px;
   margin-left: -20px;
   margin-right: -20px;
+  border-radius: 0px;
 }
 
 .font-container {
@@ -279,12 +309,38 @@ const backToContainer = () => {
 }
 
 .deploy-pixiu-incard {
-  width: 260px;
+  /* width: 323px; */
+  width: 53%;
 }
 
 .container-line-describe {
   margin-left: 90px;
   font-size: 12px;
   color: #888888;
+}
+
+.deployee-class .el-radio {
+  background-color: white;
+  border-radius: 0;
+  margin-right: 0;
+  width: 99px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.deployee-class .el-radio.is-bordered.is-checked {
+  border-color: blue; /* 颜色待定 */
+}
+
+.deployee-class .el-radio__input.is-checked + .el-radio__label {
+  color: blue; /* 颜色待定 */
+}
+
+.deployee-class .el-radio__label {
+  font-size: 13px;
+}
+
+.deployee-class .el-radio__inner {
+  display: none;
 }
 </style>
