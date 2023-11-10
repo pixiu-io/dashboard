@@ -1,6 +1,6 @@
 <template>
   <el-main>
-    <el-card style="margin-top: -20px; margin-left: -20px; margin-right: -20px">
+    <el-card style="margin-top: -20px; margin-left: -20px; margin-right: -20px; border-radius: 0px">
       <el-row>
         <el-col>
           <span style="font-weight: bold; font-size: 18px; vertical-align: middle">
@@ -388,6 +388,7 @@ const formatterResource = (row, column, cellValue) => {
 .box-card {
   margin-top: 20px;
   /* width: 480px; */
+  border-radius: 0px;
 }
 
 .el-main {
