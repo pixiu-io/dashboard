@@ -32,7 +32,13 @@
                     :label="item"
                   />
                 </el-select>
-    
+              </div>
+            </el-form-item>
+
+            <el-form-item label="Labels" style="margin-top: 20px">
+              <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button>
+            </el-form-item>
+
             <el-form-item
               v-for="(item, index) in data.deploymentLabels"
               :key="index"
@@ -65,7 +71,7 @@
             <el-form-item
               v-for="(item, index) in data.deploymentForm.spec.template.spec.containers"
               :key="index"
-              style="margin-top: -20px"
+              style="margin-top: -25px"
             >
               <el-card
                 style="
@@ -206,7 +212,7 @@ const comfirmCreate = async () => {
     });
   } catch (error) {}
 
-
+  proxy.$message.success(`deployment ${data.deploymentForm.metadata.name} 创建成功`);
   // backToContainer();
 };
 
@@ -264,6 +270,8 @@ const addContainer = () => {
     imagePullPolicy: 'IfNotPresent',
   });
 };
+
+const deleteContainer = (index) => {
   data.deploymentForm.spec.template.spec.containers.splice(index, 1);
 };
 
