@@ -10,7 +10,7 @@
         <el-input
           v-model="data.pageInfo.query"
           placeholder="名称搜索关键字"
-          style="width: 420px; float: right"
+          style="width: 480px; float: right"
           clearable
           @input="getDeployments"
           @clear="getDeployments"
@@ -24,7 +24,7 @@
 
         <el-select
           v-model="data.namespace"
-          style="width: 160px; float: right; margin-right: 10px"
+          style="width: 200px; float: right; margin-right: 10px"
           @change="changeNamespace"
         >
           <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
@@ -41,31 +41,23 @@
         header-row-class-name="pixiu-table-header"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column prop="metadata.name" label="名称" width="180">
+        <el-table-column type="selection" width="30" />
+
+        <el-table-column prop="metadata.name" sortable label="名称" width="180">
           <template #default="scope">
-            <el-link style="color: #006eff" type="primary" @click="jumpRoute(scope.row)">
+            <el-link style="color: #3377ff" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="Labels" width="150">
-          <template #default="scope">
-            <el-popover
-              v-if="scope.row.metadata.labels"
-              placement="right"
-              width="auto"
-              trigger="hover"
-            >
-              <div v-for="(val, key) in scope.row.metadata.labels" :key="key">
-                <el-tag style="margin: 5px 0px">{{ key + '=' + val }}</el-tag>
-              </div>
-              <template #reference>
-                <pixiu-tag :content="formatFirst(scope.row.metadata.labels)" />
-              </template>
-            </el-popover>
-            <span v-else>-</span>
-          </template>
-        </el-table-column>
+
+        <el-table-column
+          prop="spec.template.metadata.labels"
+          label="Labels"
+          width="150"
+          :formatter="formatterLabels"
+        />
+
         <el-table-column label="Selector" width="150">
           <template #default="scope">
             <el-popover placement="right" width="auto" trigger="hover">
@@ -107,19 +99,6 @@
           </template>
         </el-table-column>
 
-        <!-- <el-table-column label="镜像" width="300">
-          <template #default="scope">
-            <el-popover placement="right" width="auto" trigger="hover">
-              <div v-for="(val, key) in scope.row.spec.template.spec.containers" :key="key">
-                <el-tag style="margin: 5px 0px">{{ val.image }}</el-tag>
-              </div>
-              <template #reference>
-                <pixiu-tag :content="scope.row.spec.template.spec.containers[0]['image']" />
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column> -->
-
         <el-table-column fixed="right" label="操作" width="180">
           <template #default="scope">
             <el-button
@@ -134,7 +113,7 @@
             <el-button
               type="text"
               size="small"
-              style="margin-right: 2px; color: #006eff"
+              style="margin-right: 1px; color: #006eff"
               @click="handleDeploymentScaleDialog(scope.row)"
             >
               调整副本数
@@ -184,6 +163,7 @@
     <template #header>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">调整副本配置</div>
     </template>
+
     <el-form label-width="100px" style="max-width: 300px">
       <el-form-item label="原副本数">
         <el-input v-model="data.deploymentRepcliasFrom.origin" disabled />
@@ -193,10 +173,16 @@
       </el-form-item>
     </el-form>
 
+    <div style="margin-top: -18px"></div>
+
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="closeDeploymentScaleDialog">取消</el-button>
-        <el-button type="primary" @click="confirmDeploymentScale">确认</el-button>
+        <el-button class="pixiu-small-cancel-button" @click="closeDeploymentScaleDialog"
+          >取消</el-button
+        >
+        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmDeploymentScale"
+          >确认</el-button
+        >
       </span>
     </template>
   </el-dialog>
@@ -304,6 +290,7 @@ function addReadyClass(row) {
   }
   return 'span_pending';
 }
+
 const deleteDeployment = (row) => {
   ElMessageBox.confirm(
     '此操作将永久删除 Deployment ' + row.metadata.name + ' . 是否继续?',
@@ -374,14 +361,11 @@ function formatFirst(labels) {
     return `${key}=${labels[key]}`;
   }
 }
+
+const formatterLabels = (row, column, cellValue) => {};
 </script>
 
 <style scoped="scoped">
-.box-card {
-  margin-top: 20px;
-  /* width: 480px; */
-}
-
 .span_point {
   align-items: center;
   border-radius: 50%;

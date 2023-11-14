@@ -35,10 +35,28 @@
               </div>
             </el-form-item>
 
-            <div style="margin-top: 20px" />
-
-            <el-form-item label="Labels">
+            <el-form-item label="Labels" style="margin-top: 20px">
               <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button>
+            </el-form-item>
+
+            <el-form-item
+              v-for="(item, index) in data.deploymentLabels"
+              :key="index"
+              style="margin-top: -15px"
+            >
+              <div>
+                <el-input v-model="item.key" placeholder="标签键" style="width: 200px" />
+              </div>
+              <div style="margin-right: 10px; margin-left: 10px"></div>
+              <div>
+                <el-input v-model="item.value" placeholder="标签值" style="width: 200px" />
+              </div>
+              <div
+                style="float: right; cursor: pointer; margin-left: 10px"
+                @click="deleteLabel(index)"
+              >
+                <el-icon><Delete /></el-icon>
+              </div>
             </el-form-item>
             <div class="app-pixiu-line-describe">
               标签键值以字母、数字开头和结尾, 且只能包含字母、数字及分隔符.
@@ -53,7 +71,7 @@
             <el-form-item
               v-for="(item, index) in data.deploymentForm.spec.template.spec.containers"
               :key="index"
-              style="margin-top: -20px"
+              style="margin-top: -25px"
             >
               <el-card
                 style="
@@ -137,6 +155,9 @@ const data = reactive({
   autosize: {
     minRows: 5,
   },
+
+  deploymentLabels: [],
+
   // deployment 创建初始对象
   deploymentForm: {
     metadata: {
@@ -146,15 +167,11 @@ const data = reactive({
     spec: {
       replicas: 1,
       selector: {
-        matchLabels: {
-          app: 'nginx',
-        },
+        matchLabels: {},
       },
       template: {
         metadata: {
-          labels: {
-            app: 'nginx',
-          },
+          labels: {},
         },
         spec: {
           containers: [
@@ -175,25 +192,32 @@ const handleChange = (value) => {
 };
 
 const comfirmCreate = async () => {
-  console.log(data.deploymentForm);
+  data.deploymentForm.spec.selector.matchLabels['pixiu.io/app'] = data.deploymentForm.metadata.name;
+  data.deploymentForm.spec.selector.matchLabels['pixiu.io/kind'] = 'deployment';
+  data.deploymentForm.spec.template.metadata.labels = data.deploymentForm.spec.selector.matchLabels;
+
+  for (let i = 0; i < data.deploymentLabels.length; i++) {
+    data.deploymentForm.spec.template.metadata.labels[data.deploymentLabels[i].key] =
+      data.deploymentLabels[i].value;
+  }
 
   try {
     const resp = await proxy.$http({
       method: 'post',
       url:
-        `/proxy/pixiu/${data.cluser}/apis/apps/v1/namespaces/` +
+        `/proxy/pixiu/${data.cloud.cluster}/apis/apps/v1/namespaces/` +
         data.deploymentForm.metadata.namespace +
         `/deployments`,
       data: data.deploymentForm,
     });
   } catch (error) {}
 
-  proxy.$message.success(`deployment ${data.deploymentForm.name} 创建成功`);
-  // backToContainer();
+  proxy.$message.success(`deployment ${data.deploymentForm.metadata.name} 创建成功`);
+  backToDeployment();
 };
 
 const cancelCreate = () => {
-  backToContainer();
+  backToDeployment();
 };
 
 onMounted(() => {
@@ -228,17 +252,15 @@ const getNamespaceList = async () => {
   } catch (error) {}
 };
 
-const deleteLabel = (index) => {
-  nodeTableData.value.splice(index, 1);
+const addLabel = () => {
+  data.deploymentLabels.push({
+    key: '',
+    value: '',
+  });
 };
 
-const addLabel = () => {
-  nodeTableData.value.push({
-    name: 'node1',
-    address: '192.168.0.1',
-    user: 'root',
-    password: 'root123456',
-  });
+const deleteLabel = (index) => {
+  data.deploymentLabels.splice(index, 1);
 };
 
 const addContainer = () => {
@@ -253,10 +275,11 @@ const deleteContainer = (index) => {
   data.deploymentForm.spec.template.spec.containers.splice(index, 1);
 };
 
-// 回到 container 页面
-const backToContainer = () => {
+// 回到 deployment 页面
+const backToDeployment = () => {
   proxy.$router.push({
-    name: 'Container',
+    name: 'Deployment',
+    query: data.cloud,
   });
 };
 </script>
