@@ -54,39 +54,35 @@
         <el-table-column
           prop="spec.template.metadata.labels"
           label="Labels"
-          width="150"
+          width="210"
           :formatter="formatterLabels"
         />
 
-        <el-table-column label="Selector" width="150">
-          <template #default="scope">
-            <el-popover placement="right" width="auto" trigger="hover">
-              <div v-for="(val, key) in scope.row.spec.selector.matchLabels" :key="key">
-                <el-tag style="margin: 5px 0px">{{ key + '=' + val }}</el-tag>
-              </div>
-              <template #reference>
-                <pixiu-tag :content="formatFirst(scope.row.spec.selector.matchLabels)" />
-              </template>
-            </el-popover>
-          </template>
+        <el-table-column
+          prop="spec.selector.matchLabels"
+          label="Selector"
+          width="210"
+          :formatter="formatterLabels"
+        >
         </el-table-column>
 
-        <el-table-column prop="" label="Pod状态运行/期望" width="180">
-          <template #default="scope">
-            <span class="span_point" :class="addReadyClass(scope.row)" />
-            <span
-              >&nbsp;&nbsp;
-              {{
-                scope.row.status.availableReplicas == scope.row.spec.replicas ? 'ready' : 'pending'
-              }}
-              ({{
-                scope.row.status.availableReplicas > 0 ? scope.row.status.availableReplicas : 0
-              }}/{{ scope.row.spec.replicas > 0 ? scope.row.spec.replicas : 0 }})
-            </span>
-          </template>
+        <el-table-column
+          prop="status"
+          label="Pod状态运行/期望"
+          width="180"
+          :formatter="formatterStatus"
+        >
         </el-table-column>
 
-        <el-table-column label="Resources">
+        <el-table-column
+          label="镜像"
+          prop="spec.template.spec.containers"
+          width="auto"
+          :formatter="formatterImage"
+        >
+        </el-table-column>
+
+        <el-table-column label="镜像">
           <template #default="scope">
             <el-popover placement="right" width="auto" trigger="hover">
               <div v-for="(val, key) in scope.row.spec.template.spec.containers" :key="key">
@@ -188,7 +184,7 @@
   </el-dialog>
 </template>
 
-<script setup>
+<script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
@@ -284,13 +280,6 @@ const getNamespaceList = async () => {
   } catch (error) {}
 };
 
-function addReadyClass(row) {
-  if (row.status.availableReplicas == row.spec.replicas) {
-    return 'span_ready';
-  }
-  return 'span_pending';
-}
-
 const deleteDeployment = (row) => {
   ElMessageBox.confirm(
     '此操作将永久删除 Deployment ' + row.metadata.name + ' . 是否继续?',
@@ -356,37 +345,51 @@ const confirmDeploymentScale = () => {
   } catch (error) {}
 };
 
-function formatFirst(labels) {
-  for (let key in labels) {
-    return `${key}=${labels[key]}`;
-  }
-}
+const formatterLabels = (row, column, cellValue) => {
+  const labels = Object.entries(cellValue).map(([key, value]) => {
+    return `${key}: ${value}`;
+  });
 
-const formatterLabels = (row, column, cellValue) => {};
+  console.log(labels);
+  return (
+    <div>
+      {' '}
+      {labels.map((label) => (
+        <div class="pixiu-table-formatter">{label}</div>
+      ))}{' '}
+    </div>
+  );
+};
+
+const formatterStatus = (row, column, cellValue) => {
+  return (
+    <div>
+      {cellValue.availableReplicas}/{cellValue.replicas}
+    </div>
+  );
+};
+
+const formatterImage = (row, column, cellValue) => {
+  console.log(cellValue);
+
+  const images = Object.entries(cellValue).map(([key, value]) => {
+    return `${key.image}`;
+  });
+
+  console.log(images);
+
+  return (
+    <div>
+      {' '}
+      {images.map((image) => (
+        <div class="pixiu-table-formatter">{image}</div>
+      ))}{' '}
+    </div>
+  );
+};
 </script>
 
 <style scoped="scoped">
-.span_point {
-  align-items: center;
-  border-radius: 50%;
-  display: inline-flex;
-  justify-content: center;
-  line-height: normal;
-  position: relative;
-  text-align: center;
-  vertical-align: middle;
-  overflow: hidden;
-  height: 10px;
-  min-width: 10px;
-  width: 10px;
-}
-.span_ready {
-  background-color: #67c23a;
-}
-.span_pending {
-  background-color: #e6a23c;
-}
-
 .title-card-container {
   height: 50px;
   margin-top: -20px;
