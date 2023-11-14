@@ -51,6 +51,8 @@
           </template>
         </el-table-column>
 
+        <!-- <el-table-column prop="metadata.creationTimestamp" label="创建时间" width="180" /> -->
+
         <el-table-column
           prop="spec.template.metadata.labels"
           label="Labels"
@@ -80,19 +82,6 @@
           width="auto"
           :formatter="formatterImage"
         >
-        </el-table-column>
-
-        <el-table-column label="镜像">
-          <template #default="scope">
-            <el-popover placement="right" width="auto" trigger="hover">
-              <div v-for="(val, key) in scope.row.spec.template.spec.containers" :key="key">
-                <el-tag style="margin: 5px 0px">{{ val.image }}</el-tag>
-              </div>
-              <template #reference>
-                <pixiu-tag :content="scope.row.spec.template.spec.containers[0]['image']" />
-              </template>
-            </el-popover>
-          </template>
         </el-table-column>
 
         <el-table-column fixed="right" label="操作" width="180">
@@ -370,20 +359,11 @@ const formatterStatus = (row, column, cellValue) => {
 };
 
 const formatterImage = (row, column, cellValue) => {
-  console.log(cellValue);
-
-  const images = Object.entries(cellValue).map(([key, value]) => {
-    return `${key.image}`;
-  });
-
-  console.log(images);
-
   return (
     <div>
-      {' '}
-      {images.map((image) => (
-        <div class="pixiu-table-formatter">{image}</div>
-      ))}{' '}
+      {cellValue.map((item) => (
+        <div>{item.image}</div>
+      ))}
     </div>
   );
 };
