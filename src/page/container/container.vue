@@ -141,6 +141,7 @@
             width="180"
             :formatter="cloudNodeFormatter"
           />
+
           <el-table-column prop="resources" label="资源量" :formatter="formatterResource" />
 
           <el-table-column fixed="right" label="操作" width="170">

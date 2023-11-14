@@ -205,7 +205,7 @@ const comfirmCreate = async () => {
     const resp = await proxy.$http({
       method: 'post',
       url:
-        `/proxy/pixiu/${data.cluser}/apis/apps/v1/namespaces/` +
+        `/proxy/pixiu/${data.cloud.cluster}/apis/apps/v1/namespaces/` +
         data.deploymentForm.metadata.namespace +
         `/deployments`,
       data: data.deploymentForm,
@@ -213,11 +213,11 @@ const comfirmCreate = async () => {
   } catch (error) {}
 
   proxy.$message.success(`deployment ${data.deploymentForm.metadata.name} 创建成功`);
-  // backToContainer();
+  backToDeployment();
 };
 
 const cancelCreate = () => {
-  backToContainer();
+  backToDeployment();
 };
 
 onMounted(() => {
@@ -275,10 +275,11 @@ const deleteContainer = (index) => {
   data.deploymentForm.spec.template.spec.containers.splice(index, 1);
 };
 
-// 回到 container 页面
-const backToContainer = () => {
+// 回到 deployment 页面
+const backToDeployment = () => {
   proxy.$router.push({
-    name: 'Container',
+    name: 'Deployment',
+    query: data.cloud,
   });
 };
 </script>
