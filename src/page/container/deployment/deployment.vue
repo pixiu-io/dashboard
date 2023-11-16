@@ -12,11 +12,10 @@
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
-          @input="getDeployments"
           @clear="getDeployments"
         >
           <template #suffix>
-            <el-icon class="el-input__icon">
+            <el-icon class="el-input__icon" @click="getDeployments">
               <component :is="'Search'" />
             </el-icon>
           </template>
