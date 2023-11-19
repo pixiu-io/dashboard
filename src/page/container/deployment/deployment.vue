@@ -338,7 +338,6 @@ const formatterLabels = (row, column, cellValue) => {
     return `${key}: ${value}`;
   });
 
-  console.log(labels);
   return (
     <div>
       {' '}
