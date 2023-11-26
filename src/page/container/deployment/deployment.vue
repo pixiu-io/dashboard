@@ -368,13 +368,6 @@ const formatterImage = (row, column, cellValue) => {
 </script>
 
 <style scoped="scoped">
-.title-card-container {
-  height: 50px;
-  margin-top: -20px;
-  margin-left: -20px;
-  margin-right: -20px;
-}
-
 .font-container {
   margin-top: -5px;
   font-weight: bold;
