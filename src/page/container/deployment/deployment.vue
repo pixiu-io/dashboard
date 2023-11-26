@@ -229,8 +229,9 @@ const jumpRoute = (row) => {
   router.push({
     name: 'DeploymentDetail',
     query: {
-      name: row.metadata.name,
+      cluster: data.cluster,
       namespace: data.namespace,
+      name: row.metadata.name,
     },
   });
 };
