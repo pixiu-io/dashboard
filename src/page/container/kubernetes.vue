@@ -224,13 +224,13 @@ const getNamespace = async () => {
 
 onMounted(() => {
   data.cloud = proxy.$route.query;
-  data.path = proxy.$route.fullPath;
 
   changeClouds(data.cloud.cluster);
 
   getCloudList();
   getNamespaceList();
   getNamespace();
+  data.path = proxy.$route.fullPath;
 });
 </script>
 
