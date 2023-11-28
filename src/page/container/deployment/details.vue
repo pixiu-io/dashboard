@@ -52,13 +52,9 @@ const getDeployment = async () => {
   data.deployment = res;
 };
 
-const handleClick = (tab, event) => {
-  console.log(data.activeName);
-};
+const handleClick = (tab, event) => {};
 
-const handleChange = (name) => {
-  console.log(data.activeName);
-};
+const handleChange = (name) => {};
 </script>
 
 <style scoped="scoped">
