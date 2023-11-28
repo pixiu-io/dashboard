@@ -80,7 +80,7 @@
         </el-icon>
       </span>
       <template #dropdown>
-        <el-dropdown-menu>
+        <el-dropdown-menu class="dropdown-menu-style">
           <el-dropdown-item>售后支持</el-dropdown-item>
           <el-dropdown-item>待办</el-dropdown-item>
         </el-dropdown-menu>
@@ -173,5 +173,9 @@ const logout = () => {
   font-size: small;
   margin-right: 25px;
   color: #adb0bb;
+}
+
+.dropdown-menu-style {
+  border-radius: 0;
 }
 </style>
