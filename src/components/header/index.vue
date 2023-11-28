@@ -94,21 +94,14 @@
         </span>
 
         <template #dropdown>
-          <!--          <div style="margin-left: 20px; font-size: 18px; margin-top: 15px">-->
-          <!--            {{ data.loginUser }}-->
-          <!--          </div>-->
-          <!--          <div style="margin-left: 20px; margin-top: 10px">账号ID: {{ data.userId }}</div>-->
+          <el-scrollbar style="background-color: #29292b">
+            <div style="margin-left: 20px; font-size: 18px; margin-top: 15px">
+              {{ data.loginUser }}
+            </div>
+            <div style="margin-left: 20px; margin-top: 10px">账号ID: {{ data.userId }}</div>
+          </el-scrollbar>
 
-          <el-dropdown-menu style="border-radius: 0; background-color: #29292b">
-            <el-dropdown-item>
-              <div style="margin-left: 2px; font-size: 18px; margin-top: 15px">
-                {{ data.loginUser }}
-              </div>
-            </el-dropdown-item>
-            <el-dropdown-item>
-              <div style="margin-left: 2px; margin-top: 10px">账号ID: {{ data.userId }}</div>
-            </el-dropdown-item>
-            <div class="seg" style="border-bottom: 1px solid #4f5055"></div>
+          <el-dropdown-menu>
             <el-dropdown-item>
               <el-icon>
                 <component :is="'UserFilled'"></component>
@@ -190,8 +183,8 @@ const logout = () => {
   padding-top: 3px;
   padding-bottom: 3px;
 }
-
-.el-dropdown-menu__item--divided:before {
-  border-top: 1px solid #29292b;
+.el-dropdown-menu {
+  border-radius: 0;
+  background-color: #29292b;
 }
 </style>
