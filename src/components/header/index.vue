@@ -15,23 +15,23 @@
     <span style="margin-left: 16px; font-size: small; color: #adb0bb">云产品</span>
 
     <!-- <el-menu
-      :default-active="data.activeIndex"
-      active-text-color="#ffd04b"
-      class="el-menu-class"
-      text-color="#ADB0BB"
-      background-color="rgb(40, 43, 51)"
-      mode="horizontal"
-      @select="handleSelect"
-    >
-      <el-sub-menu index="1">
-        <template #title>
-          <span style="font-size: small; color: #adb0bb; height: 51px;"> 云产品 </span>
-        </template>
-        <el-menu-item style="width: 900px; height: 500px" index="2-1"
-          >TODO</el-menu-item
+          :default-active="data.activeIndex"
+          active-text-color="#ffd04b"
+          class="el-menu-class"
+          text-color="#ADB0BB"
+          background-color="rgb(40, 43, 51)"
+          mode="horizontal"
+          @select="handleSelect"
         >
-      </el-sub-menu>
-    </el-menu> -->
+          <el-sub-menu index="1">
+            <template #title>
+              <span style="font-size: small; color: #adb0bb; height: 51px;"> 云产品 </span>
+            </template>
+            <el-menu-item style="width: 900px; height: 500px" index="2-1"
+              >TODO</el-menu-item
+            >
+          </el-sub-menu>
+        </el-menu> -->
   </div>
 
   <div style="display: flex; align-items: center">
@@ -94,13 +94,22 @@
         </span>
 
         <template #dropdown>
-          <div style="margin-left: 20px; font-size: 18px; margin-top: 15px">
-            {{ data.loginUser }}
-          </div>
-          <div style="margin-left: 20px; margin-top: 10px">账号ID: {{ data.userId }}</div>
+          <!--          <div style="margin-left: 20px; font-size: 18px; margin-top: 15px">-->
+          <!--            {{ data.loginUser }}-->
+          <!--          </div>-->
+          <!--          <div style="margin-left: 20px; margin-top: 10px">账号ID: {{ data.userId }}</div>-->
 
-          <el-dropdown-menu>
-            <el-dropdown-item divided>
+          <el-dropdown-menu style="border-radius: 0; background-color: #29292b">
+            <el-dropdown-item>
+              <div style="margin-left: 2px; font-size: 18px; margin-top: 15px">
+                {{ data.loginUser }}
+              </div>
+            </el-dropdown-item>
+            <el-dropdown-item>
+              <div style="margin-left: 2px; margin-top: 10px">账号ID: {{ data.userId }}</div>
+            </el-dropdown-item>
+            <div class="seg" style="border-bottom: 1px solid #4f5055"></div>
+            <el-dropdown-item>
               <el-icon>
                 <component :is="'UserFilled'"></component>
               </el-icon>
@@ -109,14 +118,16 @@
             <el-dropdown-item>
               <el-icon> <component :is="'HelpFilled'"></component> </el-icon>访问管理
             </el-dropdown-item>
-            <el-dropdown-item divided disabled>
+            <div class="seg" style="border-bottom: 1px solid #4f5055"></div>
+            <el-dropdown-item disabled>
               <el-icon> <component :is="'Shop'"></component></el-icon>帮助设置偏好
               <el-radio-group v-model="data.radio" size="small" style="margin-left: 18px">
                 <el-radio-button label="开启" />
                 <el-radio-button label="关闭" />
               </el-radio-group>
             </el-dropdown-item>
-            <el-dropdown-item divided @click="logout">退出</el-dropdown-item>
+            <div class="seg" style="border-bottom: 1px solid #4f5055"></div>
+            <el-dropdown-item @click="logout">退出</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -173,5 +184,14 @@ const logout = () => {
   font-size: small;
   margin-right: 25px;
   color: #adb0bb;
+}
+
+.seg {
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+.el-dropdown-menu__item--divided:before {
+  border-top: 1px solid #29292b;
 }
 </style>
