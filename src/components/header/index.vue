@@ -102,6 +102,7 @@
           </el-scrollbar>
 
           <el-dropdown-menu>
+            <div class="seg" style="border-bottom: 1px solid #4f5055"></div>
             <el-dropdown-item>
               <el-icon>
                 <component :is="'UserFilled'"></component>
