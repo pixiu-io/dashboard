@@ -59,28 +59,46 @@
     <a href="https://github.com/caoyingjunz/pixiu" target="_blank" class="header-bottom">Github</a>
 
     <el-dropdown>
-      <span style="font-size: small; margin-right: 25px; color: #adb0bb; cursor: pointer">
+      <span
+        style="
+          font-size: small;
+          color: #adb0bb;
+          margin-right: 30px;
+          cursor: pointer;
+          padding: 6px 0px;
+        "
+      >
         工具
         <el-icon>
           <component :is="'CaretBottom'"></component>
         </el-icon>
       </span>
       <template #dropdown>
-        <el-dropdown-menu>
-          <el-dropdown-item>百宝箱</el-dropdown-item>
-        </el-dropdown-menu>
+        <div class="no-border-radius">
+          <el-dropdown-menu>
+            <el-dropdown-item>百宝箱</el-dropdown-item>
+          </el-dropdown-menu>
+        </div>
       </template>
     </el-dropdown>
 
-    <el-dropdown>
-      <span style="font-size: small; margin-right: 30px; color: #adb0bb; cursor: pointer">
+    <el-dropdown class="no-border-radius">
+      <span
+        style="
+          font-size: small;
+          color: #adb0bb;
+          margin-right: 30px;
+          cursor: pointer;
+          padding: 6px 0px;
+        "
+      >
         支持
         <el-icon>
           <component :is="'CaretBottom'"></component>
         </el-icon>
       </span>
       <template #dropdown>
-        <el-dropdown-menu class="dropdown-menu-style">
+        <el-dropdown-menu>
           <el-dropdown-item>售后支持</el-dropdown-item>
           <el-dropdown-item>待办</el-dropdown-item>
         </el-dropdown-menu>
@@ -88,9 +106,9 @@
     </el-dropdown>
 
     <div style="vertical-align: middle; margin-top: 30px; margin-right: 28px; cursor: pointer">
-      <el-dropdown>
+      <el-dropdown class="no-border-radius">
         <span>
-          <el-avatar :size="30" :src="data.circleUrl" />
+          <el-avatar :size="27" :src="data.circleUrl" />
         </span>
 
         <template #dropdown>
@@ -155,7 +173,7 @@ const logout = () => {
 };
 </script>
 
-<style scoped>
+<style>
 .header-input {
   margin-right: 30px;
   width: 200px;
@@ -173,9 +191,14 @@ const logout = () => {
   font-size: small;
   margin-right: 25px;
   color: #adb0bb;
+  padding: 6px 0px;
 }
 
-.dropdown-menu-style {
-  border-radius: 0;
+.el-popper {
+  border-radius: 0 !important;
+}
+
+.el-popper .el-dropdown-menu {
+  border-radius: 0 !important;
 }
 </style>
