@@ -30,18 +30,20 @@ const data = reactive({
   name: '',
   namespace: '',
 
-  deployObject: '',
+  deployment: {},
+  deploymentPods: [],
 
   loading: false,
   activeName: 'first',
 });
 
-onMounted(() => {
+onMounted(async () => {
   data.cluster = proxy.$route.query.cluster;
   data.name = proxy.$route.query.name;
   data.namespace = proxy.$route.query.namespace;
 
-  getDeployment();
+  await getDeployment();
+  await getDeploymentPods();
 });
 
 const getDeployment = async () => {
@@ -50,6 +52,14 @@ const getDeployment = async () => {
     url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${data.name}`,
   });
   data.deployment = res;
+};
+
+const getDeploymentPods = async () => {
+  const pods = await proxy.$http({
+    method: 'get',
+    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/pods?limit=500`,
+  });
+  data.deploymentPods = pods.items;
 };
 
 const handleClick = (tab, event) => {};
