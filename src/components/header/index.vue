@@ -105,7 +105,7 @@
       </template>
     </el-dropdown>
 
-    <div style="vertical-align: middle; margin-top: 30px; margin-right: 28px; cursor: pointer">
+    <div style="vertical-align: middle; margin-top: 35px; margin-right: 28px; cursor: pointer">
       <el-dropdown class="no-border-radius">
         <span>
           <el-avatar :size="27" :src="data.circleUrl" />
