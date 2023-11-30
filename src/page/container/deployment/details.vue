@@ -55,9 +55,19 @@ const getDeployment = async () => {
 };
 
 const getDeploymentPods = async () => {
+  let matchLabels = data.deployment.spec.selector.matchLabels;
+  let labels = [];
+  for (let key in matchLabels) {
+    labels.push(key + '=' + matchLabels[key]);
+  }
+
   const pods = await proxy.$http({
     method: 'get',
-    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/pods?limit=500`,
+    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/pods`,
+    data: {
+      labelSelector: labels.join(','),
+      limit: 500,
+    },
   });
   data.deploymentPods = pods.items;
 };
