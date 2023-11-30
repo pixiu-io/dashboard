@@ -20,7 +20,7 @@
             <el-table-column prop="status.hostIP" label="所在节点" />
             <el-table-column prop="status.podIP" label="实例IP" />
             <el-table-column prop="spec.priority" label="重启次数" />
-            <el-table-column fixed="right" label="操作" width="150">
+            <el-table-column fixed="right" label="操作" width="180">
               <template #default="scope">
                 <el-button
                   size="small"
@@ -37,7 +37,7 @@
                   style="margin-right: 1px; color: #006eff"
                   @click="handleDeploymentScaleDialog(scope.row)"
                 >
-                  远程登陆
+                  查看日志
                 </el-button>
               </template>
             </el-table-column>
@@ -67,6 +67,7 @@ const data = reactive({
 
   deployment: {},
   deploymentPods: [],
+  deploymentEvents: [],
 
   activeName: 'first',
 });
@@ -78,6 +79,7 @@ onMounted(async () => {
 
   await getDeployment();
   await getDeploymentPods();
+  await getDeploymentEvents();
 });
 
 const getDeployment = async () => {
@@ -86,6 +88,8 @@ const getDeployment = async () => {
     url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${data.name}`,
   });
   data.deployment = res;
+
+  console.log(data.deployment);
 };
 
 const getDeploymentPods = async () => {
@@ -104,6 +108,26 @@ const getDeploymentPods = async () => {
     },
   });
   data.deploymentPods = pods.items;
+};
+
+const getDeploymentEvents = async () => {
+  let labels = [];
+  labels.push('involvedObject.name=' + data.deployment.metadata.name);
+  labels.push('involvedObject.namespace=' + data.deployment.metadata.namespace);
+  labels.push('involvedObject.kind=' + data.deployment.kind);
+  labels.push('involvedObject.uid=' + data.deployment.metadata.uid);
+
+  const events = await proxy.$http({
+    method: 'get',
+    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/events`,
+    data: {
+      labelSelector: labels.join(','),
+      limit: 500,
+    },
+  });
+  data.deploymentEvents = events.items;
+
+  console.log('data.deploymentEvents', data.deploymentEvents);
 };
 
 const handleClick = (tab, event) => {};
