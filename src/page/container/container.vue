@@ -107,13 +107,25 @@
 
           <el-table-column prop="name" label="名称/ID" width="180">
             <template #default="scope">
-              <el-link
-                style="color: #006eff; font-size: 12px"
-                type="primary"
-                @click="cloudStore.jumpRoute(scope.row)"
-              >
-                {{ scope.row.name }}
-              </el-link>
+              <div>
+                <el-link
+                  style="color: #006eff; font-size: 12px"
+                  type="primary"
+                  @click="cloudStore.jumpRoute(scope.row)"
+                >
+                  {{ scope.row.name }}
+                </el-link>
+                <el-tooltip content="复制">
+                  <pixiu-icon
+                    name="DocumentCopy"
+                    size="10px"
+                    type="el"
+                    class-name="icon-box"
+                    color="#909399"
+                    @click="copy(scope.row)"
+                  />
+                </el-tooltip>
+              </div>
             </template>
           </el-table-column>
 
@@ -277,6 +289,25 @@ import Pagination from '@/components/pagination/index.vue';
 import useCloudStore from '@/stores/useCloud';
 
 const cloudStore = useCloudStore();
+import useClipboard from 'vue-clipboard3';
+import { ElMessage } from 'element-plus';
+import PixiuIcon from '@/components/pixiuIcon/index.vue';
+
+const { toClipboard } = useClipboard();
+const copy = async (val) => {
+  try {
+    await toClipboard(val.name);
+    ElMessage({
+      type: 'success',
+      message: '已复制',
+    });
+  } catch (e) {
+    ElMessage({
+      type: 'error',
+      message: e.valueOf().toString(),
+    });
+  }
+};
 
 onMounted(() => {
   cloudStore.getCloudList();
