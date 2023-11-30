@@ -20,7 +20,7 @@
             <el-table-column prop="status.hostIP" label="所在节点" />
             <el-table-column prop="status.podIP" label="实例IP" />
             <el-table-column prop="spec.priority" label="重启次数" />
-            <el-table-column fixed="right" label="操作" width="150">
+            <el-table-column fixed="right" label="操作" width="180">
               <template #default="scope">
                 <el-button
                   size="small"
@@ -37,7 +37,7 @@
                   style="margin-right: 1px; color: #006eff"
                   @click="handleDeploymentScaleDialog(scope.row)"
                 >
-                  远程登陆
+                  查看日志
                 </el-button>
               </template>
             </el-table-column>
