@@ -8,10 +8,43 @@
       @tab-click="handleClick"
       @tab-change="handleChange"
     >
-      <el-tab-pane label="详情" name="first">User</el-tab-pane>
-      <el-tab-pane label="Pod" name="second">Config</el-tab-pane>
+      <el-tab-pane label="基本信息" name="first">Config</el-tab-pane>
+
+      <el-tab-pane label="Pod管理" name="second"
+        ><el-card class="box-card">
+          <el-table :data="data.deploymentPods" stripe style="width: 100%">
+            <el-table-column type="selection" width="30" />
+            <el-table-column prop="metadata.name" label="实例名称" width="230px" />
+            <el-table-column prop="metadata.creationTimestamp" label="创建时间" width="240px" />
+            <el-table-column prop="status.phase" label="状态" width="180" />
+            <el-table-column prop="status.hostIP" label="所在节点" />
+            <el-table-column prop="status.podIP" label="实例IP" />
+            <el-table-column prop="spec.priority" label="重启次数" />
+            <el-table-column fixed="right" label="操作" width="150">
+              <template #default="scope">
+                <el-button
+                  size="small"
+                  type="text"
+                  style="margin-right: -25px; margin-left: -10px; color: #006eff"
+                  @click="editDeployment(scope.row)"
+                >
+                  销毁重建
+                </el-button>
+
+                <el-button
+                  type="text"
+                  size="small"
+                  style="margin-right: 1px; color: #006eff"
+                  @click="handleDeploymentScaleDialog(scope.row)"
+                >
+                  远程登陆
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card></el-tab-pane
+      >
       <el-tab-pane label="事件" name="third">Role</el-tab-pane>
-      <el-tab-pane label="监控" name="fourth">Task</el-tab-pane>
     </el-tabs>
   </el-card>
 </template>
@@ -30,10 +63,11 @@ const data = reactive({
   name: '',
   namespace: '',
 
+  restarts: 0,
+
   deployment: {},
   deploymentPods: [],
 
-  loading: false,
   activeName: 'first',
 });
 
@@ -79,7 +113,7 @@ const handleChange = (name) => {};
 
 <style scoped="scoped">
 .deployment-tab {
-  margin-top: 20px;
+  margin-top: 30px;
 }
 
 .demo-tabs .el-tabs__content {
