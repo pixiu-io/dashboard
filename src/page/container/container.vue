@@ -342,7 +342,7 @@ const cloudVersionFormatter = (row, column, cellValue) => (
 const cloudNodeFormatter = (row, column, cellValue) => (
   <div class="pixiu-table-formatter">
     <el-space>
-      <div>{cellValue}台(全部正常)</div>
+      {cellValue}台<span style="color: #28c65a;">(全部正常)</span>
     </el-space>
   </div>
 );
