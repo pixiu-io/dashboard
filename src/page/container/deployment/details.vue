@@ -8,10 +8,21 @@
       @tab-click="handleClick"
       @tab-change="handleChange"
     >
-      <el-tab-pane label="基本信息" name="first">Config</el-tab-pane>
+      <el-tab-pane label="基本信息" name="first">
+        <div class="app-pixiu-content-card">
+          <el-card style="margin-top: 8px; width: 100%; border-radius: 0px">
+            <el-form-item label="名称" class="deployment-info"> </el-form-item>
+            <el-form-item label="命名空间" class="deployment-info"> </el-form-item>
+            <el-form-item label="创建时间" class="deployment-info"> </el-form-item>
+            <el-form-item label="Labels" class="deployment-info"> </el-form-item>
+            <el-form-item label="更新策略" class="deployment-info"> </el-form-item>
+            <el-form-item label="副本数" class="deployment-info"> </el-form-item>
+          </el-card>
+        </div>
+      </el-tab-pane>
 
       <el-tab-pane label="Pod管理" name="second"
-        ><el-card class="box-card">
+        ><el-card style="margin-top: 8px">
           <el-table
             v-loading="data.loading"
             :data="data.deploymentPods"
@@ -156,5 +167,10 @@ const handleChange = (name) => {};
   color: #6b778c;
   font-size: 32px;
   font-weight: 600;
+}
+
+.deployment-info {
+  color: #909399;
+  font-size: 13px;
 }
 </style>
