@@ -164,11 +164,10 @@ const getDeploymentEvents = async () => {
   labels.push('involvedObject.kind=' + data.deployment.kind);
 
   let labelSelector = encodeURIComponent(labels.join(','));
-
   const events = await proxy.$http({
     method: 'get',
     url:
-      `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/events?labelSelector=` +
+      `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/events?fieldSelecto=` +
       labelSelector +
       '&limit=500',
   });
