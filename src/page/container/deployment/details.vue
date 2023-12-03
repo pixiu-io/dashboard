@@ -9,7 +9,7 @@
       @tab-change="handleChange"
     >
       <el-tab-pane label="基本信息" name="first">
-        <!-- <div class="app-pixiu-content-card">
+        <div class="app-pixiu-content-card">
           <el-card style="margin-top: 8px; width: 100%; border-radius: 0px">
             <el-form-item label="名称" class="deployment-info">
               <span class="deploy-detail-info" style="margin-left: 90px">
@@ -45,7 +45,7 @@
               <span class="deploy-detail-info" style="margin-left: 88px"> - </span>
             </el-form-item>
           </el-card>
-        </div> -->
+        </div>
       </el-tab-pane>
 
       <el-tab-pane label="Pod管理" name="second"
