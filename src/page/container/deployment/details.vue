@@ -136,9 +136,7 @@ const getDeployment = async () => {
   data.deployment = res;
 };
 
-const deletePod = async () => {
-  console.log('deletePod');
-};
+const deletePod = async () => {};
 
 const getDeploymentPods = async () => {
   let matchLabels = data.deployment.spec.selector.matchLabels;
