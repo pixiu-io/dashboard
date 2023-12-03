@@ -11,12 +11,15 @@
       <el-tab-pane label="基本信息" name="first">
         <div class="app-pixiu-content-card">
           <el-card style="margin-top: 8px; width: 100%; border-radius: 0px">
-            <el-form-item label="名称" class="deployment-info"> </el-form-item>
+            <el-form-item label="名称" class="deployment-info">
+              <div style="margin-left: 90px">{{ data.deployment.metadata.name }}</div>
+            </el-form-item>
             <el-form-item label="命名空间" class="deployment-info"> </el-form-item>
             <el-form-item label="创建时间" class="deployment-info"> </el-form-item>
             <el-form-item label="Labels" class="deployment-info"> </el-form-item>
             <el-form-item label="更新策略" class="deployment-info"> </el-form-item>
             <el-form-item label="副本数" class="deployment-info"> </el-form-item>
+            <el-form-item label="其他" class="deployment-info"> </el-form-item>
           </el-card>
         </div>
       </el-tab-pane>
