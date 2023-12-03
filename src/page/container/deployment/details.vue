@@ -13,7 +13,7 @@
       <el-tab-pane label="Pod管理" name="second"
         ><el-card class="box-card">
           <el-table
-            v-loading="loading"
+            v-loading="data.loading"
             :data="data.deploymentPods"
             stripe
             style="margin-top: 2px; width: 100%"
