@@ -33,7 +33,7 @@
                   size="small"
                   type="text"
                   style="margin-right: -25px; margin-left: -10px; color: #006eff"
-                  @click="editDeployment(scope.row)"
+                  @click="deletePod(scope.row)"
                 >
                   销毁重建
                 </el-button>
@@ -71,7 +71,6 @@ const data = reactive({
   namespace: '',
 
   restarts: 0,
-
   loading: false,
 
   deployment: {},
@@ -101,6 +100,10 @@ const getDeployment = async () => {
   console.log(data.deployment);
 };
 
+const deletePod = async () => {
+  console.log('deletePod');
+};
+
 const getDeploymentPods = async () => {
   let matchLabels = data.deployment.spec.selector.matchLabels;
   let labels = [];
@@ -121,22 +124,21 @@ const getDeploymentPods = async () => {
 
 const getDeploymentEvents = async () => {
   let labels = [];
+  labels.push('involvedObject.uid=' + data.deployment.metadata.uid);
   labels.push('involvedObject.name=' + data.deployment.metadata.name);
   labels.push('involvedObject.namespace=' + data.deployment.metadata.namespace);
   labels.push('involvedObject.kind=' + data.deployment.kind);
-  labels.push('involvedObject.uid=' + data.deployment.metadata.uid);
+
+  let labelSelector = encodeURIComponent(labels.join(','));
 
   const events = await proxy.$http({
     method: 'get',
-    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/events`,
-    data: {
-      labelSelector: labels.join(','),
-      limit: 500,
-    },
+    url:
+      `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/events?labelSelector=` +
+      labelSelector +
+      '&limit=500',
   });
   data.deploymentEvents = events.items;
-
-  console.log('data.deploymentEvents', data.deploymentEvents);
 };
 
 const handleClick = (tab, event) => {};
