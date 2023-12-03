@@ -12,11 +12,18 @@
 
       <el-tab-pane label="Pod管理" name="second"
         ><el-card class="box-card">
-          <el-table :data="data.deploymentPods" stripe style="width: 100%">
+          <el-table
+            v-loading="loading"
+            :data="data.deploymentPods"
+            stripe
+            style="margin-top: 2px; width: 100%"
+            header-row-class-name="pixiu-table-header"
+            @selection-change="handleSelectionChange"
+          >
             <el-table-column type="selection" width="30" />
             <el-table-column prop="metadata.name" label="实例名称" width="230px" />
-            <el-table-column prop="metadata.creationTimestamp" label="创建时间" width="240px" />
-            <el-table-column prop="status.phase" label="状态" width="180" />
+            <el-table-column prop="metadata.creationTimestamp" label="创建时间" width="200px" />
+            <el-table-column prop="status.phase" label="状态" width="100" />
             <el-table-column prop="status.hostIP" label="所在节点" />
             <el-table-column prop="status.podIP" label="实例IP" />
             <el-table-column prop="spec.priority" label="重启次数" />
@@ -64,6 +71,8 @@ const data = reactive({
   namespace: '',
 
   restarts: 0,
+
+  loading: false,
 
   deployment: {},
   deploymentPods: [],
