@@ -12,14 +12,38 @@
         <div class="app-pixiu-content-card">
           <el-card style="margin-top: 8px; width: 100%; border-radius: 0px">
             <el-form-item label="名称" class="deployment-info">
-              <div style="margin-left: 90px">{{ data.deployment.metadata.name }}</div>
+              <span class="deploy-detail-info" style="margin-left: 90px">
+                {{ data.deployment.metadata.name }}
+              </span>
             </el-form-item>
-            <el-form-item label="命名空间" class="deployment-info"> </el-form-item>
-            <el-form-item label="创建时间" class="deployment-info"> </el-form-item>
-            <el-form-item label="Labels" class="deployment-info"> </el-form-item>
-            <el-form-item label="更新策略" class="deployment-info"> </el-form-item>
-            <el-form-item label="副本数" class="deployment-info"> </el-form-item>
-            <el-form-item label="其他" class="deployment-info"> </el-form-item>
+            <el-form-item label="命名空间" class="deployment-info">
+              <span class="deploy-detail-info" style="margin-left: 63px">
+                {{ data.deployment.metadata.namespace }}
+              </span>
+            </el-form-item>
+            <el-form-item label="创建时间" class="deployment-info">
+              <span class="deploy-detail-info" style="margin-left: 63px">
+                {{ data.deployment.metadata.creationTimestamp }}
+              </span>
+            </el-form-item>
+            <el-form-item label="Labels" class="deployment-info">
+              <span class="deploy-detail-info" style="margin-left: 75px">
+                {{ data.deployment.spec.selector.matchLabels }}
+              </span>
+            </el-form-item>
+            <el-form-item label="更新策略" class="deployment-info">
+              <span class="deploy-detail-info" style="margin-left: 63px">
+                {{ data.deployment.spec.strategy.type }}
+              </span>
+            </el-form-item>
+            <el-form-item label="副本数" class="deployment-info">
+              <span class="deploy-detail-info" style="margin-left: 75px">
+                {{ data.deployment.spec.replicas }}
+              </span>
+            </el-form-item>
+            <el-form-item label="其他" class="deployment-info">
+              <span class="deploy-detail-info" style="margin-left: 88px"> - </span>
+            </el-form-item>
           </el-card>
         </div>
       </el-tab-pane>
@@ -110,8 +134,6 @@ const getDeployment = async () => {
     url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${data.name}`,
   });
   data.deployment = res;
-
-  console.log(data.deployment);
 };
 
 const deletePod = async () => {
@@ -175,5 +197,10 @@ const handleChange = (name) => {};
 .deployment-info {
   color: #909399;
   font-size: 13px;
+}
+
+.deploy-detail-info {
+  font-size: 13px;
+  color: #29232b;
 }
 </style>
