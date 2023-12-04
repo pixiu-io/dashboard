@@ -110,7 +110,7 @@ const routes = [
             component: DeploymentCreate,
           },
           {
-            path: 'deployments',
+            path: 'deployments/detail',
             name: 'DeploymentDetail',
             meta: {
               title: 'DeploymentDetail',

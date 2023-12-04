@@ -8,15 +8,63 @@
       @tab-click="handleClick"
       @tab-change="handleChange"
     >
-      <el-tab-pane label="基本信息" name="first">Config</el-tab-pane>
+      <el-tab-pane label="基本信息" name="first">
+        <div class="app-pixiu-content-card">
+          <el-card
+            v-if="data.deployment.metadata"
+            style="margin-top: 8px; width: 100%; border-radius: 0px"
+          >
+            <el-form-item label="名称" class="deployment-info">
+              <span class="deploy-detail-info" style="margin-left: 90px">
+                {{ data.deployment.metadata.name }}
+              </span>
+            </el-form-item>
+            <el-form-item label="命名空间" class="deployment-info">
+              <span class="deploy-detail-info" style="margin-left: 63px">
+                {{ data.deployment.metadata.namespace }}
+              </span>
+            </el-form-item>
+            <el-form-item label="创建时间" class="deployment-info">
+              <span class="deploy-detail-info" style="margin-left: 63px">
+                {{ data.deployment.metadata.creationTimestamp }}
+              </span>
+            </el-form-item>
+            <el-form-item label="Labels" class="deployment-info">
+              <span class="deploy-detail-info" style="margin-left: 75px">
+                {{ data.deployment.spec.selector.matchLabels }}
+              </span>
+            </el-form-item>
+            <el-form-item label="更新策略" class="deployment-info">
+              <span class="deploy-detail-info" style="margin-left: 63px">
+                {{ data.deployment.spec.strategy.type }}
+              </span>
+            </el-form-item>
+            <el-form-item label="副本数" class="deployment-info">
+              <span class="deploy-detail-info" style="margin-left: 75px">
+                {{ data.deployment.spec.replicas }}
+              </span>
+            </el-form-item>
+            <el-form-item label="其他" class="deployment-info">
+              <span class="deploy-detail-info" style="margin-left: 88px"> - </span>
+            </el-form-item>
+          </el-card>
+        </div>
+      </el-tab-pane>
 
       <el-tab-pane label="Pod管理" name="second"
-        ><el-card class="box-card">
-          <el-table :data="data.deploymentPods" stripe style="width: 100%">
+        ><el-card style="margin-top: 8px">
+          <el-table
+            v-loading="data.loading"
+            :data="data.deploymentPods"
+            stripe
+            style="margin-top: 2px; width: 100%"
+            header-row-class-name="pixiu-table-header"
+            @selection-change="handleSelectionChange"
+          >
             <el-table-column type="selection" width="30" />
             <el-table-column prop="metadata.name" label="实例名称" width="230px" />
-            <el-table-column prop="metadata.creationTimestamp" label="创建时间" width="240px" />
-            <el-table-column prop="status.phase" label="状态" width="180" />
+            <el-table-column prop="metadata.creationTimestamp" label="创建时间" width="200px" />
+            <el-table-column prop="status.phase" label="状态" width="100" />
             <el-table-column prop="status.hostIP" label="所在节点" />
             <el-table-column prop="status.podIP" label="实例IP" />
             <el-table-column prop="spec.priority" label="重启次数" />
@@ -26,7 +74,7 @@
                   size="small"
                   type="text"
                   style="margin-right: -25px; margin-left: -10px; color: #006eff"
-                  @click="editDeployment(scope.row)"
+                  @click="deletePod(scope.row)"
                 >
                   销毁重建
                 </el-button>
@@ -64,6 +112,7 @@ const data = reactive({
   namespace: '',
 
   restarts: 0,
+  loading: false,
 
   deployment: {},
   deploymentPods: [],
@@ -88,9 +137,9 @@ const getDeployment = async () => {
     url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${data.name}`,
   });
   data.deployment = res;
-
-  console.log(data.deployment);
 };
+
+const deletePod = async () => {};
 
 const getDeploymentPods = async () => {
   let matchLabels = data.deployment.spec.selector.matchLabels;
@@ -112,22 +161,20 @@ const getDeploymentPods = async () => {
 
 const getDeploymentEvents = async () => {
   let labels = [];
+  labels.push('involvedObject.uid=' + data.deployment.metadata.uid);
   labels.push('involvedObject.name=' + data.deployment.metadata.name);
   labels.push('involvedObject.namespace=' + data.deployment.metadata.namespace);
   labels.push('involvedObject.kind=' + data.deployment.kind);
-  labels.push('involvedObject.uid=' + data.deployment.metadata.uid);
 
+  let labelSelector = encodeURIComponent(labels.join(','));
   const events = await proxy.$http({
     method: 'get',
-    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/events`,
-    data: {
-      labelSelector: labels.join(','),
-      limit: 500,
-    },
+    url:
+      `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/events?fieldSelector=` +
+      labelSelector +
+      '&limit=500',
   });
   data.deploymentEvents = events.items;
-
-  console.log('data.deploymentEvents', data.deploymentEvents);
 };
 
 const handleClick = (tab, event) => {};
@@ -145,5 +192,15 @@ const handleChange = (name) => {};
   color: #6b778c;
   font-size: 32px;
   font-weight: 600;
+}
+
+.deployment-info {
+  color: #909399;
+  font-size: 13px;
+}
+
+.deploy-detail-info {
+  font-size: 13px;
+  color: #29232b;
 }
 </style>
