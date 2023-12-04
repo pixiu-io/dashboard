@@ -10,7 +10,10 @@
     >
       <el-tab-pane label="基本信息" name="first">
         <div class="app-pixiu-content-card">
-          <el-card style="margin-top: 8px; width: 100%; border-radius: 0px">
+          <el-card
+            v-if="data.deployment.metadata"
+            style="margin-top: 8px; width: 100%; border-radius: 0px"
+          >
             <el-form-item label="名称" class="deployment-info">
               <span class="deploy-detail-info" style="margin-left: 90px">
                 {{ data.deployment.metadata.name }}
