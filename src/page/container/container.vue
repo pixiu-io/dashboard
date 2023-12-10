@@ -374,11 +374,11 @@ const formatterResource = (row, column, cellValue) => {
     <div style="display:flex;flex-direction:column">
       <el-space>
         <span style="font-weight:bold;font-size: 12px">CPU:</span>
-        <span>{cellValue['cpu']}</span>
+        <span style="font-weight:bold;font-size: 12px">{cellValue['cpu']}</span>
       </el-space>
       <el-space>
         <span style="font-weight:bold;font-size: 12px">内存:</span>
-        <span>{cellValue['memory']}</span>
+        <span style="font-weight:bold;font-size: 12px">{cellValue['memory']}</span>
       </el-space>
     </div>
   );

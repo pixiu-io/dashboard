@@ -160,21 +160,11 @@ const getDeploymentPods = async () => {
 };
 
 const getDeploymentEvents = async () => {
-  let labels = [];
-  labels.push('involvedObject.uid=' + data.deployment.metadata.uid);
-  labels.push('involvedObject.name=' + data.deployment.metadata.name);
-  labels.push('involvedObject.namespace=' + data.deployment.metadata.namespace);
-  labels.push('involvedObject.kind=' + data.deployment.kind);
-
-  let labelSelector = encodeURIComponent(labels.join(','));
   const events = await proxy.$http({
     method: 'get',
-    url:
-      `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/events?fieldSelector=` +
-      labelSelector +
-      '&limit=500',
+    url: `/pixiu/kubeproxy/clusters/${data.cluster}/namespaces/${data.namespace}/name/${data.name}/kind/deployment/events`,
   });
-  data.deploymentEvents = events.items;
+  data.deploymentEvents = events;
 };
 
 const handleClick = (tab, event) => {};
