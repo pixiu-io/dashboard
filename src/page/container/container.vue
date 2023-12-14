@@ -105,6 +105,8 @@
         >
           <!-- <el-table-column type="selection" width="38" /> -->
 
+          <el-table-column prop="name" label="名称/ID" :formatter="formatterName" width="180" />
+
           <el-table-column prop="name" label="名称/ID" width="180">
             <template #default="scope">
               <div>
@@ -115,6 +117,9 @@
                 >
                   {{ scope.row.name }}
                 </el-link>
+
+                <dev></dev>
+
                 <el-tooltip content="拷贝">
                   <pixiu-icon
                     name="DocumentCopy"
@@ -350,6 +355,19 @@ const cloudStatus = {
 const cloudTypes = {
   0: '标准集群',
   1: '自建集群',
+};
+
+const formatterName = (row, column, cellValue) => {
+  return (
+    <div style="display:flex;flex-direction:column">
+      <el-space>
+        <span style="font-weight:bold;font-size: 12px">{row.alias_name}</span>
+      </el-space>
+      <el-space>
+        <span style="font-weight:bold;font-size: 12px">{row.name}</span>
+      </el-space>
+    </div>
+  );
 };
 
 const cloudTypeFormatter = (row, column, cellValue) => (
