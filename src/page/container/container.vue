@@ -115,7 +115,7 @@
                 >
                   {{ scope.row.alias_name }}
                 </el-link>
-                <el-tooltip content="编辑别名">
+                <el-tooltip content="修改名称">
                   <pixiu-icon
                     name="Edit"
                     size="10px"
@@ -129,7 +129,7 @@
                 <span style="color: #5e5e63; font-size: 12px; margin-right: 2px" type="primary">
                   {{ scope.row.name }}
                 </span>
-                <el-tooltip content="拷贝">
+                <el-tooltip content="复制">
                   <pixiu-icon
                     name="DocumentCopy"
                     size="10px"
@@ -222,15 +222,31 @@
     </div>
   </el-main>
 
-  <el-dialog v-model="cloudStore.editAliasName">
+  <el-dialog
+    v-model="cloudStore.editAliasName"
+    style="color: #000000; font: 14px"
+    width="500px"
+    center
+    @close="cloudStore.closeModal"
+  >
     <template #title>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">修改集群别名</div>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">修改集群名称</div>
     </template>
-    <el-input v-model="cloudStore.selectCloudAliasName"></el-input>
+
+    <el-form style="max-width: 440px">
+      <el-form-item label="集群名称">
+        <el-input v-model="cloudStore.selectCloudAliasName" />
+      </el-form-item>
+    </el-form>
+
+    <div style="margin-top: -18px"></div>
     <template #footer>
       <span class="dialog-footer">
-        <el-button class="pixiu-cancel-button" @click="cloudStore.closeModal">取消</el-button>
-        <el-button class="pixiu-confirm-button" type="primary" @click="cloudStore.changeAliasName"
+        <el-button class="pixiu-small-cancel-button" @click="cloudStore.closeModal">取消</el-button>
+        <el-button
+          class="pixiu-small-confirm-button"
+          type="primary"
+          @click="cloudStore.changeAliasName"
           >确定</el-button
         >
       </span>
