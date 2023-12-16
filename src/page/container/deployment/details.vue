@@ -83,7 +83,7 @@
                   type="text"
                   size="small"
                   style="margin-right: 1px; color: #006eff"
-                  @click="handleDeploymentScaleDialog(scope.row)"
+                  @click="getPodLog(scope.row)"
                 >
                   查看日志
                 </el-button>
@@ -146,6 +146,17 @@ const deletePod = async (row) => {
   });
 
   await getDeploymentPods();
+};
+
+const getPodLog = async (row) => {
+  const containers = row.spec.containers;
+  const log = await proxy.$http({
+    method: 'get',
+    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${row.metadata.namespace}/pods/${row.metadata.name}/log`,
+    data: { container: containers[0].name },
+  });
+
+  console.log('log', log);
 };
 
 const getDeploymentPods = async () => {
