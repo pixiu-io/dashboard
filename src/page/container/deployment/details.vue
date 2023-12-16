@@ -72,7 +72,11 @@
             <el-table-column prop="status" label="状态" width="100" :formatter="formatterStatus" />
             <el-table-column prop="status.hostIP" label="所在节点" />
             <el-table-column prop="status.podIP" label="实例IP" />
-            <el-table-column prop="spec.priority" label="重启次数" />
+            <el-table-column
+              prop="status.containerStatuses"
+              label="重启次数"
+              :formatter="getPodRestartCount"
+            />
             <el-table-column fixed="right" label="操作" width="180">
               <template #default="scope">
                 <el-button
@@ -213,6 +217,18 @@ const formatterTime = (row, column, cellValue) => {
   )} ${padZero(date.getHours())}:${padZero(date.getMinutes())}:${padZero(date.getSeconds())}`;
 
   return <div>{formattedDateTime}</div>;
+};
+
+const getPodRestartCount = (row, column, cellValue) => {
+  let count = 0;
+  if (cellValue === undefined) {
+  } else {
+    for (let i = 0; i < cellValue.length; i++) {
+      count = count + cellValue[i].restartCount;
+    }
+  }
+
+  return <div>{count}</div>;
 };
 
 const padZero = (number) => {
