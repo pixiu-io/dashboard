@@ -12,7 +12,7 @@
           @clear="getReleases"
         >
           <template #suffix>
-            <el-icon class="el-input__icon">
+            <el-icon class="el-input__icon" @click="getReleases">
               <component :is="'Search'" />
             </el-icon>
           </template>
@@ -185,7 +185,7 @@ const getReleases = async () => {
   data.loading = true;
   const res = await proxy.$http({
     method: 'get',
-    url: `/pixiu/helm/${data.cluster}/v1/namespaces/${data.namespace}/releases`,
+    url: `/pixiu/helms/clusters/${data.cluster}/v1/namespaces/${data.namespace}/releases`,
     data: data.pageInfo,
   });
 
