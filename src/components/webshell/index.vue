@@ -89,7 +89,7 @@ const initSocket = () => {
   //定义websocket连接地址
   let terminalWsUrl =
     websocketAddr +
-    `/clouds/webshell/ws?cloud=${props.webshelloptions.cloud}&namespace=${props.webshelloptions.namespace}&pod=${props.webshelloptions.pod}&container=${props.webshelloptions.container}`;
+    `/pixiu/kubeproxy/ws?cluster=${props.webshelloptions.cluster}&namespace=${props.webshelloptions.namespace}&pod=${props.webshelloptions.pod}&container=${props.webshelloptions.container}&command=${props.webshelloptions.command}`;
 
   //实例化
   data.socket = new WebSocket(terminalWsUrl, [localStorage.getItem('token')]);
