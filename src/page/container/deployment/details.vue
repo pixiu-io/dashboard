@@ -63,8 +63,13 @@
           >
             <el-table-column type="selection" width="30" />
             <el-table-column prop="metadata.name" label="实例名称" width="230px" />
-            <el-table-column prop="metadata.creationTimestamp" label="创建时间" width="200px" />
-            <el-table-column prop="status.phase" label="状态" width="100" />
+            <el-table-column
+              prop="metadata.creationTimestamp"
+              label="创建时间"
+              width="200px"
+              :formatter="formatterTime"
+            />
+            <el-table-column prop="status" label="状态" width="100" :formatter="formatterStatus" />
             <el-table-column prop="status.hostIP" label="所在节点" />
             <el-table-column prop="status.podIP" label="实例IP" />
             <el-table-column prop="spec.priority" label="重启次数" />
@@ -190,6 +195,28 @@ const getDeploymentEvents = async () => {
     url: `/pixiu/kubeproxy/clusters/${data.cluster}/namespaces/${data.namespace}/name/${data.name}/kind/deployment/events`,
   });
   data.deploymentEvents = events;
+};
+
+const formatterStatus = (row, column, cellValue) => {
+  let phase = cellValue.phase;
+  if (phase == 'Failed') {
+    phase = cellValue.reason;
+  }
+
+  return <div>{phase}</div>;
+};
+
+const formatterTime = (row, column, cellValue) => {
+  const date = new Date(cellValue);
+  const formattedDateTime = `${date.getFullYear()}-${padZero(date.getMonth() + 1)}-${padZero(
+    date.getDate(),
+  )} ${padZero(date.getHours())}:${padZero(date.getMinutes())}:${padZero(date.getSeconds())}`;
+
+  return <div>{formattedDateTime}</div>;
+};
+
+const padZero = (number) => {
+  return number.toString().padStart(2, '0');
 };
 
 const handleClick = (tab, event) => {};
