@@ -105,8 +105,6 @@
         >
           <!-- <el-table-column type="selection" width="38" /> -->
 
-          <el-table-column prop="name" label="名称/ID" :formatter="formatterName" width="180" />
-
           <el-table-column prop="name" label="名称/ID" width="180">
             <template #default="scope">
               <div>
@@ -118,8 +116,6 @@
                   {{ scope.row.name }}
                 </el-link>
 
-                <dev></dev>
-
                 <el-tooltip content="拷贝">
                   <pixiu-icon
                     name="DocumentCopy"
@@ -127,6 +123,18 @@
                     type="el"
                     color="#909399"
                     @click="copy(scope.row)"
+                  />
+                </el-tooltip>
+              </div>
+              <div style="font-size: 12px; margin-right: 2px">
+                {{ scope.row.alias_name }}
+                <el-tooltip content="编辑别名">
+                  <pixiu-icon
+                    name="Edit"
+                    size="10px"
+                    type="el"
+                    color="#909399"
+                    @click="cloudStore.editAlias(scope.row)"
                   />
                 </el-tooltip>
               </div>
@@ -212,6 +220,21 @@
       </el-card>
     </div>
   </el-main>
+
+  <el-dialog v-model="cloudStore.editAliasName">
+    <template #title>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">修改集群别名</div>
+    </template>
+    <el-input v-model="cloudStore.selectCloudAliasName"></el-input>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-cancel-button" @click="cloudStore.closeModal">取消</el-button>
+        <el-button class="pixiu-confirm-button" type="primary" @click="cloudStore.changeAliasName"
+          >确定</el-button
+        >
+      </span>
+    </template>
+  </el-dialog>
 
   <el-dialog
     v-model="cloudStore.createCloudVisible"
@@ -355,19 +378,6 @@ const cloudStatus = {
 const cloudTypes = {
   0: '标准集群',
   1: '自建集群',
-};
-
-const formatterName = (row, column, cellValue) => {
-  return (
-    <div style="display:flex;flex-direction:column">
-      <el-space>
-        <span style="font-weight:bold;font-size: 12px">{row.alias_name}</span>
-      </el-space>
-      <el-space>
-        <span style="font-weight:bold;font-size: 12px">{row.name}</span>
-      </el-space>
-    </div>
-  );
 };
 
 const cloudTypeFormatter = (row, column, cellValue) => (

@@ -15,6 +15,9 @@ const useCloudStore = defineStore('cloud', () => {
   const defaultOption = ref('无锡');
   const total = ref(0);
   const createCloudVisible = ref(false);
+  const editAliasName = ref(false);
+  const selectCloudId = ref('');
+  const selectCloudAliasName = ref('');
   const options = ref([
     {
       value: '无锡',
@@ -54,7 +57,24 @@ const useCloudStore = defineStore('cloud', () => {
   };
   const closeModal = () => {
     createCloudVisible.value = false;
+    editAliasName.value = false;
+    selectCloudId.value = '';
+    selectCloudAliasName.value = '';
     cloudType.value = 1;
+  };
+  const editAlias = (data) => {
+    selectCloudId.value = data.id;
+    selectCloudAliasName.value = data.alias_name;
+    editAliasName.value = true;
+  };
+  const changeAliasName = () => {
+    // 请求在这里处理，完成传递之后关闭窗口并且需要刷新列表
+    console.log(selectCloudId.value);
+    console.log(selectCloudAliasName.value);
+    editAliasName.value = false;
+    selectCloudId.value = '';
+    selectCloudAliasName.value = '';
+    getCloudList();
   };
   //分页
   const onChange = (v) => {
@@ -108,6 +128,8 @@ const useCloudStore = defineStore('cloud', () => {
     loading,
     total,
     createCloudVisible,
+    editAliasName,
+    selectCloudAliasName,
     getCloudList,
     changeActive,
     onChange,
@@ -116,6 +138,8 @@ const useCloudStore = defineStore('cloud', () => {
     jumpRoute,
     confirmCreateCloud,
     deleteCloud,
+    editAlias,
+    changeAliasName,
   };
 });
 
