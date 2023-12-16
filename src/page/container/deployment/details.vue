@@ -62,13 +62,28 @@
             @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" width="30" />
-            <el-table-column prop="metadata.name" label="实例名称" width="230px" />
-            <el-table-column prop="metadata.creationTimestamp" label="创建时间" width="200px" />
-            <el-table-column prop="status.phase" label="状态" width="100" />
-            <el-table-column prop="status.hostIP" label="所在节点" />
-            <el-table-column prop="status.podIP" label="实例IP" />
-            <el-table-column prop="spec.priority" label="重启次数" />
-            <el-table-column fixed="right" label="操作" width="180">
+            <el-table-column prop="metadata.name" label="实例名称" min-width="200px" />
+            <el-table-column
+              prop="metadata.creationTimestamp"
+              label="创建时间"
+              width="170px"
+              :formatter="formatterTime"
+            />
+            <el-table-column
+              prop="status"
+              label="状态"
+              :formatter="formatterStatus"
+              min-width="80px"
+            />
+            <el-table-column prop="status.hostIP" label="所在节点" width="120px" />
+            <el-table-column prop="status.podIP" label="实例IP" width="120px" />
+            <el-table-column
+              prop="status.containerStatuses"
+              label="重启次数"
+              width="80px"
+              :formatter="getPodRestartCount"
+            />
+            <el-table-column fixed="right" label="操作" width="160px">
               <template #default="scope">
                 <el-button
                   size="small"
@@ -83,7 +98,7 @@
                   type="text"
                   size="small"
                   style="margin-right: 1px; color: #006eff"
-                  @click="handleDeploymentScaleDialog(scope.row)"
+                  @click="getPodLog(scope.row)"
                 >
                   查看日志
                 </el-button>
@@ -95,13 +110,16 @@
       <el-tab-pane label="事件" name="third">Role</el-tab-pane>
     </el-tabs>
   </el-card>
+
+  <el-drawer v-model="data.drawer" title="I am the title" :with-header="false" size="35%">
+    <div>容器日志</div>
+    <div style="margin-top: 20px; font-size: 14px">{{ data.podLog }}</div>
+  </el-drawer>
 </template>
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
-import PixiuTag from '@/components/pixiuTag/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -119,6 +137,9 @@ const data = reactive({
   deploymentEvents: [],
 
   activeName: 'first',
+
+  drawer: false,
+  podLog: '',
 });
 
 onMounted(async () => {
@@ -139,7 +160,26 @@ const getDeployment = async () => {
   data.deployment = res;
 };
 
-const deletePod = async () => {};
+const deletePod = async (row) => {
+  const pods = await proxy.$http({
+    method: 'delete',
+    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${row.metadata.namespace}/pods/${row.metadata.name}`,
+  });
+
+  await getDeploymentPods();
+};
+
+const getPodLog = async (row) => {
+  const containers = row.spec.containers;
+  const log = await proxy.$http({
+    method: 'get',
+    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${row.metadata.namespace}/pods/${row.metadata.name}/log`,
+    data: { container: containers[0].name },
+  });
+
+  data.drawer = true;
+  data.podLog = log;
+};
 
 const getDeploymentPods = async () => {
   let matchLabels = data.deployment.spec.selector.matchLabels;
@@ -165,6 +205,46 @@ const getDeploymentEvents = async () => {
     url: `/pixiu/kubeproxy/clusters/${data.cluster}/namespaces/${data.namespace}/name/${data.name}/kind/deployment/events`,
   });
   data.deploymentEvents = events;
+};
+
+const formatterStatus = (row, column, cellValue) => {
+  let phase = cellValue.phase;
+  if (phase == 'Failed') {
+    phase = cellValue.reason;
+  } else if (phase == 'Pending') {
+    const containerStatuses = cellValue.containerStatuses;
+    for (let i = 0; i < containerStatuses.length; i++) {
+      phase = containerStatuses[i].state.waiting.reason;
+      break;
+    }
+  }
+
+  return <div>{phase}</div>;
+};
+
+const formatterTime = (row, column, cellValue) => {
+  const date = new Date(cellValue);
+  const formattedDateTime = `${date.getFullYear()}-${padZero(date.getMonth() + 1)}-${padZero(
+    date.getDate(),
+  )} ${padZero(date.getHours())}:${padZero(date.getMinutes())}:${padZero(date.getSeconds())}`;
+
+  return <div>{formattedDateTime}</div>;
+};
+
+const getPodRestartCount = (row, column, cellValue) => {
+  let count = 0;
+  if (cellValue === undefined) {
+  } else {
+    for (let i = 0; i < cellValue.length; i++) {
+      count = count + cellValue[i].restartCount;
+    }
+  }
+
+  return <div>{count}</div>;
+};
+
+const padZero = (number) => {
+  return number.toString().padStart(2, '0');
 };
 
 const handleClick = (tab, event) => {};
