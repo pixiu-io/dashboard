@@ -95,13 +95,16 @@
       <el-tab-pane label="事件" name="third">Role</el-tab-pane>
     </el-tabs>
   </el-card>
+
+  <el-drawer v-model="data.drawer" title="I am the title" :with-header="false" size="35%">
+    <div>容器日志</div>
+    <div style="margin-top: 20px; font-size: 14px">{{ data.podLog }}</div>
+  </el-drawer>
 </template>
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
-import PixiuTag from '@/components/pixiuTag/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -119,6 +122,9 @@ const data = reactive({
   deploymentEvents: [],
 
   activeName: 'first',
+
+  drawer: false,
+  podLog: '',
 });
 
 onMounted(async () => {
@@ -156,7 +162,8 @@ const getPodLog = async (row) => {
     data: { container: containers[0].name },
   });
 
-  console.log('log', log);
+  data.drawer = true;
+  data.podLog = log;
 };
 
 const getDeploymentPods = async () => {
