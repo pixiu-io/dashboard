@@ -62,22 +62,28 @@
             @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" width="30" />
-            <el-table-column prop="metadata.name" label="实例名称" width="230px" />
+            <el-table-column prop="metadata.name" label="实例名称" min-width="200px" />
             <el-table-column
               prop="metadata.creationTimestamp"
               label="创建时间"
-              width="200px"
+              width="170px"
               :formatter="formatterTime"
             />
-            <el-table-column prop="status" label="状态" width="100" :formatter="formatterStatus" />
-            <el-table-column prop="status.hostIP" label="所在节点" />
-            <el-table-column prop="status.podIP" label="实例IP" />
+            <el-table-column
+              prop="status"
+              label="状态"
+              :formatter="formatterStatus"
+              min-width="80px"
+            />
+            <el-table-column prop="status.hostIP" label="所在节点" width="120px" />
+            <el-table-column prop="status.podIP" label="实例IP" width="120px" />
             <el-table-column
               prop="status.containerStatuses"
               label="重启次数"
+              width="80px"
               :formatter="getPodRestartCount"
             />
-            <el-table-column fixed="right" label="操作" width="180">
+            <el-table-column fixed="right" label="操作" width="160px">
               <template #default="scope">
                 <el-button
                   size="small"
@@ -205,6 +211,12 @@ const formatterStatus = (row, column, cellValue) => {
   let phase = cellValue.phase;
   if (phase == 'Failed') {
     phase = cellValue.reason;
+  } else if (phase == 'Pending') {
+    const containerStatuses = cellValue.containerStatuses;
+    for (let i = 0; i < containerStatuses.length; i++) {
+      phase = containerStatuses[i].state.waiting.reason;
+      break;
+    }
   }
 
   return <div>{phase}</div>;
