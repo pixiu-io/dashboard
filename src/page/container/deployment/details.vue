@@ -139,7 +139,14 @@ const getDeployment = async () => {
   data.deployment = res;
 };
 
-const deletePod = async () => {};
+const deletePod = async (row) => {
+  const pods = await proxy.$http({
+    method: 'delete',
+    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${row.metadata.namespace}/pods/${row.metadata.name}`,
+  });
+
+  await getDeploymentPods();
+};
 
 const getDeploymentPods = async () => {
   let matchLabels = data.deployment.spec.selector.matchLabels;
