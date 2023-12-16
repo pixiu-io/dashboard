@@ -86,7 +86,7 @@
             @clear="cloudStore.getCloudList"
           >
             <template #suffix>
-              <el-icon class="el-input__icon">
+              <el-icon class="el-input__icon" @click="cloudStore.getCloudList">
                 <component :is="'Search'" />
               </el-icon>
             </template>

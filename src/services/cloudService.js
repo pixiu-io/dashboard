@@ -21,3 +21,18 @@ export const deleteCloudById = async (id) => {
   );
   return [err, result];
 };
+
+export const changeCluserAliasName = async (id, resource_version, alias_name) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'put',
+      url: `/pixiu/clusters/${id}`,
+      data: {
+        resource_version: resource_version,
+        alias_name: alias_name,
+      },
+    }),
+  );
+
+  return [err, result];
+};
