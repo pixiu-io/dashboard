@@ -115,7 +115,6 @@
                 >
                   {{ scope.row.name }}
                 </el-link>
-
                 <el-tooltip content="拷贝">
                   <pixiu-icon
                     name="DocumentCopy"
