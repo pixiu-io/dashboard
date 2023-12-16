@@ -86,7 +86,7 @@
             @clear="cloudStore.getCloudList"
           >
             <template #suffix>
-              <el-icon class="el-input__icon">
+              <el-icon class="el-input__icon" @click="cloudStore.getCloudList">
                 <component :is="'Search'" />
               </el-icon>
             </template>
@@ -107,15 +107,29 @@
 
           <el-table-column prop="name" label="名称/ID" width="180">
             <template #default="scope">
-              <div>
+              <div style="font-size: 12px; margin-right: 2px">
                 <el-link
                   style="color: #006eff; font-size: 12px; margin-right: 2px"
                   type="primary"
                   @click="cloudStore.jumpRoute(scope.row)"
                 >
-                  {{ scope.row.name }}
+                  {{ scope.row.alias_name }}
                 </el-link>
-                <el-tooltip content="拷贝">
+                <el-tooltip content="修改名称">
+                  <pixiu-icon
+                    name="Edit"
+                    size="10px"
+                    type="el"
+                    color="#909399"
+                    @click="cloudStore.editAlias(scope.row)"
+                  />
+                </el-tooltip>
+              </div>
+              <div>
+                <span style="color: #5e5e63; font-size: 12px; margin-right: 2px" type="primary">
+                  {{ scope.row.name }}
+                </span>
+                <el-tooltip content="复制">
                   <pixiu-icon
                     name="DocumentCopy"
                     size="10px"
@@ -207,6 +221,37 @@
       </el-card>
     </div>
   </el-main>
+
+  <el-dialog
+    v-model="cloudStore.editAliasName"
+    style="color: #000000; font: 14px"
+    width="500px"
+    center
+    @close="cloudStore.closeModal"
+  >
+    <template #title>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">修改集群名称</div>
+    </template>
+
+    <el-form style="max-width: 440px">
+      <el-form-item label="集群名称">
+        <el-input v-model="cloudStore.selectCloudAliasName" />
+      </el-form-item>
+    </el-form>
+
+    <div style="margin-top: -18px"></div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-small-cancel-button" @click="cloudStore.closeModal">取消</el-button>
+        <el-button
+          class="pixiu-small-confirm-button"
+          type="primary"
+          @click="cloudStore.changeAliasName"
+          >确定</el-button
+        >
+      </span>
+    </template>
+  </el-dialog>
 
   <el-dialog
     v-model="cloudStore.createCloudVisible"
