@@ -40,7 +40,6 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="30" />
-
         <el-table-column prop="metadata.name" sortable label="名称" width="180">
           <template #default="scope">
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
@@ -49,8 +48,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="status" label="类型" width="180" :formatter="formatterStatus">
-        </el-table-column>
+        <el-table-column prop="spec.type" label="类型" width="180"> </el-table-column>
 
         <el-table-column
           prop="spec.selector.matchLabels"
@@ -60,10 +58,14 @@
         >
         </el-table-column>
 
-        <el-table-column label="访问入口" prop="spec.template.spec.containers" width="auto">
-        </el-table-column>
+        <el-table-column label="访问入口" prop="spec.clusterIP" width="auto"> </el-table-column>
 
-        <el-table-column label="创建时间" prop="spec.template.spec.containers" width="auto">
+        <el-table-column
+          label="创建时间"
+          prop="metadata.creationTimestamp"
+          width="170px"
+          :formatter="formatterTime"
+        >
         </el-table-column>
 
         <el-table-column fixed="right" label="操作" width="180">
@@ -200,6 +202,18 @@ const deleteService = (row) => {
       });
     })
     .catch(() => {}); // 取消
+};
+
+const formatterTime = (row, column, cellValue) => {
+  const date = new Date(cellValue);
+  const formattedDateTime = `${date.getFullYear()}-${padZero(date.getMonth() + 1)}-${padZero(
+    date.getDate(),
+  )} ${padZero(date.getHours())}:${padZero(date.getMinutes())}:${padZero(date.getSeconds())}`;
+
+  return <div>{formattedDateTime}</div>;
+};
+const padZero = (number) => {
+  return number.toString().padStart(2, '0');
 };
 
 const formatterLabels = (row, column, cellValue) => {};
