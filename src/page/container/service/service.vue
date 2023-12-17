@@ -36,6 +36,10 @@
         :data="data.serviceList"
         stripe
         style="margin-top: 2px; width: 100%"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#29292b',
+        }"
         header-row-class-name="pixiu-table-header"
         @selection-change="handleSelectionChange"
       >
@@ -207,7 +211,7 @@ const deleteService = (row) => {
 
 const formatterTime = (row, column, cellValue) => {
   const time = formatTimestamp(cellValue);
-  return <div>{time}</div>;
+  return <div class="pixiu-table-formatter">{time}</div>;
 };
 
 const formatterLabels = (row, column, cellValue) => {};
