@@ -25,6 +25,7 @@ import {
   Ingress,
   ConfigMap,
   StatefulSet,
+  Pod,
 } from '@/page';
 
 const routes = [
@@ -112,6 +113,14 @@ const routes = [
               title: 'release',
             },
             component: Release,
+          },
+          {
+            path: 'pods',
+            name: 'Pod',
+            meta: {
+              title: 'pod',
+            },
+            component: Pod,
           },
           {
             path: 'deployment_create',
