@@ -1,6 +1,14 @@
 <template>
   <el-card class="glabal-detail-card">
-    <div class="font-container">deployment</div>
+    <div class="font-container">
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item :to="{ path: '/container' }">容器服务</el-breadcrumb-item>
+        <el-breadcrumb-item @click="goToDeployment"
+          ><span style="color: black">Deployment</span>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item>详细信息</el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
 
     <el-tabs
       v-model="data.activeName"
@@ -250,6 +258,11 @@ const padZero = (number) => {
 const handleClick = (tab, event) => {};
 
 const handleChange = (name) => {};
+
+const goToDeployment = () => {
+  const queryParams = { cluster: data.cluster, namespace: data.namespace };
+  router.push({ path: '/kubernetes/deployments', query: queryParams });
+};
 </script>
 
 <style scoped="scoped">
