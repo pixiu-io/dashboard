@@ -4,8 +4,8 @@ import Kubernetes from './container/kubernetes.vue';
 import Operator from './container/operator.vue';
 import Deployment from './container/deployment/deployment.vue';
 import DeploymentCreate from './container/deployment/createDeployment.vue';
-import Release from './container/release/release.vue';
 import DeploymentDetail from './container/deployment/details.vue';
+import Release from './container/release/release.vue';
 import Terminal from './container/terminal.vue';
 import Monitor from './container/monitor.vue';
 import Node from './container/node.vue';
@@ -18,6 +18,8 @@ import Role from './user/role.vue';
 import InsertCluster from './container/insertCluster.vue';
 import CreateCluster from './container/createCluster.vue';
 import NotFound from './notFound/notFound.vue';
+import Service from './container/service/service.vue';
+import ConfigMap from './container/configmap/configmap.vue';
 export {
   Home,
   Login,
@@ -29,9 +31,9 @@ export {
   Container,
   Kubernetes,
   Deployment,
-  Release,
   DeploymentCreate,
   DeploymentDetail,
+  Release,
   Node,
   Terminal,
   Monitor,
@@ -39,4 +41,6 @@ export {
   CreateCluster,
   NotFound,
   Operator,
+  Service,
+  ConfigMap,
 };
