@@ -211,7 +211,7 @@ const deleteService = (row) => {
 
 const formatterTime = (row, column, cellValue) => {
   const time = formatTimestamp(cellValue);
-  return <div class="pixiu-table-formatter">{time}</div>;
+  return <div>{time}</div>;
 };
 
 const formatterLabels = (row, column, cellValue) => {};
