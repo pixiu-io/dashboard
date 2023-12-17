@@ -68,6 +68,10 @@
             style="margin-top: 2px; width: 100%"
             header-row-class-name="pixiu-table-header"
             @selection-change="handleSelectionChange"
+            :cell-style="{
+              'font-size': '12px',
+              color: '#29292b',
+            }"
           >
             <el-table-column type="selection" width="30" />
             <el-table-column prop="metadata.name" label="实例名称" min-width="200px" />

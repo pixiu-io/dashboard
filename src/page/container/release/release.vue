@@ -33,6 +33,10 @@
         :data="data.releasesList"
         stripe
         style="margin-top: 2px; width: 100%"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#29292b',
+        }"
       >
         <el-table-column prop="metadata.name" label="名称" min-width="150px">
           <template #default="scope">

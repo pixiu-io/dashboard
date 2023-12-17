@@ -38,6 +38,10 @@
         stripe
         style="margin-top: 2px; width: 100%"
         header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#29292b',
+        }"
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="30" />
