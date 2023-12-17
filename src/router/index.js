@@ -21,6 +21,11 @@ import {
   CreateCluster,
   NotFound,
   Operator,
+  Service,
+  Ingress,
+  ConfigMap,
+  StatefulSet,
+  Pod,
 } from '@/page';
 
 const routes = [
@@ -94,12 +99,28 @@ const routes = [
             component: Deployment,
           },
           {
+            path: 'statefulsets',
+            name: 'statefulset',
+            meta: {
+              title: 'statefulset',
+            },
+            component: StatefulSet,
+          },
+          {
             path: 'release',
             name: 'Release',
             meta: {
               title: 'release',
             },
             component: Release,
+          },
+          {
+            path: 'pods',
+            name: 'Pod',
+            meta: {
+              title: 'pod',
+            },
+            component: Pod,
           },
           {
             path: 'deployment_create',
@@ -140,6 +161,30 @@ const routes = [
               title: 'monitor',
             },
             component: Monitor,
+          },
+          {
+            path: 'services',
+            name: 'Service',
+            meta: {
+              title: 'service',
+            },
+            component: Service,
+          },
+          {
+            path: 'ingress',
+            name: 'Ingress',
+            meta: {
+              title: 'ingress',
+            },
+            component: Ingress,
+          },
+          {
+            path: 'configmaps',
+            name: 'ConfigMap',
+            meta: {
+              title: 'configmap',
+            },
+            component: ConfigMap,
           },
         ],
       },

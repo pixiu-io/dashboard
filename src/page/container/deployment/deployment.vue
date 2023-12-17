@@ -38,13 +38,17 @@
         stripe
         style="margin-top: 2px; width: 100%"
         header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#29292b',
+        }"
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="30" />
 
         <el-table-column prop="metadata.name" sortable label="名称" width="180">
           <template #default="scope">
-            <el-link style="color: #3377ff" type="primary" @click="jumpRoute(scope.row)">
+            <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
             </el-link>
           </template>

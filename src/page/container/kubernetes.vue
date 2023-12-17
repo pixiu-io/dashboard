@@ -59,8 +59,8 @@ const data = reactive({
         },
         {
           id: 1.2,
-          name: 'Statsfulset',
-          url: '/kubernetes/statsfulsets',
+          name: 'StatefulSet',
+          url: '/kubernetes/statefulsets',
         },
         {
           id: 1.3,
@@ -83,7 +83,7 @@ const data = reactive({
         {
           id: 2.1,
           name: 'ConfigMap',
-          url: '/kubernetes/comfig-map',
+          url: '/kubernetes/configmaps',
         },
       ],
     },

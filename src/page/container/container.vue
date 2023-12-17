@@ -107,24 +107,22 @@
 
           <el-table-column prop="name" label="名称/ID" width="180">
             <template #default="scope">
-              <div style="font-size: 12px; margin-right: 2px">
-                <el-link
-                  style="color: #006eff; font-size: 12px; margin-right: 2px"
-                  type="primary"
-                  @click="cloudStore.jumpRoute(scope.row)"
-                >
-                  {{ scope.row.alias_name }}
-                </el-link>
-                <el-tooltip content="修改名称">
-                  <pixiu-icon
-                    name="Edit"
-                    size="10px"
-                    type="el"
-                    color="#909399"
-                    @click="cloudStore.editAlias(scope.row)"
-                  />
-                </el-tooltip>
-              </div>
+              <el-link
+                style="color: #006eff; font-size: 12px; margin-right: 2px"
+                type="primary"
+                @click="cloudStore.jumpRoute(scope.row)"
+              >
+                {{ scope.row.alias_name }}
+              </el-link>
+              <el-tooltip content="修改名称">
+                <pixiu-icon
+                  name="Edit"
+                  size="10px"
+                  type="el"
+                  color="#909399"
+                  @click="cloudStore.editAlias(scope.row)"
+                />
+              </el-tooltip>
               <div>
                 <span style="color: #5e5e63; font-size: 12px; margin-right: 2px" type="primary">
                   {{ scope.row.name }}

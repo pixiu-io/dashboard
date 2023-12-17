@@ -33,6 +33,10 @@
         :data="data.releasesList"
         stripe
         style="margin-top: 2px; width: 100%"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#29292b',
+        }"
       >
         <el-table-column prop="metadata.name" label="名称" min-width="150px">
           <template #default="scope">
@@ -66,12 +70,12 @@
         </el-table-column>
         <el-table-column label="部署时间" width="180px">
           <template #default="scope">
-            {{ parseTime(scope.row.info.first_deployed) }}
+            {{ formatTimestamp(scope.row.info.first_deployed) }}
           </template>
         </el-table-column>
         <el-table-column prop="" label="上次部署时间" width="180px">
           <template #default="scope">
-            {{ parseTime(scope.row.info.last_deployed) }}
+            {{ formatTimestamp(scope.row.info.first_deployed) }}
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作" align="center" width="250">
@@ -127,7 +131,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-
+import { formatTimestamp } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 
 const { proxy } = getCurrentInstance();
@@ -216,44 +220,6 @@ const getNamespaceList = async () => {
     }
   } catch (error) {}
 };
-
-function parseTime(time, cFormat) {
-  if (arguments.length === 0) {
-    return null;
-  }
-  const format = cFormat || '{y}-{m}-{d} {h}:{i}:{s}';
-  let date;
-  if (typeof time === 'object') {
-    date = time;
-  } else {
-    if (typeof time === 'string' && /^[0-9]+$/.test(time)) {
-      time = parseInt(time);
-    }
-    if (typeof time === 'number' && time.toString().length === 10) {
-      time = time * 1000;
-    }
-    date = new Date(time);
-  }
-  const formatObj = {
-    y: date.getFullYear(),
-    m: date.getMonth() + 1,
-    d: date.getDate(),
-    h: date.getHours(),
-    i: date.getMinutes(),
-    s: date.getSeconds(),
-    a: date.getDay(),
-  };
-  const time_str = format.replace(/{([ymdhisa])+}/g, (result, key) => {
-    const value = formatObj[key];
-    // Note: getDay() returns 0 on Sunday
-    if (key === 'a') {
-      return ['日', '一', '二', '三', '四', '五', '六'][value];
-    }
-    return value.toString().padStart(2, '0');
-  });
-
-  return time_str;
-}
 </script>
 
 <style scoped="scoped">
