@@ -111,6 +111,7 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
+import { formatTimestamp } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 
@@ -205,15 +206,8 @@ const deleteService = (row) => {
 };
 
 const formatterTime = (row, column, cellValue) => {
-  const date = new Date(cellValue);
-  const formattedDateTime = `${date.getFullYear()}-${padZero(date.getMonth() + 1)}-${padZero(
-    date.getDate(),
-  )} ${padZero(date.getHours())}:${padZero(date.getMinutes())}:${padZero(date.getSeconds())}`;
-
-  return <div>{formattedDateTime}</div>;
-};
-const padZero = (number) => {
-  return number.toString().padStart(2, '0');
+  const time = formatTimestamp(cellValue);
+  return <div>{time}</div>;
 };
 
 const formatterLabels = (row, column, cellValue) => {};
