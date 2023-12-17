@@ -5,6 +5,7 @@ import Operator from './container/operator.vue';
 import Deployment from './container/deployment/deployment.vue';
 import DeploymentCreate from './container/deployment/createDeployment.vue';
 import DeploymentDetail from './container/deployment/details.vue';
+import StatefulSet from './container/statefulset/statefulset.vue';
 import Release from './container/release/release.vue';
 import Terminal from './container/terminal.vue';
 import Monitor from './container/monitor.vue';
@@ -17,9 +18,10 @@ import Menu from './user/menu.vue';
 import Role from './user/role.vue';
 import InsertCluster from './container/insertCluster.vue';
 import CreateCluster from './container/createCluster.vue';
-import NotFound from './notFound/notFound.vue';
 import Service from './container/service/service.vue';
 import ConfigMap from './container/configmap/configmap.vue';
+import Ingress from './container/ingress/ingress.vue';
+import NotFound from './notFound/notFound.vue';
 export {
   Home,
   Login,
@@ -39,8 +41,10 @@ export {
   Monitor,
   InsertCluster,
   CreateCluster,
-  NotFound,
   Operator,
   Service,
+  StatefulSet,
   ConfigMap,
+  Ingress,
+  NotFound,
 };
