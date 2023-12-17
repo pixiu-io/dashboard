@@ -85,7 +85,7 @@
             {{ formatTimestamp(scope.row.info.first_deployed) }}
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="250">
+        <el-table-column fixed="right" label="操作" width="220">
           <template #default="scope">
             <el-button
               size="small"

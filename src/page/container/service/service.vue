@@ -52,18 +52,10 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="spec.type" label="类型" width="180"> </el-table-column>
-
-        <el-table-column
-          prop="spec.selector.matchLabels"
-          label="Selector"
-          width="210"
-          :formatter="formatterLabels"
-        >
+        <el-table-column prop="spec.type" label="类型" width="110"> </el-table-column>
+        <el-table-column label="访问入口" prop="spec.clusterIP" width="180"> </el-table-column>
+        <el-table-column prop="spec.ports" label="端口组" :formatter="formatterPorts">
         </el-table-column>
-
-        <el-table-column label="访问入口" prop="spec.clusterIP" width="auto"> </el-table-column>
-
         <el-table-column
           label="创建时间"
           prop="metadata.creationTimestamp"
@@ -118,6 +110,7 @@ import { useRouter } from 'vue-router';
 import { formatTimestamp } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { getNamespaces } from '@/services/cloudService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -177,16 +170,14 @@ const changeNamespace = async (val) => {
 };
 
 const getNamespaceList = async () => {
-  try {
-    const result = await proxy.$http({
-      method: 'get',
-      url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces`,
-    });
+  const [err, result] = await getNamespaces(data.cluster);
+  if (err) {
+    return;
+  }
 
-    for (let item of result.items) {
-      data.namespaces.push(item.metadata.name);
-    }
-  } catch (error) {}
+  for (let item of result.items) {
+    data.namespaces.push(item.metadata.name);
+  }
 };
 
 const deleteService = (row) => {
@@ -214,7 +205,13 @@ const formatterTime = (row, column, cellValue) => {
   return <div>{time}</div>;
 };
 
-const formatterLabels = (row, column, cellValue) => {};
+const formatterPorts = (row, column, cellValue) => {
+  let ports = [];
+  for (let item of cellValue) {
+    ports.push(`${item.port}/${item.protocol}`);
+  }
+  return <div>{ports.join(',')}</div>;
+};
 </script>
 
 <style scoped="scoped">
