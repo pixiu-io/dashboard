@@ -1,8 +1,12 @@
 <template>
+  <el-card class="title-card-container">
+    <div class="font-container">Release</div>
+  </el-card>
+
   <div style="margin-top: 20px">
     <el-row>
       <el-col>
-        <button class="pixiu-button">新建</button>
+        <button class="pixiu-two-button">新建</button>
         <el-input
           v-model="data.pageInfo.query"
           placeholder="名称搜索关键字"
@@ -33,6 +37,7 @@
         :data="data.releasesList"
         stripe
         style="margin-top: 2px; width: 100%"
+        header-row-class-name="pixiu-table-header"
         :cell-style="{
           'font-size': '12px',
           color: '#29292b',
@@ -78,7 +83,7 @@
             {{ formatTimestamp(scope.row.info.first_deployed) }}
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" align="center" width="250">
+        <el-table-column fixed="right" label="操作" width="250">
           <template #default="scope">
             <el-button
               size="small"
