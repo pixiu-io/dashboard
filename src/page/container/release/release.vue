@@ -43,9 +43,11 @@
           color: '#29292b',
         }"
       >
+        <el-table-column type="selection" width="30" />
+
         <el-table-column prop="metadata.name" label="名称" min-width="150px">
           <template #default="scope">
-            <el-link style="color: #006eff" type="primary" @click="jumpRoute(scope.row)">
+            <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.name }}
             </el-link>
           </template>
