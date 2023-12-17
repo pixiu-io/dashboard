@@ -103,7 +103,7 @@ const routes = [
             meta: {
               title: 'statefulset',
             },
-            component: StastefulSet,
+            component: StatefulSet,
           },
           {
             path: 'release',
