@@ -44,7 +44,7 @@
 
         <el-table-column prop="metadata.name" sortable label="名称" width="180">
           <template #default="scope">
-            <el-link style="color: #3377ff" type="primary" @click="jumpRoute(scope.row)">
+            <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
             </el-link>
           </template>
