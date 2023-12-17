@@ -118,6 +118,7 @@ import { useRouter } from 'vue-router';
 import { formatTimestamp } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { getNamespaces } from '@/services/cloudService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -177,16 +178,14 @@ const changeNamespace = async (val) => {
 };
 
 const getNamespaceList = async () => {
-  try {
-    const result = await proxy.$http({
-      method: 'get',
-      url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces`,
-    });
+  const [err, result] = await getNamespaces(data.cluster);
+  if (err) {
+    return;
+  }
 
-    for (let item of result.items) {
-      data.namespaces.push(item.metadata.name);
-    }
-  } catch (error) {}
+  for (let item of result.items) {
+    data.namespaces.push(item.metadata.name);
+  }
 };
 
 const deleteService = (row) => {
