@@ -25,6 +25,7 @@ import {
   Ingress,
   ConfigMap,
   StatefulSet,
+  StorageClass,
   Pod,
 } from '@/page';
 
@@ -185,6 +186,14 @@ const routes = [
               title: 'configmap',
             },
             component: ConfigMap,
+          },
+          {
+            path: 'storageclass',
+            name: 'StorageClass',
+            meta: {
+              title: 'storageclass',
+            },
+            component: StorageClass,
           },
         ],
       },
