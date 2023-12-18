@@ -15,6 +15,20 @@
       </el-select>
     </div> -->
 
+    <div class="app-2title-container">集群管理</div>
+    <el-menu
+      :default-active="data.path"
+      :default-openeds="data.openedMenu"
+      :unique-opened="true"
+      background-color="#f6f7fb"
+      text-color="#000"
+      router
+      class="el-menu-vertical-no-collapse deployment-container"
+      @open="handleOpen"
+    >
+      <pixiu-menu :items="data.clusterItems" />
+    </el-menu>
+
     <div class="app-title-container">应用中心</div>
     <el-menu
       :default-active="data.path"
@@ -53,6 +67,34 @@ const data = reactive({
   namespaces: [],
   path: '',
   openedMenu: JSON.parse(localStorage.getItem('openMenu')) || [],
+  clusterItems: [
+    {
+      id: 1,
+      name: '基本信息',
+      icon: 'icon-peizhiguanli',
+      iconType: 'iconfont',
+      children: [
+        {
+          id: 2.1,
+          name: 'ConfigMap',
+          url: '/kubernetes/configmaps',
+        },
+      ],
+    },
+    {
+      id: 2,
+      name: '节点管理',
+      icon: 'icon-peizhiguanli',
+      iconType: 'iconfont',
+      children: [
+        {
+          id: 2.1,
+          name: 'ConfigMap',
+          url: '/kubernetes/configmaps',
+        },
+      ],
+    },
+  ],
   items: [
     {
       id: 1,
@@ -284,6 +326,14 @@ onMounted(() => {
 
 .app-title-container {
   margin-top: 18px;
+  margin-left: 10px;
+  font-size: 15px;
+  color: #4c4e58;
+  height: 20px;
+  padding: 10px;
+}
+
+.app-2title-container {
   margin-left: 10px;
   font-size: 15px;
   color: #4c4e58;
