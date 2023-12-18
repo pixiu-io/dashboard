@@ -36,7 +36,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="30" />
-        <el-table-column prop="metadata.name" sortable label="名称" width="180">
+        <el-table-column prop="metadata.name" sortable label="名称" width="220px">
           <template #default="scope">
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
@@ -44,17 +44,19 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="spec.type" label="类型" width="110"> </el-table-column>
-        <el-table-column label="访问入口" prop="spec.clusterIP" width="180"> </el-table-column>
+        <el-table-column prop="provisioner" label="PROVISIONER"> </el-table-column>
+        <el-table-column label="回收策略" prop="reclaimPolicy" width="160px"> </el-table-column>
+        <el-table-column label="绑定模式" prop="volumeBindingMode" width="160px"> </el-table-column>
+
         <el-table-column
           label="创建时间"
           prop="metadata.creationTimestamp"
-          width="170px"
+          width="180px"
           :formatter="formatterTime"
         >
         </el-table-column>
 
-        <el-table-column fixed="right" label="操作" width="180">
+        <el-table-column fixed="right" label="操作" width="180px">
           <template #default="scope">
             <el-button
               size="small"
