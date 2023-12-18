@@ -1,39 +1,31 @@
 <template>
   <el-card class="title-card-container">
-    <div class="font-container">Service</div>
+    <div class="font-container">StorageClass</div>
   </el-card>
 
   <div style="margin-top: 25px">
     <el-row>
       <el-col>
-        <button class="pixiu-two-button" @click="createService">新建</button>
+        <button class="pixiu-two-button" @click="createStorageClass">新建</button>
         <el-input
           v-model="data.pageInfo.query"
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
-          @clear="getServices"
+          @clear="getStorageClass"
         >
           <template #suffix>
-            <el-icon class="el-input__icon" @click="getServices">
+            <el-icon class="el-input__icon" @click="getStorageClass">
               <component :is="'Search'" />
             </el-icon>
           </template>
         </el-input>
-
-        <el-select
-          v-model="data.namespace"
-          style="width: 200px; float: right; margin-right: 10px"
-          @change="changeNamespace"
-        >
-          <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
-        </el-select>
       </el-col>
     </el-row>
     <el-card class="box-card">
       <el-table
         v-loading="loading"
-        :data="data.serviceList"
+        :data="data.straogeClassList"
         stripe
         style="margin-top: 2px; width: 100%"
         :cell-style="{
@@ -44,7 +36,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="30" />
-        <el-table-column prop="metadata.name" sortable label="名称" width="180">
+        <el-table-column prop="metadata.name" sortable label="名称" width="220px">
           <template #default="scope">
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
@@ -52,19 +44,19 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="spec.type" label="类型" width="110"> </el-table-column>
-        <el-table-column label="访问入口" prop="spec.clusterIP" width="180"> </el-table-column>
-        <el-table-column prop="spec.ports" label="端口组" :formatter="formatterPorts">
-        </el-table-column>
+        <el-table-column prop="provisioner" label="PROVISIONER"> </el-table-column>
+        <el-table-column label="回收策略" prop="reclaimPolicy" width="160px"> </el-table-column>
+        <el-table-column label="绑定模式" prop="volumeBindingMode" width="160px"> </el-table-column>
+
         <el-table-column
           label="创建时间"
           prop="metadata.creationTimestamp"
-          width="170px"
+          width="180px"
           :formatter="formatterTime"
         >
         </el-table-column>
 
-        <el-table-column fixed="right" label="操作" width="180">
+        <el-table-column fixed="right" label="操作" width="180px">
           <template #default="scope">
             <el-button
               size="small"
@@ -125,46 +117,45 @@ const data = reactive({
   },
   loading: false,
 
-  namespace: 'default',
-  namespaces: [],
-  serviceList: [],
+  namespace: [],
+  straogeClassList: [],
 });
 
 const handleSizeChange = (newSize) => {
   data.pageInfo.limit = newSize;
-  getServices();
+  getStorageClass();
 };
 
 const handleCurrentChange = (newPage) => {
   data.pageInfo.page = newPage;
-  getServices();
+  getStorageClass();
 };
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
 
-  getServices();
+  getStorageClass();
   getNamespaceList();
 });
 
-const getServices = async () => {
+const getStorageClass = async () => {
   data.loading = true;
   const res = await proxy.$http({
     method: 'get',
-    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/services`,
+    url: `/proxy/pixiu/${data.cluster}/apis/storage.k8s.io/v1/storageclasses`,
     data: data.pageInfo,
   });
 
   data.loading = false;
-  data.serviceList = res.items;
-  data.pageInfo.total = data.serviceList.length;
+  data.straogeClassList = res.items;
+  data.pageInfo.total = data.straogeClassList.length;
 };
 
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
   data.namespace = val;
 
-  getServices();
+  getStorageClass();
 };
 
 const getNamespaceList = async () => {
@@ -201,14 +192,6 @@ const deleteService = (row) => {
 const formatterTime = (row, column, cellValue) => {
   const time = formatTimestamp(cellValue);
   return <div>{time}</div>;
-};
-
-const formatterPorts = (row, column, cellValue) => {
-  let ports = [];
-  for (let item of cellValue) {
-    ports.push(`${item.port}/${item.protocol}`);
-  }
-  return <div>{ports.join(',')}</div>;
 };
 </script>
 
