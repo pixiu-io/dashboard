@@ -2,11 +2,11 @@
   <el-card class="glabal-detail-card">
     <div class="font-container">
       <el-breadcrumb separator="/">
-        <el-breadcrumb-item :to="{ path: '/container' }">容器服务</el-breadcrumb-item>
         <el-breadcrumb-item @click="goToDeployment"
-          ><span style="color: black">Deployment</span>
+          ><span style="color: black"> Deployment </span>
         </el-breadcrumb-item>
-        <el-breadcrumb-item>详细信息</el-breadcrumb-item>
+        <el-breadcrumb-item>{{ data.name }}</el-breadcrumb-item>
+        <el-breadcrumb-item>详情</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
 
