@@ -18,10 +18,13 @@
     <div class="app-title-container">应用中心</div>
     <el-menu
       :default-active="data.path"
+      :default-openeds="data.openedMenu"
+      :unique-opened="true"
       background-color="#f6f7fb"
       text-color="#000"
       router
       class="el-menu-vertical-no-collapse deployment-container"
+      @open="handleOpen"
     >
       <pixiu-menu :items="data.items" />
     </el-menu>
@@ -39,12 +42,17 @@ import PixiuMenu from '@/components/menu/index.vue';
 
 const { proxy } = getCurrentInstance();
 
+const handleOpen = (key, keyPath) => {
+  localStorage.setItem('openMenu', JSON.stringify(keyPath));
+};
+
 const data = reactive({
   cloud: {},
   clouds: [],
   namespace: 'default',
   namespaces: [],
   path: '',
+  openedMenu: JSON.parse(localStorage.getItem('openMenu')) || [],
   items: [
     {
       id: 1,
@@ -59,8 +67,8 @@ const data = reactive({
         },
         {
           id: 1.2,
-          name: 'Statsfulset',
-          url: '/kubernetes/statsfulsets',
+          name: 'StatefulSet',
+          url: '/kubernetes/statefulsets',
         },
         {
           id: 1.3,
@@ -83,7 +91,7 @@ const data = reactive({
         {
           id: 2.1,
           name: 'ConfigMap',
-          url: '/kubernetes/comfig-map',
+          url: '/kubernetes/configmaps',
         },
       ],
     },
@@ -113,8 +121,8 @@ const data = reactive({
       children: [
         {
           id: 3.1,
-          name: 'Storage class',
-          url: '/kubernetes/storage-pv',
+          name: 'StorageClass',
+          url: '/kubernetes/storageclass',
         },
       ],
     },
@@ -231,6 +239,10 @@ onMounted(() => {
   getNamespaceList();
   getNamespace();
   data.path = proxy.$route.fullPath;
+  const openMenu = JSON.parse(localStorage.getItem('openMenu'));
+  if (openMenu) {
+    data.openedMenu = openMenu;
+  }
 });
 </script>
 

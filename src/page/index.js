@@ -4,8 +4,9 @@ import Kubernetes from './container/kubernetes.vue';
 import Operator from './container/operator.vue';
 import Deployment from './container/deployment/deployment.vue';
 import DeploymentCreate from './container/deployment/createDeployment.vue';
-import Release from './container/release/release.vue';
 import DeploymentDetail from './container/deployment/details.vue';
+import StatefulSet from './container/statefulset/statefulset.vue';
+import Release from './container/release/release.vue';
 import Terminal from './container/terminal.vue';
 import Monitor from './container/monitor.vue';
 import Node from './container/node.vue';
@@ -17,6 +18,11 @@ import Menu from './user/menu.vue';
 import Role from './user/role.vue';
 import InsertCluster from './container/insertCluster.vue';
 import CreateCluster from './container/createCluster.vue';
+import Service from './container/service/service.vue';
+import ConfigMap from './container/configmap/configmap.vue';
+import Ingress from './container/ingress/ingress.vue';
+import Pod from './container/pod/pod.vue';
+import StorageClass from './container/storageclass/storageclass.vue';
 import NotFound from './notFound/notFound.vue';
 export {
   Home,
@@ -29,14 +35,20 @@ export {
   Container,
   Kubernetes,
   Deployment,
-  Release,
   DeploymentCreate,
   DeploymentDetail,
+  Release,
   Node,
   Terminal,
   Monitor,
   InsertCluster,
   CreateCluster,
-  NotFound,
   Operator,
+  Service,
+  StatefulSet,
+  ConfigMap,
+  Ingress,
+  Pod,
+  StorageClass,
+  NotFound,
 };

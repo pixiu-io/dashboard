@@ -161,3 +161,16 @@
   margin-right: -20px;
   border-radius: 0px;
 }
+
+/* 全局表格的名称 */
+.global-table-world {
+  color: #006eff;
+  font-size: 13px;
+}
+
+.font-container {
+  margin-top: -5px;
+  font-weight: bold;
+  font-size: 16px;
+  vertical-align: middle;
+}
