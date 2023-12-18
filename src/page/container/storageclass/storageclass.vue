@@ -149,8 +149,6 @@ const getStorageClass = async () => {
   data.loading = false;
   data.straogeClassList = res.items;
   data.pageInfo.total = data.straogeClassList.length;
-
-  console.log('ddd', data.straogeClassList);
 };
 
 const changeNamespace = async (val) => {
