@@ -1,6 +1,6 @@
 <template>
   <el-main>
-    <el-card style="margin-top: -20px; margin-left: -20px; margin-right: -20px">
+    <el-card style="margin-top: -20px; margin-left: -20px; margin-right: -20px; border-radius: 0px">
       <el-row>
         <el-col>
           <span style="font-weight: bold; font-size: 18px; vertical-align: middle">
@@ -86,7 +86,7 @@
             @clear="cloudStore.getCloudList"
           >
             <template #suffix>
-              <el-icon class="el-input__icon">
+              <el-icon class="el-input__icon" @click="cloudStore.getCloudList">
                 <component :is="'Search'" />
               </el-icon>
             </template>
@@ -108,12 +108,35 @@
           <el-table-column prop="name" label="名称/ID" width="180">
             <template #default="scope">
               <el-link
-                style="color: #006eff; font-size: 12px"
+                style="color: #006eff; font-size: 12px; margin-right: 2px"
                 type="primary"
                 @click="cloudStore.jumpRoute(scope.row)"
               >
-                {{ scope.row.name }}
+                {{ scope.row.alias_name }}
               </el-link>
+              <el-tooltip content="修改名称">
+                <pixiu-icon
+                  name="Edit"
+                  size="10px"
+                  type="el"
+                  color="#909399"
+                  @click="cloudStore.editAlias(scope.row)"
+                />
+              </el-tooltip>
+              <div>
+                <span style="color: #5e5e63; font-size: 12px; margin-right: 2px" type="primary">
+                  {{ scope.row.name }}
+                </span>
+                <el-tooltip content="复制">
+                  <pixiu-icon
+                    name="DocumentCopy"
+                    size="10px"
+                    type="el"
+                    color="#909399"
+                    @click="copy(scope.row)"
+                  />
+                </el-tooltip>
+              </div>
             </template>
           </el-table-column>
 
@@ -141,6 +164,7 @@
             width="180"
             :formatter="cloudNodeFormatter"
           />
+
           <el-table-column prop="resources" label="资源量" :formatter="formatterResource" />
 
           <el-table-column fixed="right" label="操作" width="170">
@@ -195,6 +219,37 @@
       </el-card>
     </div>
   </el-main>
+
+  <el-dialog
+    v-model="cloudStore.editAliasName"
+    style="color: #000000; font: 14px"
+    width="500px"
+    center
+    @close="cloudStore.closeModal"
+  >
+    <template #title>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">修改集群名称</div>
+    </template>
+
+    <el-form style="max-width: 440px">
+      <el-form-item label="集群名称">
+        <el-input v-model="cloudStore.selectCloudAliasName" />
+      </el-form-item>
+    </el-form>
+
+    <div style="margin-top: -18px"></div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-small-cancel-button" @click="cloudStore.closeModal">取消</el-button>
+        <el-button
+          class="pixiu-small-confirm-button"
+          type="primary"
+          @click="cloudStore.changeAliasName"
+          >确定</el-button
+        >
+      </span>
+    </template>
+  </el-dialog>
 
   <el-dialog
     v-model="cloudStore.createCloudVisible"
@@ -274,8 +329,26 @@ import PixiuRadioCard from '@/components/radioCard/index.vue';
 import Icon from '@/components/pixiuTooltip/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import useCloudStore from '@/stores/useCloud';
+import useClipboard from 'vue-clipboard3';
+import { ElMessage } from 'element-plus';
 
 const cloudStore = useCloudStore();
+
+const { toClipboard } = useClipboard();
+const copy = async (val) => {
+  try {
+    await toClipboard(val.name);
+    ElMessage({
+      type: 'success',
+      message: '已复制',
+    });
+  } catch (e) {
+    ElMessage({
+      type: 'error',
+      message: e.valueOf().toString(),
+    });
+  }
+};
 
 onMounted(() => {
   cloudStore.getCloudList();
@@ -341,7 +414,9 @@ const cloudVersionFormatter = (row, column, cellValue) => (
 const cloudNodeFormatter = (row, column, cellValue) => (
   <div class="pixiu-table-formatter">
     <el-space>
-      <div>{cellValue}台(全部正常)</div>
+      <div>
+        {cellValue}台(<span style="color: #28c65a;">全部正常</span>)
+      </div>
     </el-space>
   </div>
 );
@@ -373,11 +448,11 @@ const formatterResource = (row, column, cellValue) => {
     <div style="display:flex;flex-direction:column">
       <el-space>
         <span style="font-weight:bold;font-size: 12px">CPU:</span>
-        <span>{cellValue['cpu']}</span>
+        <span style="font-weight:bold;font-size: 12px">{cellValue['cpu']}</span>
       </el-space>
       <el-space>
         <span style="font-weight:bold;font-size: 12px">内存:</span>
-        <span>{cellValue['memory']}</span>
+        <span style="font-weight:bold;font-size: 12px">{cellValue['memory']}</span>
       </el-space>
     </div>
   );
@@ -388,6 +463,7 @@ const formatterResource = (row, column, cellValue) => {
 .box-card {
   margin-top: 20px;
   /* width: 480px; */
+  border-radius: 0px;
 }
 
 .el-main {

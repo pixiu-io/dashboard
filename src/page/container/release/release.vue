@@ -1,8 +1,12 @@
 <template>
+  <el-card class="title-card-container">
+    <div class="font-container">Release</div>
+  </el-card>
+
   <div style="margin-top: 20px">
     <el-row>
       <el-col>
-        <button class="pixiu-button">新建</button>
+        <button class="pixiu-two-button">新建</button>
         <el-input
           v-model="data.pageInfo.query"
           placeholder="名称搜索关键字"
@@ -12,7 +16,7 @@
           @clear="getReleases"
         >
           <template #suffix>
-            <el-icon class="el-input__icon">
+            <el-icon class="el-input__icon" @click="getReleases">
               <component :is="'Search'" />
             </el-icon>
           </template>
@@ -33,10 +37,17 @@
         :data="data.releasesList"
         stripe
         style="margin-top: 2px; width: 100%"
+        header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#29292b',
+        }"
       >
+        <el-table-column type="selection" width="30" />
+
         <el-table-column prop="metadata.name" label="名称" min-width="150px">
           <template #default="scope">
-            <el-link style="color: #006eff" type="primary" @click="jumpRoute(scope.row)">
+            <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.name }}
             </el-link>
           </template>
@@ -66,15 +77,15 @@
         </el-table-column>
         <el-table-column label="部署时间" width="180px">
           <template #default="scope">
-            {{ parseTime(scope.row.info.first_deployed) }}
+            {{ formatTimestamp(scope.row.info.first_deployed) }}
           </template>
         </el-table-column>
         <el-table-column prop="" label="上次部署时间" width="180px">
           <template #default="scope">
-            {{ parseTime(scope.row.info.last_deployed) }}
+            {{ formatTimestamp(scope.row.info.first_deployed) }}
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" align="center" width="250">
+        <el-table-column fixed="right" label="操作" width="220">
           <template #default="scope">
             <el-button
               size="small"
@@ -127,7 +138,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-
+import { formatTimestamp } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 
 const { proxy } = getCurrentInstance();
@@ -185,7 +196,7 @@ const getReleases = async () => {
   data.loading = true;
   const res = await proxy.$http({
     method: 'get',
-    url: `/pixiu/helm/${data.cluster}/v1/namespaces/${data.namespace}/releases`,
+    url: `/pixiu/helms/clusters/${data.cluster}/v1/namespaces/${data.namespace}/releases`,
     data: data.pageInfo,
   });
 
@@ -216,44 +227,6 @@ const getNamespaceList = async () => {
     }
   } catch (error) {}
 };
-
-function parseTime(time, cFormat) {
-  if (arguments.length === 0) {
-    return null;
-  }
-  const format = cFormat || '{y}-{m}-{d} {h}:{i}:{s}';
-  let date;
-  if (typeof time === 'object') {
-    date = time;
-  } else {
-    if (typeof time === 'string' && /^[0-9]+$/.test(time)) {
-      time = parseInt(time);
-    }
-    if (typeof time === 'number' && time.toString().length === 10) {
-      time = time * 1000;
-    }
-    date = new Date(time);
-  }
-  const formatObj = {
-    y: date.getFullYear(),
-    m: date.getMonth() + 1,
-    d: date.getDate(),
-    h: date.getHours(),
-    i: date.getMinutes(),
-    s: date.getSeconds(),
-    a: date.getDay(),
-  };
-  const time_str = format.replace(/{([ymdhisa])+}/g, (result, key) => {
-    const value = formatObj[key];
-    // Note: getDay() returns 0 on Sunday
-    if (key === 'a') {
-      return ['日', '一', '二', '三', '四', '五', '六'][value];
-    }
-    return value.toString().padStart(2, '0');
-  });
-
-  return time_str;
-}
 </script>
 
 <style scoped="scoped">

@@ -31,6 +31,7 @@
             :collapse="data.isCollapse"
             @open="handleOpen"
             @close="handleClose"
+            @select="handleSelect"
           >
             <pixiu-menu :items="data.menus" />
             <el-menu-item class="expand-icon">
@@ -63,9 +64,7 @@ import PixiuMenu from '@/components/menu/index.vue';
 const router = useRouter();
 
 const data = reactive({
-  activeIndex: router.currentRoute.value.fullPath
-    ? router.currentRoute.value.fullPath
-    : localStorage.getItem('activeIndex') ?? '/index',
+  activeIndex: '',
   headInput: '',
 
   inputWidth: '200px',
@@ -74,6 +73,13 @@ const data = reactive({
   manualCollapse: false, // 手动控制侧边栏是否开启，默认为 false
   menus: [],
 });
+
+// 查找fullPath是否在data.menus中
+const getActive = () => {
+  const fullPath = router.currentRoute.value.fullPath;
+  const index = data.menus.findIndex((item) => item.url === fullPath);
+  return index !== -1 ? fullPath : localStorage.getItem('activeIndex') ?? '/index';
+};
 
 onMounted(() => {
   data.menus = [
@@ -114,6 +120,7 @@ onMounted(() => {
       iconType: 'el',
     },
   ];
+  data.activeIndex = getActive();
 });
 
 // 持久化权限
@@ -137,6 +144,11 @@ const mouseLeave = () => {
   if (!data.manualCollapse) {
     data.isCollapse = true;
   }
+};
+
+const handleSelect = (item) => {
+  localStorage.setItem('activeIndex', item);
+  data.activeIndex = item;
 };
 </script>
 

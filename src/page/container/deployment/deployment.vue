@@ -10,13 +10,12 @@
         <el-input
           v-model="data.pageInfo.query"
           placeholder="名称搜索关键字"
-          style="width: 420px; float: right"
+          style="width: 480px; float: right"
           clearable
-          @input="getDeployments"
           @clear="getDeployments"
         >
           <template #suffix>
-            <el-icon class="el-input__icon">
+            <el-icon class="el-input__icon" @click="getDeployments">
               <component :is="'Search'" />
             </el-icon>
           </template>
@@ -24,7 +23,7 @@
 
         <el-select
           v-model="data.namespace"
-          style="width: 160px; float: right; margin-right: 10px"
+          style="width: 200px; float: right; margin-right: 10px"
           @change="changeNamespace"
         >
           <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
@@ -39,86 +38,54 @@
         stripe
         style="margin-top: 2px; width: 100%"
         header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#29292b',
+        }"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column prop="metadata.name" label="名称" width="180">
+        <el-table-column type="selection" width="30" />
+
+        <el-table-column prop="metadata.name" sortable label="名称" width="180">
           <template #default="scope">
-            <el-link style="color: #006eff" type="primary" @click="jumpRoute(scope.row)">
+            <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="Labels" width="150">
-          <template #default="scope">
-            <el-popover
-              v-if="scope.row.metadata.labels"
-              placement="right"
-              width="auto"
-              trigger="hover"
-            >
-              <div v-for="(val, key) in scope.row.metadata.labels" :key="key">
-                <el-tag style="margin: 5px 0px">{{ key + '=' + val }}</el-tag>
-              </div>
-              <template #reference>
-                <pixiu-tag :content="formatFirst(scope.row.metadata.labels)" />
-              </template>
-            </el-popover>
-            <span v-else>-</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="Selector" width="150">
-          <template #default="scope">
-            <el-popover placement="right" width="auto" trigger="hover">
-              <div v-for="(val, key) in scope.row.spec.selector.matchLabels" :key="key">
-                <el-tag style="margin: 5px 0px">{{ key + '=' + val }}</el-tag>
-              </div>
-              <template #reference>
-                <pixiu-tag :content="formatFirst(scope.row.spec.selector.matchLabels)" />
-              </template>
-            </el-popover>
-          </template>
+
+        <!-- <el-table-column prop="metadata.creationTimestamp" label="创建时间" width="180" /> -->
+
+        <el-table-column
+          prop="spec.template.metadata.labels"
+          label="Labels"
+          width="210"
+          :formatter="formatterLabels"
+        />
+
+        <el-table-column
+          prop="spec.selector.matchLabels"
+          label="Selector"
+          width="210"
+          :formatter="formatterLabels"
+        >
         </el-table-column>
 
-        <el-table-column prop="" label="Pod状态运行/期望" width="180">
-          <template #default="scope">
-            <span class="span_point" :class="addReadyClass(scope.row)" />
-            <span
-              >&nbsp;&nbsp;
-              {{
-                scope.row.status.availableReplicas == scope.row.spec.replicas ? 'ready' : 'pending'
-              }}
-              ({{
-                scope.row.status.availableReplicas > 0 ? scope.row.status.availableReplicas : 0
-              }}/{{ scope.row.spec.replicas > 0 ? scope.row.spec.replicas : 0 }})
-            </span>
-          </template>
+        <el-table-column
+          prop="status"
+          label="Pod状态运行/期望"
+          width="180"
+          :formatter="formatterStatus"
+        >
         </el-table-column>
 
-        <el-table-column label="Resources">
-          <template #default="scope">
-            <el-popover placement="right" width="auto" trigger="hover">
-              <div v-for="(val, key) in scope.row.spec.template.spec.containers" :key="key">
-                <el-tag style="margin: 5px 0px">{{ val.image }}</el-tag>
-              </div>
-              <template #reference>
-                <pixiu-tag :content="scope.row.spec.template.spec.containers[0]['image']" />
-              </template>
-            </el-popover>
-          </template>
+        <el-table-column
+          label="镜像"
+          prop="spec.template.spec.containers"
+          width="auto"
+          :formatter="formatterImage"
+        >
         </el-table-column>
-
-        <!-- <el-table-column label="镜像" width="300">
-          <template #default="scope">
-            <el-popover placement="right" width="auto" trigger="hover">
-              <div v-for="(val, key) in scope.row.spec.template.spec.containers" :key="key">
-                <el-tag style="margin: 5px 0px">{{ val.image }}</el-tag>
-              </div>
-              <template #reference>
-                <pixiu-tag :content="scope.row.spec.template.spec.containers[0]['image']" />
-              </template>
-            </el-popover>
-          </template>
-        </el-table-column> -->
 
         <el-table-column fixed="right" label="操作" width="180">
           <template #default="scope">
@@ -134,7 +101,7 @@
             <el-button
               type="text"
               size="small"
-              style="margin-right: 2px; color: #006eff"
+              style="margin-right: 1px; color: #006eff"
               @click="handleDeploymentScaleDialog(scope.row)"
             >
               调整副本数
@@ -184,6 +151,7 @@
     <template #header>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">调整副本配置</div>
     </template>
+
     <el-form label-width="100px" style="max-width: 300px">
       <el-form-item label="原副本数">
         <el-input v-model="data.deploymentRepcliasFrom.origin" disabled />
@@ -193,16 +161,22 @@
       </el-form-item>
     </el-form>
 
+    <div style="margin-top: -18px"></div>
+
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="closeDeploymentScaleDialog">取消</el-button>
-        <el-button type="primary" @click="confirmDeploymentScale">确认</el-button>
+        <el-button class="pixiu-small-cancel-button" @click="closeDeploymentScaleDialog"
+          >取消</el-button
+        >
+        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmDeploymentScale"
+          >确认</el-button
+        >
       </span>
     </template>
   </el-dialog>
 </template>
 
-<script setup>
+<script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
@@ -259,8 +233,9 @@ const jumpRoute = (row) => {
   router.push({
     name: 'DeploymentDetail',
     query: {
-      name: row.metadata.name,
+      cluster: data.cluster,
       namespace: data.namespace,
+      name: row.metadata.name,
     },
   });
 };
@@ -298,12 +273,6 @@ const getNamespaceList = async () => {
   } catch (error) {}
 };
 
-function addReadyClass(row) {
-  if (row.status.availableReplicas == row.spec.replicas) {
-    return 'span_ready';
-  }
-  return 'span_pending';
-}
 const deleteDeployment = (row) => {
   ElMessageBox.confirm(
     '此操作将永久删除 Deployment ' + row.metadata.name + ' . 是否继续?',
@@ -369,47 +338,41 @@ const confirmDeploymentScale = () => {
   } catch (error) {}
 };
 
-function formatFirst(labels) {
-  for (let key in labels) {
-    return `${key}=${labels[key]}`;
-  }
-}
+const formatterLabels = (row, column, cellValue) => {
+  const labels = Object.entries(cellValue).map(([key, value]) => {
+    return `${key}: ${value}`;
+  });
+
+  return (
+    <div>
+      {' '}
+      {labels.map((label) => (
+        <div class="pixiu-table-formatter">{label}</div>
+      ))}{' '}
+    </div>
+  );
+};
+
+const formatterStatus = (row, column, cellValue) => {
+  return (
+    <div>
+      {cellValue.availableReplicas}/{cellValue.replicas}
+    </div>
+  );
+};
+
+const formatterImage = (row, column, cellValue) => {
+  return (
+    <div>
+      {cellValue.map((item) => (
+        <div>{item.image}</div>
+      ))}
+    </div>
+  );
+};
 </script>
 
 <style scoped="scoped">
-.box-card {
-  margin-top: 20px;
-  /* width: 480px; */
-}
-
-.span_point {
-  align-items: center;
-  border-radius: 50%;
-  display: inline-flex;
-  justify-content: center;
-  line-height: normal;
-  position: relative;
-  text-align: center;
-  vertical-align: middle;
-  overflow: hidden;
-  height: 10px;
-  min-width: 10px;
-  width: 10px;
-}
-.span_ready {
-  background-color: #67c23a;
-}
-.span_pending {
-  background-color: #e6a23c;
-}
-
-.title-card-container {
-  height: 50px;
-  margin-top: -20px;
-  margin-left: -20px;
-  margin-right: -20px;
-}
-
 .font-container {
   margin-top: -5px;
   font-weight: bold;

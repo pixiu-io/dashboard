@@ -423,14 +423,6 @@ const getMenusByMenuType = async () => {
   margin-left: 15px;
 }
 
-.el-dropdown-link {
-  cursor: pointer;
-  color: #006eff;
-  display: flex;
-  font-size: 12px;
-  margin-top: 6px;
-}
-
 .dropdown-buttons {
   display: flex;
   flex-direction: column;
