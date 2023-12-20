@@ -163,8 +163,8 @@ const data = reactive({
       children: [
         {
           id: 3.1,
-          name: 'Storage class',
-          url: '/kubernetes/storage-pv',
+          name: 'StorageClass',
+          url: '/kubernetes/storageclass',
         },
       ],
     },
