@@ -63,18 +63,16 @@ const data = reactive({
   openedMenu: JSON.parse(localStorage.getItem('openMenu')) || [],
   clusterItems: [
     {
-      id: 1,
       name: '基本信息',
       icon: 'Postcard',
       iconType: 'el',
-      url: '/kubernetes/configmaps',
+      url: '/kubernetes/info',
     },
     {
-      id: 2,
       name: '节点管理',
       icon: 'Operation',
       iconType: 'el',
-      url: '/kubernetes/configmaps',
+      url: '/kubernetes/nodes',
     },
     {
       name: 'Pixiu Shell',
