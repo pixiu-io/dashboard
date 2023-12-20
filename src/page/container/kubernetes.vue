@@ -71,28 +71,16 @@ const data = reactive({
     {
       id: 1,
       name: '基本信息',
-      icon: 'icon-peizhiguanli',
-      iconType: 'iconfont',
-      children: [
-        {
-          id: 2.1,
-          name: 'ConfigMap',
-          url: '/kubernetes/configmaps',
-        },
-      ],
+      icon: 'Postcard',
+      iconType: 'el',
+      url: '/kubernetes/configmaps',
     },
     {
       id: 2,
       name: '节点管理',
-      icon: 'icon-peizhiguanli',
-      iconType: 'iconfont',
-      children: [
-        {
-          id: 2.1,
-          name: 'ConfigMap',
-          url: '/kubernetes/configmaps',
-        },
-      ],
+      icon: 'Operation',
+      iconType: 'el',
+      url: '/kubernetes/configmaps',
     },
   ],
   items: [
@@ -325,7 +313,7 @@ onMounted(() => {
 }
 
 .app-title-container {
-  margin-top: 18px;
+  margin-top: 6px;
   margin-left: 10px;
   font-size: 15px;
   color: #4c4e58;
