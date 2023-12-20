@@ -82,6 +82,22 @@
             >
               删除
             </el-button>
+            <el-dropdown>
+              <span class="el-dropdown-link">
+                更多
+                <el-icon><arrow-down /></el-icon>
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu class="dropdown-buttons">
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="deleteDeployment(scope.row)"
+                  >
+                    删除
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </template>
         </el-table-column>
 
@@ -178,12 +194,12 @@ const formatRole = (row, column, cellValue) => {
   let roles = [];
   let ls = JSON.parse(JSON.stringify(cellValue.labels));
   console.log('ls', ls);
-  for (let [label, v] of ls) {
-    if (label.indexOf('node-role.kubernetes.io')) {
-      let parts = str.split('/');
-      roles.push(parts[1]);
-    }
-  }
+  // for (let [label, v] of ls) {
+  //   if (label.indexOf('node-role.kubernetes.io')) {
+  //     let parts = str.split('/');
+  //     roles.push(parts[1]);
+  //   }
+  // }
 
   return <div>master</div>;
 };
