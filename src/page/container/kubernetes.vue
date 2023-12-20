@@ -23,7 +23,7 @@
       background-color="#f6f7fb"
       text-color="#000"
       router
-      class="el-menu-vertical-no-collapse deployment-container"
+      class="deployment-container"
       @open="handleOpen"
     >
       <pixiu-menu :items="data.clusterItems" />
@@ -37,7 +37,7 @@
       background-color="#f6f7fb"
       text-color="#000"
       router
-      class="el-menu-vertical-no-collapse deployment-container"
+      class="deployment-container"
       @open="handleOpen"
     >
       <pixiu-menu :items="data.items" />
@@ -372,16 +372,10 @@ onMounted(() => {
   width: 200px;
 }
 
-.el-menu-vertical-no-collapse:not(.el-menu--collapse) {
-  width: 180px;
-  height: calc(100% - 300px);
-}
-
 .el-menu {
   border-right: none;
-  height: 100%;
+  /* height: 100%; */
 }
-
 .expand-icon {
   position: absolute;
   width: 100%;
