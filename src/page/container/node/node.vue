@@ -89,13 +89,13 @@
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
-                  <el-dropdown-item class="dropdown-item-buttons" @click="setUnCordon(scope.row)">
+                  <el-dropdown-item class="dropdown-item-buttons" @click="drain(scope.row)">
                     节点驱散
                   </el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons" @click="setCordon(scope.row)">
+                  <el-dropdown-item class="dropdown-item-buttons" @click="cordon(scope.row)">
                     设置可调度
                   </el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons" @click="setUnCordon(scope.row)">
+                  <el-dropdown-item class="dropdown-item-buttons" @click="unCordon(scope.row)">
                     设置不可调度
                   </el-dropdown-item>
                 </el-dropdown-menu>
@@ -173,6 +173,12 @@ const getNodes = async () => {
   data.nodeList = res.items;
   data.pageInfo.total = data.nodeList.length;
 };
+
+const drain = (row) => {};
+
+const cordon = (row) => {};
+
+const unCordon = (row) => {};
 
 const formatterTime = (row, column, cellValue) => {
   const time = formatTimestamp(cellValue);
