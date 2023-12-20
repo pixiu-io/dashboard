@@ -26,6 +26,7 @@ import {
   ConfigMap,
   StatefulSet,
   StorageClass,
+  Info,
   Pod,
 } from '@/page';
 
@@ -83,6 +84,14 @@ const routes = [
         },
         component: Kubernetes,
         children: [
+          {
+            path: 'info',
+            name: 'Info',
+            meta: {
+              title: 'info',
+            },
+            component: Info,
+          },
           {
             path: 'nodes',
             name: 'Node',

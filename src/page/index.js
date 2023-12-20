@@ -9,7 +9,8 @@ import StatefulSet from './container/statefulset/statefulset.vue';
 import Release from './container/release/release.vue';
 import Terminal from './container/terminal.vue';
 import Monitor from './container/monitor.vue';
-import Node from './container/node.vue';
+import Node from './container/node/node.vue';
+import Info from './container/info/info.vue';
 import Home from './home/home.vue';
 import Login from './login/login.vue';
 import Setting from './setting/setting.vue';
@@ -50,5 +51,6 @@ export {
   Ingress,
   Pod,
   StorageClass,
+  Info,
   NotFound,
 };
