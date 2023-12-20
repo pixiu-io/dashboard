@@ -89,11 +89,14 @@
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
-                  <el-dropdown-item
-                    class="dropdown-item-buttons"
-                    @click="deleteDeployment(scope.row)"
-                  >
-                    删除
+                  <el-dropdown-item class="dropdown-item-buttons" @click="setUnCordon(scope.row)">
+                    节点驱散
+                  </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons" @click="setCordon(scope.row)">
+                    设置可调度
+                  </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons" @click="setUnCordon(scope.row)">
+                    设置不可调度
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
