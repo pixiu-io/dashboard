@@ -36,7 +36,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="30" />
-        <el-table-column prop="metadata.name" sortable label="名称" width="220px">
+        <el-table-column prop="metadata.name" sortable label="名称" width="180px">
           <template #default="scope">
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
@@ -44,15 +44,21 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="状态" prop="provisioner"> </el-table-column>
-        <el-table-column label="角色" prop="reclaimPolicy" width="160px"> </el-table-column>
-        <el-table-column label="版本" prop="volumeBindingMode" width="160px"> </el-table-column>
-        <el-table-column label="运行时" prop="volumeBindingMode" width="160px"> </el-table-column>
+        <el-table-column label="状态" prop="status" :formatter="formatStatus"> </el-table-column>
+        <el-table-column label="角色" prop="metadata" :formatter="formatRole"> </el-table-column>
+        <el-table-column label="地址" prop="status" :formatter="formatIp"> </el-table-column>
+        <el-table-column label="版本" prop="status.nodeInfo.kubeletVersion"> </el-table-column>
+        <el-table-column
+          label="运行时"
+          prop="status.nodeInfo.containerRuntimeVersion"
+          width="120px"
+        >
+        </el-table-column>
 
         <el-table-column
           label="创建时间"
           prop="metadata.creationTimestamp"
-          width="180px"
+          width="160px"
           :formatter="formatterTime"
         >
         </el-table-column>
@@ -152,6 +158,18 @@ const getNodes = async () => {
 const formatterTime = (row, column, cellValue) => {
   const time = formatTimestamp(cellValue);
   return <div>{time}</div>;
+};
+
+const formatStatus = (row, column, cellValue) => {
+  return <div>status</div>;
+};
+
+const formatRole = (row, column, cellValue) => {
+  return <div>role</div>;
+};
+
+const formatIp = (row, column, cellValue) => {
+  return <div>formatIp</div>;
 };
 </script>
 
