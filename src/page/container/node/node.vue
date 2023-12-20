@@ -161,15 +161,42 @@ const formatterTime = (row, column, cellValue) => {
 };
 
 const formatStatus = (row, column, cellValue) => {
-  return <div>status</div>;
+  let status = 'NotReady';
+  for (let c of cellValue.conditions) {
+    if (c.type === 'Ready') {
+      if (c.status === 'True') {
+        status = 'Ready';
+      }
+      break;
+    }
+  }
+
+  return <div>{status}</div>;
 };
 
 const formatRole = (row, column, cellValue) => {
-  return <div>role</div>;
+  let roles = [];
+  let ls = JSON.parse(JSON.stringify(cellValue.labels));
+  console.log('ls', ls);
+  for (let [label, v] of ls) {
+    if (label.indexOf('node-role.kubernetes.io')) {
+      let parts = str.split('/');
+      roles.push(parts[1]);
+    }
+  }
+
+  return <div>master</div>;
 };
 
 const formatIp = (row, column, cellValue) => {
-  return <div>formatIp</div>;
+  let address = '';
+  for (let i of cellValue.addresses) {
+    if (i.type === 'InternalIP') {
+      address = i.address;
+      break;
+    }
+  }
+  return <div>{address}</div>;
 };
 </script>
 
