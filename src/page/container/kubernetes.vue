@@ -8,12 +8,6 @@
         <el-option v-for="item in data.clouds" :key="item.id" :value="item.id" :label="item.id" />
       </el-select>
     </div>
-    <!-- <div class="namespace-title-container">命名空间</div>
-    <div class="namespace-select-container">
-      <el-select v-model="data.namespace" style="width: 80%" @change="changeNamespace">
-        <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
-      </el-select>
-    </div> -->
 
     <div class="app-2title-container">集群管理</div>
     <el-menu
@@ -81,6 +75,12 @@ const data = reactive({
       icon: 'Operation',
       iconType: 'el',
       url: '/kubernetes/configmaps',
+    },
+    {
+      name: 'Pixiu Shell',
+      icon: 'icon-a-kuozhanicon_huaban1fuben33',
+      iconType: 'iconfont',
+      url: '/kubernetes/terminal',
     },
   ],
   items: [
@@ -155,20 +155,6 @@ const data = reactive({
           url: '/kubernetes/storageclass',
         },
       ],
-    },
-    // {
-    //   id: 7,
-    //   name: '监控中心',
-    //   icon: 'Monitor',
-    //   iconType: 'iconfont',
-    //   url: '/kubernetes/monitor',
-    // },
-    {
-      id: 5,
-      name: 'Pixiu Shell',
-      icon: 'icon-a-kuozhanicon_huaban1fuben33',
-      iconType: 'iconfont',
-      url: '/kubernetes/terminal',
     },
     {
       id: 6,
@@ -327,14 +313,6 @@ onMounted(() => {
   color: #4c4e58;
   height: 20px;
   padding: 10px;
-}
-
-.namespace-select-container {
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-bottom: 1px rgba(0, 0, 0, 0.1) solid;
 }
 
 .el-header {
