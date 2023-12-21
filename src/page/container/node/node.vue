@@ -1,39 +1,31 @@
 <template>
   <el-card class="title-card-container">
-    <div class="font-container">Ingress</div>
+    <div class="font-container">节点管理</div>
   </el-card>
 
   <div style="margin-top: 25px">
     <el-row>
       <el-col>
-        <button class="pixiu-two-button" @click="createService">新建</button>
+        <button class="pixiu-two-button" @click="createStorageClass">新建</button>
         <el-input
           v-model="data.pageInfo.query"
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
-          @clear="getIngresses"
+          @clear="getNodes"
         >
           <template #suffix>
-            <el-icon class="el-input__icon" @click="getIngresses">
+            <el-icon class="el-input__icon" @click="getNodes">
               <component :is="'Search'" />
             </el-icon>
           </template>
         </el-input>
-
-        <el-select
-          v-model="data.namespace"
-          style="width: 200px; float: right; margin-right: 10px"
-          @change="changeNamespace"
-        >
-          <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
-        </el-select>
       </el-col>
     </el-row>
     <el-card class="box-card">
       <el-table
         v-loading="loading"
-        :data="data.serviceList"
+        :data="data.nodeList"
         stripe
         style="margin-top: 2px; width: 100%"
         :cell-style="{
@@ -44,7 +36,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="30" />
-        <el-table-column prop="metadata.name" sortable label="名称" width="180">
+        <el-table-column prop="metadata.name" sortable label="名称" width="180px">
           <template #default="scope">
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
@@ -52,24 +44,32 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="spec.type" label="HOSTS" width="110"> </el-table-column>
-        <el-table-column prop="spec.ports" label="端口组" :formatter="formatterPorts">
+        <el-table-column label="状态" prop="status" :formatter="formatStatus"> </el-table-column>
+        <el-table-column label="角色" prop="metadata" :formatter="formatRole"> </el-table-column>
+        <el-table-column label="地址" prop="status" :formatter="formatIp"> </el-table-column>
+        <el-table-column label="版本" prop="status.nodeInfo.kubeletVersion"> </el-table-column>
+        <el-table-column
+          label="运行时"
+          prop="status.nodeInfo.containerRuntimeVersion"
+          width="120px"
+        >
         </el-table-column>
+
         <el-table-column
           label="创建时间"
           prop="metadata.creationTimestamp"
-          width="170px"
+          width="160px"
           :formatter="formatterTime"
         >
         </el-table-column>
 
-        <el-table-column fixed="right" label="操作" width="180">
+        <el-table-column fixed="right" label="操作" width="180px">
           <template #default="scope">
             <el-button
               size="small"
               type="text"
               style="margin-right: -20px; margin-left: -10px; color: #006eff"
-              @click="editIngress(scope.row)"
+              @click="editDeployment(scope.row)"
             >
               更新配置
             </el-button>
@@ -78,10 +78,29 @@
               type="text"
               size="small"
               style="margin-right: 1px; color: #006eff"
-              @click="deleteIngress(scope.row)"
+              @click="handleDeploymentScaleDialog(scope.row)"
             >
               删除
             </el-button>
+            <el-dropdown>
+              <span class="el-dropdown-link">
+                更多
+                <el-icon><arrow-down /></el-icon>
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu class="dropdown-buttons">
+                  <el-dropdown-item class="dropdown-item-buttons" @click="drain(scope.row)">
+                    节点驱散
+                  </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons" @click="cordon(scope.row)">
+                    设置可调度
+                  </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons" @click="unCordon(scope.row)">
+                    设置不可调度
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </template>
         </el-table-column>
 
@@ -108,8 +127,6 @@
 import { useRouter } from 'vue-router';
 import { formatTimestamp } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
-import { getNamespaces } from '@/services/cloudService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -122,87 +139,89 @@ const data = reactive({
     total: 0,
     limit: 100,
   },
+
   loading: false,
 
-  namespace: 'default',
-  namespaces: [],
-  serviceList: [],
+  nodeList: [],
 });
 
 const handleSizeChange = (newSize) => {
   data.pageInfo.limit = newSize;
-  getIngresses();
+  getNodes();
 };
 
 const handleCurrentChange = (newPage) => {
   data.pageInfo.page = newPage;
-  getIngresses();
+  getNodes();
 };
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
 
-  getIngresses();
-  getNamespaceList();
+  getNodes();
 });
 
-const getIngresses = async () => {
+const getNodes = async () => {
   data.loading = true;
   const res = await proxy.$http({
     method: 'get',
-    url: `/proxy/pixiu/${data.cluster}/apis/networking.k8s.io/v1/namespaces/${data.namespace}/ingresses`,
+    url: `/proxy/pixiu/${data.cluster}/api/v1/nodes`,
     data: data.pageInfo,
   });
-
   data.loading = false;
-  data.serviceList = res.items;
-  data.pageInfo.total = data.serviceList.length;
+
+  data.nodeList = res.items;
+  data.pageInfo.total = data.nodeList.length;
 };
 
-const changeNamespace = async (val) => {
-  localStorage.setItem('namespace', val);
-  data.namespace = val;
+const drain = (row) => {};
 
-  getIngresses();
-};
+const cordon = (row) => {};
 
-const getNamespaceList = async () => {
-  const [err, result] = await getNamespaces(data.cluster);
-  if (err) {
-    return;
-  }
-
-  for (let item of result.items) {
-    data.namespaces.push(item.metadata.name);
-  }
-};
-
-const deleteIngress = (row) => {
-  ElMessageBox.confirm('此操作将永久删除 Ingress ' + row.metadata.name + ' . 是否继续?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-    draggable: true,
-  })
-    .then(() => {
-      const res = proxy.$http({
-        method: 'delete',
-        url: `/proxy/pixiu/${data.cluster}/apis/networking.k8s.io/v1/namespaces/${data.namespace}/ingresses/${row.metadata.name}`,
-      });
-
-      getIngresses();
-
-      ElMessage({
-        type: 'success',
-        message: '删除 ' + row.metadata.name + ' 成功',
-      });
-    })
-    .catch(() => {}); // 取消
-};
+const unCordon = (row) => {};
 
 const formatterTime = (row, column, cellValue) => {
   const time = formatTimestamp(cellValue);
   return <div>{time}</div>;
+};
+
+const formatStatus = (row, column, cellValue) => {
+  let status = 'NotReady';
+  for (let c of cellValue.conditions) {
+    if (c.type === 'Ready') {
+      if (c.status === 'True') {
+        status = 'Ready';
+      }
+      break;
+    }
+  }
+
+  return <div>{status}</div>;
+};
+
+const formatRole = (row, column, cellValue) => {
+  let roles = [];
+  let ls = JSON.parse(JSON.stringify(cellValue.labels));
+  console.log('ls', ls);
+  // for (let [label, v] of ls) {
+  //   if (label.indexOf('node-role.kubernetes.io')) {
+  //     let parts = str.split('/');
+  //     roles.push(parts[1]);
+  //   }
+  // }
+
+  return <div>master</div>;
+};
+
+const formatIp = (row, column, cellValue) => {
+  let address = '';
+  for (let i of cellValue.addresses) {
+    if (i.type === 'InternalIP') {
+      address = i.address;
+      break;
+    }
+  }
+  return <div>{address}</div>;
 };
 </script>
 

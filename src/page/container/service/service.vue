@@ -158,8 +158,6 @@ const getServices = async () => {
   data.loading = false;
   data.serviceList = res.items;
   data.pageInfo.total = data.serviceList.length;
-
-  console.log('svc', data.serviceList);
 };
 
 const changeNamespace = async (val) => {

@@ -122,6 +122,11 @@
   justify-content: center;
 }
 
+.dropdown-item-buttons {
+  color: #006eff;
+  font-size: 12px;
+}
+
 /* 表格表头样式 */
 .pixiu-table-header {
   font-size: 12px;
@@ -166,4 +171,11 @@
 .global-table-world {
   color: #006eff;
   font-size: 13px;
+}
+
+.font-container {
+  margin-top: -5px;
+  font-weight: bold;
+  font-size: 16px;
+  vertical-align: middle;
 }
