@@ -202,15 +202,14 @@ const formatStatus = (row, column, cellValue) => {
 const formatRole = (row, column, cellValue) => {
   let roles = [];
   let ls = JSON.parse(JSON.stringify(cellValue.labels));
-  console.log('ls', ls);
-  // for (let [label, v] of ls) {
-  //   if (label.indexOf('node-role.kubernetes.io')) {
-  //     let parts = str.split('/');
-  //     roles.push(parts[1]);
-  //   }
-  // }
+  for (let [label, v] of Object.entries(ls)) {
+    if (label.indexOf('node-role.kubernetes.io') !== -1) {
+      let parts = label.split('/');
+      roles.push(parts[1]);
+    }
+  }
 
-  return <div>master</div>;
+  return <div>{roles.toString()}</div>;
 };
 
 const formatIp = (row, column, cellValue) => {
