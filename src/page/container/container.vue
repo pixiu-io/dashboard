@@ -321,6 +321,36 @@
       </span>
     </template>
   </el-dialog>
+
+  <el-dialog
+    :model-value="cloudStore.showDeleteModal"
+    style="color: #000000; font: 14px"
+    width="500px"
+    center
+    @close="cloudStore.cancelDeleteCloud"
+  >
+    <template #header>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">删除集群</div>
+    </template>
+
+    <div>此操作将永久删除 ' {{ cloudStore.preDeleteCloudName }} ' 集群. 是否继续?</div>
+
+    <!-- <div style="margin-top: -18px"></div> -->
+
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-small-cancel-button" @click="cloudStore.cancelDeleteCloud"
+          >取消</el-button
+        >
+        <el-button
+          type="primary"
+          class="pixiu-small-confirm-button"
+          @click="cloudStore.confirmDeleteCloud"
+          >确认</el-button
+        >
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="jsx">
