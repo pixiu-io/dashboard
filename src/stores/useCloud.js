@@ -20,6 +20,9 @@ const useCloudStore = defineStore('cloud', () => {
   const selectCloudId = ref('');
   const selectCloudAliasName = ref('');
   const resourceVersion = ref(0);
+  const showDeleteModal = ref(false);
+  const preDeleteCloudName = ref('');
+  const preDeleteCloudId = ref('');
   const options = ref([
     {
       value: '无锡',
@@ -112,25 +115,29 @@ const useCloudStore = defineStore('cloud', () => {
       name,
     });
   };
+  const cancelDeleteCloud = () => {
+    showDeleteModal.value = false;
+    preDeleteCloudName.value = '';
+    preDeleteCloudId.value = '';
+  };
+  const confirmDeleteCloud = async () => {
+    const [err, result] = await deleteCloudById(preDeleteCloudId.value);
+    showDeleteModal.value = false;
+    preDeleteCloudName.value = '';
+    preDeleteCloudId.value = '';
+    if (err) {
+      return;
+    }
+    ElMessage({
+      type: 'success',
+      message: '删除成功',
+    });
+    getCloudList();
+  };
   const deleteCloud = (row) => {
-    ElMessageBox.confirm('此操作将永久删除 ' + row.name + ' 集群. 是否继续?', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-      draggable: true,
-    })
-      .then(async () => {
-        const [err, result] = await deleteCloudById(row.id);
-        if (err) {
-          return;
-        }
-        ElMessage({
-          type: 'success',
-          message: '删除成功',
-        });
-        getCloudList();
-      })
-      .catch(() => {}); // 取消
+    showDeleteModal.value = true;
+    preDeleteCloudName.value = row.name;
+    preDeleteCloudId.value = row.id;
   };
   return {
     pageInfo,
@@ -143,6 +150,8 @@ const useCloudStore = defineStore('cloud', () => {
     createCloudVisible,
     editAliasName,
     selectCloudAliasName,
+    showDeleteModal,
+    preDeleteCloudName,
     getCloudList,
     changeActive,
     onChange,
@@ -153,6 +162,8 @@ const useCloudStore = defineStore('cloud', () => {
     deleteCloud,
     editAlias,
     changeAliasName,
+    cancelDeleteCloud,
+    confirmDeleteCloud,
   };
 });
 
