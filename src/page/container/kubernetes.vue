@@ -75,6 +75,12 @@ const data = reactive({
       url: '/kubernetes/nodes',
     },
     {
+      name: '命名空间',
+      icon: 'Money',
+      iconType: 'el',
+      url: '/kubernetes/namespaces',
+    },
+    {
       name: 'Pixiu Shell',
       icon: 'icon-a-kuozhanicon_huaban1fuben33',
       iconType: 'iconfont',
