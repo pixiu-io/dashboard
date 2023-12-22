@@ -24,6 +24,7 @@ import ConfigMap from './container/configmap/configmap.vue';
 import Ingress from './container/ingress/ingress.vue';
 import Pod from './container/pod/pod.vue';
 import StorageClass from './container/storageclass/storageclass.vue';
+import Namespace from './container/namespace/namespace.vue';
 import NotFound from './notFound/notFound.vue';
 export {
   Home,
@@ -52,5 +53,6 @@ export {
   Pod,
   StorageClass,
   Info,
+  Namespace,
   NotFound,
 };

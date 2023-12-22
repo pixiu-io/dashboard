@@ -28,6 +28,7 @@ import {
   StorageClass,
   Info,
   Pod,
+  Namespace,
 } from '@/page';
 
 const routes = [
@@ -99,6 +100,14 @@ const routes = [
               title: 'node',
             },
             component: Node,
+          },
+          {
+            path: 'namespaces',
+            name: 'Namespace',
+            meta: {
+              title: 'namespace',
+            },
+            component: Namespace,
           },
           {
             path: 'deployments',
