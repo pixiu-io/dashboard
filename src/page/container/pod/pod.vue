@@ -1,3 +1,418 @@
 <template>
-  <div>pod</div>
+  <el-card class="title-card-container">
+    <div class="font-container">Pod</div>
+  </el-card>
+
+  <div style="margin-top: 25px">
+    <el-row>
+      <el-col>
+        <button class="pixiu-two-button" @click="createPod">新建</button>
+        <el-input
+          v-model="data.pageInfo.query"
+          placeholder="名称搜索关键字"
+          style="width: 480px; float: right"
+          clearable
+          @clear="getPods"
+        >
+          <template #suffix>
+            <el-icon class="el-input__icon" @click="getPods">
+              <component :is="'Search'" />
+            </el-icon>
+          </template>
+        </el-input>
+
+        <el-select
+          v-model="data.namespace"
+          style="width: 200px; float: right; margin-right: 10px"
+          @change="changeNamespace"
+        >
+          <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
+        </el-select>
+        <!-- <dev class="namespace-container" style="width: 112px; float: right">命名空间</dev> -->
+      </el-col>
+    </el-row>
+    <el-card class="box-card">
+      <el-table
+        v-loading="loading"
+        :data="data.podList"
+        stripe
+        style="margin-top: 2px; width: 100%"
+        header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#29292b',
+        }"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="30" />
+
+        <el-table-column prop="metadata.name" sortable label="名称" width="280">
+          <template #default="scope">
+            <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
+              {{ scope.row.metadata.name }}
+            </el-link>
+          </template>
+        </el-table-column>
+        <el-table-column prop="status" label="状态" width="150" :formatter="formatterStatus" />
+        <el-table-column
+          prop="status"
+          label="重启次数"
+          width="80"
+          :formatter="formatterRestartNumber"
+        />
+        <el-table-column
+          prop="metadata.labels"
+          label="Labels"
+          width="260"
+          :formatter="formatterLabels"
+        />
+        <el-table-column prop="status.podIP" label="PodIP" width="120" />
+        <el-table-column prop="status.hostIP" label="所在节点" width="120px" />
+        <el-table-column label="镜像" prop="spec.containers" :formatter="formatterImage" />
+        <el-table-column
+          prop="metadata.creationTimestamp"
+          label="创建时间"
+          width="150"
+          :formatter="formatterTime"
+        />
+
+        <el-table-column fixed="right" label="操作" width="180">
+          <template #default="scope">
+            <el-button
+              size="small"
+              type="text"
+              style="margin-right: -20px; margin-left: -10px; color: #006eff"
+              @click="editPod(scope.row)"
+            >
+              设置
+            </el-button>
+
+            <el-button
+              type="text"
+              size="small"
+              style="margin-right: 1px; color: #006eff"
+              @click="podLog(scope.row)"
+            >
+              日志
+            </el-button>
+
+            <el-dropdown>
+              <span class="el-dropdown-link">
+                更多
+                <el-icon><arrow-down /></el-icon>
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu class="dropdown-buttons">
+                  <el-dropdown-item style="color: #006eff" @click="deletePod(scope.row)">
+                    删除
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </template>
+        </el-table-column>
+
+        <template #empty>
+          <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
+        </template>
+      </el-table>
+
+      <el-pagination
+        v-model:currentPage="data.pageInfo.page"
+        v-model:page-size="data.pageInfo.page_size"
+        style="float: right; margin-right: 30px; margin-top: 20px; margin-bottom: 20px"
+        :page-sizes="[10, 20, 50]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="data.pageInfo.total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
+    </el-card>
+  </div>
 </template>
+
+<script setup lang="jsx">
+import { useRouter } from 'vue-router';
+import { reactive, getCurrentInstance, onMounted } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import PixiuTag from '@/components/pixiuTag/index.vue';
+import { formatTimestamp } from '@/utils/utils';
+
+const { proxy } = getCurrentInstance();
+const router = useRouter();
+
+const data = reactive({
+  cluster: '',
+  pageInfo: {
+    page: 1,
+    limit: 10,
+    query: '',
+    total: 0,
+  },
+  loading: false,
+
+  namespace: 'default',
+  namespaces: [],
+  podList: [],
+
+  podReplicasDialog: false,
+  podRepcliasFrom: {
+    name: '',
+    origin: '',
+    target: 0,
+  },
+});
+
+const handleSizeChange = (newSize) => {
+  data.pageInfo.limit = newSize;
+  getPods();
+};
+
+const handleCurrentChange = (newPage) => {
+  data.pageInfo.page = newPage;
+  getPods();
+};
+
+const createPod = () => {
+  const url = `/kubernetes/pod_create?cluster=${data.cluster}&namespace=${data.namespace}`;
+  router.push(url);
+};
+
+onMounted(() => {
+  data.cluster = proxy.$route.query.cluster;
+
+  getPods();
+  getNamespaceList();
+});
+
+const jumpRoute = (row) => {
+  router.push({
+    name: 'PodDetail',
+    query: {
+      cluster: data.cluster,
+      namespace: data.namespace,
+      name: row.metadata.name,
+    },
+  });
+};
+
+const getPods = async () => {
+  data.loading = true;
+  const res = await proxy.$http({
+    method: 'get',
+    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/pods`,
+    data: data.pageInfo,
+  });
+
+  data.loading = false;
+  data.podList = res.items;
+  data.pageInfo.total = data.podList.length;
+};
+
+const changeNamespace = async (val) => {
+  localStorage.setItem('namespace', val);
+  data.namespace = val;
+
+  getPods();
+};
+
+const getNamespaceList = async () => {
+  try {
+    const result = await proxy.$http({
+      method: 'get',
+      url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces`,
+    });
+
+    for (let item of result.items) {
+      data.namespaces.push(item.metadata.name);
+    }
+  } catch (error) {}
+};
+
+const deletePod = (row) => {
+  ElMessageBox.confirm('此操作将永久删除 Pod ' + row.metadata.name + ' . 是否继续?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+    draggable: true,
+  })
+    .then(() => {
+      const res = proxy.$http({
+        method: 'delete',
+        url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${row.metadata.name}`,
+      });
+      ElMessage({
+        type: 'success',
+        message: '删除 ' + row.metadata.name + ' 成功',
+      });
+      getPods();
+    })
+    .catch(() => {}); // 取消
+};
+
+const podLog = (row) => {
+  ElMessageBox.alert('暂不支持');
+};
+
+const closePodScaleDialog = (row) => {
+  data.podReplicasDialog = false;
+
+  data.podRepcliasFrom.name = '';
+  data.podRepcliasFrom.origin = '';
+  data.podRepcliasFrom.target = 0;
+};
+
+const confirmPodScale = () => {
+  try {
+    const res = proxy.$http({
+      method: 'patch',
+      url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/pods/${data.podRepcliasFrom.name}/scale`,
+      data: {
+        spec: {
+          replicas: Number(data.podRepcliasFrom.target),
+        },
+      },
+      config: {
+        header: {
+          'Content-Type': 'application/merge-patch+json',
+        },
+      },
+    });
+    getPods();
+    getPods();
+    closePodScaleDialog();
+  } catch (error) {}
+};
+
+const formatterLabels = (row, column, cellValue) => {
+  if (!cellValue) return <div>None</div>;
+  const labels = Object.entries(cellValue).map(([key, value]) => {
+    return `${key}: ${value}`;
+  });
+
+  return (
+    <div>
+      {' '}
+      {labels.map((label) => (
+        <div class="pixiu-table-formatter">{label}</div>
+      ))}{' '}
+    </div>
+  );
+};
+
+const formatterStatus = (row, column, status) => {
+  let s = <span style="color: green">Running</span>;
+  if (status.phase === 'Running') {
+    status.conditions.forEach((item) => {
+      if (item.status !== 'True') {
+        let res = '';
+        status.containerStatuses.forEach((c) => {
+          if (!c.ready) {
+            if (c.state.waiting) {
+              res = (
+                <div>
+                  <div>${c.state.waiting.reason}</div>
+                  <div style="font-size: 10px">{c.state.waiting.message}</div>
+                </div>
+              );
+            }
+            if (c.state.terminated) {
+              res = (
+                <div>
+                  <div>{c.state.waiting.reason}</div>
+                  <div style="font-size: 11px">{c.state.waiting.message}</div>
+                  <div style="font-size: 11px">{c.state.terminated.reason}</div>
+                </div>
+              );
+            }
+          }
+        });
+        return (s = <span style="color: red">{res}</span>);
+      }
+    });
+  } else if (status.phase === 'Succeeded') {
+    let res = '';
+    status.containerStatuses.forEach((c) => {
+      if (!c.ready) {
+        if (c.state.terminated) {
+          res = (
+            <div>
+              <div>{c.state.waiting.reason}</div>
+              <div style="font-size: 11px">{c.state.waiting.message}</div>
+              <div style="font-size: 11px">{c.state.terminated.reason}</div>
+            </div>
+          );
+        }
+      }
+    });
+    return (s = <span style="color: #E6A23C">${res}</span>);
+  } else {
+    let res = status.phase;
+    status.containerStatuses.forEach((c) => {
+      if (!c.ready) {
+        if (c.state.waiting) {
+          res = (
+            <div>
+              <div>{c.state.waiting.reason}</div>
+              <div style="font-size: 11px">{c.state.waiting.message}</div>
+            </div>
+          );
+        }
+        if (c.state.terminated) {
+          res = (
+            <div>
+              <div>{c.state.waiting.reason}</div>
+              <div style="font-size: 11px">{c.state.waiting.message}</div>
+              <div style="font-size: 10px">{c.state.terminated.reason}</div>
+            </div>
+          );
+        }
+      }
+    });
+    return (s = <div style="color: red">{res}</div>);
+  }
+  return s;
+};
+
+const formatterImage = (row, column, cellValue) => {
+  return (
+    <div>
+      {cellValue.map((item) => (
+        <div>{item.image}</div>
+      ))}
+    </div>
+  );
+};
+const formatterRestartNumber = (row, column, status) => {
+  console.log(status.containerStatuses);
+  let count = 0;
+  status.containerStatuses.forEach((item) => {
+    count += item.restartCount;
+  });
+  return <div>{count}</div>;
+};
+
+const formatterTime = (row, column, cellValue) => {
+  const time = formatTimestamp(cellValue);
+  return <div>{time}</div>;
+};
+</script>
+
+<style scoped="scoped">
+.font-container {
+  margin-top: -5px;
+  font-weight: bold;
+  font-size: 16px;
+  vertical-align: middle;
+}
+
+.namespace-container {
+  font-size: 14px;
+  margin-top: -2px;
+  /* margin-left: 10px; */
+  margin-right: -60px;
+  color: #4c4e58;
+  height: 20px;
+  padding: 10px;
+}
+</style>
