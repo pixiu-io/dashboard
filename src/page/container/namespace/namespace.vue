@@ -13,6 +13,7 @@
           style="width: 480px; float: right"
           clearable
           @clear="getNamespace"
+        >
           <template #suffix>
             <el-icon class="el-input__icon" @click="getNamespace">
               <component :is="'Search'" />
@@ -33,6 +34,7 @@
         }"
         header-row-class-name="pixiu-table-header"
         @selection-change="handleSelectionChange"
+      >
         <!-- <el-table-column type="selection" width="30" /> -->
         <el-table-column prop="metadata.name" sortable label="名称">
           <template #default="scope">
@@ -49,6 +51,7 @@
           prop="metadata.creationTimestamp"
           width="160px"
           :formatter="formatterTime"
+        >
         </el-table-column>
 
         <el-table-column label="描述" prop="-"> </el-table-column>
@@ -60,6 +63,7 @@
               type="text"
               style="margin-right: -20px; margin-left: -10px; color: #006eff"
               @click="editDeployment(scope.row)"
+            >
               配额管理
             </el-button>
 
@@ -68,6 +72,7 @@
               size="small"
               style="margin-right: 1px; color: #006eff"
               @click="handleDeploymentScaleDialog(scope.row)"
+            >
               删除
             </el-button>
           </template>
