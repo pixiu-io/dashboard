@@ -116,9 +116,9 @@
               </el-link>
               <el-tooltip content="修改名称">
                 <pixiu-icon
-                  name="Edit"
-                  size="10px"
-                  type="el"
+                  name="icon-bianji"
+                  size="12px"
+                  type="iconfont"
                   color="#909399"
                   @click="cloudStore.editAlias(scope.row)"
                 />
@@ -129,9 +129,9 @@
                 </span>
                 <el-tooltip content="复制">
                   <pixiu-icon
-                    name="DocumentCopy"
-                    size="10px"
-                    type="el"
+                    name="icon-copy"
+                    size="12px"
+                    type="iconfont"
                     color="#909399"
                     @click="copy(scope.row)"
                   />
