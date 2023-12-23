@@ -6,11 +6,32 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "868656",
+      "name": "弹性存储",
+      "font_class": "yidongyunkongzhitaiicon06",
+      "unicode": "e74e",
+      "unicode_decimal": 59214
+    },
+    {
+      "icon_id": "10936714",
+      "name": "节点",
+      "font_class": "jiedian",
+      "unicode": "e629",
+      "unicode_decimal": 58921
+    },
+    {
       "icon_id": "375682",
       "name": "edit",
       "font_class": "bianji",
       "unicode": "e622",
       "unicode_decimal": 58914
+    },
+    {
+      "icon_id": "13570508",
+      "name": "acr 容器镜像服务",
+      "font_class": "acrrongqijingxiangfuwu",
+      "unicode": "e6d9",
+      "unicode_decimal": 59097
     },
     {
       "icon_id": "7241566",
@@ -34,34 +55,6 @@
       "unicode_decimal": 58883
     },
     {
-      "icon_id": "3287615",
-      "name": "等待确认",
-      "font_class": "icon-",
-      "unicode": "e6e7",
-      "unicode_decimal": 59111
-    },
-    {
-      "icon_id": "9466645",
-      "name": "删除",
-      "font_class": "shanchu",
-      "unicode": "e620",
-      "unicode_decimal": 58912
-    },
-    {
-      "icon_id": "12659765",
-      "name": "异常",
-      "font_class": "yichang",
-      "unicode": "e618",
-      "unicode_decimal": 58904
-    },
-    {
-      "icon_id": "18005114",
-      "name": "dlf-数据湖构建",
-      "font_class": "dlf-shujuhugoujian",
-      "unicode": "e8a2",
-      "unicode_decimal": 59554
-    },
-    {
       "icon_id": "6263310",
       "name": "系统负载",
       "font_class": "xitongfuzai",
@@ -83,20 +76,6 @@
       "unicode_decimal": 58920
     },
     {
-      "icon_id": "23284470",
-      "name": "SHELL",
-      "font_class": "a-kuozhanicon_huaban1fuben33",
-      "unicode": "e646",
-      "unicode_decimal": 58950
-    },
-    {
-      "icon_id": "1014",
-      "name": "硬盘",
-      "font_class": "yingpan",
-      "unicode": "e600",
-      "unicode_decimal": 58880
-    },
-    {
       "icon_id": "31310820",
       "name": "中英文切换-英文",
       "font_class": "zhongyingwenqiehuan-yingwen",
@@ -109,20 +88,6 @@
       "font_class": "zhongyingwenqiehuan-zhongwen",
       "unicode": "e617",
       "unicode_decimal": 58903
-    },
-    {
-      "icon_id": "13479219",
-      "name": "状态",
-      "font_class": "B",
-      "unicode": "e70a",
-      "unicode_decimal": 59146
-    },
-    {
-      "icon_id": "4676496",
-      "name": "云容器",
-      "font_class": "yunrongqi",
-      "unicode": "e70d",
-      "unicode_decimal": 59149
     }
   ]
 }

@@ -70,8 +70,8 @@ const data = reactive({
     },
     {
       name: '节点管理',
-      icon: 'Operation',
-      iconType: 'el',
+      icon: 'icon-jiedian',
+      iconType: 'iconfont',
       url: '/kubernetes/nodes',
     },
     {
@@ -82,7 +82,7 @@ const data = reactive({
     },
     {
       name: 'Pixiu Shell',
-      icon: 'icon-a-kuozhanicon_huaban1fuben33',
+      icon: 'icon-terminal',
       iconType: 'iconfont',
       url: '/kubernetes/terminal',
     },
@@ -150,7 +150,7 @@ const data = reactive({
     {
       id: 3,
       name: '存储',
-      icon: 'icon-yingpan',
+      icon: 'icon-yidongyunkongzhitaiicon06',
       iconType: 'iconfont',
       children: [
         {

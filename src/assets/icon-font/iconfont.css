@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3708393 */
-  src: url('iconfont.woff2?t=1703313617004') format('woff2'),
-       url('iconfont.woff?t=1703313617004') format('woff'),
-       url('iconfont.ttf?t=1703313617004') format('truetype');
+  src: url('iconfont.woff2?t=1703315235652') format('woff2'),
+       url('iconfont.woff?t=1703315235652') format('woff'),
+       url('iconfont.ttf?t=1703315235652') format('truetype');
 }
 
 .iconfont {
@@ -13,8 +13,20 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-yidongyunkongzhitaiicon06:before {
+  content: "\e74e";
+}
+
+.icon-jiedian:before {
+  content: "\e629";
+}
+
 .icon-bianji:before {
   content: "\e622";
+}
+
+.icon-acrrongqijingxiangfuwu:before {
+  content: "\e6d9";
 }
 
 .icon-copy:before {
@@ -29,22 +41,6 @@
   content: "\e603";
 }
 
-.icon-icon-:before {
-  content: "\e6e7";
-}
-
-.icon-shanchu:before {
-  content: "\e620";
-}
-
-.icon-yichang:before {
-  content: "\e618";
-}
-
-.icon-dlf-shujuhugoujian:before {
-  content: "\e8a2";
-}
-
 .icon-xitongfuzai:before {
   content: "\e662";
 }
@@ -57,27 +53,11 @@
   content: "\e628";
 }
 
-.icon-a-kuozhanicon_huaban1fuben33:before {
-  content: "\e646";
-}
-
-.icon-yingpan:before {
-  content: "\e600";
-}
-
 .icon-zhongyingwenqiehuan-yingwen:before {
   content: "\e616";
 }
 
 .icon-zhongyingwenqiehuan-zhongwen:before {
   content: "\e617";
-}
-
-.icon-B:before {
-  content: "\e70a";
-}
-
-.icon-yunrongqi:before {
-  content: "\e70d";
 }
 
