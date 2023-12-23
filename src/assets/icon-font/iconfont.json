@@ -1,23 +1,93 @@
 {
-  "id": "",
-  "name": "",
+  "id": "3708393",
+  "name": "pixiu-icon-project",
   "font_family": "iconfont",
   "css_prefix_text": "icon-",
   "description": "",
   "glyphs": [
     {
-      "icon_id": "4676496",
-      "name": "云容器",
-      "font_class": "yunrongqi",
-      "unicode": "e70d",
-      "unicode_decimal": 59149
+      "icon_id": "868656",
+      "name": "弹性存储",
+      "font_class": "yidongyunkongzhitaiicon06",
+      "unicode": "e74e",
+      "unicode_decimal": 59214
     },
     {
-      "icon_id": "13479219",
-      "name": "状态",
-      "font_class": "B",
-      "unicode": "e70a",
-      "unicode_decimal": 59146
+      "icon_id": "10936714",
+      "name": "节点",
+      "font_class": "jiedian",
+      "unicode": "e629",
+      "unicode_decimal": 58921
+    },
+    {
+      "icon_id": "375682",
+      "name": "edit",
+      "font_class": "bianji",
+      "unicode": "e622",
+      "unicode_decimal": 58914
+    },
+    {
+      "icon_id": "13570508",
+      "name": "acr 容器镜像服务",
+      "font_class": "acrrongqijingxiangfuwu",
+      "unicode": "e6d9",
+      "unicode_decimal": 59097
+    },
+    {
+      "icon_id": "7241566",
+      "name": "copy",
+      "font_class": "copy",
+      "unicode": "e667",
+      "unicode_decimal": 58983
+    },
+    {
+      "icon_id": "22160276",
+      "name": "terminal",
+      "font_class": "terminal",
+      "unicode": "ea2e",
+      "unicode_decimal": 59950
+    },
+    {
+      "icon_id": "873462",
+      "name": "地域分布",
+      "font_class": "diyufenbu",
+      "unicode": "e603",
+      "unicode_decimal": 58883
+    },
+    {
+      "icon_id": "6263310",
+      "name": "系统负载",
+      "font_class": "xitongfuzai",
+      "unicode": "e662",
+      "unicode_decimal": 58978
+    },
+    {
+      "icon_id": "21053653",
+      "name": "服务",
+      "font_class": "fuwu",
+      "unicode": "e66f",
+      "unicode_decimal": 58991
+    },
+    {
+      "icon_id": "14076068",
+      "name": "配置管理",
+      "font_class": "peizhiguanli",
+      "unicode": "e628",
+      "unicode_decimal": 58920
+    },
+    {
+      "icon_id": "31310820",
+      "name": "中英文切换-英文",
+      "font_class": "zhongyingwenqiehuan-yingwen",
+      "unicode": "e616",
+      "unicode_decimal": 58902
+    },
+    {
+      "icon_id": "31310821",
+      "name": "中英文切换-中文",
+      "font_class": "zhongyingwenqiehuan-zhongwen",
+      "unicode": "e617",
+      "unicode_decimal": 58903
     }
   ]
 }
