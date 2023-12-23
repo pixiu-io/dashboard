@@ -44,9 +44,9 @@
 
             <el-tooltip content="复制">
               <pixiu-icon
-                name="DocumentCopy"
-                size="10px"
-                type="el"
+                name="icon-copy"
+                size="11px"
+                type="iconfont"
                 class-name="icon-box"
                 color="#909399"
                 @click="copy(scope.row)"
