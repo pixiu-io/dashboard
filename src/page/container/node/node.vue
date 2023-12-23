@@ -35,7 +35,7 @@
         header-row-class-name="pixiu-table-header"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="30" />
+        <!-- <el-table-column type="selection" width="30" /> -->
         <el-table-column prop="metadata.name" sortable label="名称" width="180px">
           <template #default="scope">
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
@@ -51,14 +51,14 @@
         <el-table-column
           label="运行时"
           prop="status.nodeInfo.containerRuntimeVersion"
-          width="120px"
+          width="130px"
         >
         </el-table-column>
 
         <el-table-column
           label="创建时间"
           prop="metadata.creationTimestamp"
-          width="160px"
+          width="150px"
           :formatter="formatterTime"
         >
         </el-table-column>
@@ -68,30 +68,23 @@
             <el-button
               size="small"
               type="text"
-              style="margin-right: -20px; margin-left: -10px; color: #006eff"
+              style="margin-right: -22px; margin-left: -10px; color: #006eff"
               @click="editDeployment(scope.row)"
             >
               更新配置
             </el-button>
 
-            <el-button
-              type="text"
-              size="small"
-              style="margin-right: 1px; color: #006eff"
-              @click="handleDeploymentScaleDialog(scope.row)"
-            >
-              删除
+            <el-button type="text" size="small" style="color: #006eff" @click="drain(scope.row)">
+              驱散
             </el-button>
             <el-dropdown>
-              <span class="el-dropdown-link">
+              <span class="cluster-dropdown">
                 更多
-                <el-icon><arrow-down /></el-icon>
+                <div style="margin-left: 2px"></div>
+                <pixiu-icon name="icon-xiala" size="12px" type="iconfont" color="#006eff" />
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
-                  <el-dropdown-item class="dropdown-item-buttons" @click="drain(scope.row)">
-                    节点驱散
-                  </el-dropdown-item>
                   <el-dropdown-item class="dropdown-item-buttons" @click="cordon(scope.row)">
                     设置可调度
                   </el-dropdown-item>
@@ -196,7 +189,7 @@ const formatStatus = (row, column, cellValue) => {
     }
   }
 
-  return <div>{status}</div>;
+  return <div class="color-green-word">{status}</div>;
 };
 
 const formatRole = (row, column, cellValue) => {
