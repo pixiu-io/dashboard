@@ -179,3 +179,8 @@
   font-size: 16px;
   vertical-align: middle;
 }
+
+/* 绿色状态字体 */
+.color-green-word {
+  color: #28c65a;
+}
