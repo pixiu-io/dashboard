@@ -137,7 +137,7 @@ const data = reactive({
 const { toClipboard } = useClipboard();
 const copy = async (val) => {
   try {
-    await toClipboard(val.name);
+    await toClipboard(val.metadata.name);
     ElMessage({
       type: 'success',
       message: '已复制',
@@ -168,11 +168,11 @@ onMounted(() => {
 
 const getNamespace = async () => {
   data.loading = true;
-
   const [err, result] = await getNamespaces(data.cluster);
   if (err) {
     return;
   }
+  data.loading = false;
 
   data.namespaceList = result.items;
   data.pageInfo.total = data.namespaceList.length;
