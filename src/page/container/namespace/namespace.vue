@@ -176,8 +176,6 @@ const getNamespace = async () => {
 
   data.namespaceList = result.items;
   data.pageInfo.total = data.namespaceList.length;
-
-  console.log(data.namespaceList);
 };
 
 const formatterTime = (row, column, cellValue) => {

@@ -384,7 +384,6 @@ const formatterImage = (row, column, cellValue) => {
   );
 };
 const formatterRestartNumber = (row, column, status) => {
-  console.log(status.containerStatuses);
   let count = 0;
   status.containerStatuses.forEach((item) => {
     count += item.restartCount;
