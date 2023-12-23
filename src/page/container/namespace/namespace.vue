@@ -36,25 +36,37 @@
         @selection-change="handleSelectionChange"
       >
         <!-- <el-table-column type="selection" width="30" /> -->
-        <el-table-column prop="metadata.name" sortable label="名称">
+        <el-table-column prop="metadata.name" sortable label="名称" min-width="80px">
           <template #default="scope">
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
             </el-link>
+
+            <el-tooltip content="复制">
+              <pixiu-icon
+                name="DocumentCopy"
+                size="10px"
+                type="el"
+                class-name="icon-box"
+                color="#909399"
+                @click="copy(scope.row)"
+              />
+            </el-tooltip>
           </template>
         </el-table-column>
 
-        <el-table-column label="状态" prop="status" :formatter="formatStatus"> </el-table-column>
+        <el-table-column label="状态" prop="status" width="160px" :formatter="formatStatus">
+        </el-table-column>
 
         <el-table-column
           label="创建时间"
           prop="metadata.creationTimestamp"
-          width="160px"
+          width="220px"
           :formatter="formatterTime"
         >
         </el-table-column>
 
-        <el-table-column label="描述" prop="metadata1"> </el-table-column>
+        <el-table-column label="描述" prop="-"> </el-table-column>
 
         <el-table-column fixed="right" label="操作" width="180px">
           <template #default="scope">
@@ -102,6 +114,8 @@ import { useRouter } from 'vue-router';
 import { formatTimestamp } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { getNamespaces } from '@/services/cloudService';
+import useClipboard from 'vue-clipboard3';
+import { ElMessage } from 'element-plus';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -119,6 +133,22 @@ const data = reactive({
 
   namespaceList: [],
 });
+
+const { toClipboard } = useClipboard();
+const copy = async (val) => {
+  try {
+    await toClipboard(val.metadata.name);
+    ElMessage({
+      type: 'success',
+      message: '已复制',
+    });
+  } catch (e) {
+    ElMessage({
+      type: 'error',
+      message: e.valueOf().toString(),
+    });
+  }
+};
 
 const handleSizeChange = (newSize) => {
   data.pageInfo.limit = newSize;
@@ -138,16 +168,14 @@ onMounted(() => {
 
 const getNamespace = async () => {
   data.loading = true;
-
   const [err, result] = await getNamespaces(data.cluster);
   if (err) {
     return;
   }
+  data.loading = false;
 
   data.namespaceList = result.items;
   data.pageInfo.total = data.namespaceList.length;
-
-  console.log(data.namespaceList);
 };
 
 const formatterTime = (row, column, cellValue) => {
@@ -156,10 +184,13 @@ const formatterTime = (row, column, cellValue) => {
 };
 
 const formatStatus = (row, column, cellValue) => {
-  let status = cellValue.phase;
-
-  return <div>{status}</div>;
+  return <div class="color-green-word">{cellValue.phase}</div>;
 };
 </script>
 
-<style scoped="scoped"></style>
+<style scoped="scoped">
+.icon-box {
+  padding: 3px;
+  margin-top: -1px;
+}
+</style>
