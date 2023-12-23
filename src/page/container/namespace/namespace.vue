@@ -54,7 +54,7 @@
         >
         </el-table-column>
 
-        <el-table-column label="描述" prop="metadata1"> </el-table-column>
+        <el-table-column label="描述" prop="-"> </el-table-column>
 
         <el-table-column fixed="right" label="操作" width="180px">
           <template #default="scope">
@@ -156,9 +156,7 @@ const formatterTime = (row, column, cellValue) => {
 };
 
 const formatStatus = (row, column, cellValue) => {
-  let status = cellValue.phase;
-
-  return <div>{status}</div>;
+  return <div class="color-green-word">{cellValue.phase}</div>;
 };
 </script>
 
