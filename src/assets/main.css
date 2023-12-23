@@ -114,6 +114,15 @@
   font-weight: 500;
 }
 
+.cluster-dropdown {
+  cursor: pointer;
+  color: #006eff;
+  display: flex;
+  font-size: 12px;
+  margin-top: 7px;
+  font-weight: 500;
+}
+
 /* 下拉后的按钮样式 */
 .dropdown-buttons {
   display: flex;
