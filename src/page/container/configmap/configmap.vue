@@ -53,46 +53,26 @@
 
         <!-- <el-table-column prop="metadata.creationTimestamp" label="创建时间" width="180" /> -->
 
-        <!-- <el-table-column
-          prop="spec.template.metadata.labels"
-          label="Labels"
-          width="210"
-          :formatter="formatterLabels"
-        /> -->
-
+        <el-table-column label="Labels" width="530">
+          <span>-</span>
+        </el-table-column>
         <el-table-column
-          prop="spec.selector.creationTimestamp"
+          prop="metadata.creationTimestamp"
           label="创建时间"
-          width="210"
-          :formatter="formatterLabels"
-        >
-        </el-table-column>
+          sortable
+          width="530"
+          :formatter="formatterTime"
+        />
 
-        <!-- <el-table-column
-          prop="status"
-          label="Pod状态运行/期望"
-          width="180"
-          :formatter="formatterStatus"
-        >
-        </el-table-column> -->
-
-        <el-table-column
-          label="镜像"
-          prop="spec.template.spec.containers"
-          width="auto"
-          :formatter="formatterImage"
-        >
-        </el-table-column>
-
-        <el-table-column fixed="right" label="操作" width="180">
+        <el-table-column fixed="right" label="操作" width="300">
           <template #default="scope">
             <el-button
               size="small"
               type="text"
               style="margin-right: -20px; margin-left: -10px; color: #006eff"
-              @click="editDeployment(scope.row)"
+              @click="editConfigMap(scope.row)"
             >
-              设置
+              更新配置
             </el-button>
 
             <el-button
@@ -101,13 +81,13 @@
               style="margin-right: 1px; color: #006eff"
               @click="handleDeploymentScaleDialog(scope.row)"
             >
-              调整副本数
+              编辑yaml
             </el-button>
 
             <el-dropdown>
               <span class="el-dropdown-link">
-                更多
-                <el-icon><arrow-down /></el-icon>
+                删除
+                <!-- <el-icon><arrow-down /></el-icon> -->
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
@@ -177,7 +157,7 @@ import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import PixiuTag from '@/components/pixiuTag/index.vue';
-
+import { formatTimestamp } from '@/utils/utils';
 const { proxy } = getCurrentInstance();
 const router = useRouter();
 
@@ -269,6 +249,10 @@ const getConfigMapsList = async () => {
   } catch (error) {}
 };
 
+const editConfigMap = (row) => {
+  const url = `/kubernetes/configmap/editConfigMap?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
+  router.push(url);
+};
 const deleteDeployment = (row) => {
   ElMessageBox.confirm(
     '此操作将永久删除 Deployment ' + row.metadata.name + ' . 是否继续?',
@@ -338,7 +322,6 @@ const formatterLabels = (row, column, cellValue) => {
   const labels = Object.entries(cellValue).map(([key, value]) => {
     return `${key}: ${value}`;
   });
-
   return (
     <div>
       {' '}
@@ -349,22 +332,9 @@ const formatterLabels = (row, column, cellValue) => {
   );
 };
 
-const formatterStatus = (row, column, cellValue) => {
-  return (
-    <div>
-      {cellValue.availableReplicas}/{cellValue.replicas}
-    </div>
-  );
-};
-
-const formatterImage = (row, column, cellValue) => {
-  return (
-    <div>
-      {cellValue.map((item) => (
-        <div>{item.image}</div>
-      ))}
-    </div>
-  );
+const formatterTime = (row, column, cellValue) => {
+  const time = formatTimestamp(cellValue);
+  return <div>{time}</div>;
 };
 </script>
 
