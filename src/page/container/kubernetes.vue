@@ -40,7 +40,7 @@
 
   <!-- 主体 -->
   <el-main>
-    <router-view />
+    <router-view :key="$route.fullPath" />
   </el-main>
 </template>
 
@@ -198,10 +198,24 @@ const changeClouds = (value) => {
       item.url = `${url}?cluster=${data.cloud.cluster}&namespace=${data.namespace}`;
     }
   });
+  data.clusterItems.map((item) => {
+    // 如果父级中不存在children,改变父级url
+    if (item.children !== undefined) {
+      // 子级url拼接集群名称
+      item.children.map((childrenItem) => {
+        const url = childrenItem.url.split('?')[0];
+        childrenItem.url = `${url}?cluster=${data.cloud.cluster}&namespace=${data.namespace}`;
+      });
+    } else {
+      // 父级url拼接集群名称
+      const url = item.url.split('?')[0];
+      item.url = `${url}?cluster=${data.cloud.cluster}&namespace=${data.namespace}`;
+    }
+  });
   data.path = `${path}?cluster=${value}`;
   const newQuery = JSON.parse(JSON.stringify(query));
   newQuery.cluster = value;
-  proxy.$router.push({ path, query: newQuery });
+  proxy.$router.replace({ path, query: newQuery });
 };
 
 // watch(
@@ -340,6 +354,7 @@ onMounted(() => {
   height: 100%;
   background-color: #f6f7fb;
   width: 200px;
+  border-right: 1px rgba(0, 0, 0, 0.1) solid;
 }
 
 .el-menu {
