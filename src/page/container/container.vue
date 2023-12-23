@@ -116,9 +116,9 @@
               </el-link>
               <el-tooltip content="修改名称">
                 <pixiu-icon
-                  name="Edit"
-                  size="10px"
-                  type="el"
+                  name="icon-bianji"
+                  size="12px"
+                  type="iconfont"
                   color="#909399"
                   @click="cloudStore.editAlias(scope.row)"
                 />
@@ -129,9 +129,9 @@
                 </span>
                 <el-tooltip content="复制">
                   <pixiu-icon
-                    name="DocumentCopy"
-                    size="10px"
-                    type="el"
+                    name="icon-copy"
+                    size="12px"
+                    type="iconfont"
                     color="#909399"
                     @click="copy(scope.row)"
                   />
@@ -445,7 +445,7 @@ const cloudNodeFormatter = (row, column, cellValue) => (
   <div class="pixiu-table-formatter">
     <el-space>
       <div>
-        {cellValue}台(<span style="color: #28c65a;">全部正常</span>)
+        {cellValue}台(<span class="color-green-word">全部正常</span>)
       </div>
     </el-space>
   </div>
