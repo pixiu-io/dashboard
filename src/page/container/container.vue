@@ -173,7 +173,7 @@
                 v-permissions="'user:cloud:setting'"
                 size="small"
                 type="text"
-                style="margin-right: -20px; margin-left: -10px; color: #006eff"
+                style="margin-right: -22px; margin-left: -10px; color: #006eff"
                 @click="handleEdit(scope.row)"
               >
                 设置
@@ -183,7 +183,7 @@
                 v-permissions="'user:cloud:delete'"
                 type="text"
                 size="small"
-                style="margin-right: 2px; color: #006eff"
+                style="color: #006eff"
                 @click="cloudStore.deleteCloud(scope.row)"
               >
                 删除
@@ -336,10 +336,8 @@
     <template #header>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">删除集群</div>
     </template>
-
-    <div>此操作将永久删除 ' {{ cloudStore.preDeleteCloudName }} ' 集群. 是否继续?</div>
-
     <!-- <div style="margin-top: -18px"></div> -->
+    <div>此操作将永久删除 {{ cloudStore.preDeleteCloudName }} 集群. 是否继续?</div>
 
     <template #footer>
       <span class="dialog-footer">
