@@ -27,6 +27,7 @@ import Ingress from './container/ingress/ingress.vue';
 import Pod from './container/pod/pod.vue';
 import StorageClass from './container/storageclass/storageclass.vue';
 import Namespace from './container/namespace/namespace.vue';
+import CreateNamespace from './container/namespace/createNamespace.vue';
 import NotFound from './notFound/notFound.vue';
 export {
   Home,
@@ -58,5 +59,6 @@ export {
   StorageClass,
   Info,
   Namespace,
+  CreateNamespace,
   NotFound,
 };
