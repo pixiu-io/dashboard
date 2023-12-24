@@ -18,7 +18,6 @@
                 最长63个字符，只能包含小写字母、数字及分隔符("-"),且必须以小写字母开头，数字或小写字母结尾
               </div>
             </el-form-item>
-
             <el-form-item label="命名空间" style="width: 300px">
               <div class="namespace-select-container">
                 <el-select
@@ -36,39 +35,46 @@
             </el-form-item>
             <el-divider />
             <el-form-item label="内容" style="margin-top: 20px">
-              <el-table :data="data.tableData" style="width: 100%" max-height="250">
-                <el-table-column prop="key" label="变量名" width="120" />
-                <el-table-column prop="value" label="变量值" width="auto" />
-                <el-table-column fixed="right" label="操作" width="120">
-                  <template #default="scope">
-                    <el-button
-                      link
-                      type="primary"
-                      size="small"
-                      @click.prevent="handleConfigmapDialog(scope.$index)"
-                    >
-                      编辑
-                    </el-button>
-                    <el-button
-                      link
-                      type="primary"
-                      size="small"
-                      @click.prevent="deleteRow(scope.$index)"
-                    >
-                      删除
-                    </el-button>
-                  </template>
-                </el-table-column>
-              </el-table>
-              <div class="app-pixiu-line-describe2">
-                只能包含字母、数字及分隔符"、"”、";
-                变量名为空时，在变量名称中粘贴一行或多行key=valuekey:
-                value的键值对可以实现快速批量输入
+              <!-- <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button> -->
+              <div class="configmap-label-title" style="margin-left: 5px">变量名</div>
+              <div class="configmap-label-title" style="margin-left: 510px">变量值</div>
+              <el-divider />
+            </el-form-item>
+
+            <el-form-item
+              v-for="(item, index) in data.configMapLabels"
+              :key="index"
+              style="margin-top: -15px"
+            >
+              <div>
+                <el-input
+                  v-model="item.key"
+                  placeholder="变量名"
+                  style="width: 500px; height: 52px"
+                />
               </div>
+              <div style="margin-right: 10px; margin-left: 10px"></div>
+              =
+              <div>
+                <el-input
+                  v-model="item.value"
+                  placeholder="请输入变量值"
+                  type="textarea"
+                  style="width: 500px; margin-left: 20px"
+                  :row="1"
+                />
+              </div>
+              <div
+                style="float: right; cursor: pointer; margin-left: 10px"
+                @click="deleteLabel(index)"
+              >
+                <el-icon><Delete /></el-icon>
+              </div>
+              <el-divider />
             </el-form-item>
             <el-form-item>
-              <el-button class="mt-4" style="width: 5%" @click="onAddItem">手动增加</el-button>
-              <el-button class="mt-4" style="width: 5%" @click="onAddItem">文件导入</el-button>
+              <el-button class="mt-5" style="width: 5%" @click="addLabel">手动增加</el-button>
+              <el-button class="mt-5" style="width: 5%" @click="onAddItem">文件导入</el-button>
             </el-form-item>
             <div style="margin-top: 30px" />
             <el-form-item style="margin-left: 30%">
@@ -129,10 +135,10 @@ const data = reactive({
   cluser: '',
   namespaces: [],
   autosize: {
-    minRows: 5,
+    minRows: 2,
   },
 
-  deploymentLabels: [],
+  configMapLabels: [],
 
   // configmap 创建初始对象
   configmapForm: {
@@ -157,7 +163,7 @@ const data = reactive({
 });
 
 const comfirmCreate = async () => {
-  data.tableData.forEach((item) => {
+  data.configMapLabels.forEach((item) => {
     data.configmapForm.data[item.key] = item.value;
   });
   try {
@@ -223,6 +229,17 @@ const onAddItem = () => {
   });
 };
 
+const addLabel = () => {
+  data.configMapLabels.push({
+    key: '',
+    value: '',
+  });
+};
+
+const deleteLabel = (index) => {
+  data.configMapLabels.splice(index, 1);
+};
+
 const handleConfigmapDialog = (index) => {
   data.configmapDataFrom.key = data.tableData[index].key;
   data.configmapDataFrom.target = index;
@@ -265,6 +282,18 @@ const confirmconfigmap = () => {
 
 .app-pixiu-line-describe2 {
   margin-left: 2px;
+  font-size: 12px;
+  color: #888888;
+}
+
+.app-pixiu-line-describe4 {
+  margin-left: -25px;
+  margin-top: 25px;
+  font-size: 12px;
+  color: #888888;
+}
+
+.configmap-label-title {
   font-size: 12px;
   color: #888888;
 }
@@ -316,9 +345,9 @@ const confirmconfigmap = () => {
 .deployee-class .el-radio__inner {
   display: none;
 }
-.mt-4 {
+.mt-5 {
   border: none;
-  margin-left: 150px;
+  margin-left: 2px;
   margin-top: 20px;
   color: rgb(64, 64, 237);
 }
