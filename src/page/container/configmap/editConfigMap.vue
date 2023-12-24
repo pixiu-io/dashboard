@@ -14,7 +14,7 @@
   >
     <el-main>
       <div class="app-pixiu-content-card">
-        <el-card style="margin-top: 8px; width: 80%; border-radius: 0px">
+        <el-card style="margin-top: 8px; width: 100%; border-radius: 0px">
           <template #header>
             <el-descriptions
               class="no-border"
@@ -35,13 +35,26 @@
                 {{ data.configmapForm.metadata.name }}
               </el-descriptions-item>
             </el-descriptions>
-            <el-divider />
-            <div>
-              <el-table :data="data.tableData" style="width: 100%" max-height="250">
+          </template>
+          <el-form>
+            <el-form-item label="内容" style="margin-top: 20px">
+              <el-table
+                :data="data.tableData"
+                style="width: 100%; padding-left: 150px"
+                max-height="250"
+              >
                 <el-table-column prop="key" label="变量名" width="120" />
                 <el-table-column prop="value" label="变量值" width="auto" />
                 <el-table-column fixed="right" label="操作" width="120">
                   <template #default="scope">
+                    <el-button
+                      link
+                      type="primary"
+                      size="small"
+                      @click.prevent="handleConfigmapDialog(scope.$index)"
+                    >
+                      编辑
+                    </el-button>
                     <el-button
                       link
                       type="primary"
@@ -55,11 +68,51 @@
               </el-table>
               <el-button class="mt-4" style="width: 5%" @click="onAddItem">手动增加</el-button>
               <el-button class="mt-4" style="width: 5%" @click="onAddItem">文件导入</el-button>
-            </div>
-          </template>
+            </el-form-item>
+            <div style="margin-top: 30px" />
+            <el-form-item style="margin-left: 30%">
+              <el-button class="pixiu-cancel-button" @click="cancelUpdate()">取消</el-button>
+              <el-button class="pixiu-confirm-button" type="primary" @click="comfirmUpdate()"
+                >确定</el-button
+              >
+            </el-form-item>
+          </el-form>
         </el-card>
       </div>
     </el-main>
+    <el-dialog
+      :model-value="data.configmapDialog"
+      style="color: #000000; font: 14px"
+      width="500px"
+      center
+      @close="closeDeploymentScaleDialog"
+    >
+      <template #header>
+        <div style="text-align: left; font-weight: bold; padding-left: 5px">输入内容</div>
+      </template>
+
+      <el-form label-width="100px" style="max-width: 300px">
+        <el-form-item label="变量名">
+          <el-input v-model="data.configmapDataFrom.key" placeholder="请输入变量值" />
+        </el-form-item>
+        <el-form-item label="变量值">
+          <el-input v-model="data.configmapDataFrom.value" placeholder="请输入新副本数" />
+        </el-form-item>
+      </el-form>
+
+      <div style="margin-top: -18px"></div>
+
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button class="pixiu-small-cancel-button" @click="closeConfigmapDialog"
+            >取消</el-button
+          >
+          <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmconfigmap"
+            >确认</el-button
+          >
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -101,39 +154,20 @@ const data = reactive({
       value: '',
     },
   },
+  configmapDialog: false,
+  configmapDataFrom: {
+    key: '',
+    value: '',
+    target: 0,
+  },
 });
 
 const handleChange = (value) => {
   data.configmapForm.spec.replicas = value;
 };
 
-const comfirmCreate = async () => {
-  data.configmapForm.spec.selector.matchLabels['pixiu.io/app'] = data.configmapForm.metadata.name;
-  data.configmapForm.spec.selector.matchLabels['pixiu.io/kind'] = 'deployment';
-  data.configmapForm.spec.template.metadata.labels = data.configmapForm.spec.selector.matchLabels;
-
-  for (let i = 0; i < data.deploymentLabels.length; i++) {
-    data.configmapForm.spec.template.metadata.labels[data.deploymentLabels[i].key] =
-      data.deploymentLabels[i].value;
-  }
-
-  try {
-    const resp = await proxy.$http({
-      method: 'post',
-      url:
-        `/proxy/pixiu/${data.cloud.cluster}/apis/apps/v1/namespaces/` +
-        data.configmapForm.metadata.namespace +
-        `/deployments`,
-      data: data.configmapForm,
-    });
-  } catch (error) {}
-
-  proxy.$message.success(`deployment ${data.configmapForm.metadata.name} 创建成功`);
-  backToDeployment();
-};
-
-const cancelCreate = () => {
-  backToDeployment();
+const cancelUpdate = () => {
+  backToConfigmap();
 };
 
 onMounted(() => {
@@ -141,6 +175,7 @@ onMounted(() => {
   data.configmapForm.metadata.name = data.cloud.name;
   data.path = proxy.$route.fullPath;
   getConfigMap();
+  getNamespace();
   getNamespaceList();
 });
 
@@ -162,7 +197,6 @@ const getConfigMap = async () => {
     method: 'get',
     url: `/proxy/pixiu/${data.cloud.cluster}/api/v1/namespaces/${data.cloud.namespace}/configmaps/${data.cloud.name}`,
     data: '',
-    // data: data.pageInfo,
   });
   data.configmapForm.metadata = res.metadata;
   data.tableData = Object.entries(res.data).map(([key, value]) => ({ key, value }));
@@ -181,46 +215,61 @@ const getNamespaceList = async () => {
   } catch (error) {}
 };
 
-const addLabel = () => {
-  data.deploymentLabels.push({
-    key: '',
-    value: '',
-  });
-};
-
-const deleteLabel = (index) => {
-  data.deploymentLabels.splice(index, 1);
-};
-
-const addContainer = () => {
-  data.configmapForm.spec.template.spec.containers.push({
-    name: '',
-    image: '',
-    imagePullPolicy: 'IfNotPresent',
-  });
-};
-
-const deleteContainer = (index) => {
-  data.configmapForm.spec.template.spec.containers.splice(index, 1);
-};
-
 // 回到 configmap 页面
 const backToConfigmap = () => {
   proxy.$router.push({
-    name: 'configmap',
+    name: 'ConfigMap',
     query: data.cloud,
   });
 };
 
 const deleteRow = (index) => {
-  tableData.value.splice(index, 1);
+  data.tableData.splice(index, 1);
 };
 
 const onAddItem = () => {
-  tableData.value.push({
-    key: 'Tom',
-    value: 'California',
+  data.tableData.push({
+    key: '',
+    value: '',
   });
+};
+
+const handleConfigmapDialog = (index) => {
+  data.configmapDataFrom.key = data.tableData[index].key;
+  data.configmapDataFrom.target = index;
+  data.configmapDataFrom.value = data.tableData[index].value;
+  data.configmapDialog = true;
+};
+
+const closeConfigmapDialog = () => {
+  data.configmapDialog = false;
+};
+
+const confirmconfigmap = () => {
+  const dataVlue = data.configmapDataFrom;
+  data.tableData[dataVlue.target].key = dataVlue.key;
+  data.tableData[dataVlue.target].value = dataVlue.value;
+  data.configmapDialog = false;
+};
+
+const comfirmUpdate = async () => {
+  data.tableData.forEach((item) => {
+    data.configmapForm.data[item.key] = item.value;
+  });
+  try {
+    const resp = await proxy.$http({
+      method: 'put',
+      url:
+        `/proxy/pixiu/${data.cloud.cluster}/api/v1/namespaces/` +
+        data.configmapForm.metadata.namespace +
+        `/configmaps/` +
+        data.configmapForm.metadata.name,
+      data: data.configmapForm,
+    });
+  } catch (error) {}
+
+  proxy.$message.success(`configmap ${data.configmapForm.metadata.name} 更新成功`);
+  backToConfigmap();
 };
 </script>
 
@@ -311,6 +360,8 @@ const onAddItem = () => {
 }
 .mt-4 {
   border: none;
+  margin-left: 150px;
+  margin-top: 20px;
   color: rgb(64, 64, 237);
 }
 </style>

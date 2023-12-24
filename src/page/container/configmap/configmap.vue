@@ -12,7 +12,7 @@
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
-          @clear="getDeployments"
+          @clear="getConfigMaps"
         >
           <template #suffix>
             <el-icon class="el-input__icon" @click="getDeployments">
@@ -28,7 +28,6 @@
         >
           <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
         </el-select>
-        <!-- <dev class="namespace-container" style="width: 112px; float: right">命名空间</dev> -->
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -207,9 +206,10 @@ const editConfigMap = (row) => {
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
-
+  data.cloud = proxy.$route.query;
+  data.path = proxy.$route.fullPath;
+  getNamespaceList();
   getConfigMaps();
-  getConfigMapsList();
 });
 
 const jumpRoute = (row) => {
@@ -237,7 +237,7 @@ const getConfigMaps = async () => {
 };
 
 const changeNamespace = async (val) => {
-  localStorage.setItem('namespace', val);
+  // localStorage.setItem('namespace', val);
   data.namespace = val;
 
   getConfigMaps();
@@ -249,6 +249,16 @@ const getConfigMapsList = async () => {
       method: 'get',
       url: `/proxy/pixiu/${data.cluster}/api/v1/configmaps`,
     });
+  } catch (error) {}
+};
+
+const getNamespaceList = async () => {
+  console.log(data.namespaces);
+  try {
+    const result = await proxy.$http({
+      method: 'get',
+      url: '/proxy/pixiu/' + data.cloud.cluster + '/api/v1/namespaces',
+    });
 
     for (let item of result.items) {
       data.namespaces.push(item.metadata.name);
@@ -257,16 +267,12 @@ const getConfigMapsList = async () => {
 };
 
 const deleteDeployment = (row) => {
-  ElMessageBox.confirm(
-    '此操作将永久删除 Deployment ' + row.metadata.name + ' . 是否继续?',
-    '提示',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-      draggable: true,
-    },
-  )
+  ElMessageBox.confirm('此操作将永久删除 ConfigMap ' + row.metadata.name + ' . 是否继续?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+    draggable: true,
+  })
     .then(() => {
       const res = proxy.$http({
         method: 'delete',
@@ -277,9 +283,7 @@ const deleteDeployment = (row) => {
         message: '删除 ' + row.metadata.name + ' 成功',
       });
 
-      // TODO：一次更新即可
-      getDeployments();
-      getDeployments();
+      getConfigMaps();
     })
     .catch(() => {}); // 取消
 };
@@ -319,20 +323,6 @@ const confirmDeploymentScale = () => {
     getDeployments();
     closeDeploymentScaleDialog();
   } catch (error) {}
-};
-
-const formatterLabels = (row, column, cellValue) => {
-  const labels = Object.entries(cellValue).map(([key, value]) => {
-    return `${key}: ${value}`;
-  });
-  return (
-    <div>
-      {' '}
-      {labels.map((label) => (
-        <div class="pixiu-table-formatter">{label}</div>
-      ))}{' '}
-    </div>
-  );
 };
 
 const formatterTime = (row, column, cellValue) => {

@@ -62,16 +62,7 @@
               </el-table>
               <el-button class="mt-4" style="width: 5%" @click="onAddItem">手动增加</el-button>
               <el-button class="mt-4" style="width: 5%" @click="onAddItem">文件导入</el-button>
-              <!-- <el-input-number
-                v-model="data.configmapForm.spec.replicas"
-                style="margin-top: 8px"
-                :min="0"
-                size="small"
-                @change="handleChange"
-            /> -->
             </el-form-item>
-            <!-- <div class="app-pixiu-line-describe" style="margin-top: -10px">Deployment 副本设置</div> -->
-
             <div style="margin-top: 30px" />
             <el-form-item style="margin-left: 30%">
               <el-button class="pixiu-cancel-button" @click="cancelCreate()">取消</el-button>
@@ -91,7 +82,7 @@
       @close="closeDeploymentScaleDialog"
     >
       <template #header>
-        <div style="text-align: left; font-weight: bold; padding-left: 5px">调整副本配置</div>
+        <div style="text-align: left; font-weight: bold; padding-left: 5px">输入内容</div>
       </template>
 
       <el-form label-width="100px" style="max-width: 300px">
@@ -191,13 +182,6 @@ onMounted(() => {
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
   data.configmapForm.metadata.namespace = val;
-};
-
-const getNamespace = async () => {
-  const namespace = localStorage.getItem('namespace');
-  if (namespace) {
-    data.namespace = namespace;
-  }
 };
 
 const getNamespaceList = async () => {
