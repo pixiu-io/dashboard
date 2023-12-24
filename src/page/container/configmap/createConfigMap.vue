@@ -60,6 +60,13 @@
                   </template>
                 </el-table-column>
               </el-table>
+              <div class="app-pixiu-line-describe2">
+                只能包含字母、数字及分隔符"、"”、";
+                变量名为空时，在变量名称中粘贴一行或多行key=valuekey:
+                value的键值对可以实现快速批量输入
+              </div>
+            </el-form-item>
+            <el-form-item>
               <el-button class="mt-4" style="width: 5%" @click="onAddItem">手动增加</el-button>
               <el-button class="mt-4" style="width: 5%" @click="onAddItem">文件导入</el-button>
             </el-form-item>
@@ -257,8 +264,8 @@ const confirmconfigmap = () => {
 }
 
 .app-pixiu-line-describe2 {
-  margin-left: 2px;
-  font-size: 10px;
+  margin-left: 165px;
+  font-size: 12px;
   color: #888888;
 }
 
@@ -308,5 +315,11 @@ const confirmconfigmap = () => {
 
 .deployee-class .el-radio__inner {
   display: none;
+}
+.mt-4 {
+  border: none;
+  margin-left: 150px;
+  margin-top: 20px;
+  color: rgb(64, 64, 237);
 }
 </style>

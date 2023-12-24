@@ -15,7 +15,7 @@
           @clear="getConfigMaps"
         >
           <template #suffix>
-            <el-icon class="el-input__icon" @click="getDeployments">
+            <el-icon class="el-input__icon" @click="getConfigMaps">
               <component :is="'Search'" />
             </el-icon>
           </template>
@@ -61,7 +61,7 @@
           prop="metadata.creationTimestamp"
           label="创建时间"
           sortable
-          width="150px"
+          width="auto"
           :formatter="formatterTime"
         />
 
@@ -84,20 +84,15 @@
             >
               编辑yaml
             </el-button>
-
-            <el-dropdown>
-              <span class="el-dropdown-link">
-                删除
-                <!-- <el-icon><arrow-down /></el-icon> -->
-              </span>
-              <template #dropdown>
-                <el-dropdown-menu class="dropdown-buttons">
-                  <el-dropdown-item style="color: #006eff" @click="deleteDeployment(scope.row)">
-                    删除
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
+            <el-button
+              link
+              type="primary"
+              size="small"
+              style="color: #006eff"
+              @click="deleteConfigMap(scope.row)"
+            >
+              删除
+            </el-button>
           </template>
         </el-table-column>
 
@@ -186,12 +181,12 @@ const data = reactive({
 
 const handleSizeChange = (newSize) => {
   data.pageInfo.limit = newSize;
-  getDeployments();
+  getConfigMaps();
 };
 
 const handleCurrentChange = (newPage) => {
   data.pageInfo.page = newPage;
-  getDeployments();
+  getConfigMaps();
 };
 
 const createConfigMap = () => {
@@ -202,6 +197,27 @@ const createConfigMap = () => {
 const editConfigMap = (row) => {
   const url = `/kubernetes/configmaps/editConfigMap?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
   router.push(url);
+};
+
+const deleteConfigMap = (row) => {
+  ElMessageBox.confirm('此操作将永久删除 ConfigMap ' + row.metadata.name + ' . 是否继续?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+    draggable: true,
+  })
+    .then(() => {
+      const res = proxy.$http({
+        method: 'delete',
+        url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/configmaps/${row.metadata.name}`,
+      });
+      ElMessage({
+        type: 'success',
+        message: '删除 ' + row.metadata.name + ' 成功',
+      });
+      getConfigMaps();
+    })
+    .catch(() => {}); // 取消
 };
 
 onMounted(() => {
@@ -225,6 +241,7 @@ const jumpRoute = (row) => {
 
 const getConfigMaps = async () => {
   data.loading = true;
+  data.namespace = localStorage.getItem('namespace');
   const res = await proxy.$http({
     method: 'get',
     url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/configmaps`,
@@ -237,23 +254,13 @@ const getConfigMaps = async () => {
 };
 
 const changeNamespace = async (val) => {
-  // localStorage.setItem('namespace', val);
+  localStorage.setItem('namespace', val);
   data.namespace = val;
 
   getConfigMaps();
 };
 
-const getConfigMapsList = async () => {
-  try {
-    const result = await proxy.$http({
-      method: 'get',
-      url: `/proxy/pixiu/${data.cluster}/api/v1/configmaps`,
-    });
-  } catch (error) {}
-};
-
 const getNamespaceList = async () => {
-  console.log(data.namespaces);
   try {
     const result = await proxy.$http({
       method: 'get',
@@ -264,28 +271,6 @@ const getNamespaceList = async () => {
       data.namespaces.push(item.metadata.name);
     }
   } catch (error) {}
-};
-
-const deleteDeployment = (row) => {
-  ElMessageBox.confirm('此操作将永久删除 ConfigMap ' + row.metadata.name + ' . 是否继续?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-    draggable: true,
-  })
-    .then(() => {
-      const res = proxy.$http({
-        method: 'delete',
-        url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${row.metadata.name}`,
-      });
-      ElMessage({
-        type: 'success',
-        message: '删除 ' + row.metadata.name + ' 成功',
-      });
-
-      getConfigMaps();
-    })
-    .catch(() => {}); // 取消
 };
 
 const handleDeploymentScaleDialog = (row) => {
@@ -319,8 +304,8 @@ const confirmDeploymentScale = () => {
         },
       },
     });
-    getDeployments();
-    getDeployments();
+    getConfigMaps();
+    getConfigMaps();
     closeDeploymentScaleDialog();
   } catch (error) {}
 };
