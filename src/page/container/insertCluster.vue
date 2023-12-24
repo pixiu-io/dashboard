@@ -3,7 +3,7 @@
     <pixiu-card back="true" title="新建标准集群" height="50px" />
     <el-main>
       <div class="app-pixiu-content-card">
-        <el-card style="margin-top: 10px; width: 75%">
+        <el-card style="margin-top: 10px; width: 75%; border-radius: 0px">
           <el-form
             :label-position="labelPosition"
             label-width="120px"
@@ -62,17 +62,18 @@
             </div> -->
 
             <div style="margin-top: 18px" />
-            <el-form-item label="新建系统空间">
+            <el-form-item label="集群删除保护">
               <el-switch
-                v-model="data.clusterForm.create_ns"
+                v-model="data.clusterForm.protected"
                 inline-prompt
-                width="42px"
+                width="48px"
                 active-text="是"
                 inactive-text="否"
               />
             </el-form-item>
             <div class="app-pixiu-describe" style="margin-top: -12px">
-              在 kubernetes 集群中创建 pixiu-system 命名空间，用于运行 pixiu 的系统组件和配置
+              开启集群删除保护时，不允许进行删除集群操作
+              <!-- 在 kubernetes 集群中创建 pixiu-system  命名空间，用于运行 pixiu 的系统组件和配置 -->
             </div>
 
             <div style="margin-top: 20px" />
@@ -122,8 +123,8 @@ const data = reactive({
     alias_name: '',
     kube_config: '', // k8s 集群 kubeconfig 文件的 base64 格式
     region: '无锡',
+    protected: true,
     description: '',
-    create_ns: false, // 创建 pixiu 的系统命名空间
     enable_pixiu_eventer: false, // 启用高性能事件收集器
   },
 
