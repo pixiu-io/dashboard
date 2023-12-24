@@ -166,7 +166,6 @@ const getConfigMap = async () => {
   });
   data.configmapForm.metadata = res.metadata;
   data.tableData = Object.entries(res.data).map(([key, value]) => ({ key, value }));
-  console.log(data.tableData);
 };
 
 const getNamespaceList = async () => {

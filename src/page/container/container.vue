@@ -173,7 +173,7 @@
                 v-permissions="'user:cloud:setting'"
                 size="small"
                 type="text"
-                style="margin-right: -20px; margin-left: -10px; color: #006eff"
+                style="margin-right: -22px; margin-left: -10px; color: #006eff"
                 @click="handleEdit(scope.row)"
               >
                 设置
@@ -183,22 +183,26 @@
                 v-permissions="'user:cloud:delete'"
                 type="text"
                 size="small"
-                style="margin-right: 2px; color: #006eff"
+                style="color: #006eff"
                 @click="cloudStore.deleteCloud(scope.row)"
               >
                 删除
               </el-button>
 
               <el-dropdown>
-                <span class="el-dropdown-link">
+                <span class="cluster-dropdown">
                   更多
-                  <el-icon><arrow-down /></el-icon>
+                  <div style="margin-left: 2px"></div>
+                  <pixiu-icon name="icon-xiala" size="12px" type="iconfont" color="#006eff" />
+
+                  <!-- <el-icon style="margin-left: 2px"><arrow-down /></el-icon> -->
                 </span>
                 <template #dropdown>
                   <el-dropdown-menu class="dropdown-buttons">
-                    <el-dropdown-item style="color: #006eff"> 启动 </el-dropdown-item>
-                    <el-dropdown-item style="color: #006eff"> 详情 </el-dropdown-item>
-                    <el-dropdown-item style="color: #006eff"> 终端 </el-dropdown-item>
+                    <el-dropdown-item class="dropdown-item-buttons"> 启用终端 </el-dropdown-item>
+                    <el-dropdown-item class="dropdown-item-buttons">
+                      启用集群删除保护
+                    </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -332,10 +336,8 @@
     <template #header>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">删除集群</div>
     </template>
-
-    <div>此操作将永久删除 ' {{ cloudStore.preDeleteCloudName }} ' 集群. 是否继续?</div>
-
     <!-- <div style="margin-top: -18px"></div> -->
+    <div>此操作将永久删除 {{ cloudStore.preDeleteCloudName }} 集群. 是否继续?</div>
 
     <template #footer>
       <span class="dialog-footer">
@@ -445,7 +447,7 @@ const cloudNodeFormatter = (row, column, cellValue) => (
   <div class="pixiu-table-formatter">
     <el-space>
       <div>
-        {cellValue}台(<span class="color-green-word">全部正常</span>)
+        {cellValue}台 (<span class="color-green-word">全部正常</span>)
       </div>
     </el-space>
   </div>
@@ -454,7 +456,7 @@ const cloudNodeFormatter = (row, column, cellValue) => (
 const cloudStatusFormatter = (row, column, cellValue) => (
   <div class="pixiu-table-formatter">
     <el-space>
-      <div>运行中</div>
+      <div class="color-green-word">运行中</div>
     </el-space>
   </div>
 );

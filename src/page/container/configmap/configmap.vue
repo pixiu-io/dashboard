@@ -1,5 +1,8 @@
 <template>
-  <div>ConfigMap</div>
+  <el-card class="title-card-container">
+    <div class="font-container">ConfigMap</div>
+  </el-card>
+
   <div style="margin-top: 25px">
     <el-row>
       <el-col>
@@ -51,20 +54,19 @@
           </template>
         </el-table-column>
 
-        <!-- <el-table-column prop="metadata.creationTimestamp" label="创建时间" width="180" /> -->
-
         <el-table-column label="Labels" width="530">
           <span>-</span>
         </el-table-column>
+
         <el-table-column
           prop="metadata.creationTimestamp"
           label="创建时间"
           sortable
-          width="530"
+          width="150px"
           :formatter="formatterTime"
         />
 
-        <el-table-column fixed="right" label="操作" width="300">
+        <el-table-column fixed="right" label="操作" width="200">
           <template #default="scope">
             <el-button
               size="small"
