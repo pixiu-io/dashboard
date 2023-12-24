@@ -36,7 +36,7 @@
         @selection-change="handleSelectionChange"
       >
         <!-- <el-table-column type="selection" width="30" /> -->
-        <el-table-column prop="metadata.name" sortable label="名称" min-width="80px">
+        <el-table-column prop="metadata.name" sortable label="名称" width="auto">
           <template #default="scope">
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
@@ -66,7 +66,7 @@
         >
         </el-table-column>
 
-        <el-table-column label="描述" prop="-"> </el-table-column>
+        <el-table-column label="描述" prop="-"> <span>-</span> </el-table-column>
 
         <el-table-column fixed="right" label="操作" width="180px">
           <template #default="scope">
@@ -83,7 +83,7 @@
               type="text"
               size="small"
               style="margin-right: 1px; color: #006eff"
-              @click="handleDeploymentScaleDialog(scope.row)"
+              @click="deleteNamespace(scope.row)"
             >
               删除
             </el-button>
@@ -115,7 +115,7 @@ import { formatTimestamp } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { getNamespaces } from '@/services/cloudService';
 import useClipboard from 'vue-clipboard3';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElMessageBox } from 'element-plus';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -166,6 +166,11 @@ onMounted(() => {
   getNamespace();
 });
 
+const createNamespace = () => {
+  const url = `/kubernetes/createNamespace?cluster=${data.cluster}`;
+  router.push(url);
+};
+
 const getNamespace = async () => {
   data.loading = true;
   const [err, result] = await getNamespaces(data.cluster);
@@ -178,13 +183,39 @@ const getNamespace = async () => {
   data.pageInfo.total = data.namespaceList.length;
 };
 
+const deleteNamespace = (row) => {
+  ElMessageBox.confirm('此操作将永久删除 ' + row.metadata.name + ' 命名空间. 是否继续?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+    draggable: true,
+  })
+    .then(() => {
+      const res = proxy.$http({
+        method: 'delete',
+        url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${row.metadata.name}`,
+      });
+      ElMessage({
+        type: 'success',
+        message: '删除 ' + row.metadata.name + ' 成功',
+      });
+
+      getNamespace();
+    })
+    .catch(() => {}); // 取消
+};
+
 const formatterTime = (row, column, cellValue) => {
   const time = formatTimestamp(cellValue);
   return <div>{time}</div>;
 };
 
 const formatStatus = (row, column, cellValue) => {
-  return <div class="color-green-word">{cellValue.phase}</div>;
+  if (cellValue.phase === 'Active') {
+    return <div class="color-green-word">{cellValue.phase}</div>;
+  }
+
+  return <div>{cellValue.phase}</div>;
 };
 </script>
 
