@@ -144,8 +144,8 @@ const data = reactive({
   },
   tableData: [
     {
-      key: '1',
-      value: '22',
+      key: '',
+      value: '',
     },
   ],
   configmapDialog: false,
