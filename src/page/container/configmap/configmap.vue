@@ -3,7 +3,7 @@
   <div style="margin-top: 25px">
     <el-row>
       <el-col>
-        <button class="pixiu-two-button" @click="createDeployment">新建</button>
+        <button class="pixiu-two-button" @click="createConfigMap">新建</button>
         <el-input
           v-model="data.pageInfo.query"
           placeholder="名称搜索关键字"
@@ -193,8 +193,13 @@ const handleCurrentChange = (newPage) => {
   getDeployments();
 };
 
-const createDeployment = () => {
-  const url = `/kubernetes/deployment_create?cluster=${data.cluster}&namespace=${data.namespace}`;
+const createConfigMap = () => {
+  const url = `/kubernetes/configmaps/createConfigMap?cluster=${data.cluster}&namespace=${data.namespace}`;
+  router.push(url);
+};
+
+const editConfigMap = (row) => {
+  const url = `/kubernetes/configmaps/editConfigMap?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
   router.push(url);
 };
 
@@ -249,10 +254,6 @@ const getConfigMapsList = async () => {
   } catch (error) {}
 };
 
-const editConfigMap = (row) => {
-  const url = `/kubernetes/configmap/editConfigMap?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
-  router.push(url);
-};
 const deleteDeployment = (row) => {
   ElMessageBox.confirm(
     '此操作将永久删除 Deployment ' + row.metadata.name + ' . 是否继续?',

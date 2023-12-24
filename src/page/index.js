@@ -21,6 +21,7 @@ import InsertCluster from './container/insertCluster.vue';
 import CreateCluster from './container/createCluster.vue';
 import Service from './container/service/service.vue';
 import ConfigMap from './container/configmap/configmap.vue';
+import CreateConfigMap from './container/configmap/createConfigMap.vue';
 import EditConfigMap from './container/configmap/editConfigMap.vue';
 import Ingress from './container/ingress/ingress.vue';
 import Pod from './container/pod/pod.vue';
@@ -50,6 +51,7 @@ export {
   Service,
   StatefulSet,
   ConfigMap,
+  CreateConfigMap,
   EditConfigMap,
   Ingress,
   Pod,

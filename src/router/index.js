@@ -24,6 +24,7 @@ import {
   Service,
   Ingress,
   ConfigMap,
+  CreateConfigMap,
   EditConfigMap,
   StatefulSet,
   StorageClass,
@@ -207,7 +208,15 @@ const routes = [
             component: ConfigMap,
           },
           {
-            path: 'configmap/editConfigMap',
+            path: 'configmaps/createConfigMap',
+            name: 'createConfigMap',
+            meta: {
+              title: 'createConfigMap',
+            },
+            component: CreateConfigMap,
+          },
+          {
+            path: 'configmaps/editConfigMap',
             name: 'editConfigMap',
             meta: {
               title: 'editConfigMap',
