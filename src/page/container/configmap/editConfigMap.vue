@@ -66,7 +66,7 @@
                   </template>
                 </el-table-column>
               </el-table>
-              <div class="app-pixiu-line-describe2">
+              <div class="app-pixiu-line-describe3">
                 只能包含字母、数字及分隔符"、"”、";
                 变量名为空时，在变量名称中粘贴一行或多行key=valuekey:
                 value的键值对可以实现快速批量输入
@@ -301,8 +301,8 @@ const comfirmUpdate = async () => {
   color: #888888;
 }
 
-.app-pixiu-line-describe2 {
-  margin-left: 2px;
+.app-pixiu-line-describe3 {
+  margin-left: 165px;
   font-size: 12px;
   color: #888888;
 }
@@ -329,13 +329,6 @@ const comfirmUpdate = async () => {
   font-size: 12px;
   color: #888888;
 }
-
-.app-pixiu-line-describe2 {
-  margin-left: 165px;
-  font-size: 12px;
-  color: #888888;
-}
-
 .configmap-class .el-radio {
   background-color: white;
   border-radius: 0;

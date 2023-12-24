@@ -264,7 +264,7 @@ const confirmconfigmap = () => {
 }
 
 .app-pixiu-line-describe2 {
-  margin-left: 165px;
+  margin-left: 2px;
   font-size: 12px;
   color: #888888;
 }

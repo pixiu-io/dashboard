@@ -45,7 +45,7 @@
       >
         <el-table-column type="selection" width="30" />
 
-        <el-table-column prop="metadata.name" sortable label="名称" width="180">
+        <el-table-column prop="metadata.name" sortable label="名称" width="auto">
           <template #default="scope">
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
@@ -86,9 +86,9 @@
             </el-button>
             <el-button
               link
-              type="primary"
+              type="text"
               size="small"
-              style="color: #006eff"
+              style="margin-right: 1px; margin-left: -2px; color: #006eff"
               @click="deleteConfigMap(scope.row)"
             >
               删除
