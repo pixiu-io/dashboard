@@ -6,16 +6,16 @@
   <div style="margin-top: 25px">
     <el-row>
       <el-col>
-        <button class="pixiu-two-button" @click="createDeployment">新建</button>
+        <button class="pixiu-two-button" @click="createConfigMap">新建</button>
         <el-input
           v-model="data.pageInfo.query"
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
-          @clear="getDeployments"
+          @clear="getConfigMaps"
         >
           <template #suffix>
-            <el-icon class="el-input__icon" @click="getDeployments">
+            <el-icon class="el-input__icon" @click="getConfigMaps">
               <component :is="'Search'" />
             </el-icon>
           </template>
@@ -28,7 +28,6 @@
         >
           <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
         </el-select>
-        <!-- <dev class="namespace-container" style="width: 112px; float: right">命名空间</dev> -->
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -46,7 +45,7 @@
       >
         <el-table-column type="selection" width="30" />
 
-        <el-table-column prop="metadata.name" sortable label="名称" width="180">
+        <el-table-column prop="metadata.name" sortable label="名称" width="auto">
           <template #default="scope">
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
@@ -62,7 +61,7 @@
           prop="metadata.creationTimestamp"
           label="创建时间"
           sortable
-          width="150px"
+          width="auto"
           :formatter="formatterTime"
         />
 
@@ -85,20 +84,15 @@
             >
               编辑yaml
             </el-button>
-
-            <el-dropdown>
-              <span class="el-dropdown-link">
-                删除
-                <!-- <el-icon><arrow-down /></el-icon> -->
-              </span>
-              <template #dropdown>
-                <el-dropdown-menu class="dropdown-buttons">
-                  <el-dropdown-item style="color: #006eff" @click="deleteDeployment(scope.row)">
-                    删除
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
+            <el-button
+              link
+              type="text"
+              size="small"
+              style="margin-right: 1px; margin-left: -2px; color: #006eff"
+              @click="deleteConfigMap(scope.row)"
+            >
+              删除
+            </el-button>
           </template>
         </el-table-column>
 
@@ -187,24 +181,51 @@ const data = reactive({
 
 const handleSizeChange = (newSize) => {
   data.pageInfo.limit = newSize;
-  getDeployments();
+  getConfigMaps();
 };
 
 const handleCurrentChange = (newPage) => {
   data.pageInfo.page = newPage;
-  getDeployments();
+  getConfigMaps();
 };
 
-const createDeployment = () => {
-  const url = `/kubernetes/deployment_create?cluster=${data.cluster}&namespace=${data.namespace}`;
+const createConfigMap = () => {
+  const url = `/kubernetes/configmaps/createConfigMap?cluster=${data.cluster}&namespace=${data.namespace}`;
   router.push(url);
+};
+
+const editConfigMap = (row) => {
+  const url = `/kubernetes/configmaps/editConfigMap?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
+  router.push(url);
+};
+
+const deleteConfigMap = (row) => {
+  ElMessageBox.confirm('此操作将永久删除 ConfigMap ' + row.metadata.name + ' . 是否继续?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+    draggable: true,
+  })
+    .then(() => {
+      const res = proxy.$http({
+        method: 'delete',
+        url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/configmaps/${row.metadata.name}`,
+      });
+      ElMessage({
+        type: 'success',
+        message: '删除 ' + row.metadata.name + ' 成功',
+      });
+      getConfigMaps();
+    })
+    .catch(() => {}); // 取消
 };
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
-
+  data.cloud = proxy.$route.query;
+  data.path = proxy.$route.fullPath;
+  getNamespaceList();
   getConfigMaps();
-  getConfigMapsList();
 });
 
 const jumpRoute = (row) => {
@@ -220,6 +241,7 @@ const jumpRoute = (row) => {
 
 const getConfigMaps = async () => {
   data.loading = true;
+  data.namespace = localStorage.getItem('namespace');
   const res = await proxy.$http({
     method: 'get',
     url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/configmaps`,
@@ -238,49 +260,17 @@ const changeNamespace = async (val) => {
   getConfigMaps();
 };
 
-const getConfigMapsList = async () => {
+const getNamespaceList = async () => {
   try {
     const result = await proxy.$http({
       method: 'get',
-      url: `/proxy/pixiu/${data.cluster}/api/v1/configmaps`,
+      url: '/proxy/pixiu/' + data.cloud.cluster + '/api/v1/namespaces',
     });
 
     for (let item of result.items) {
       data.namespaces.push(item.metadata.name);
     }
   } catch (error) {}
-};
-
-const editConfigMap = (row) => {
-  const url = `/kubernetes/configmap/editConfigMap?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
-  router.push(url);
-};
-const deleteDeployment = (row) => {
-  ElMessageBox.confirm(
-    '此操作将永久删除 Deployment ' + row.metadata.name + ' . 是否继续?',
-    '提示',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-      draggable: true,
-    },
-  )
-    .then(() => {
-      const res = proxy.$http({
-        method: 'delete',
-        url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${row.metadata.name}`,
-      });
-      ElMessage({
-        type: 'success',
-        message: '删除 ' + row.metadata.name + ' 成功',
-      });
-
-      // TODO：一次更新即可
-      getDeployments();
-      getDeployments();
-    })
-    .catch(() => {}); // 取消
 };
 
 const handleDeploymentScaleDialog = (row) => {
@@ -314,24 +304,10 @@ const confirmDeploymentScale = () => {
         },
       },
     });
-    getDeployments();
-    getDeployments();
+    getConfigMaps();
+    getConfigMaps();
     closeDeploymentScaleDialog();
   } catch (error) {}
-};
-
-const formatterLabels = (row, column, cellValue) => {
-  const labels = Object.entries(cellValue).map(([key, value]) => {
-    return `${key}: ${value}`;
-  });
-  return (
-    <div>
-      {' '}
-      {labels.map((label) => (
-        <div class="pixiu-table-formatter">{label}</div>
-      ))}{' '}
-    </div>
-  );
 };
 
 const formatterTime = (row, column, cellValue) => {
