@@ -20,9 +20,15 @@
     <el-main>
       <div class="app-pixiu-content-card">
         <el-card style="margin-top: 8px; width: 100%; border-radius: 0px">
-          <el-form label-position="left" label-width="100px" style="margin-left: 3%; width: 80%">
+          <el-form
+            label-position="left"
+            label-width="100px"
+            :rules="rules"
+            style="margin-left: 3%; width: 80%"
+          >
             <div style="margin-top: 20px" />
-            <el-form-item label="名称" style="width: 400px">
+
+            <el-form-item label="名称" prop="name" style="width: 400px">
               <el-input v-model="data.namespaceForm.metadata.name" />
               <div class="app-pixiu-line-describe2">
                 最长63个字符，只能包含小写字母、数字及分隔符("-")
@@ -96,6 +102,10 @@ onMounted(() => {
 
   data.path = proxy.$route.fullPath;
 });
+
+const rules = {
+  name: [{ required: true, message: '请输入命名空间名称', trigger: 'blur' }],
+};
 
 const backToNamespace = () => {
   proxy.$router.push({
