@@ -105,7 +105,7 @@
         >
           <!-- <el-table-column type="selection" width="38" /> -->
 
-          <el-table-column prop="name" label="名称/ID" width="180">
+          <el-table-column prop="name" label="名称/ID" width="200px">
             <template #default="scope">
               <el-link
                 style="color: #006eff; font-size: 12px; margin-right: 2px"
@@ -161,11 +161,21 @@
           <el-table-column
             prop="nodes"
             label="节点数"
-            width="180"
+            width="170"
             :formatter="cloudNodeFormatter"
           />
 
-          <el-table-column prop="resources" label="资源量" :formatter="formatterResource" />
+          <el-table-column prop="protected" label="集群删除保护" :formatter="formatProtected" />
+
+          <el-table-column
+            label="创建时间"
+            prop="gmt_create"
+            width="auto"
+            :formatter="formatterTime"
+          >
+          </el-table-column>
+
+          <!-- <el-table-column prop="resources" label="资源量" :formatter="formatterResource" /> -->
 
           <el-table-column fixed="right" label="操作" width="170">
             <template #default="scope">
@@ -363,6 +373,7 @@ import Pagination from '@/components/pagination/index.vue';
 import useCloudStore from '@/stores/useCloud';
 import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
+import { formatTimestamp } from '@/utils/utils';
 
 const cloudStore = useCloudStore();
 
@@ -474,6 +485,19 @@ const cloudStatus2Formatter = (row, column, cellValue) => (
     </el-space>
   </div>
 );
+
+const formatProtected = (row, column, cellValue) => {
+  if (cellValue === true) {
+    return <div class="pixiu-table-formatter">开启</div>;
+  }
+
+  return <div class="pixiu-table-formatter">未开启</div>;
+};
+
+const formatterTime = (row, column, cellValue) => {
+  const time = formatTimestamp(cellValue);
+  return <div class="pixiu-table-formatter">{time}</div>;
+};
 
 const formatterResource = (row, column, cellValue) => {
   return (
