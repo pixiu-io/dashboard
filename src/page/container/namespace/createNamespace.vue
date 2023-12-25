@@ -1,6 +1,16 @@
 <template>
   <el-card class="title-card-container">
-    <div class="font-container">新建命名空间</div>
+    <div class="font-container">
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item @click="backToNamespace"
+          ><span style="color: black; cursor: pointer"> 命名空间 </span>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item style="color: black">{{ data.cluster }}</el-breadcrumb-item>
+        <el-breadcrumb-item>
+          <span style="color: black"> 新建命名空间 </span>
+        </el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
   </el-card>
 
   <div
@@ -12,7 +22,7 @@
         <el-card style="margin-top: 8px; width: 100%; border-radius: 0px">
           <el-form label-position="left" label-width="100px" style="margin-left: 3%; width: 80%">
             <div style="margin-top: 20px" />
-            <el-form-item label="名称" style="width: 35%">
+            <el-form-item label="名称" style="width: 400px">
               <el-input v-model="data.namespaceForm.metadata.name" />
               <div class="app-pixiu-line-describe2">
                 最长63个字符，只能包含小写字母、数字及分隔符("-")
@@ -20,7 +30,7 @@
             </el-form-item>
 
             <div style="margin-top: 20px" />
-            <el-form-item label="描述" style="width: 50%">
+            <el-form-item label="描述" style="width: 60%">
               <el-input
                 v-model="data.namespaceForm.description"
                 placeholder="请输入命名空间的描述信息"
@@ -51,7 +61,7 @@ const { proxy } = getCurrentInstance();
 
 const data = reactive({
   loading: false,
-  cluser: '',
+  cluster: '',
   autosize: {
     minRows: 5,
   },
@@ -83,13 +93,14 @@ const cancel = () => {
 onMounted(() => {
   data.query = proxy.$route.query;
   data.cluster = data.query.cluster;
+
   data.path = proxy.$route.fullPath;
 });
 
 const backToNamespace = () => {
   proxy.$router.push({
     name: 'Namespace',
-    query: data.cluster,
+    query: data.query,
   });
 };
 </script>
