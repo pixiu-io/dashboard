@@ -305,7 +305,6 @@ const confirmDeploymentScale = () => {
       },
     });
     getConfigMaps();
-    getConfigMaps();
     closeDeploymentScaleDialog();
   } catch (error) {}
 };
