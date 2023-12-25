@@ -273,42 +273,6 @@ const getNamespaceList = async () => {
   } catch (error) {}
 };
 
-const handleDeploymentScaleDialog = (row) => {
-  data.deploymentRepcliasFrom.name = row.metadata.name;
-  data.deploymentRepcliasFrom.target = '';
-  data.deploymentRepcliasFrom.origin = row.spec.replicas;
-  data.deploymentReplicasDialog = true;
-};
-
-const closeDeploymentScaleDialog = (row) => {
-  data.deploymentReplicasDialog = false;
-
-  data.deploymentRepcliasFrom.name = '';
-  data.deploymentRepcliasFrom.origin = '';
-  data.deploymentRepcliasFrom.target = 0;
-};
-
-const confirmDeploymentScale = () => {
-  try {
-    const res = proxy.$http({
-      method: 'patch',
-      url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${data.deploymentRepcliasFrom.name}/scale`,
-      data: {
-        spec: {
-          replicas: Number(data.deploymentRepcliasFrom.target),
-        },
-      },
-      config: {
-        header: {
-          'Content-Type': 'application/merge-patch+json',
-        },
-      },
-    });
-    getConfigMaps();
-    closeDeploymentScaleDialog();
-  } catch (error) {}
-};
-
 const formatterTime = (row, column, cellValue) => {
   const time = formatTimestamp(cellValue);
   return <div>{time}</div>;
