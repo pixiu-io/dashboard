@@ -92,10 +92,9 @@ const confirm = () => {
           url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces`,
           data: data.namespaceForm,
         });
+        proxy.$message.success(`命名空间 ${data.namespaceForm.metadata.name} 创建成功`);
+        backToNamespace();
       } catch (error) {}
-
-      proxy.$message.success(`命名空间 ${data.namespaceForm.metadata.name} 创建成功`);
-      backToNamespace();
     }
   });
 };
