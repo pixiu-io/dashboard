@@ -10,9 +10,18 @@
     <el-main>
       <div class="app-pixiu-content-card">
         <el-card style="margin-top: 8px; width: 100%; border-radius: 0px">
-          <el-form label-position="left" label-width="100px" style="margin-left: 3%; width: 80%">
+          <el-form
+            label-position="left"
+            require-asterisk-position="right"
+            label-width="100px"
+            style="margin-left: 3%; width: 80%"
+          >
             <div style="margin-top: 20px" />
-            <el-form-item label="名称" style="width: 700px">
+            <el-form-item
+              :rules="[{ required: true, message: '名称不能为空', trigger: 'blur' }]"
+              label="名称"
+              style="width: 700px"
+            >
               <el-input v-model="data.configmapForm.metadata.name" style="width: 200px" />
               <div class="app-pixiu-line-describe2">
                 最长63个字符，只能包含小写字母、数字及分隔符("-"),且必须以小写字母开头，数字或小写字母结尾
@@ -78,7 +87,7 @@
             </div>
             <el-form-item>
               <el-button class="mt-5" style="width: 5%" @click="addLabel">手动增加</el-button>
-              <el-button class="mt-5" style="width: 5%" @click="onAddItem">文件导入</el-button>
+              <el-button class="mt-5" style="width: 5%" @click="addLabel">文件导入</el-button>
             </el-form-item>
             <div style="margin-top: 30px" />
             <el-form-item style="margin-left: 30%">
@@ -96,11 +105,8 @@
 
 <script setup>
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
-
 import PixiuCard from '@/components/card/index.vue';
-
 const { proxy } = getCurrentInstance();
-
 const data = reactive({
   loading: false,
   cluser: '',

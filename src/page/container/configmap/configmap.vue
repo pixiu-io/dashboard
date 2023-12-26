@@ -50,10 +50,21 @@
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
             </el-link>
+
+            <el-tooltip content="复制">
+              <pixiu-icon
+                name="icon-copy"
+                size="11px"
+                type="iconfont"
+                class-name="icon-box"
+                color="#909399"
+                @click="copy(scope.row)"
+              />
+            </el-tooltip>
           </template>
         </el-table-column>
 
-        <el-table-column label="Labels" width="530">
+        <el-table-column label="Labels" width="220px">
           <span>-</span>
         </el-table-column>
 
@@ -153,6 +164,7 @@ import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import PixiuTag from '@/components/pixiuTag/index.vue';
+import useClipboard from 'vue-clipboard3';
 import { formatTimestamp } from '@/utils/utils';
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -237,6 +249,21 @@ const jumpRoute = (row) => {
       name: row.metadata.name,
     },
   });
+};
+const { toClipboard } = useClipboard();
+const copy = async (val) => {
+  try {
+    await toClipboard(val.metadata.name);
+    ElMessage({
+      type: 'success',
+      message: '已复制',
+    });
+  } catch (e) {
+    ElMessage({
+      type: 'error',
+      message: e.valueOf().toString(),
+    });
+  }
 };
 
 const getConfigMaps = async () => {
