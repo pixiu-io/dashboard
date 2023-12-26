@@ -15,66 +15,78 @@
     <el-main>
       <div class="app-pixiu-content-card">
         <el-card style="margin-top: 8px; width: 100%; border-radius: 0px">
-          <template #header>
-            <el-descriptions
-              class="no-border"
-              title="基本信息"
-              :direction="vertical"
-              :column="1"
-              width="100%"
-              border
-            >
-              <el-descriptions-item label="所在地域">华东地区(南京)</el-descriptions-item>
-              <el-descriptions-item label="集群ID">
-                {{ data.configmapForm.metadata.uid }}
-              </el-descriptions-item>
-              <el-descriptions-item label="所在命名空间">
-                {{ data.configmapForm.metadata.namespace }}
-              </el-descriptions-item>
-              <el-descriptions-item label="资源名称">
-                {{ data.configmapForm.metadata.name }}
-              </el-descriptions-item>
-            </el-descriptions>
-          </template>
           <el-form>
-            <el-form-item label="内容" style="margin-top: 20px">
-              <el-table
-                :data="data.tableData"
-                style="width: 100%; padding-left: 150px"
-                max-height="250"
-              >
-                <el-table-column prop="key" label="变量名" width="120" />
-                <el-table-column prop="value" label="变量值" width="auto" />
-                <el-table-column fixed="right" label="操作" width="120">
-                  <template #default="scope">
-                    <el-button
-                      link
-                      type="primary"
-                      size="small"
-                      @click.prevent="handleConfigmapDialog(scope.$index)"
-                    >
-                      编辑
-                    </el-button>
-                    <el-button
-                      link
-                      type="primary"
-                      size="small"
-                      @click.prevent="deleteRow(scope.$index)"
-                    >
-                      删除
-                    </el-button>
-                  </template>
-                </el-table-column>
-              </el-table>
-              <div class="app-pixiu-line-describe3">
-                只能包含字母、数字及分隔符"、"”、";
-                变量名为空时，在变量名称中粘贴一行或多行key=valuekey:
-                value的键值对可以实现快速批量输入
-              </div>
+            <el-form-item label="基本信息" style="margin-top: 20px">
+              <el-form style="margin-top: 20px; margin-left: -70px">
+                <el-form-item
+                  class="configmap-info"
+                  label="所在地域"
+                  style="margin-top: 20px; width: 200px"
+                  ><el-form-item style="margin-left: 50px" label="华东地区(南京)"></el-form-item>
+                </el-form-item>
+                <el-form-item label="集群ID" style="margin-top: 10px; width: 200px">
+                  <el-form-item style="margin-left: 61px" :label="data.configmapForm.metadata.uid">
+                  </el-form-item>
+                </el-form-item>
+                <el-form-item label="所在命名空间" style="margin-top: 10px; width: 200px">
+                  <el-form-item
+                    style="margin-left: 19px"
+                    :label="data.configmapForm.metadata.namespace"
+                  ></el-form-item>
+                </el-form-item>
+                <el-form-item label="资源名称" style="margin-top: 10px; width: 200px">
+                  <el-form-item
+                    style="margin-left: 47px"
+                    :label="data.configmapForm.metadata.name"
+                  ></el-form-item>
+                </el-form-item>
+              </el-form>
             </el-form-item>
+            <el-divider />
+            <el-form-item label="内容" style="margin-top: 20px">
+              <div class="configmap-label-title" style="margin-left: 100px">变量名</div>
+              <div class="configmap-label-title" style="margin-left: 510px">变量值</div>
+              <el-divider style="margin-left: 80px" />
+            </el-form-item>
+
+            <el-form-item
+              v-for="(item, index) in data.configMapLabels"
+              :key="index"
+              style="margin-top: -15px; margin-left: 120px"
+            >
+              <div>
+                <el-input
+                  v-model="item.key"
+                  placeholder="变量名"
+                  style="width: 500px; height: 52px"
+                />
+              </div>
+              <div style="margin-right: 10px; margin-left: 10px"></div>
+              =
+              <div>
+                <el-input
+                  v-model="item.value"
+                  placeholder="请输入变量值"
+                  type="textarea"
+                  style="width: 500px; margin-left: 20px"
+                  :row="1"
+                />
+              </div>
+              <div
+                style="float: right; cursor: pointer; margin-left: 10px"
+                @click="deleteLabel(index)"
+              >
+                <el-icon><Delete /></el-icon>
+              </div>
+              <el-divider />
+            </el-form-item>
+            <div class="app-pixiu-line-describe4">
+              只能包含字母、数字及分隔符"、"”、";变量名为空时，在变量名称中粘贴一行或多行key=valuekey:
+              value的键值对可以实现快速批量输入
+            </div>
             <el-form-item>
-              <el-button class="mt-4" style="width: 5%" @click="onAddItem">手动增加</el-button>
-              <el-button class="mt-4" style="width: 5%" @click="onAddItem">文件导入</el-button>
+              <el-button class="mt-4" style="width: 5%" @click="addLabel">手动增加</el-button>
+              <el-button class="mt-4" style="width: 5%" @click="addLabel">文件导入</el-button>
             </el-form-item>
             <div style="margin-top: 30px" />
             <el-form-item style="margin-left: 30%">
@@ -87,46 +99,11 @@
         </el-card>
       </div>
     </el-main>
-    <el-dialog
-      :model-value="data.configmapDialog"
-      style="color: #000000; font: 14px"
-      width="500px"
-      center
-      @close="closeDeploymentScaleDialog"
-    >
-      <template #header>
-        <div style="text-align: left; font-weight: bold; padding-left: 5px">输入内容</div>
-      </template>
-
-      <el-form label-width="100px" style="max-width: 300px">
-        <el-form-item label="变量名">
-          <el-input v-model="data.configmapDataFrom.key" placeholder="请输入变量值" />
-        </el-form-item>
-        <el-form-item label="变量值">
-          <el-input v-model="data.configmapDataFrom.value" placeholder="请输入新副本数" />
-        </el-form-item>
-      </el-form>
-
-      <div style="margin-top: -18px"></div>
-
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button class="pixiu-small-cancel-button" @click="closeConfigmapDialog"
-            >取消</el-button
-          >
-          <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmconfigmap"
-            >确认</el-button
-          >
-        </span>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
-
-import PixiuCard from '@/components/card/index.vue';
 
 const { proxy } = getCurrentInstance();
 
@@ -138,7 +115,7 @@ const data = reactive({
     minRows: 5,
   },
 
-  configmapLabels: [],
+  configMapLabels: [],
 
   // configmap 创建初始对象
   configmapForm: {
@@ -149,29 +126,18 @@ const data = reactive({
     },
     data: {},
   },
-  tableData: [
-    {
-      ket: '1',
-      value: '22',
-    },
-  ],
   configmapFormData: {
     data: {
       key: '',
       value: '',
     },
   },
-  configmapDialog: false,
   configmapDataFrom: {
     key: '',
     value: '',
     target: 0,
   },
 });
-
-const handleChange = (value) => {
-  data.configmapForm.spec.replicas = value;
-};
 
 const cancelUpdate = () => {
   backToConfigmap();
@@ -185,11 +151,6 @@ onMounted(() => {
   getNamespace();
   getNamespaceList();
 });
-
-const changeNamespace = async (val) => {
-  localStorage.setItem('namespace', val);
-  data.configmapForm.metadata.namespace = val;
-};
 
 const getNamespace = async () => {
   const namespace = localStorage.getItem('namespace');
@@ -206,7 +167,7 @@ const getConfigMap = async () => {
     data: '',
   });
   data.configmapForm.metadata = res.metadata;
-  data.tableData = Object.entries(res.data).map(([key, value]) => ({ key, value }));
+  data.configMapLabels = Object.entries(res.data).map(([key, value]) => ({ key, value }));
 };
 
 const getNamespaceList = async () => {
@@ -230,37 +191,8 @@ const backToConfigmap = () => {
   });
 };
 
-const deleteRow = (index) => {
-  data.tableData.splice(index, 1);
-};
-
-const onAddItem = () => {
-  data.tableData.push({
-    key: '',
-    value: '',
-  });
-};
-
-const handleConfigmapDialog = (index) => {
-  data.configmapDataFrom.key = data.tableData[index].key;
-  data.configmapDataFrom.target = index;
-  data.configmapDataFrom.value = data.tableData[index].value;
-  data.configmapDialog = true;
-};
-
-const closeConfigmapDialog = () => {
-  data.configmapDialog = false;
-};
-
-const confirmconfigmap = () => {
-  const dataVlue = data.configmapDataFrom;
-  data.tableData[dataVlue.target].key = dataVlue.key;
-  data.tableData[dataVlue.target].value = dataVlue.value;
-  data.configmapDialog = false;
-};
-
 const comfirmUpdate = async () => {
-  data.tableData.forEach((item) => {
+  data.configMapLabels.forEach((item) => {
     data.configmapForm.data[item.key] = item.value;
   });
   try {
@@ -277,6 +209,17 @@ const comfirmUpdate = async () => {
 
   proxy.$message.success(`configmap ${data.configmapForm.metadata.name} 更新成功`);
   backToConfigmap();
+};
+
+const addLabel = () => {
+  data.configMapLabels.push({
+    key: '',
+    value: '',
+  });
+};
+
+const deleteLabel = (index) => {
+  data.configMapLabels.splice(index, 1);
 };
 </script>
 
@@ -354,20 +297,21 @@ const comfirmUpdate = async () => {
   display: none;
 }
 
-.el-descriptions__cell {
-  width: 30%;
-  display: inline-flex;
-  border: none !important;
-}
-.el-descriptions__content {
-  flex: 1;
-  border: none !important;
-  background: white;
-}
 .mt-4 {
   border: none;
   margin-left: 150px;
   margin-top: 20px;
   color: rgb(64, 64, 237);
+}
+
+.configmap-info {
+  word-wrap: break-word;
+}
+
+.app-pixiu-line-describe4 {
+  margin-left: 120px;
+  margin-top: -35px;
+  font-size: 12px;
+  color: #888888;
 }
 </style>

@@ -50,10 +50,21 @@
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
             </el-link>
+
+            <el-tooltip content="复制">
+              <pixiu-icon
+                name="icon-copy"
+                size="11px"
+                type="iconfont"
+                class-name="icon-box"
+                color="#909399"
+                @click="copy(scope.row)"
+              />
+            </el-tooltip>
           </template>
         </el-table-column>
 
-        <el-table-column label="Labels" width="530">
+        <el-table-column label="Labels" width="220px">
           <span>-</span>
         </el-table-column>
 
@@ -153,6 +164,7 @@ import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import PixiuTag from '@/components/pixiuTag/index.vue';
+import useClipboard from 'vue-clipboard3';
 import { formatTimestamp } from '@/utils/utils';
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -238,6 +250,21 @@ const jumpRoute = (row) => {
     },
   });
 };
+const { toClipboard } = useClipboard();
+const copy = async (val) => {
+  try {
+    await toClipboard(val.metadata.name);
+    ElMessage({
+      type: 'success',
+      message: '已复制',
+    });
+  } catch (e) {
+    ElMessage({
+      type: 'error',
+      message: e.valueOf().toString(),
+    });
+  }
+};
 
 const getConfigMaps = async () => {
   data.loading = true;
@@ -270,43 +297,6 @@ const getNamespaceList = async () => {
     for (let item of result.items) {
       data.namespaces.push(item.metadata.name);
     }
-  } catch (error) {}
-};
-
-const handleDeploymentScaleDialog = (row) => {
-  data.deploymentRepcliasFrom.name = row.metadata.name;
-  data.deploymentRepcliasFrom.target = '';
-  data.deploymentRepcliasFrom.origin = row.spec.replicas;
-  data.deploymentReplicasDialog = true;
-};
-
-const closeDeploymentScaleDialog = (row) => {
-  data.deploymentReplicasDialog = false;
-
-  data.deploymentRepcliasFrom.name = '';
-  data.deploymentRepcliasFrom.origin = '';
-  data.deploymentRepcliasFrom.target = 0;
-};
-
-const confirmDeploymentScale = () => {
-  try {
-    const res = proxy.$http({
-      method: 'patch',
-      url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${data.deploymentRepcliasFrom.name}/scale`,
-      data: {
-        spec: {
-          replicas: Number(data.deploymentRepcliasFrom.target),
-        },
-      },
-      config: {
-        header: {
-          'Content-Type': 'application/merge-patch+json',
-        },
-      },
-    });
-    getConfigMaps();
-    getConfigMaps();
-    closeDeploymentScaleDialog();
   } catch (error) {}
 };
 
