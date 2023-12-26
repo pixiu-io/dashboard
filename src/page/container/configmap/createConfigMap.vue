@@ -189,17 +189,6 @@ const backToConfigmap = () => {
   });
 };
 
-const deleteRow = (index) => {
-  data.tableData.splice(index, 1);
-};
-
-const onAddItem = () => {
-  data.tableData.push({
-    key: '',
-    value: '',
-  });
-};
-
 const addLabel = () => {
   data.configMapLabels.push({
     key: '',
