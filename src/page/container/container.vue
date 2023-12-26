@@ -144,14 +144,14 @@
             :formatter="cloudStatusFormatter"
             prop="status"
             label="状态"
-            width="120"
+            width="120px"
           />
 
           <el-table-column
             :formatter="cloudTypeFormatter"
             prop="cluster_type"
             label="集群类型"
-            width="160"
+            width="150px"
           />
           <el-table-column prop="kubernetes_version" width="180" :formatter="cloudVersionFormatter">
             <template #header>
@@ -161,18 +161,13 @@
           <el-table-column
             prop="nodes"
             label="节点数"
-            width="170"
+            width="150px"
             :formatter="cloudNodeFormatter"
           />
 
-          <el-table-column prop="protected" label="集群删除保护" :formatter="formatProtected" />
+          <el-table-column prop="protected" label="集群保护" :formatter="formatProtected" />
 
-          <el-table-column
-            label="创建时间"
-            prop="gmt_create"
-            width="auto"
-            :formatter="formatterTime"
-          >
+          <el-table-column label="创建时间" prop="gmt_create" :formatter="formatterTime">
           </el-table-column>
 
           <!-- <el-table-column prop="resources" label="资源量" :formatter="formatterResource" /> -->
