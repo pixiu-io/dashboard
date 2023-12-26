@@ -21,8 +21,11 @@
       <div class="app-pixiu-content-card">
         <el-card style="margin-top: 8px; width: 100%; border-radius: 0px">
           <el-form
+            require-asterisk-position="right"
+            ref="ruleFormRef"
             label-position="left"
             label-width="100px"
+            status-icon
             :rules="rules"
             style="margin-left: 3%; width: 80%"
           >
@@ -64,6 +67,7 @@ import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 import PixiuCard from '@/components/card/index.vue';
 
 const { proxy } = getCurrentInstance();
+const ruleFormRef = ref(null);
 
 const data = reactive({
   loading: false,
@@ -79,17 +83,21 @@ const data = reactive({
   },
 });
 
-const confirm = async () => {
-  try {
-    const resp = await proxy.$http({
-      method: 'post',
-      url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces`,
-      data: data.namespaceForm,
-    });
-  } catch (error) {}
+const confirm = () => {
+  ruleFormRef.value.validate(async (valid) => {
+    if (valid) {
+      try {
+        const resp = await proxy.$http({
+          method: 'post',
+          url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces`,
+          data: data.namespaceForm,
+        });
+      } catch (error) {}
 
-  proxy.$message.success(`命名空间 ${data.namespaceForm.metadata.name} 创建成功`);
-  backToNamespace();
+      proxy.$message.success(`命名空间 ${data.namespaceForm.metadata.name} 创建成功`);
+      backToNamespace();
+    }
+  });
 };
 
 const cancel = () => {
