@@ -21,17 +21,18 @@
       <div class="app-pixiu-content-card">
         <el-card style="margin-top: 8px; width: 100%; border-radius: 0px">
           <el-form
-            require-asterisk-position="right"
             ref="ruleFormRef"
             label-position="left"
             label-width="100px"
             status-icon
             :rules="rules"
+            :model="data.namespaceForm"
+            require-asterisk-position="right"
             style="margin-left: 3%; width: 80%"
           >
             <div style="margin-top: 20px" />
 
-            <el-form-item label="名称" prop="name" style="width: 400px">
+            <el-form-item label="名称" prop="metadata.name" style="width: 400px">
               <el-input v-model="data.namespaceForm.metadata.name" />
               <div class="app-pixiu-line-describe2">
                 最长63个字符，只能包含小写字母、数字及分隔符("-")
@@ -39,7 +40,7 @@
             </el-form-item>
 
             <div style="margin-top: 20px" />
-            <el-form-item label="描述" style="width: 60%">
+            <el-form-item prop="description" label="描述" style="width: 60%">
               <el-input
                 v-model="data.namespaceForm.description"
                 placeholder="请输入命名空间的描述信息"
@@ -67,7 +68,7 @@ import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 import PixiuCard from '@/components/card/index.vue';
 
 const { proxy } = getCurrentInstance();
-const ruleFormRef = ref(null);
+const ruleFormRef = ref();
 
 const data = reactive({
   loading: false,
@@ -111,7 +112,7 @@ onMounted(() => {
 });
 
 const rules = {
-  name: [{ required: true, message: '请输入命名空间名称', trigger: 'blur' }],
+  'metadata.name': [{ required: true, message: '请输入命名空间名称', trigger: 'blur' }],
 };
 
 const backToNamespace = () => {
