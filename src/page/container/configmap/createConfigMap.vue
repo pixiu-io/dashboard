@@ -1,6 +1,16 @@
 <template>
   <el-card class="title-card-container">
-    <div class="font-container">创建 ConfigMap</div>
+    <div class="font-container">
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item @click="backToConfigmap"
+          ><span style="color: black; cursor: pointer"> ConfigMap </span>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item style="color: black">{{ data.cluster }}</el-breadcrumb-item>
+        <el-breadcrumb-item>
+          <span style="color: black"> 新建ConfigMap </span>
+        </el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
   </el-card>
 
   <div
@@ -107,9 +117,10 @@
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 import PixiuCard from '@/components/card/index.vue';
 const { proxy } = getCurrentInstance();
+
 const data = reactive({
   loading: false,
-  cluser: '',
+  cluster: '',
   namespaces: [],
   autosize: {
     minRows: 2,
@@ -147,15 +158,14 @@ const comfirmCreate = async () => {
     const resp = await proxy.$http({
       method: 'post',
       url:
-        `/proxy/pixiu/${data.cloud.cluster}/api/v1/namespaces/` +
+        `/proxy/pixiu/${data.cluster}/api/v1/namespaces/` +
         data.configmapForm.metadata.namespace +
         `/configmaps`,
       data: data.configmapForm,
     });
+    proxy.$message.success(`configmap ${data.configmapForm.metadata.name} 创建成功`);
+    backToConfigmap();
   } catch (error) {}
-
-  proxy.$message.success(`configmap ${data.configmapForm.metadata.name} 创建成功`);
-  backToConfigmap();
 };
 
 const cancelCreate = () => {
@@ -163,8 +173,11 @@ const cancelCreate = () => {
 };
 
 onMounted(() => {
-  data.cloud = proxy.$route.query;
+  data.query = proxy.$route.query;
+  data.cluster = data.query.cluster;
+
   data.path = proxy.$route.fullPath;
+
   data.configmapForm.metadata.namespace = proxy.$route.query.namespace;
   // getNamespace();
   getNamespaceList();
@@ -178,7 +191,7 @@ const getNamespaceList = async () => {
   try {
     const result = await proxy.$http({
       method: 'get',
-      url: '/proxy/pixiu/' + data.cloud.cluster + '/api/v1/namespaces',
+      url: '/proxy/pixiu/' + data.cluster + '/api/v1/namespaces',
     });
 
     for (let item of result.items) {
@@ -191,7 +204,7 @@ const getNamespaceList = async () => {
 const backToConfigmap = () => {
   proxy.$router.push({
     name: 'ConfigMap',
-    query: data.cloud,
+    query: data.query,
   });
 };
 
