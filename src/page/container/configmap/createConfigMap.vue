@@ -252,12 +252,6 @@ const deleteLabel = (index) => {
   color: #888888;
 }
 
-.app-pixiu-line-describe2 {
-  margin-left: 2px;
-  font-size: 12px;
-  color: #888888;
-}
-
 .app-pixiu-line-describe4 {
   margin-left: 105px;
   margin-top: -35px;
