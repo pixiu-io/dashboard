@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "712332",
+      "name": "刷新",
+      "font_class": "icon-refresh",
+      "unicode": "e65e",
+      "unicode_decimal": 58974
+    },
+    {
+      "icon_id": "10936675",
+      "name": "删除",
+      "font_class": "shanchu",
+      "unicode": "e623",
+      "unicode_decimal": 58915
+    },
+    {
       "icon_id": "4942677",
       "name": "下拉",
       "font_class": "xiala",
