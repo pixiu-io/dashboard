@@ -32,10 +32,10 @@
           >
             <div style="margin-top: 20px" />
 
-            <el-form-item label="名称" prop="metadata.name" style="width: 400px">
-              <el-input v-model="data.namespaceForm.metadata.name" />
+            <el-form-item label="名称" prop="metadata.name" style="width: 80%">
+              <el-input style="width: 40%" v-model="data.namespaceForm.metadata.name" />
               <div class="app-pixiu-line-describe2">
-                最长63个字符，只能包含小写字母、数字及分隔符("-")
+                最长63个字符，只能包含小写字母、数字及分隔符("-"),且必须以小写字母开头，数字或小写字母结尾
               </div>
             </el-form-item>
 

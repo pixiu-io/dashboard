@@ -1,6 +1,16 @@
 <template>
   <el-card class="title-card-container">
-    <div class="font-container">创建 ConfigMap</div>
+    <div class="font-container">
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item @click="backToConfigmap"
+          ><span style="color: black; cursor: pointer"> ConfigMap </span>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item style="color: black">{{ data.cluster }}</el-breadcrumb-item>
+        <el-breadcrumb-item>
+          <span style="color: black"> 新建ConfigMap </span>
+        </el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
   </el-card>
 
   <div
@@ -14,19 +24,21 @@
             label-position="left"
             require-asterisk-position="right"
             label-width="100px"
+            ref="ruleFormRef"
+            :rules="rules"
+            status-icon
+            :model="data.configmapForm"
             style="margin-left: 3%; width: 80%"
           >
             <div style="margin-top: 20px" />
-            <el-form-item
-              :rules="[{ required: true, message: '名称不能为空', trigger: 'blur' }]"
-              label="名称"
-              style="width: 700px"
-            >
-              <el-input v-model="data.configmapForm.metadata.name" style="width: 200px" />
+
+            <el-form-item label="名称" prop="metadata.name" style="width: 80%">
+              <el-input style="width: 40%" v-model="data.configmapForm.metadata.name" />
               <div class="app-pixiu-line-describe2">
                 最长63个字符，只能包含小写字母、数字及分隔符("-"),且必须以小写字母开头，数字或小写字母结尾
               </div>
             </el-form-item>
+
             <el-form-item label="命名空间" style="width: 300px">
               <div class="namespace-select-container">
                 <el-select
@@ -107,9 +119,11 @@
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 import PixiuCard from '@/components/card/index.vue';
 const { proxy } = getCurrentInstance();
+const ruleFormRef = ref();
+
 const data = reactive({
   loading: false,
-  cluser: '',
+  cluster: '',
   namespaces: [],
   autosize: {
     minRows: 2,
@@ -139,23 +153,30 @@ const data = reactive({
   },
 });
 
-const comfirmCreate = async () => {
-  data.configMapLabels.forEach((item) => {
-    data.configmapForm.data[item.key] = item.value;
-  });
-  try {
-    const resp = await proxy.$http({
-      method: 'post',
-      url:
-        `/proxy/pixiu/${data.cloud.cluster}/api/v1/namespaces/` +
-        data.configmapForm.metadata.namespace +
-        `/configmaps`,
-      data: data.configmapForm,
-    });
-  } catch (error) {}
+const rules = {
+  'metadata.name': [{ required: true, message: '请输入 ConfigMap 名称', trigger: 'blur' }],
+};
 
-  proxy.$message.success(`configmap ${data.configmapForm.metadata.name} 创建成功`);
-  backToConfigmap();
+const comfirmCreate = () => {
+  ruleFormRef.value.validate(async (valid) => {
+    if (valid) {
+      data.configMapLabels.forEach((item) => {
+        data.configmapForm.data[item.key] = item.value;
+      });
+      try {
+        const resp = await proxy.$http({
+          method: 'post',
+          url:
+            `/proxy/pixiu/${data.cluster}/api/v1/namespaces/` +
+            data.configmapForm.metadata.namespace +
+            `/configmaps`,
+          data: data.configmapForm,
+        });
+        proxy.$message.success(`configmap ${data.configmapForm.metadata.name} 创建成功`);
+        backToConfigmap();
+      } catch (error) {}
+    }
+  });
 };
 
 const cancelCreate = () => {
@@ -163,8 +184,11 @@ const cancelCreate = () => {
 };
 
 onMounted(() => {
-  data.cloud = proxy.$route.query;
+  data.query = proxy.$route.query;
+  data.cluster = data.query.cluster;
+
   data.path = proxy.$route.fullPath;
+
   data.configmapForm.metadata.namespace = proxy.$route.query.namespace;
   // getNamespace();
   getNamespaceList();
@@ -178,7 +202,7 @@ const getNamespaceList = async () => {
   try {
     const result = await proxy.$http({
       method: 'get',
-      url: '/proxy/pixiu/' + data.cloud.cluster + '/api/v1/namespaces',
+      url: '/proxy/pixiu/' + data.cluster + '/api/v1/namespaces',
     });
 
     for (let item of result.items) {
@@ -191,7 +215,7 @@ const getNamespaceList = async () => {
 const backToConfigmap = () => {
   proxy.$router.push({
     name: 'ConfigMap',
-    query: data.cloud,
+    query: data.query,
   });
 };
 
@@ -224,12 +248,6 @@ const deleteLabel = (index) => {
 .app-pixiu-line-describe {
   margin-left: 100px;
   margin-top: -18px;
-  font-size: 12px;
-  color: #888888;
-}
-
-.app-pixiu-line-describe2 {
-  margin-left: 2px;
   font-size: 12px;
   color: #888888;
 }

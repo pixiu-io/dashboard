@@ -305,12 +305,6 @@ const backToDeployment = () => {
   color: #888888;
 }
 
-.app-pixiu-line-describe2 {
-  margin-left: 2px;
-  font-size: 12px;
-  color: #888888;
-}
-
 .font-container {
   margin-top: -5px;
   font-weight: bold;
