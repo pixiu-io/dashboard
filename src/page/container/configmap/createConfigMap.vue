@@ -58,21 +58,17 @@
             <el-form-item label="内容" style="margin-top: 20px">
               <!-- <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button> -->
               <div class="configmap-label-title" style="margin-left: 5px">变量名</div>
-              <div class="configmap-label-title" style="margin-left: 510px">变量值</div>
+              <div class="configmap-label-title" style="margin-left: 405px">变量值</div>
               <el-divider />
             </el-form-item>
 
             <el-form-item
               v-for="(item, index) in data.configMapLabels"
               :key="index"
-              style="margin-top: -15px"
+              style="margin-top: -25px"
             >
               <div>
-                <el-input
-                  v-model="item.key"
-                  placeholder="变量名"
-                  style="width: 500px; height: 52px"
-                />
+                <el-input v-model="item.key" placeholder="变量名" style="width: 400px" />
               </div>
               <div style="margin-right: 10px; margin-left: 10px"></div>
               =
@@ -80,22 +76,22 @@
                 <el-input
                   v-model="item.value"
                   placeholder="请输入变量值"
+                  autosize
                   type="textarea"
-                  style="width: 500px; margin-left: 20px"
-                  :row="1"
+                  style="width: 400px; margin-left: 20px"
                 />
               </div>
               <div
-                style="float: right; cursor: pointer; margin-left: 10px"
+                style="float: right; cursor: pointer; margin-left: 10px; margin-left: 20px"
                 @click="deleteLabel(index)"
               >
-                <el-icon><Delete /></el-icon>
+                <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
               </div>
               <el-divider />
             </el-form-item>
             <div class="app-pixiu-line-describe4">
-              只能包含字母、数字及分隔符"、"”、";变量名为空时，在变量名称中粘贴一行或多行key=valuekey:
-              value的键值对可以实现快速批量输入
+              只能包含字母、数字及分隔符"."; 变量名为空时，在变量名称中粘贴一行或多行 key=value key:
+              value 的键值对可以实现快速批量输入
             </div>
             <el-form-item>
               <el-button class="mt-5" style="width: 5%" @click="addLabel">手动增加</el-button>
@@ -252,13 +248,6 @@ const deleteLabel = (index) => {
   color: #888888;
 }
 
-.app-pixiu-line-describe4 {
-  margin-left: 105px;
-  margin-top: -35px;
-  font-size: 12px;
-  color: #888888;
-}
-
 .configmap-label-title {
   font-size: 12px;
   color: #888888;
@@ -311,10 +300,11 @@ const deleteLabel = (index) => {
 .deployee-class .el-radio__inner {
   display: none;
 }
+
 .mt-5 {
   border: none;
-  margin-left: 2px;
+  font-size: 12px;
   margin-top: 20px;
-  color: rgb(64, 64, 237);
+  color: #006eff;
 }
 </style>

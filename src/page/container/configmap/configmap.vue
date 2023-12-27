@@ -43,11 +43,16 @@
         }"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="30" />
+        <!-- <el-table-column type="selection" width="30" /> -->
 
         <el-table-column prop="metadata.name" sortable label="名称" width="auto">
           <template #default="scope">
-            <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
+            <el-link
+              class="global-table-world"
+              type="primary"
+              style="margin-right: 2px"
+              @click="jumpRoute(scope.row)"
+            >
               {{ scope.row.metadata.name }}
             </el-link>
 
@@ -64,7 +69,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="Labels" width="220px">
+        <el-table-column label="Labels" width="auto">
           <span>-</span>
         </el-table-column>
 
@@ -72,7 +77,7 @@
           prop="metadata.creationTimestamp"
           label="创建时间"
           sortable
-          width="auto"
+          width="220px"
           :formatter="formatterTime"
         />
 

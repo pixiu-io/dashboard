@@ -190,8 +190,8 @@ const deleteNamespace = (row) => {
     type: 'warning',
     draggable: true,
   })
-    .then(() => {
-      const res = proxy.$http({
+    .then(async () => {
+      const res = await proxy.$http({
         method: 'delete',
         url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${row.metadata.name}`,
       });

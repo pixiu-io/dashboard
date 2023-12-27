@@ -307,11 +307,4 @@ const deleteLabel = (index) => {
 .configmap-info {
   word-wrap: break-word;
 }
-
-.app-pixiu-line-describe4 {
-  margin-left: 120px;
-  margin-top: -35px;
-  font-size: 12px;
-  color: #888888;
-}
 </style>
