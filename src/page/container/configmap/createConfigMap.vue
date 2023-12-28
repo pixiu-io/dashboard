@@ -53,11 +53,11 @@
                   />
                 </el-select>
 
-                <div>
+                <div style="margin-left: 12px; margin-top: 3px">
                   <pixiu-icon
                     name="icon-icon-refresh"
                     style="cursor: pointer"
-                    size="15px"
+                    size="16px"
                     type="iconfont"
                     color="#909399"
                     @click="getNamespaceList"
