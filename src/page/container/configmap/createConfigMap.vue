@@ -219,6 +219,7 @@ const getNamespaceList = async () => {
       url: '/proxy/pixiu/' + data.cluster + '/api/v1/namespaces',
     });
 
+    data.namespaces = [];
     for (let item of result.items) {
       data.namespaces.push(item.metadata.name);
     }
