@@ -8,10 +8,14 @@
             :label-position="labelPosition"
             label-width="120px"
             :model="data.clusterForm"
+            ref="ruleFormRef"
+            :rules="rules"
+            status-icon
+            require-asterisk-position="right"
             style="margin-left: 2%"
           >
             <div style="margin-top: 20px" />
-            <el-form-item label="集群名称" style="width: 50%">
+            <el-form-item label="集群名称" prop="alias_name" style="width: 50%">
               <el-input v-model="data.clusterForm.alias_name" placeholder="请输入集群名称" />
             </el-form-item>
 
@@ -112,6 +116,11 @@ import { reactive, getCurrentInstance, ref } from 'vue';
 import PixiuCard from '@/components/card/index.vue';
 
 const { proxy } = getCurrentInstance();
+const ruleFormRef = ref();
+
+const rules = {
+  alias_name: [{ required: true, message: '请输入集群名称', trigger: 'blur' }],
+};
 
 const data = reactive({
   loading: false,
@@ -170,21 +179,23 @@ const data = reactive({
 const labelPosition = ref('left');
 
 const comfirmCreate = async () => {
-  if (data.clusterForm.kube_config.trim().length === 0) {
-    return proxy.$message.error('未发现 Kubeconfig 文件，请完成上传后再进行操作');
-  }
+  ruleFormRef.value.validate(async (valid) => {
+    if (valid) {
+      if (data.clusterForm.kube_config.trim().length === 0) {
+        return proxy.$message.error('未发现 Kubeconfig 文件，请完成上传后再进行操作');
+      }
 
-  try {
-    const resp = await proxy.$http({
-      method: 'post',
-      url: '/pixiu/clusters',
-      data: data.clusterForm,
-    });
-  } catch (error) {}
-
-  proxy.$message.success(`Kubernetes 集群 ${data.clusterForm.alias_name} 创建成功`);
-
-  backToContainer();
+      try {
+        const resp = await proxy.$http({
+          method: 'post',
+          url: '/pixiu/clusters',
+          data: data.clusterForm,
+        });
+        proxy.$message.success(`Kubernetes 集群 ${data.clusterForm.alias_name} 创建成功`);
+        backToContainer();
+      } catch (error) {}
+    }
+  });
 };
 
 const cancelCreate = () => {

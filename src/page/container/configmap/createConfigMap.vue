@@ -39,8 +39,8 @@
               </div>
             </el-form-item>
 
-            <el-form-item label="命名空间" style="width: 300px">
-              <div class="namespace-select-container">
+            <el-form-item label="命名空间" style="width: 500px; margin-right: 20px">
+              <div class="one-line-style">
                 <el-select
                   v-model="data.configmapForm.metadata.namespace"
                   @change="changeNamespace"
@@ -52,23 +52,35 @@
                     :label="item"
                   />
                 </el-select>
+
+                <div style="margin-left: 12px; margin-top: 3px">
+                  <pixiu-icon
+                    name="icon-icon-refresh"
+                    style="cursor: pointer"
+                    size="16px"
+                    type="iconfont"
+                    color="#909399"
+                    @click="getNamespaceList"
+                  />
+                </div>
               </div>
             </el-form-item>
+
             <el-divider />
-            <el-form-item label="内容" style="margin-top: 20px">
+            <el-form-item label="内容" style="margin-top: 10px">
               <!-- <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button> -->
               <div class="configmap-label-title" style="margin-left: 5px">变量名</div>
-              <div class="configmap-label-title" style="margin-left: 405px">变量值</div>
+              <div class="configmap-label-title" style="margin-left: 355px">变量值</div>
               <el-divider />
             </el-form-item>
 
             <el-form-item
               v-for="(item, index) in data.configMapLabels"
               :key="index"
-              style="margin-top: -25px"
+              style="margin-top: -20px"
             >
               <div>
-                <el-input v-model="item.key" placeholder="变量名" style="width: 400px" />
+                <el-input v-model="item.key" placeholder="变量名" style="width: 350px" />
               </div>
               <div style="margin-right: 10px; margin-left: 10px"></div>
               =
@@ -82,7 +94,7 @@
                 />
               </div>
               <div
-                style="float: right; cursor: pointer; margin-left: 10px; margin-left: 20px"
+                style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
                 @click="deleteLabel(index)"
               >
                 <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
@@ -94,8 +106,15 @@
               value 的键值对可以实现快速批量输入
             </div>
             <el-form-item>
-              <el-button class="mt-5" style="width: 5%" @click="addLabel">手动增加</el-button>
-              <el-button class="mt-5" style="width: 5%" @click="addLabel">文件导入</el-button>
+              <el-button
+                class="table-inline-btn"
+                style="margin-left: -14px; margin-right: -20px; margin-top: 15px"
+                @click="addLabel"
+                >手动增加</el-button
+              >
+              <el-button class="table-inline-btn" style="margin-top: 15px" addLabel
+                >文件导入</el-button
+              >
             </el-form-item>
             <div style="margin-top: 30px" />
             <el-form-item style="margin-left: 30%">
@@ -186,7 +205,6 @@ onMounted(() => {
   data.path = proxy.$route.fullPath;
 
   data.configmapForm.metadata.namespace = proxy.$route.query.namespace;
-  // getNamespace();
   getNamespaceList();
 });
 
@@ -201,6 +219,7 @@ const getNamespaceList = async () => {
       url: '/proxy/pixiu/' + data.cluster + '/api/v1/namespaces',
     });
 
+    data.namespaces = [];
     for (let item of result.items) {
       data.namespaces.push(item.metadata.name);
     }
@@ -299,12 +318,5 @@ const deleteLabel = (index) => {
 
 .deployee-class .el-radio__inner {
   display: none;
-}
-
-.mt-5 {
-  border: none;
-  font-size: 12px;
-  margin-top: 20px;
-  color: #006eff;
 }
 </style>
