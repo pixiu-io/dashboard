@@ -52,8 +52,15 @@
                     :label="item"
                   />
                 </el-select>
-                <div>dd</div>
               </div>
+
+              <pixiu-icon
+                name="icon-icon-refresh"
+                size="14px"
+                type="iconfont"
+                color="#909399"
+                @click="getNamespaceList"
+              />
             </el-form-item>
 
             <el-divider />
@@ -84,7 +91,7 @@
                 />
               </div>
               <div
-                style="float: right; cursor: pointer; margin-left: 10px; margin-left: 18px"
+                style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
                 @click="deleteLabel(index)"
               >
                 <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
@@ -195,7 +202,6 @@ onMounted(() => {
   data.path = proxy.$route.fullPath;
 
   data.configmapForm.metadata.namespace = proxy.$route.query.namespace;
-  // getNamespace();
   getNamespaceList();
 });
 
