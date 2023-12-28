@@ -39,8 +39,8 @@
               </div>
             </el-form-item>
 
-            <el-form-item label="命名空间" style="width: 300px">
-              <div class="namespace-select-container">
+            <el-form-item label="命名空间" style="width: 500px; margin-right: 20px">
+              <div class="one-line-style">
                 <el-select
                   v-model="data.configmapForm.metadata.namespace"
                   @change="changeNamespace"
@@ -52,15 +52,18 @@
                     :label="item"
                   />
                 </el-select>
-              </div>
 
-              <pixiu-icon
-                name="icon-icon-refresh"
-                size="14px"
-                type="iconfont"
-                color="#909399"
-                @click="getNamespaceList"
-              />
+                <div>
+                  <pixiu-icon
+                    name="icon-icon-refresh"
+                    style="cursor: pointer"
+                    size="15px"
+                    type="iconfont"
+                    color="#909399"
+                    @click="getNamespaceList"
+                  />
+                </div>
+              </div>
             </el-form-item>
 
             <el-divider />
