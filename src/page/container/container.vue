@@ -491,7 +491,14 @@ const formatProtected = (row, column, cellValue) => {
 
 const formatterTime = (row, column, cellValue) => {
   const time = formatTimestamp(cellValue);
-  return <div class="pixiu-table-formatter">{time}</div>;
+  return (
+    <div
+      class="pixiu-table-formatter"
+      style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;"
+    >
+      {time}
+    </div>
+  );
 };
 
 const formatterResource = (row, column, cellValue) => {
