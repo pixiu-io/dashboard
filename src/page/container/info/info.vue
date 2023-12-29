@@ -10,10 +10,37 @@
   <div><el-card class="content3-card-container"> 核心组件状态</el-card></div>
 </template>
 
+<script setup>
+import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
+import PixiuCard from '@/components/card/index.vue';
+const { proxy } = getCurrentInstance();
+const ruleFormRef = ref();
+
+const data = reactive({
+  cluster: '',
+  clusterForm: {
+    name: '',
+    alias_name: '',
+    cluster_type: 0,
+    protected: true,
+    kubernetes_version: '',
+    gmt_create: '',
+  },
+});
+
+onMounted(() => {
+  data.cluster = proxy.$route.query.cluster;
+
+  getCluster();
+});
+
+const getCluster = async () => {};
+</script>
+
 <style>
 .content1-card-container {
   height: 400px;
-  width: 30%;
+  width: 38%;
   margin-top: 25px;
   margin-left: 10px;
   border-radius: 0px;
