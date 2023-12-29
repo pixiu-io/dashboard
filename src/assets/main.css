@@ -214,3 +214,9 @@
 .one-line-style {
   display: flex;
 }
+
+.hidden-style {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

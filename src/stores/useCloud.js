@@ -101,7 +101,7 @@ const useCloudStore = defineStore('cloud', () => {
   };
   const jumpRoute = (row) => {
     router.push({
-      name: 'Namespace',
+      name: 'Info',
       query: {
         cluster: row.name,
       },
