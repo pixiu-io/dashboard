@@ -21,10 +21,10 @@
       <div class="app-pixiu-content-card">
         <el-card style="margin-top: 8px; width: 100%; border-radius: 0px">
           <el-form
+            ref="ruleFormRef"
             label-position="left"
             require-asterisk-position="right"
             label-width="100px"
-            ref="ruleFormRef"
             :rules="rules"
             status-icon
             :model="data.configmapForm"
@@ -33,7 +33,7 @@
             <div style="margin-top: 20px" />
 
             <el-form-item label="名称" prop="metadata.name" style="width: 80%">
-              <el-input style="width: 40%" v-model="data.configmapForm.metadata.name" />
+              <el-input v-model="data.configmapForm.metadata.name" style="width: 40%" />
               <div class="app-pixiu-line-describe2">
                 最长63个字符，只能包含小写字母、数字及分隔符("-"),且必须以小写字母开头，数字或小写字母结尾
               </div>
@@ -112,7 +112,7 @@
                 @click="addLabel"
                 >手动增加</el-button
               >
-              <el-button class="table-inline-btn" style="margin-top: 15px" addLabel
+              <el-button class="table-inline-btn" style="margin-top: 15px" @click="addLabel"
                 >文件导入</el-button
               >
             </el-form-item>
