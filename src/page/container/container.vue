@@ -492,12 +492,14 @@ const formatProtected = (row, column, cellValue) => {
 const formatterTime = (row, column, cellValue) => {
   const time = formatTimestamp(cellValue);
   return (
-    <div
-      class="pixiu-table-formatter"
-      style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;"
-    >
-      {time}
-    </div>
+    <el-tooltip effect="light" placement="top" content={time}>
+      <div
+        class="pixiu-table-formatter"
+        style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;"
+      >
+        {time}
+      </div>
+    </el-tooltip>
   );
 };
 
