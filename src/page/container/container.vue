@@ -206,7 +206,7 @@
                   <el-dropdown-menu class="dropdown-buttons">
                     <el-dropdown-item class="dropdown-item-buttons"> 连接集群 </el-dropdown-item>
                     <el-dropdown-item class="dropdown-item-buttons">
-                      启用集群删除保护
+                      关闭删除保护
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
