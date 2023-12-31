@@ -202,7 +202,12 @@ const formatRole = (row, column, cellValue) => {
     }
   }
 
-  return <div>{roles.toString()}</div>;
+  let roleContent = roles.toString();
+  return (
+    <el-tooltip effect="light" content="roleStr" placement="top">
+      <div class="hidden-style">{roleContent}</div>
+    </el-tooltip>
+  );
 };
 
 const formatIp = (row, column, cellValue) => {
