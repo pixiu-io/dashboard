@@ -204,7 +204,7 @@ const formatRole = (row, column, cellValue) => {
 
   let roleContent = roles.toString();
   return (
-    <el-tooltip effect="light" placement="top" content="ddd">
+    <el-tooltip effect="light" placement="top" content="${roleContent}">
       <div class="hidden-style">{roleContent}</div>
     </el-tooltip>
   );
