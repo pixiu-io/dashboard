@@ -175,7 +175,7 @@ const unCordon = (row) => {};
 
 const formatterTime = (row, column, cellValue) => {
   const time = formatTimestamp(cellValue);
-  return <div class="hidden-style">{time}</div>;
+  return <div>{time}</div>;
 };
 
 const formatStatus = (row, column, cellValue) => {
