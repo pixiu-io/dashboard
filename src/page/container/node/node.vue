@@ -71,11 +71,11 @@
               style="margin-right: -22px; margin-left: -10px; color: #006eff"
               @click="editDeployment(scope.row)"
             >
-              更新配置
+              编辑标签
             </el-button>
 
             <el-button type="text" size="small" style="color: #006eff" @click="drain(scope.row)">
-              驱散
+              驱逐
             </el-button>
             <el-dropdown>
               <span class="cluster-dropdown">
@@ -120,6 +120,7 @@
 import { useRouter } from 'vue-router';
 import { formatTimestamp } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -167,7 +168,27 @@ const getNodes = async () => {
   data.pageInfo.total = data.nodeList.length;
 };
 
-const drain = (row) => {};
+const drain = (row) => {
+  ElMessageBox.confirm('此操作将驱逐 ' + row.metadata.name + ' 上的 pod. 是否继续?', '节点驱逐', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+    draggable: true,
+  })
+    .then(async () => {
+      const res = await proxy.$http({
+        method: 'delete',
+        url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${row.metadata.name}`,
+      });
+      ElMessage({
+        type: 'success',
+        message: '驱逐 ' + row.metadata.name + ' 成功',
+      });
+
+      getNodes();
+    })
+    .catch(() => {}); // 取消
+};
 
 const cordon = (row) => {};
 
