@@ -175,7 +175,7 @@ const unCordon = (row) => {};
 
 const formatterTime = (row, column, cellValue) => {
   const time = formatTimestamp(cellValue);
-  return <div>{time}</div>;
+  return <div class="hidden-style">{time}</div>;
 };
 
 const formatStatus = (row, column, cellValue) => {
@@ -204,7 +204,7 @@ const formatRole = (row, column, cellValue) => {
 
   let roleContent = roles.toString();
   return (
-    <el-tooltip effect="light" content="roleStr" placement="top">
+    <el-tooltip effect="light" placement="top" content="ddd">
       <div class="hidden-style">{roleContent}</div>
     </el-tooltip>
   );
