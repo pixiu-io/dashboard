@@ -7,6 +7,18 @@
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createStorageClass">新建</button>
+
+        <div style="margin-left: 8px; float: right; margin-top: 6px">
+          <pixiu-icon
+            name="icon-icon-refresh"
+            style="cursor: pointer"
+            size="14px"
+            type="iconfont"
+            color="#909399"
+            @click="getNodes"
+          />
+        </div>
+
         <el-input
           v-model="data.pageInfo.query"
           placeholder="名称搜索关键字"
@@ -15,9 +27,18 @@
           @clear="getNodes"
         >
           <template #suffix>
-            <el-icon class="el-input__icon" @click="getNodes">
+            <pixiu-icon
+              name="icon-search"
+              style="cursor: pointer"
+              size="15px"
+              type="iconfont"
+              color="#909399"
+              @click="getNodes"
+            />
+
+            <!-- <el-icon class="el-input__icon" @click="getNodes">
               <component :is="'Search'" />
-            </el-icon>
+            </el-icon> -->
           </template>
         </el-input>
       </el-col>
