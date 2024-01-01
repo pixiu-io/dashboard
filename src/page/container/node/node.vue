@@ -223,13 +223,47 @@ const drain = (row) => {
 };
 
 const cordon = (row) => {
-  console.log('cordon', row);
-  console.log('scope.row.spec.unschedulable,', row.spec.unschedulable);
+  if (row.spec.unschedulable === true) {
+    return;
+  }
+
+  ElMessageBox.confirm('关闭 ' + row.metadata.name + ' 节点调度. 是否继续?', '关闭调度', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+    draggable: true,
+  })
+    .then(async () => {
+      ElMessage({
+        type: 'success',
+        message: '驱逐 ' + row.metadata.name + ' 成功',
+      });
+
+      getNodes();
+    })
+    .catch(() => {});
 };
 
 const unCordon = (row) => {
-  console.log('uncordon', row);
-  console.log('scope.row.spec.unschedulable,', row.spec.unschedulable);
+  if (row.spec.unschedulable === undefined || row.spec.unschedulable === false) {
+    return;
+  }
+
+  ElMessageBox.confirm('开启 ' + row.metadata.name + ' 节点调度. 是否继续?', '开启调度', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+    draggable: true,
+  })
+    .then(async () => {
+      ElMessage({
+        type: 'success',
+        message: '驱逐 ' + row.metadata.name + ' 成功',
+      });
+
+      getNodes();
+    })
+    .catch(() => {});
 };
 
 const formatterTime = (row, column, cellValue) => {
