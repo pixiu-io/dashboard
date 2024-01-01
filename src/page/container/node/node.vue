@@ -234,9 +234,23 @@ const cordon = (row) => {
     draggable: true,
   })
     .then(async () => {
+      const res = await proxy.$http({
+        method: 'patch',
+        data: {
+          spec: {
+            unschedulable: true,
+          },
+        },
+        url: `/proxy/pixiu/${data.cluster}/api/v1/nodes/${row.metadata.name}`,
+        config: {
+          header: {
+            'Content-Type': 'application/strategic-merge-patch+json',
+          },
+        },
+      });
       ElMessage({
         type: 'success',
-        message: '驱逐 ' + row.metadata.name + ' 成功',
+        message: '已关闭 ' + row.metadata.name + ' 节点调度',
       });
 
       getNodes();
@@ -256,9 +270,23 @@ const unCordon = (row) => {
     draggable: true,
   })
     .then(async () => {
+      const res = await proxy.$http({
+        method: 'patch',
+        data: {
+          spec: {
+            unschedulable: null,
+          },
+        },
+        url: `/proxy/pixiu/${data.cluster}/api/v1/nodes/${row.metadata.name}`,
+        config: {
+          header: {
+            'Content-Type': 'application/strategic-merge-patch+json',
+          },
+        },
+      });
       ElMessage({
         type: 'success',
-        message: '驱逐 ' + row.metadata.name + ' 成功',
+        message: '已开启 ' + row.metadata.name + ' 节点调度',
       });
 
       getNodes();
