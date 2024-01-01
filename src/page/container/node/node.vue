@@ -176,10 +176,10 @@ const drain = (row) => {
     draggable: true,
   })
     .then(async () => {
-      const res = await proxy.$http({
-        method: 'delete',
-        url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${row.metadata.name}`,
-      });
+      // const res = await proxy.$http({
+      //   method: 'delete',
+      //   url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${row.metadata.name}`,
+      // });
       ElMessage({
         type: 'success',
         message: '驱逐 ' + row.metadata.name + ' 成功',
