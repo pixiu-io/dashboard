@@ -227,7 +227,7 @@ const cordon = (row) => {
     return;
   }
 
-  ElMessageBox.confirm('关闭 ' + row.metadata.name + ' 节点调度. 是否继续?', '关闭调度', {
+  ElMessageBox.confirm('关闭 ' + row.metadata.name + ' 节点调度. 是否继续?', '节点调度', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning',
@@ -249,7 +249,7 @@ const unCordon = (row) => {
     return;
   }
 
-  ElMessageBox.confirm('开启 ' + row.metadata.name + ' 节点调度. 是否继续?', '开启调度', {
+  ElMessageBox.confirm('开启 ' + row.metadata.name + ' 节点调度. 是否继续?', '节点调度', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning',
