@@ -106,10 +106,21 @@
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
-                  <el-dropdown-item class="dropdown-item-buttons" @click="cordon(scope.row)">
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="unCordon(scope.row)"
+                    :disabled="
+                      scope.row.spec.unschedulable === undefined ||
+                      scope.row.spec.unschedulable === false
+                    "
+                  >
                     设置可调度
                   </el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons" @click="unCordon(scope.row)">
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    :disabled="scope.row.spec.unschedulable === true"
+                    @click="cordon(scope.row)"
+                  >
                     设置不可调度
                   </el-dropdown-item>
                 </el-dropdown-menu>
@@ -211,9 +222,15 @@ const drain = (row) => {
     .catch(() => {}); // 取消
 };
 
-const cordon = (row) => {};
+const cordon = (row) => {
+  console.log('cordon', row);
+  console.log('scope.row.spec.unschedulable,', row.spec.unschedulable);
+};
 
-const unCordon = (row) => {};
+const unCordon = (row) => {
+  console.log('uncordon', row);
+  console.log('scope.row.spec.unschedulable,', row.spec.unschedulable);
+};
 
 const formatterTime = (row, column, cellValue) => {
   const time = formatTimestamp(cellValue);
