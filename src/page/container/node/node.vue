@@ -7,6 +7,18 @@
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createStorageClass">新建</button>
+
+        <div style="margin-left: 8px; float: right; margin-top: 6px">
+          <pixiu-icon
+            name="icon-icon-refresh"
+            style="cursor: pointer"
+            size="14px"
+            type="iconfont"
+            color="#909399"
+            @click="getNodes"
+          />
+        </div>
+
         <el-input
           v-model="data.pageInfo.query"
           placeholder="名称搜索关键字"
@@ -15,9 +27,18 @@
           @clear="getNodes"
         >
           <template #suffix>
-            <el-icon class="el-input__icon" @click="getNodes">
+            <pixiu-icon
+              name="icon-search"
+              style="cursor: pointer"
+              size="15px"
+              type="iconfont"
+              color="#909399"
+              @click="getNodes"
+            />
+
+            <!-- <el-icon class="el-input__icon" @click="getNodes">
               <component :is="'Search'" />
-            </el-icon>
+            </el-icon> -->
           </template>
         </el-input>
       </el-col>
@@ -71,11 +92,11 @@
               style="margin-right: -22px; margin-left: -10px; color: #006eff"
               @click="editDeployment(scope.row)"
             >
-              更新配置
+              编辑标签
             </el-button>
 
             <el-button type="text" size="small" style="color: #006eff" @click="drain(scope.row)">
-              驱散
+              驱逐
             </el-button>
             <el-dropdown>
               <span class="cluster-dropdown">
@@ -85,10 +106,21 @@
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
-                  <el-dropdown-item class="dropdown-item-buttons" @click="cordon(scope.row)">
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="unCordon(scope.row)"
+                    :disabled="
+                      scope.row.spec.unschedulable === undefined ||
+                      scope.row.spec.unschedulable === false
+                    "
+                  >
                     设置可调度
                   </el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons" @click="unCordon(scope.row)">
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    :disabled="scope.row.spec.unschedulable === true"
+                    @click="cordon(scope.row)"
+                  >
                     设置不可调度
                   </el-dropdown-item>
                 </el-dropdown-menu>
@@ -120,6 +152,7 @@
 import { useRouter } from 'vue-router';
 import { formatTimestamp } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -167,11 +200,99 @@ const getNodes = async () => {
   data.pageInfo.total = data.nodeList.length;
 };
 
-const drain = (row) => {};
+const drain = (row) => {
+  ElMessageBox.confirm('此操作将驱逐 ' + row.metadata.name + ' 上的 pod. 是否继续?', '节点驱逐', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+    draggable: true,
+  })
+    .then(async () => {
+      // const res = await proxy.$http({
+      //   method: 'delete',
+      //   url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${row.metadata.name}`,
+      // });
+      ElMessage({
+        type: 'success',
+        message: '驱逐 ' + row.metadata.name + ' 成功',
+      });
 
-const cordon = (row) => {};
+      getNodes();
+    })
+    .catch(() => {}); // 取消
+};
 
-const unCordon = (row) => {};
+const cordon = (row) => {
+  if (row.spec.unschedulable === true) {
+    return;
+  }
+
+  ElMessageBox.confirm('关闭 ' + row.metadata.name + ' 节点调度. 是否继续?', '节点调度', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+    draggable: true,
+  })
+    .then(async () => {
+      const res = await proxy.$http({
+        method: 'patch',
+        data: {
+          spec: {
+            unschedulable: true,
+          },
+        },
+        url: `/proxy/pixiu/${data.cluster}/api/v1/nodes/${row.metadata.name}`,
+        config: {
+          header: {
+            'Content-Type': 'application/strategic-merge-patch+json',
+          },
+        },
+      });
+      ElMessage({
+        type: 'success',
+        message: '已关闭 ' + row.metadata.name + ' 节点调度',
+      });
+
+      getNodes();
+    })
+    .catch(() => {});
+};
+
+const unCordon = (row) => {
+  if (row.spec.unschedulable === undefined || row.spec.unschedulable === false) {
+    return;
+  }
+
+  ElMessageBox.confirm('开启 ' + row.metadata.name + ' 节点调度. 是否继续?', '节点调度', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+    draggable: true,
+  })
+    .then(async () => {
+      const res = await proxy.$http({
+        method: 'patch',
+        data: {
+          spec: {
+            unschedulable: null,
+          },
+        },
+        url: `/proxy/pixiu/${data.cluster}/api/v1/nodes/${row.metadata.name}`,
+        config: {
+          header: {
+            'Content-Type': 'application/strategic-merge-patch+json',
+          },
+        },
+      });
+      ElMessage({
+        type: 'success',
+        message: '已开启 ' + row.metadata.name + ' 节点调度',
+      });
+
+      getNodes();
+    })
+    .catch(() => {});
+};
 
 const formatterTime = (row, column, cellValue) => {
   const time = formatTimestamp(cellValue);

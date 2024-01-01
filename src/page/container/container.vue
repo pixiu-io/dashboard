@@ -204,9 +204,9 @@
                 </span>
                 <template #dropdown>
                   <el-dropdown-menu class="dropdown-buttons">
-                    <el-dropdown-item class="dropdown-item-buttons"> 启用终端 </el-dropdown-item>
+                    <el-dropdown-item class="dropdown-item-buttons"> 连接集群 </el-dropdown-item>
                     <el-dropdown-item class="dropdown-item-buttons">
-                      启用集群删除保护
+                      关闭删除保护
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
@@ -492,12 +492,14 @@ const formatProtected = (row, column, cellValue) => {
 const formatterTime = (row, column, cellValue) => {
   const time = formatTimestamp(cellValue);
   return (
-    <div
-      class="pixiu-table-formatter"
-      style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;"
-    >
-      {time}
-    </div>
+    <el-tooltip effect="light" placement="top" content={time}>
+      <div
+        class="pixiu-table-formatter"
+        style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;"
+      >
+        {time}
+      </div>
+    </el-tooltip>
   );
 };
 

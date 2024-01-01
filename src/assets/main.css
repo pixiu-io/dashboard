@@ -131,10 +131,11 @@
 
 /* 下拉后的按钮样式 */
 .dropdown-buttons {
-  display: flex;
+  display: block;
+  /* display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start; */
 }
 
 .dropdown-item-buttons {

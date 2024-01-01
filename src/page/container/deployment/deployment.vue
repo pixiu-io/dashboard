@@ -274,18 +274,14 @@ const getNamespaceList = async () => {
 };
 
 const deleteDeployment = (row) => {
-  ElMessageBox.confirm(
-    '此操作将永久删除 Deployment ' + row.metadata.name + ' . 是否继续?',
-    '提示',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-      draggable: true,
-    },
-  )
-    .then(() => {
-      const res = proxy.$http({
+  ElMessageBox.confirm('此操作将永久删除 ' + row.metadata.name + ' Deployment. 是否继续?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+    draggable: true,
+  })
+    .then(async () => {
+      const res = await proxy.$http({
         method: 'delete',
         url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${row.metadata.name}`,
       });
@@ -294,8 +290,6 @@ const deleteDeployment = (row) => {
         message: '删除 ' + row.metadata.name + ' 成功',
       });
 
-      // TODO：一次更新即可
-      getDeployments();
       getDeployments();
     })
     .catch(() => {}); // 取消
@@ -316,9 +310,9 @@ const closeDeploymentScaleDialog = (row) => {
   data.deploymentRepcliasFrom.target = 0;
 };
 
-const confirmDeploymentScale = () => {
+const confirmDeploymentScale = async () => {
   try {
-    const res = proxy.$http({
+    const res = await proxy.$http({
       method: 'patch',
       url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${data.deploymentRepcliasFrom.name}/scale`,
       data: {
@@ -332,7 +326,7 @@ const confirmDeploymentScale = () => {
         },
       },
     });
-    getDeployments();
+
     getDeployments();
     closeDeploymentScaleDialog();
   } catch (error) {}
