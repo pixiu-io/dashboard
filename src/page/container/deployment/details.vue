@@ -19,7 +19,7 @@
     >
       <el-tab-pane label="基本信息" name="first">
         <div class="app-pixiu-content-card">
-          <el-card
+          <div
             v-if="data.deployment.metadata"
             style="margin-top: 8px; width: 100%; border-radius: 0px"
           >
@@ -56,12 +56,12 @@
             <el-form-item label="其他" class="deployment-info">
               <span class="deploy-detail-info" style="margin-left: 88px"> - </span>
             </el-form-item>
-          </el-card>
+          </div>
         </div>
       </el-tab-pane>
 
       <el-tab-pane label="Pod管理" name="second"
-        ><el-card style="margin-top: 8px">
+        ><div style="margin-top: 8px">
           <el-table
             v-loading="data.loading"
             :data="data.deploymentPods"
@@ -118,7 +118,7 @@
               </template>
             </el-table-column>
           </el-table>
-        </el-card></el-tab-pane
+        </div></el-tab-pane
       >
       <el-tab-pane label="事件" name="third">Role</el-tab-pane>
     </el-tabs>
