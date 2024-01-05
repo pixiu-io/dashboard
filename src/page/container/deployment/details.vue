@@ -1,15 +1,16 @@
 <template>
-  <el-card class="glabal-detail-card">
+  <el-card class="title-card-container">
     <div class="font-container">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item @click="goToDeployment"
           ><span style="color: black"> Deployment </span>
         </el-breadcrumb-item>
         <el-breadcrumb-item>{{ data.name }}</el-breadcrumb-item>
-        <el-breadcrumb-item>详情</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
+  </el-card>
 
+  <el-card style="border-radius: 0px; margin-top: 20px; margin-left: 2px; margin-right: 2px">
     <el-tabs
       v-model="data.activeName"
       class="deployment-tab"
@@ -271,7 +272,7 @@ const goToDeployment = () => {
 
 <style scoped="scoped">
 .deployment-tab {
-  margin-top: 30px;
+  margin-top: 1px;
 }
 
 .demo-tabs .el-tabs__content {
