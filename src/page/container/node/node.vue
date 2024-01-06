@@ -68,7 +68,7 @@
         <el-table-column label="状态" prop="status" :formatter="formatStatus"> </el-table-column>
         <el-table-column label="角色" prop="metadata" :formatter="formatRole"> </el-table-column>
         <el-table-column label="地址" prop="status" :formatter="formatIp"> </el-table-column>
-        <el-table-column label="版本" prop="status.nodeInfo.kubeletVersion"> </el-table-column>
+        <el-table-column label="节点版本" prop="status.nodeInfo.kubeletVersion"> </el-table-column>
         <el-table-column
           label="运行时"
           prop="status.nodeInfo.containerRuntimeVersion"

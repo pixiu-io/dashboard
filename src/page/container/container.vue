@@ -77,6 +77,17 @@
             新建集群
           </el-button>
 
+          <div style="margin-left: 8px; float: right; margin-top: 6px">
+            <pixiu-icon
+              name="icon-icon-refresh"
+              style="cursor: pointer"
+              size="14px"
+              type="iconfont"
+              color="#909399"
+              @click="cloudStore.getCloudList"
+            />
+          </div>
+
           <el-input
             v-model="cloudStore.pageInfo.query"
             placeholder="多个过滤标签用回车分隔"
@@ -86,9 +97,18 @@
             @clear="cloudStore.getCloudList"
           >
             <template #suffix>
-              <el-icon class="el-input__icon" @click="cloudStore.getCloudList">
+              <pixiu-icon
+                name="icon-search"
+                style="cursor: pointer"
+                size="15px"
+                type="iconfont"
+                color="#909399"
+                @click="cloudStore.getCloudList"
+              />
+
+              <!-- <el-icon class="el-input__icon" @click="cloudStore.getCloudList">
                 <component :is="'Search'" />
-              </el-icon>
+              </el-icon> -->
             </template>
           </el-input>
         </el-col>
