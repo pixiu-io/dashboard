@@ -146,7 +146,22 @@
 
               <el-table-column prop="status" label="状态" :formatter="formatterStatus" />
               <el-table-column prop="status.hostIP" label="所在节点" />
-              <el-table-column prop="status.podIP" label="实例IP" />
+
+              <el-table-column prop="status.podIP" label="实例IP">
+                <template #default="scope">
+                  {{ scope.row.status.podIP }}
+                  <el-tooltip content="复制">
+                    <pixiu-icon
+                      name="icon-copy"
+                      size="11px"
+                      type="iconfont"
+                      class-name="icon-box"
+                      color="#909399"
+                      @click="copyIP(scope.row)"
+                    />
+                  </el-tooltip>
+                </template>
+              </el-table-column>
 
               <el-table-column
                 prop="status.containerStatuses"
@@ -245,6 +260,21 @@ const { toClipboard } = useClipboard();
 const copy = async (val) => {
   try {
     await toClipboard(val.metadata.name);
+    ElMessage({
+      type: 'success',
+      message: '已复制',
+    });
+  } catch (e) {
+    ElMessage({
+      type: 'error',
+      message: e.valueOf().toString(),
+    });
+  }
+};
+
+const copyIP = async (val) => {
+  try {
+    await toClipboard(val.status.podIP);
     ElMessage({
       type: 'success',
       message: '已复制',
