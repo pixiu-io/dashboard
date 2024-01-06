@@ -128,26 +128,35 @@
               }"
             >
               <el-table-column type="selection" width="30" />
-              <el-table-column prop="metadata.name" label="实例名称" min-width="80px" />
-              <el-table-column
-                prop="metadata.creationTimestamp"
-                label="创建时间"
-                width="170px"
-                :formatter="formatterTime"
-              />
-              <el-table-column
-                prop="status"
-                label="状态"
-                :formatter="formatterStatus"
-                min-width="80px"
-              />
-              <el-table-column prop="status.hostIP" label="所在节点" width="120px" />
-              <el-table-column prop="status.podIP" label="实例IP" width="120px" />
+              <el-table-column prop="metadata.name" label="实例名称" min-width="70px">
+                <template #default="scope">
+                  {{ scope.row.metadata.name }}
+                  <el-tooltip content="复制">
+                    <pixiu-icon
+                      name="icon-copy"
+                      size="11px"
+                      type="iconfont"
+                      class-name="icon-box"
+                      color="#909399"
+                      @click="copy(scope.row)"
+                    />
+                  </el-tooltip>
+                </template>
+              </el-table-column>
+
+              <el-table-column prop="status" label="状态" :formatter="formatterStatus" />
+              <el-table-column prop="status.hostIP" label="所在节点" />
+              <el-table-column prop="status.podIP" label="实例IP" />
               <el-table-column
                 prop="status.containerStatuses"
                 label="重启次数"
-                width="80px"
                 :formatter="getPodRestartCount"
+              />
+
+              <el-table-column
+                prop="metadata.creationTimestamp"
+                label="创建时间"
+                :formatter="formatterTime"
               />
               <el-table-column fixed="right" label="操作" width="160px">
                 <template #default="scope">
@@ -189,6 +198,9 @@
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
+import { formatTimestamp } from '@/utils/utils';
+import useClipboard from 'vue-clipboard3';
+import { ElMessage } from 'element-plus';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -227,6 +239,22 @@ onMounted(async () => {
   await getDeploymentPods();
   await getDeploymentEvents();
 });
+
+const { toClipboard } = useClipboard();
+const copy = async (val) => {
+  try {
+    await toClipboard(val.metadata.name);
+    ElMessage({
+      type: 'success',
+      message: '已复制',
+    });
+  } catch (e) {
+    ElMessage({
+      type: 'error',
+      message: e.valueOf().toString(),
+    });
+  }
+};
 
 const getDeployment = async () => {
   const res = await proxy.$http({
@@ -299,12 +327,17 @@ const formatterStatus = (row, column, cellValue) => {
 };
 
 const formatterTime = (row, column, cellValue) => {
-  const date = new Date(cellValue);
-  const formattedDateTime = `${date.getFullYear()}-${padZero(date.getMonth() + 1)}-${padZero(
-    date.getDate(),
-  )} ${padZero(date.getHours())}:${padZero(date.getMinutes())}:${padZero(date.getSeconds())}`;
-
-  return <div>{formattedDateTime}</div>;
+  const time = formatTimestamp(cellValue);
+  return (
+    <el-tooltip effect="light" placement="top" content={time}>
+      <div
+        class="pixiu-table-formatter"
+        style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;"
+      >
+        {time}
+      </div>
+    </el-tooltip>
+  );
 };
 
 const getPodRestartCount = (row, column, cellValue) => {
@@ -316,7 +349,7 @@ const getPodRestartCount = (row, column, cellValue) => {
     }
   }
 
-  return <div>{count}</div>;
+  return <div>{count} 次</div>;
 };
 
 const padZero = (number) => {
