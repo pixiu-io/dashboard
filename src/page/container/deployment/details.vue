@@ -76,11 +76,50 @@
 
         <el-tab-pane label="Pod管理" name="second"
           ><div style="margin-top: 8px">
+            <el-row>
+              <el-col>
+                <button class="pixiu-two-button2">监控</button>
+                <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">
+                  销毁重建
+                </button>
+
+                <div style="margin-left: 8px; float: right; margin-top: 6px">
+                  <pixiu-icon
+                    name="icon-icon-refresh"
+                    style="cursor: pointer"
+                    size="14px"
+                    type="iconfont"
+                    color="#909399"
+                    @click="getDeploymentPods"
+                  />
+                </div>
+
+                <el-input
+                  v-model="data.pageInfo.query"
+                  placeholder="名称搜索关键字"
+                  style="width: 480px; float: right"
+                  clearable
+                  @clear="getDeploymentPods"
+                >
+                  <template #suffix>
+                    <pixiu-icon
+                      name="icon-search"
+                      style="cursor: pointer"
+                      size="15px"
+                      type="iconfont"
+                      color="#909399"
+                      @click="getDeploymentPods"
+                    />
+                  </template>
+                </el-input>
+              </el-col>
+            </el-row>
+
             <el-table
               v-loading="data.loading"
               :data="data.deploymentPods"
               stripe
-              style="margin-top: 2px; width: 100%"
+              style="margin-top: 20px; width: 100%; margin-bottom: 25px"
               header-row-class-name="pixiu-table-header"
               @selection-change="handleSelectionChange"
               :cell-style="{
@@ -89,7 +128,7 @@
               }"
             >
               <el-table-column type="selection" width="30" />
-              <el-table-column prop="metadata.name" label="实例名称" min-width="200px" />
+              <el-table-column prop="metadata.name" label="实例名称" min-width="80px" />
               <el-table-column
                 prop="metadata.creationTimestamp"
                 label="创建时间"
@@ -158,6 +197,13 @@ const data = reactive({
   cluster: '',
   name: '',
   namespace: '',
+
+  pageInfo: {
+    page: 1,
+    limit: 10,
+    query: '',
+    total: 0,
+  },
 
   restarts: 0,
   loading: false,
