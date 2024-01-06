@@ -1,11 +1,24 @@
 <template>
   <el-card class="title-card-container">
-    <div class="font-container">
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item @click="goToDeployment"
-          ><span style="color: black"> Deployment </span>
+    <div class="font-container" style="display: flex">
+      <pixiu-icon
+        name="icon-back"
+        style="cursor: pointer"
+        size="16px"
+        type="iconfont"
+        color="#006eff"
+        @click="goToDeployment"
+      />
+
+      <el-breadcrumb separator="/" style="margin-left: 20px">
+        <el-breadcrumb-item><span class="breadcrumb-style">集群</span></el-breadcrumb-item>
+        <el-breadcrumb-item>
+          <span class="breadcrumb-style">{{ data.cluster }}</span>
         </el-breadcrumb-item>
-        <el-breadcrumb-item>{{ data.name }}</el-breadcrumb-item>
+
+        <el-breadcrumb-item
+          ><span class="breadcrumb-style">Deployment:{{ data.name }}({{ data.namespace }})</span>
+        </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
   </el-card>
@@ -122,6 +135,8 @@
           </div></el-tab-pane
         >
         <el-tab-pane label="事件" name="third">Role</el-tab-pane>
+        <el-tab-pane label="日志" name="four">日志</el-tab-pane>
+        <el-tab-pane label="YAML" name="five">YAML</el-tab-pane>
       </el-tabs>
     </div>
   </el-card>
