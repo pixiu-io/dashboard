@@ -23,9 +23,7 @@
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createDeployment">新建</button>
-        <button class="pixiu-two-button2" style="margin-left: 10px" @click="createDeployment">
-          监控
-        </button>
+        <button class="pixiu-two-button2" style="margin-left: 10px">监控</button>
 
         <el-input
           v-model="data.pageInfo.query"
@@ -35,9 +33,14 @@
           @clear="getDeployments"
         >
           <template #suffix>
-            <el-icon class="el-input__icon" @click="getDeployments">
-              <component :is="'Search'" />
-            </el-icon>
+            <pixiu-icon
+              name="icon-search"
+              style="cursor: pointer"
+              size="15px"
+              type="iconfont"
+              color="#909399"
+              @click="getDeployments"
+            />
           </template>
         </el-input>
 
