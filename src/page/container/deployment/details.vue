@@ -147,6 +147,7 @@
               <el-table-column prop="status" label="状态" :formatter="formatterStatus" />
               <el-table-column prop="status.hostIP" label="所在节点" />
               <el-table-column prop="status.podIP" label="实例IP" />
+
               <el-table-column
                 prop="status.containerStatuses"
                 label="重启次数"
@@ -323,6 +324,9 @@ const formatterStatus = (row, column, cellValue) => {
     }
   }
 
+  if (phase == 'Running') {
+    return <div class="color-green-word">{phase}</div>;
+  }
   return <div>{phase}</div>;
 };
 
