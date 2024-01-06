@@ -133,7 +133,7 @@
             <el-dropdown>
               <span class="el-dropdown-link">
                 更多
-                <el-icon><arrow-down /></el-icon>
+                <pixiu-icon name="icon-xiala" size="12px" type="iconfont" color="#006eff" />
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
