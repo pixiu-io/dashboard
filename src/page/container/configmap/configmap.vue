@@ -33,7 +33,7 @@
     <el-card class="box-card">
       <el-table
         v-loading="loading"
-        :data="data.configmMapsList"
+        :data="data.configMapsList"
         stripe
         style="margin-top: 2px; width: 100%"
         header-row-class-name="pixiu-table-header"
@@ -96,7 +96,7 @@
               type="text"
               size="small"
               style="margin-right: 1px; color: #006eff"
-              @click="handleDeploymentScaleDialog(scope.row)"
+              @click="handleEditConfigmapYamlDialog(scope.row)"
             >
               编辑yaml
             </el-button>
@@ -131,33 +131,25 @@
   </div>
 
   <el-dialog
-    :model-value="data.deploymentReplicasDialog"
+    :model-value="data.editConfigmapYamlDialog"
     style="color: #000000; font: 14px"
     width="500px"
     center
-    @close="closeDeploymentScaleDialog"
+    @close="closeEditConfigmapYamlDialog"
   >
     <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">调整副本配置</div>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">编辑yaml</div>
     </template>
-
-    <el-form label-width="100px" style="max-width: 300px">
-      <el-form-item label="原副本数">
-        <el-input v-model="data.deploymentRepcliasFrom.origin" disabled />
-      </el-form-item>
-      <el-form-item label="新副本数">
-        <el-input v-model="data.deploymentRepcliasFrom.target" placeholder="请输入新副本数" />
-      </el-form-item>
-    </el-form>
-
     <div style="margin-top: -18px"></div>
-
     <template #footer>
       <span class="dialog-footer">
-        <el-button class="pixiu-small-cancel-button" @click="closeDeploymentScaleDialog"
+        <el-button class="pixiu-small-cancel-button" @click="closeEditConfigmapYamlDialog"
           >取消</el-button
         >
-        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmDeploymentScale"
+        <el-button
+          type="primary"
+          class="pixiu-small-confirm-button"
+          @click="confirmEditConfigmapYaml"
           >确认</el-button
         >
       </span>
@@ -166,14 +158,12 @@
 </template>
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import PixiuTag from '@/components/pixiuTag/index.vue';
 import useClipboard from 'vue-clipboard3';
 import { formatTimestamp } from '@/utils/utils';
 const { proxy } = getCurrentInstance();
 const router = useRouter();
-
 const data = reactive({
   cluster: '',
   pageInfo: {
@@ -183,17 +173,11 @@ const data = reactive({
     total: 0,
   },
   loading: false,
-
+  yaml: '',
   namespace: 'default',
   namespaces: [],
-  configmMapsList: [],
-
-  deploymentReplicasDialog: false,
-  deploymentRepcliasFrom: {
-    name: '',
-    origin: '',
-    target: 0,
-  },
+  configMapsList: [],
+  editConfigmapYamlDialog: false,
 });
 
 const handleSizeChange = (newSize) => {
@@ -281,8 +265,8 @@ const getConfigMaps = async () => {
   });
 
   data.loading = false;
-  data.configmMapsList = res.items;
-  data.pageInfo.total = data.configmMapsList.length;
+  data.configMapsList = res.items;
+  data.pageInfo.total = data.configMapsList.length;
 };
 
 const changeNamespace = async (val) => {
@@ -309,6 +293,18 @@ const formatterTime = (row, column, cellValue) => {
   const time = formatTimestamp(cellValue);
   return <div>{time}</div>;
 };
+
+const handleEditConfigmapYamlDialog = (row) => {
+  data.editConfigmapYamlDialog = true;
+};
+
+const closeEditConfigmapYamlDialog = () => {
+  data.editConfigmapYamlDialog = false;
+};
+
+const confirmEditConfigmapYaml = () => {
+  data.editConfigmapYamlDialog = false;
+};
 </script>
 
 <style scoped="scoped">
@@ -322,7 +318,6 @@ const formatterTime = (row, column, cellValue) => {
 .namespace-container {
   font-size: 14px;
   margin-top: -2px;
-  /* margin-left: 10px; */
   margin-right: -60px;
   color: #4c4e58;
   height: 20px;
