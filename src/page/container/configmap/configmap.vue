@@ -141,7 +141,7 @@
       <div style="text-align: left; font-weight: bold; padding-left: 5px">编辑yaml</div>
     </template>
     <div style="margin-top: -18px"></div>
-    <MyCodeMirror></MyCodeMirror>
+    <MyCodeMirror :yaml="data.yaml"></MyCodeMirror>
     <template #footer>
       <span class="dialog-footer">
         <el-button class="pixiu-small-cancel-button" @click="closeEditConfigmapYamlDialog"
@@ -165,6 +165,7 @@ import useClipboard from 'vue-clipboard3';
 import { formatTimestamp } from '@/utils/utils';
 const { proxy } = getCurrentInstance();
 const router = useRouter();
+import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 const options = {
   language: 'html',
@@ -185,7 +186,9 @@ const data = reactive({
   namespaces: [],
   configMapsList: [],
   editConfigmapYamlDialog: false,
-  editorp: { el: 'monaco', options: options },
+  isShow: false,
+  showTooltip: false, // 控制提示信息的显示状态，默认为隐藏
+  showIcon: false, // 控制图标的显示状态，默认为隐藏
 });
 
 const handleSizeChange = (newSize) => {
@@ -302,6 +305,7 @@ const formatterTime = (row, column, cellValue) => {
 };
 
 const handleEditConfigmapYamlDialog = (row) => {
+  data.yaml = jsYaml.dump(row);
   data.editConfigmapYamlDialog = true;
 };
 
@@ -329,5 +333,10 @@ const confirmEditConfigmapYaml = () => {
   color: #4c4e58;
   height: 20px;
   padding: 10px;
+}
+.tooltip-copy {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 </style>
