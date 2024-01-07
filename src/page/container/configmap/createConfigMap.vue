@@ -77,6 +77,7 @@
             <el-form-item
               v-for="(item, index) in data.configMapLabels"
               :key="index"
+              prop="item.key"
               style="margin-top: -20px"
             >
               <div>
@@ -144,7 +145,7 @@ const data = reactive({
     minRows: 2,
   },
 
-  configMapLabels: [],
+  configMapLabels: [{ key: null, value: null }],
 
   // configmap 创建初始对象
   configmapForm: {
@@ -170,6 +171,7 @@ const data = reactive({
 
 const rules = {
   'metadata.name': [{ required: true, message: '请输入 ConfigMap 名称', trigger: 'blur' }],
+  'item.key': [{ required: true, message: 'key 不能为空', trigger: 'blur' }],
 };
 
 const comfirmCreate = () => {
