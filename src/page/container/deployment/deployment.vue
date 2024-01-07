@@ -1,12 +1,30 @@
 <template>
   <el-card class="title-card-container">
     <div class="font-container">Deployment</div>
+
+    <div
+      style="
+        display: block;
+        font-size: 12px;
+        margin-top: -20px;
+        float: right;
+        color: rgba(0, 0, 0, 0.9);
+        vertical-align: middle;
+      "
+    >
+      操作指南
+      <el-icon style="vertical-align: middle; margin-right: 10px">
+        <component :is="'Edit'" />
+      </el-icon>
+    </div>
   </el-card>
 
   <div style="margin-top: 25px">
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createDeployment">新建</button>
+        <button class="pixiu-two-button2" style="margin-left: 10px">监控</button>
+
         <el-input
           v-model="data.pageInfo.query"
           placeholder="名称搜索关键字"
@@ -15,9 +33,14 @@
           @clear="getDeployments"
         >
           <template #suffix>
-            <el-icon class="el-input__icon" @click="getDeployments">
-              <component :is="'Search'" />
-            </el-icon>
+            <pixiu-icon
+              name="icon-search"
+              style="cursor: pointer"
+              size="15px"
+              type="iconfont"
+              color="#909399"
+              @click="getDeployments"
+            />
           </template>
         </el-input>
 
@@ -110,7 +133,7 @@
             <el-dropdown>
               <span class="el-dropdown-link">
                 更多
-                <el-icon><arrow-down /></el-icon>
+                <pixiu-icon name="icon-xiala" size="12px" type="iconfont" color="#006eff" />
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">

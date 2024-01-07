@@ -70,7 +70,7 @@
             <el-form-item label="内容" style="margin-top: 10px">
               <!-- <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button> -->
               <div class="configmap-label-title" style="margin-left: 5px">变量名</div>
-              <div class="configmap-label-title" style="margin-left: 355px">变量值</div>
+              <div class="configmap-label-title" style="margin-left: 305px">变量值</div>
               <el-divider />
             </el-form-item>
 
@@ -80,9 +80,9 @@
               style="margin-top: -20px"
             >
               <div>
-                <el-input v-model="item.key" placeholder="变量名" style="width: 350px" />
+                <el-input v-model="item.key" placeholder="变量名" style="width: 300px" />
               </div>
-              <div style="margin-right: 10px; margin-left: 10px"></div>
+              <div style="margin-right: 8px; margin-left: 8px"></div>
               =
               <div>
                 <el-input
@@ -90,7 +90,7 @@
                   placeholder="请输入变量值"
                   autosize
                   type="textarea"
-                  style="width: 400px; margin-left: 20px"
+                  style="width: 350px; margin-left: 20px"
                 />
               </div>
               <div

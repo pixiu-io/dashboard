@@ -32,6 +32,18 @@
   cursor: pointer;
 }
 
+.pixiu-two-button2 {
+  height: 31px;
+  min-width: 25px;
+  width: 68px;
+  border-radius: 0%;
+  font-size: 12px;
+  border: 1px solid #cfd5de;
+  color: #0366e7;
+  background-color: white;
+  cursor: pointer;
+}
+
 /* 通用确认按钮 */
 .pixiu-confirm-button {
   height: 35px;
@@ -220,4 +232,8 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.breadcrumb-style {
+  color: black;
 }
