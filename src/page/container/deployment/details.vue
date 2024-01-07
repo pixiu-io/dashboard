@@ -115,7 +115,7 @@
                 <div style="float: right">
                   <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
                     style="font-size: 13px; margin-left: 5px; margin-right: 10px"
-                    >分页展示</span
+                    >定时刷新</span
                   >
                 </div>
               </el-col>
