@@ -115,7 +115,7 @@
                 <div style="float: right">
                   <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
                     style="font-size: 13px; margin-left: 5px; margin-right: 10px"
-                    >定时刷新</span
+                    >自动刷新</span
                   >
                 </div>
               </el-col>
@@ -204,7 +204,12 @@
             </el-table>
           </div></el-tab-pane
         >
-        <el-tab-pane label="容器日志" name="third">日志</el-tab-pane>
+        <el-tab-pane label="日志" name="third">
+          <el-card
+            style="border-radius: 0px; margin-top: 20px; margin-left: 2px; margin-right: 2px"
+          >
+          </el-card>
+        </el-tab-pane>
         <el-tab-pane label="事件" name="four">Role</el-tab-pane>
 
         <el-tab-pane label="YAML" name="five">YAML</el-tab-pane>
