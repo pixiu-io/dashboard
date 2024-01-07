@@ -204,8 +204,9 @@
             </el-table>
           </div></el-tab-pane
         >
-        <el-tab-pane label="事件" name="third">Role</el-tab-pane>
-        <el-tab-pane label="日志" name="four">日志</el-tab-pane>
+        <el-tab-pane label="容器日志" name="third">日志</el-tab-pane>
+        <el-tab-pane label="事件" name="four">Role</el-tab-pane>
+
         <el-tab-pane label="YAML" name="five">YAML</el-tab-pane>
       </el-tabs>
     </div>
