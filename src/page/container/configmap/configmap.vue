@@ -182,6 +182,7 @@ const data = reactive({
   },
   loading: false,
   yaml: '',
+  yamlName: '',
   namespace: 'default',
   namespaces: [],
   configMapsList: [],
@@ -306,6 +307,7 @@ const formatterTime = (row, column, cellValue) => {
 
 const handleEditConfigmapYamlDialog = (row) => {
   data.yaml = jsYaml.dump(row);
+  data.yamlName = row.metadata.name;
   data.editConfigmapYamlDialog = true;
 };
 
@@ -313,8 +315,21 @@ const closeEditConfigmapYamlDialog = () => {
   data.editConfigmapYamlDialog = false;
 };
 
-const confirmEditConfigmapYaml = () => {
+const confirmEditConfigmapYaml = async () => {
+  let yaml = jsYaml.load(data.yaml);
+  try {
+    const resp = await proxy.$http({
+      method: 'put',
+      url:
+        `/proxy/pixiu/${data.cloud.cluster}/api/v1/namespaces/` +
+        data.configmapForm.metadata.namespace +
+        `/configmaps/` +
+        data.yamlName,
+      data: yaml,
+    });
+  } catch (error) {}
   data.editConfigmapYamlDialog = false;
+  proxy.$message.success(`configmap ${data.yamlName} 更新成功`);
 };
 </script>
 
