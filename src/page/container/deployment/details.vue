@@ -112,6 +112,12 @@
                     />
                   </template>
                 </el-input>
+                <div style="float: right">
+                  <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
+                    style="font-size: 13px; margin-left: 5px; margin-right: 10px"
+                    >分页展示</span
+                  >
+                </div>
               </el-col>
             </el-row>
 
@@ -244,6 +250,8 @@ const data = reactive({
 
   drawer: false,
   podLog: '',
+
+  crontab: true,
 });
 
 onMounted(async () => {
