@@ -16,7 +16,8 @@ import '@/assets/main.css';
 // import "./assets/icon-font/iconfont.css";
 import '@/assets/icon-font/iconfont';
 import PixiuIcon from '@/components/pixiuIcon/index.vue';
-
+// 引入 codemirror
+import { InstallCodemirro } from 'codemirror-editor-vue3';
 const app = createApp(App);
 
 for (const name in ElIcons) {
@@ -31,7 +32,7 @@ setupI18n(app); // 装载i18n
 app.use(ElementPlus, {
   locale: zhCn,
 });
-
+app.use(InstallCodemirro);
 app.component('PixiuIcon', PixiuIcon);
 
 app.config.globalProperties.$http = axios;
