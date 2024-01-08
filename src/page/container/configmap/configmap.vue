@@ -41,7 +41,6 @@
           'font-size': '12px',
           color: '#29292b',
         }"
-        @selection-change="handleSelectionChange"
       >
         <!-- <el-table-column type="selection" width="30" /> -->
 
@@ -132,7 +131,7 @@
 
   <el-dialog
     :model-value="data.editConfigmapYamlDialog"
-    style="color: #000000; font: 14px"
+    style="color: #000000; font: 14px; margin-top: 50px"
     width="800px"
     center
     @close="closeEditConfigmapYamlDialog"
@@ -167,11 +166,6 @@ const { proxy } = getCurrentInstance();
 const router = useRouter();
 import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
-const options = {
-  language: 'html',
-  code: `<button class="btn">默认按钮</button>`,
-};
-
 const data = reactive({
   cluster: '',
   pageInfo: {
@@ -313,6 +307,7 @@ const handleEditConfigmapYamlDialog = (row) => {
 
 const closeEditConfigmapYamlDialog = () => {
   data.editConfigmapYamlDialog = false;
+  data.yaml = '';
 };
 
 const confirmEditConfigmapYaml = async () => {
@@ -329,6 +324,7 @@ const confirmEditConfigmapYaml = async () => {
     });
   } catch (error) {}
   data.editConfigmapYamlDialog = false;
+  data.yaml = '';
   proxy.$message.success(`configmap ${data.yamlName} 更新成功`);
 };
 </script>
