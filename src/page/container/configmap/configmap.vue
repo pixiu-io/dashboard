@@ -307,6 +307,7 @@ const handleEditConfigmapYamlDialog = (row) => {
 
 const closeEditConfigmapYamlDialog = () => {
   data.editConfigmapYamlDialog = false;
+  data.yaml = '';
 };
 
 const confirmEditConfigmapYaml = async () => {
@@ -323,6 +324,7 @@ const confirmEditConfigmapYaml = async () => {
     });
   } catch (error) {}
   data.editConfigmapYamlDialog = false;
+  data.yaml = '';
   proxy.$message.success(`configmap ${data.yamlName} 更新成功`);
 };
 </script>
