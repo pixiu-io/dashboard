@@ -33,7 +33,7 @@
     <el-card class="box-card">
       <el-table
         v-loading="loading"
-        :data="data.configMapsList"
+        :data="data.secretList"
         stripe
         style="margin-top: 2px; width: 100%"
         header-row-class-name="pixiu-table-header"
@@ -179,7 +179,7 @@ const data = reactive({
   yamlName: '',
   namespace: 'default',
   namespaces: [],
-  configMapsList: [],
+  secretList: [],
   editConfigmapYamlDialog: false,
   isShow: false,
   showTooltip: false, // 控制提示信息的显示状态，默认为隐藏
@@ -188,12 +188,12 @@ const data = reactive({
 
 const handleSizeChange = (newSize) => {
   data.pageInfo.limit = newSize;
-  getConfigMaps();
+  getSecretList();
 };
 
 const handleCurrentChange = (newPage) => {
   data.pageInfo.page = newPage;
-  getConfigMaps();
+  getSecretList();
 };
 
 const createConfigMap = () => {
@@ -222,7 +222,7 @@ const deleteConfigMap = (row) => {
         type: 'success',
         message: '删除 ' + row.metadata.name + ' 成功',
       });
-      getConfigMaps();
+      getSecretList();
     })
     .catch(() => {}); // 取消
 };
@@ -232,7 +232,7 @@ onMounted(() => {
   data.cloud = proxy.$route.query;
   data.path = proxy.$route.fullPath;
   getNamespaceList();
-  getConfigMaps();
+  getSecretList();
 });
 
 const jumpRoute = (row) => {
@@ -261,24 +261,24 @@ const copy = async (val) => {
   }
 };
 
-const getConfigMaps = async () => {
+const getSecretList = async () => {
   data.loading = true;
   data.namespace = localStorage.getItem('namespace');
   const res = await proxy.$http({
     method: 'get',
-    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/configmaps`,
+    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/secrets`,
     data: data.pageInfo,
   });
 
   data.loading = false;
-  data.configMapsList = res.items;
-  data.pageInfo.total = data.configMapsList.length;
+  data.secretList = res.items;
+  data.pageInfo.total = data.secretList.length;
 };
 
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
   data.namespace = val;
-  getConfigMaps();
+  getSecretList();
 };
 
 const getNamespaceList = async () => {
