@@ -41,7 +41,6 @@
           'font-size': '12px',
           color: '#29292b',
         }"
-        @selection-change="handleSelectionChange"
       >
         <!-- <el-table-column type="selection" width="30" /> -->
 
@@ -167,11 +166,6 @@ const { proxy } = getCurrentInstance();
 const router = useRouter();
 import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
-const options = {
-  language: 'html',
-  code: `<button class="btn">默认按钮</button>`,
-};
-
 const data = reactive({
   cluster: '',
   pageInfo: {

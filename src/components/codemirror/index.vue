@@ -23,7 +23,7 @@ import 'codemirror/addon/display/placeholder.js';
 // theme
 import 'codemirror/theme/dracula.css';
 
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, watch } from 'vue';
 const code = ref(null);
 const data = reactive({
   code: '',
@@ -39,10 +39,13 @@ const props = defineProps({
   },
 });
 onMounted(() => {
-  console.log(props);
+  data.code = props.yaml.valueOf();
+});
+
+watch(() => {
   data.code = props.yaml.valueOf();
 });
 const change = () => {
-  console.log(data.code);
+  data.code = props.yaml.valueOf();
 };
 </script>
