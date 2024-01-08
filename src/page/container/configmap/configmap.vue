@@ -131,7 +131,7 @@
 
   <el-dialog
     :model-value="data.editConfigmapYamlDialog"
-    style="color: #000000; font: 14px"
+    style="color: #000000; font: 14px; margin-top: 50px"
     width="800px"
     center
     @close="closeEditConfigmapYamlDialog"

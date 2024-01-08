@@ -4,7 +4,7 @@
     :options="data.cmOptions"
     border
     placeholder=""
-    :height="200"
+    :height="720"
     @change="change"
   />
 </template>
