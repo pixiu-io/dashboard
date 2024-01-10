@@ -108,11 +108,11 @@
                 <el-dropdown-menu class="dropdown-buttons">
                   <el-dropdown-item
                     class="dropdown-item-buttons"
-                    @click="unCordon(scope.row)"
                     :disabled="
                       scope.row.spec.unschedulable === undefined ||
                       scope.row.spec.unschedulable === false
                     "
+                    @click="unCordon(scope.row)"
                   >
                     设置可调度
                   </el-dropdown-item>
