@@ -24,6 +24,8 @@ import ConfigMap from './container/configmap/configmap.vue';
 import CreateConfigMap from './container/configmap/createConfigMap.vue';
 import EditConfigMap from './container/configmap/editConfigMap.vue';
 import Secret from './container/secret/secret.vue';
+import CreateSecret from './container/secret/createSecret.vue';
+import EditSecret from './container/secret/editSecret.vue';
 import Ingress from './container/ingress/ingress.vue';
 import Pod from './container/pod/pod.vue';
 import StorageClass from './container/storageclass/storageclass.vue';
@@ -56,6 +58,8 @@ export {
   CreateConfigMap,
   EditConfigMap,
   Secret,
+  CreateSecret,
+  EditSecret,
   Ingress,
   Pod,
   StorageClass,

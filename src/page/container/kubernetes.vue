@@ -130,7 +130,7 @@ const data = reactive({
         {
           id: 2.2,
           name: 'Secret',
-          url: '/kubernetes/secret',
+          url: '/kubernetes/secrets',
         },
       ],
     },

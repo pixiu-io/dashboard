@@ -27,6 +27,8 @@ import {
   CreateConfigMap,
   EditConfigMap,
   Secret,
+  CreateSecret,
+  EditSecret,
   StatefulSet,
   StorageClass,
   Info,
@@ -234,12 +236,28 @@ const routes = [
             component: EditConfigMap,
           },
           {
-            path: 'secret',
+            path: 'secrets',
             name: 'secret',
             meta: {
               title: 'secret',
             },
             component: Secret,
+          },
+          {
+            path: 'secrets/editSecret',
+            name: 'editSecret',
+            meta: {
+              title: 'editSecret',
+            },
+            component: EditSecret,
+          },
+          {
+            path: 'secrets/createSecret',
+            name: 'createSecret',
+            meta: {
+              title: 'createSecret',
+            },
+            component: CreateSecret,
           },
           {
             path: 'storageclass',
