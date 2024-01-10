@@ -428,6 +428,7 @@ const goToDeployment = () => {
 
 .deployment-tab .el-tabs__content {
   background-color: white;
+  margin: 0 20px;
   padding: 0 20px;
 }
 
