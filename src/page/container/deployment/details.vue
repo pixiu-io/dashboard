@@ -235,7 +235,7 @@
         </span>
       </el-form-item>
 
-      <div style="margin-left: 170px; margin-top: -10px">
+      <div style="margin-left: 170px; margin-top: -10px; margin-bottom: 10px">
         <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
           style="font-size: 14px; margin-left: 5px; margin-right: 10px"
           >查看已退出的容器</span
