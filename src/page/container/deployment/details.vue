@@ -133,11 +133,11 @@
         stripe
         style="margin-top: 10px; width: 100%; margin-bottom: 25px"
         header-row-class-name="pixiu-table-header"
-        @selection-change="handleSelectionChange"
         :cell-style="{
           'font-size': '12px',
           color: '#29292b',
         }"
+        @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="30" />
         <el-table-column prop="metadata.name" label="实例名称" min-width="70px">
@@ -201,7 +201,7 @@
               type="text"
               size="small"
               style="margin-right: 1px; color: #006eff"
-              @click="getPodLog(scope.row)"
+              @click="openShell(scope.row)"
             >
               远程连接
             </el-button>
@@ -220,9 +220,36 @@
         class="deployment-info"
         style="font-size: 15px; margin-left: 8px"
       >
-        <span class="deploy-detail-info" style="margin-left: 90px">
-          {{ data.deployment.metadata.name }}
+        <span class="deploy-detail-info" style="margin-left: 92px">
+          <el-select
+            v-model="data.selectedPod"
+            style="width: 230px; float: right; margin-right: 10px"
+            @change="changePod"
+          >
+            <el-option v-for="item in data.selectedPods" :key="item" :value="item" :label="item" />
+          </el-select>
         </span>
+
+        <span class="deploy-detail-info" style="margin-left: 8px">
+          <el-select
+            v-model="data.selectedContainer"
+            style="width: 230px; float: right; margin-right: 10px"
+            @change="changeContainer"
+          >
+            <el-option v-for="item in data.selectedPods" :key="item" :value="item" :label="item" />
+          </el-select>
+        </span>
+
+        <div style="margin-left: 4px; margin-top: 6px">
+          <pixiu-icon
+            name="icon-icon-refresh"
+            style="cursor: pointer"
+            size="16px"
+            type="iconfont"
+            color="#909399"
+            @click="getNamespaceList"
+          />
+        </div>
       </el-form-item>
 
       <el-form-item
@@ -231,17 +258,30 @@
         style="font-size: 15px; margin-left: 8px"
       >
         <span class="deploy-detail-info" style="margin-left: 90px">
-          {{ data.deployment.metadata.name }}
+          <el-select
+            v-model="data.selectedContainer"
+            style="width: 230px; float: right; margin-right: 10px"
+            @change="changeContainer"
+          >
+            <el-option v-for="item in data.selectedPods" :key="item" :value="item" :label="item" />
+          </el-select>
         </span>
       </el-form-item>
 
       <div style="margin-left: 170px; margin-top: -10px; margin-bottom: 10px">
-        <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
+        <el-switch v-model="data.previous" inline-prompt width="36px" /><span
           style="font-size: 14px; margin-left: 5px; margin-right: 10px"
           >查看已退出的容器</span
         >
       </div>
     </el-card>
+
+    <div style="float: right">
+      <el-switch v-model="data.autoRefresh" inline-prompt width="36px" /><span
+        style="font-size: 13px; margin-left: 5px; margin-right: 10px"
+        >自动刷新</span
+      >
+    </div>
   </div>
 
   <div v-if="data.activeName === 'four'">
@@ -287,7 +327,13 @@ const data = reactive({
   drawer: false,
   podLog: '',
 
+  selectedPods: [],
+  selectedPod: '',
+  selectedContainer: '',
+
   crontab: true,
+  autoRefresh: true,
+  previous: false,
 });
 
 onMounted(async () => {
@@ -314,6 +360,23 @@ const copy = async (val) => {
       message: e.valueOf().toString(),
     });
   }
+};
+
+const openShell = (val) => {
+  window.open(
+    '/#/podshell?pod=' +
+      val.metadata.name +
+      '&namespace=' +
+      data.namespace +
+      '&cluster=' +
+      data.cluster,
+    '_blank',
+    'width=1000,height=600',
+  );
+};
+
+const changePod = async (val) => {
+  data.selectedPod = val;
 };
 
 const copyIP = async (val) => {
@@ -376,6 +439,13 @@ const getDeploymentPods = async () => {
     },
   });
   data.deploymentPods = pods.items;
+
+  for (let item of data.deploymentPods) {
+    data.selectedPods.push(item.metadata.name);
+  }
+  if (data.selectedPods.length > 0) {
+    data.selectedPod = data.selectedPods[0];
+  }
 };
 
 const getDeploymentEvents = async () => {
