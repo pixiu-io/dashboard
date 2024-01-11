@@ -39,11 +39,47 @@
   </el-card>
 
   <div v-if="data.activeName === 'first'">
-    <el-card class="contend-card-container2">基本信息</el-card>
+    <el-card class="contend-card-container2">
+      <div v-if="data.deployment.metadata" style="margin-top: 8px; width: 100%; border-radius: 0px">
+        <el-form-item label="名称" class="deployment-info">
+          <span class="deploy-detail-info" style="margin-left: 90px">
+            {{ data.deployment.metadata.name }}
+          </span>
+        </el-form-item>
+        <el-form-item label="命名空间" class="deployment-info">
+          <span class="deploy-detail-info" style="margin-left: 63px">
+            {{ data.deployment.metadata.namespace }}
+          </span>
+        </el-form-item>
+        <el-form-item label="创建时间" class="deployment-info">
+          <span class="deploy-detail-info" style="margin-left: 63px">
+            {{ data.deployment.metadata.creationTimestamp }}
+          </span>
+        </el-form-item>
+        <el-form-item label="Labels" class="deployment-info">
+          <span class="deploy-detail-info" style="margin-left: 75px">
+            {{ data.deployment.spec.selector.matchLabels }}
+          </span>
+        </el-form-item>
+        <el-form-item label="更新策略" class="deployment-info">
+          <span class="deploy-detail-info" style="margin-left: 63px">
+            {{ data.deployment.spec.strategy.type }}
+          </span>
+        </el-form-item>
+        <el-form-item label="副本数" class="deployment-info">
+          <span class="deploy-detail-info" style="margin-left: 75px">
+            {{ data.deployment.spec.replicas }}
+          </span>
+        </el-form-item>
+        <el-form-item label="其他" class="deployment-info">
+          <span class="deploy-detail-info" style="margin-left: 88px"> - </span>
+        </el-form-item>
+      </div></el-card
+    >
   </div>
 
   <div v-if="data.activeName === 'second'">
-    <div style="margin-top: 20px">
+    <div style="margin-top: 25px">
       <el-row>
         <el-col>
           <button class="pixiu-two-button2">监控</button>
