@@ -12,6 +12,7 @@
 
       <el-breadcrumb separator="/" style="margin-left: 20px">
         <el-breadcrumb-item><span class="breadcrumb-style">集群</span></el-breadcrumb-item>
+
         <el-breadcrumb-item>
           <span class="breadcrumb-style">{{ data.cluster }}</span>
         </el-breadcrumb-item>
@@ -40,6 +41,8 @@
 
   <div v-if="data.activeName === 'first'">
     <el-card class="contend-card-container2">
+      <div class="big-world-style" style="margin-bottom: 20px">基本信息</div>
+
       <div v-if="data.deployment.metadata" style="margin-top: 8px; width: 100%; border-radius: 0px">
         <el-form-item label="名称" class="deployment-info">
           <span class="deploy-detail-info" style="margin-left: 90px">
@@ -209,7 +212,76 @@
   </div>
 
   <div v-if="data.activeName === 'third'">
-    <el-card class="contend-card-container2">日志</el-card>
+    <el-card class="contend-card-container2">
+      <div class="big-world-style">筛选条件</div>
+
+      <el-form-item
+        label="Pod选项"
+        class="deployment-info"
+        style="font-size: 15px; margin-left: 8px"
+      >
+        <span class="deploy-detail-info" style="margin-left: 92px">
+          <el-select
+            v-model="data.selectedPod"
+            style="width: 230px; float: right; margin-right: 10px"
+            @change="changePod"
+          >
+            <el-option v-for="item in data.selectedPods" :key="item" :value="item" :label="item" />
+          </el-select>
+        </span>
+
+        <span class="deploy-detail-info" style="margin-left: 8px">
+          <el-select
+            v-model="data.selectedContainer"
+            style="width: 230px; float: right; margin-right: 10px"
+            @change="changeContainer"
+          >
+            <el-option v-for="item in data.selectedPods" :key="item" :value="item" :label="item" />
+          </el-select>
+        </span>
+
+        <div style="margin-left: 4px; margin-top: 6px">
+          <pixiu-icon
+            name="icon-icon-refresh"
+            style="cursor: pointer"
+            size="16px"
+            type="iconfont"
+            color="#909399"
+            @click="getNamespaceList"
+          />
+        </div>
+      </el-form-item>
+
+      <el-form-item
+        label="其他选项"
+        class="deployment-info"
+        style="font-size: 15px; margin-left: 8px"
+      >
+        <span class="deploy-detail-info" style="margin-left: 90px">
+          <el-select
+            v-model="data.selectedContainer"
+            style="width: 230px; float: right; margin-right: 10px"
+            @change="changeContainer"
+          >
+            <el-option v-for="item in data.selectedPods" :key="item" :value="item" :label="item" />
+          </el-select>
+        </span>
+      </el-form-item>
+
+      <div style="margin-left: 170px; margin-top: -10px; margin-bottom: 10px">
+        <el-switch v-model="data.previous" inline-prompt width="36px" /><span
+          style="font-size: 14px; margin-left: 5px; margin-right: 10px"
+          >查看已退出的容器</span
+        >
+      </div>
+    </el-card>
+
+    <div style="float: right">
+      <el-switch v-model="data.autoRefresh" inline-prompt width="36px" /><span
+        style="font-size: 13px; margin-left: 5px; margin-right: 10px"
+        >自动刷新</span
+      >
+    </div>
   </div>
 
   <div v-if="data.activeName === 'four'">
@@ -255,7 +327,13 @@ const data = reactive({
   drawer: false,
   podLog: '',
 
+  selectedPods: [],
+  selectedPod: '',
+  selectedContainer: '',
+
   crontab: true,
+  autoRefresh: true,
+  previous: false,
 });
 
 onMounted(async () => {
@@ -295,6 +373,10 @@ const openShell = (val) => {
     '_blank',
     'width=1000,height=600',
   );
+};
+
+const changePod = async (val) => {
+  data.selectedPod = val;
 };
 
 const copyIP = async (val) => {
@@ -357,6 +439,13 @@ const getDeploymentPods = async () => {
     },
   });
   data.deploymentPods = pods.items;
+
+  for (let item of data.deploymentPods) {
+    data.selectedPods.push(item.metadata.name);
+  }
+  if (data.selectedPods.length > 0) {
+    data.selectedPod = data.selectedPods[0];
+  }
 };
 
 const getDeploymentEvents = async () => {
@@ -441,6 +530,7 @@ const goToDeployment = () => {
 .deployment-info {
   color: #909399;
   font-size: 13px;
+  margin-left: 8px;
 }
 
 .deploy-detail-info {
