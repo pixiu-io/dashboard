@@ -133,11 +133,11 @@
         stripe
         style="margin-top: 10px; width: 100%; margin-bottom: 25px"
         header-row-class-name="pixiu-table-header"
-        @selection-change="handleSelectionChange"
         :cell-style="{
           'font-size': '12px',
           color: '#29292b',
         }"
+        @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="30" />
         <el-table-column prop="metadata.name" label="实例名称" min-width="70px">
@@ -201,7 +201,7 @@
               type="text"
               size="small"
               style="margin-right: 1px; color: #006eff"
-              @click="getPodLog(scope.row)"
+              @click="openShell(scope.row)"
             >
               远程连接
             </el-button>
@@ -314,6 +314,19 @@ const copy = async (val) => {
       message: e.valueOf().toString(),
     });
   }
+};
+
+const openShell = (val) => {
+  window.open(
+    '/#/podshell?pod=' +
+      val.metadata.name +
+      '&namespace=' +
+      data.namespace +
+      '&cluster=' +
+      data.cluster,
+    '_blank',
+    'width=1000,height=600',
+  );
 };
 
 const copyIP = async (val) => {
