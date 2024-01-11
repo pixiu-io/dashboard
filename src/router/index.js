@@ -283,6 +283,11 @@ const routes = [
     name: 'Login',
     component: Login,
   },
+  {
+    path: '/podshell',
+    name: 'PodShell',
+    component: Terminal,
+  },
   { path: '/:pathMatch(.*)', name: 'NotFound', component: NotFound },
 ];
 
