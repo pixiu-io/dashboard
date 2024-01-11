@@ -165,7 +165,7 @@ const routes = [
             name: 'DeploymentDetail',
             meta: {
               title: 'DeploymentDetail',
-              noPadding: true,
+              // noPadding: true,
             },
             component: DeploymentDetail,
           },
