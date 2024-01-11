@@ -39,7 +39,7 @@
   </el-aside>
 
   <!-- 主体 -->
-  <el-main>
+  <el-main :class="{ 'no-padding': $route.meta.noPadding }">
     <router-view :key="$route.fullPath" />
   </el-main>
 </template>
@@ -281,6 +281,9 @@ onMounted(() => {
 </script>
 
 <style scoped="scoped">
+.no-padding {
+  padding: 0;
+}
 .cloud-title-container {
   font-size: 8px;
   color: #4c4e58;
