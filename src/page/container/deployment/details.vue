@@ -43,7 +43,133 @@
   </div>
 
   <div v-if="data.activeName === 'second'">
-    <el-card class="contend-card-container2">Pod管理</el-card>
+    <div style="margin-top: 20px">
+      <el-row>
+        <el-col>
+          <button class="pixiu-two-button2">监控</button>
+          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">销毁重建</button>
+
+          <div style="margin-left: 8px; float: right; margin-top: 6px">
+            <pixiu-icon
+              name="icon-icon-refresh"
+              style="cursor: pointer"
+              size="14px"
+              type="iconfont"
+              color="#909399"
+              @click="getDeploymentPods"
+            />
+          </div>
+
+          <el-input
+            v-model="data.pageInfo.query"
+            placeholder="名称搜索关键字"
+            style="width: 480px; float: right"
+            clearable
+            @clear="getDeploymentPods"
+          >
+            <template #suffix>
+              <pixiu-icon
+                name="icon-search"
+                style="cursor: pointer"
+                size="15px"
+                type="iconfont"
+                color="#909399"
+                @click="getDeploymentPods"
+              />
+            </template>
+          </el-input>
+          <div style="float: right">
+            <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
+              style="font-size: 13px; margin-left: 5px; margin-right: 10px"
+              >自动刷新</span
+            >
+          </div>
+        </el-col>
+      </el-row>
+    </div>
+    <el-card style="margin-top: 15px" class="contend-card-container2">
+      <el-table
+        v-loading="data.loading"
+        :data="data.deploymentPods"
+        stripe
+        style="margin-top: 10px; width: 100%; margin-bottom: 25px"
+        header-row-class-name="pixiu-table-header"
+        @selection-change="handleSelectionChange"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#29292b',
+        }"
+      >
+        <el-table-column type="selection" width="30" />
+        <el-table-column prop="metadata.name" label="实例名称" min-width="70px">
+          <template #default="scope">
+            {{ scope.row.metadata.name }}
+            <el-tooltip content="复制">
+              <pixiu-icon
+                name="icon-copy"
+                size="11px"
+                type="iconfont"
+                class-name="icon-box"
+                color="#909399"
+                @click="copy(scope.row)"
+              />
+            </el-tooltip>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="status" label="状态" :formatter="formatterStatus" />
+        <el-table-column prop="status.hostIP" label="所在节点" />
+
+        <el-table-column prop="status.podIP" label="实例IP">
+          <template #default="scope">
+            {{ scope.row.status.podIP }}
+            <el-tooltip content="复制">
+              <pixiu-icon
+                name="icon-copy"
+                size="11px"
+                type="iconfont"
+                class-name="icon-box"
+                color="#909399"
+                @click="copyIP(scope.row)"
+              />
+            </el-tooltip>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          prop="status.containerStatuses"
+          label="重启次数"
+          :formatter="getPodRestartCount"
+        />
+
+        <el-table-column
+          prop="metadata.creationTimestamp"
+          label="创建时间"
+          :formatter="formatterTime"
+        />
+        <el-table-column fixed="right" label="操作" width="160px">
+          <template #default="scope">
+            <el-button
+              size="small"
+              type="text"
+              style="margin-right: -25px; margin-left: -10px; color: #006eff"
+              @click="deletePod(scope.row)"
+            >
+              销毁重建
+            </el-button>
+
+            <el-button
+              type="text"
+              size="small"
+              style="margin-right: 1px; color: #006eff"
+              @click="getPodLog(scope.row)"
+            >
+              查看日志
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
   </div>
 
   <div v-if="data.activeName === 'third'">
@@ -253,7 +379,7 @@ const goToDeployment = () => {
 <style scoped="scoped">
 .deployment-tab {
   margin-top: 1px;
-  margin-bottom: -33px;
+  margin-bottom: -32px;
 }
 
 .demo-tabs .el-tabs__content {
