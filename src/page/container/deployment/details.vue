@@ -79,7 +79,7 @@
   </div>
 
   <div v-if="data.activeName === 'second'">
-    <div style="margin-top: 25px">
+    <div style="margin-top: 20px">
       <el-row>
         <el-col>
           <button class="pixiu-two-button2">监控</button>
@@ -200,7 +200,7 @@
               style="margin-right: 1px; color: #006eff"
               @click="getPodLog(scope.row)"
             >
-              查看日志
+              远程连接
             </el-button>
           </template>
         </el-table-column>
