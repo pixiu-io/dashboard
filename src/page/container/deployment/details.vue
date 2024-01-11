@@ -460,6 +460,7 @@ const goToDeployment = () => {
 .deployment-info {
   color: #909399;
   font-size: 13px;
+  margin-left: 8px;
 }
 
 .deploy-detail-info {
