@@ -12,6 +12,7 @@
 
       <el-breadcrumb separator="/" style="margin-left: 20px">
         <el-breadcrumb-item><span class="breadcrumb-style">集群</span></el-breadcrumb-item>
+
         <el-breadcrumb-item>
           <span class="breadcrumb-style">{{ data.cluster }}</span>
         </el-breadcrumb-item>
@@ -40,6 +41,8 @@
 
   <div v-if="data.activeName === 'first'">
     <el-card class="contend-card-container2">
+      <div class="big-world-style" style="margin-bottom: 20px">基本信息</div>
+
       <div v-if="data.deployment.metadata" style="margin-top: 8px; width: 100%; border-radius: 0px">
         <el-form-item label="名称" class="deployment-info">
           <span class="deploy-detail-info" style="margin-left: 90px">
@@ -209,7 +212,36 @@
   </div>
 
   <div v-if="data.activeName === 'third'">
-    <el-card class="contend-card-container2">日志</el-card>
+    <el-card class="contend-card-container2">
+      <div class="big-world-style">筛选条件</div>
+
+      <el-form-item
+        label="Pod选项"
+        class="deployment-info"
+        style="font-size: 15px; margin-left: 8px"
+      >
+        <span class="deploy-detail-info" style="margin-left: 90px">
+          {{ data.deployment.metadata.name }}
+        </span>
+      </el-form-item>
+
+      <el-form-item
+        label="其他选项"
+        class="deployment-info"
+        style="font-size: 15px; margin-left: 8px"
+      >
+        <span class="deploy-detail-info" style="margin-left: 90px">
+          {{ data.deployment.metadata.name }}
+        </span>
+      </el-form-item>
+
+      <div style="margin-left: 170px; margin-top: -10px">
+        <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
+          style="font-size: 14px; margin-left: 5px; margin-right: 10px"
+          >查看已退出的容器</span
+        >
+      </div>
+    </el-card>
   </div>
 
   <div v-if="data.activeName === 'four'">
