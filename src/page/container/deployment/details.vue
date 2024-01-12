@@ -419,7 +419,6 @@ const changePod = async (val) => {
   data.selectedPod = val;
 };
 
-
 const copyIP = async (val) => {
   try {
     await toClipboard(val.status.podIP);
