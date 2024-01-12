@@ -291,17 +291,45 @@
   <div v-if="data.activeName === 'five'">
     <el-card class="contend-card-container2">YAML</el-card>
   </div>
+
+  <el-dialog v-model="showDialog" width="300" title="选择要链接的容器">
+    <div
+      style="display: flex; justify-content: center; align-items: center; flex-direction: column"
+    >
+      <el-button
+        v-for="(item, index) in selectedContainers"
+        :key="index"
+        type="primary"
+        link
+        @click="
+          selectedContainer = item.name;
+          openWindowShell();
+          showDialog = false;
+          selectedContainer = '';
+          selectedContainers = [];
+          selectedPod = '';
+        "
+      >
+        {{ item.name }}
+      </el-button>
+    </div>
+  </el-dialog>
 </template>
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { formatTimestamp } from '@/utils/utils';
 import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
+
+const showDialog = ref(false);
+const selectedContainers = ref([]);
+const selectedContainer = ref('');
+const selectedPod = ref('');
 
 const data = reactive({
   cluster: '',
@@ -363,13 +391,25 @@ const copy = async (val) => {
 };
 
 const openShell = (val) => {
+  selectedPod.value = val.metadata.name;
+  selectedContainers.value = val.spec.containers;
+  if (val.spec.containers.length > 1) {
+    showDialog.value = true;
+  } else {
+    openWindowShell();
+  }
+};
+
+const openWindowShell = () => {
   window.open(
     '/#/podshell?pod=' +
-      val.metadata.name +
+      selectedPod.value +
       '&namespace=' +
       data.namespace +
       '&cluster=' +
-      data.cluster,
+      data.cluster +
+      '&container=' +
+      selectedContainer.value,
     '_blank',
     'width=1000,height=600',
   );
@@ -378,6 +418,7 @@ const openShell = (val) => {
 const changePod = async (val) => {
   data.selectedPod = val;
 };
+
 
 const copyIP = async (val) => {
   try {
