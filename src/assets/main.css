@@ -193,6 +193,11 @@
   border-radius: 0px;
 }
 
+.contend-card-container2 {
+  margin-top: 20px;
+  border-radius: 0px;
+}
+
 /* 全局详情 */
 .glabal-detail-card {
   height: 120%;
@@ -243,4 +248,14 @@
 
 .breadcrumb-style {
   color: black;
+}
+
+/* 字体加粗 */
+.big-world-style {
+  color: black;
+  font-size: 17px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  margin-top: 10px;
+  margin-left: 8px;
 }

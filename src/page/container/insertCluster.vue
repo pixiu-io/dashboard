@@ -5,10 +5,10 @@
       <div class="app-pixiu-content-card">
         <el-card style="margin-top: 10px; width: 75%; border-radius: 0px">
           <el-form
+            ref="ruleFormRef"
             :label-position="labelPosition"
             label-width="120px"
             :model="data.clusterForm"
-            ref="ruleFormRef"
             :rules="rules"
             status-icon
             require-asterisk-position="right"

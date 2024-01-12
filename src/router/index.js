@@ -168,6 +168,7 @@ const routes = [
             name: 'DeploymentDetail',
             meta: {
               title: 'DeploymentDetail',
+              // noPadding: true,
             },
             component: DeploymentDetail,
           },
@@ -308,6 +309,11 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: Login,
+  },
+  {
+    path: '/podshell',
+    name: 'PodShell',
+    component: Terminal,
   },
   { path: '/:pathMatch(.*)', name: 'NotFound', component: NotFound },
 ];
