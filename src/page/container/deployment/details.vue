@@ -321,10 +321,21 @@
       <el-col>
         <button class="pixiu-two-button" style="width: 85px">编辑YAML</button>
         <button class="pixiu-two-button" style="margin-left: 10px">复制</button>
+
+        <div style="margin-left: 8px; float: right; margin-top: 6px">
+          <pixiu-icon
+            name="icon-icon-refresh"
+            style="cursor: pointer"
+            size="14px"
+            type="iconfont"
+            color="#909399"
+            @click="getDeployment"
+          />
+        </div>
       </el-col>
     </div>
-
-    <el-card class="contend-card-container2"> </el-card>
+    <div style="margin-top: 10px"></div>
+    <MyCodeMirror :yaml="data.yaml"></MyCodeMirror>
   </div>
 
   <el-dialog v-model="showDialog" width="300" title="选择要链接的容器">
@@ -358,6 +369,7 @@ import { formatTimestamp } from '@/utils/utils';
 import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
 import jsYaml from 'js-yaml';
+import MyCodeMirror from '@/components/codemirror/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -509,7 +521,6 @@ const getDeployment = async () => {
   data.deployment = res;
 
   data.yaml = jsYaml.dump(data.deployment);
-  data.yamlName = data.deployment.metadata.name;
 };
 
 const deletePod = async (row) => {
