@@ -36,6 +36,12 @@
     </el-tabs>
   </el-card>
 
+  <div v-if="data.activeName === 'first'">
+    <el-card class="contend-card-container2">
+      <div class="big-world-style" style="margin-bottom: 20px">基本信息</div>
+    </el-card>
+  </div>
+
   <div v-if="data.activeName === 'second'">
     <div style="margin-top: 20px">
       <el-col>
@@ -169,5 +175,10 @@ const editYaml = () => {
 .namespace-tab {
   margin-top: 1px;
   margin-bottom: -32px;
+}
+
+.namespace-detail-info {
+  font-size: 13px;
+  color: #29232b;
 }
 </style>
