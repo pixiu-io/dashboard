@@ -281,6 +281,10 @@
       </div>
     </el-card>
 
+    <button style="margin-top: 15px; width: 90px" class="pixiu-two-button" @click="getPodLog">
+      刷新
+    </button>
+
     <div style="float: right; margin-top: 8px">
       <el-switch v-model="data.logAutoRefresh" inline-prompt width="36px" /><span
         style="font-size: 13px; margin-left: 5px; margin-right: 10px"
@@ -296,9 +300,9 @@
       />
     </div>
 
-    <div style="margin-top: 48px">
+    <div style="margin-top: 15px">
       <el-card class="contend-card-container2">
-        <div style="background-color: #29232b; color: white; min-height: 460px">
+        <div style="background-color: #29232b; color: white; min-height: 440px">
           <div style="margin-left: 20px">
             <div v-if="data.podLogs.length === 0" style="font-size: 14px">暂无日志</div>
             <div v-else>
@@ -348,7 +352,13 @@
     </el-card>
 
     <el-col>
-      <button style="margin-top: 15px; width: 90px" class="pixiu-two-button">批量删除</button>
+      <button style="margin-top: 15px" class="pixiu-two-button" @click="getDeploymentEvents">
+        刷新
+      </button>
+      <button style="margin-top: 15px; margin-left: 10px; width: 90px" class="pixiu-two-button2">
+        批量删除
+      </button>
+
       <div style="float: right; margin-top: 16px">
         <el-switch v-model="data.eventAutoRefresh" inline-prompt width="36px" /><span
           style="font-size: 13px; margin-left: 5px; margin-right: 10px"
