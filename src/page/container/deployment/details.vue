@@ -303,7 +303,7 @@
             <div v-if="data.podLogs.length === 0" style="font-size: 14px">暂无日志</div>
             <div v-else>
               <div style="font-size: 14px" v-for="(item, index) in data.podLogs" :key="item">
-                {{ index + 1 }} {{ item }}
+                {{ index + 1 }} <span style="margin-left: 18px"></span> {{ item }}
               </div>
             </div>
           </div>
