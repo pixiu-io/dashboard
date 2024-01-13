@@ -297,8 +297,8 @@
     </div>
 
     <div style="margin-top: 48px">
-      <el-card class="contend-card-container2" style="height: 480px">
-        <div style="background-color: #29232b; color: white; height: 440px">
+      <el-card class="contend-card-container2" style="min-height: 480px">
+        <div style="background-color: #29232b; color: white; min-height: 460px">
           <div style="margin-left: 20px">暂无日志</div>
         </div>
       </el-card>
