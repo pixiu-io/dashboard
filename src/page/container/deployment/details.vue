@@ -357,6 +357,7 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { formatTimestamp } from '@/utils/utils';
 import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
+import jsYaml from 'js-yaml';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -401,6 +402,9 @@ const data = reactive({
   logLines: ['50行日志', '100行日志', '200行日志', '500行日志'],
   selectedLog: 100,
   podLogs: [],
+
+  yaml: '',
+  yamlName: '',
 });
 
 onMounted(async () => {
@@ -503,6 +507,9 @@ const getDeployment = async () => {
     url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${data.name}`,
   });
   data.deployment = res;
+
+  data.yaml = jsYaml.dump(data.deployment);
+  data.yamlName = data.deployment.metadata.name;
 };
 
 const deletePod = async (row) => {
