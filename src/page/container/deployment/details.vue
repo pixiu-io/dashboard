@@ -432,10 +432,8 @@
     <div style="margin-top: 10px"></div>
     <MyCodeMirror :yaml="data.yaml" :read-only="data.readOnly"></MyCodeMirror>
     <div v-if="!data.readOnly" style="margin-top: 10px">
-      <el-button class="pixiu-cancel-button" @click="cancelCreate()">取消</el-button>
-      <el-button class="pixiu-confirm-button" type="primary" @click="comfirmCreate()"
-        >确定</el-button
-      >
+      <el-button class="pixiu-cancel-button" @click="cancel()">取消</el-button>
+      <el-button class="pixiu-confirm-button" type="primary" @click="confirm()">确定</el-button>
     </div>
   </div>
 
@@ -774,6 +772,14 @@ const handleChange = (name) => {};
 const goToDeployment = () => {
   const queryParams = { cluster: data.cluster, namespace: data.namespace };
   router.push({ path: '/kubernetes/deployments', query: queryParams });
+};
+
+const confirm = () => {
+  data.readOnly = true;
+};
+
+const cancel = () => {
+  data.readOnly = true;
 };
 
 const editYaml = () => {

@@ -35,6 +35,32 @@
       <el-tab-pane label="YAML" name="second"></el-tab-pane>
     </el-tabs>
   </el-card>
+
+  <div v-if="data.activeName === 'second'">
+    <div style="margin-top: 20px">
+      <el-col>
+        <button class="pixiu-two-button" style="width: 85px" @click="editYaml">编辑YAML</button>
+        <button class="pixiu-two-button" style="margin-left: 10px" @click="copyYmal">复制</button>
+
+        <div style="margin-left: 8px; float: right; margin-top: 6px">
+          <pixiu-icon
+            name="icon-icon-refresh"
+            style="cursor: pointer"
+            size="14px"
+            type="iconfont"
+            color="#909399"
+            @click="getDeployment"
+          />
+        </div>
+      </el-col>
+    </div>
+    <div style="margin-top: 10px"></div>
+    <MyCodeMirror :yaml="data.yaml" :read-only="data.readOnly"></MyCodeMirror>
+    <div v-if="!data.readOnly" style="margin-top: 10px">
+      <el-button class="pixiu-cancel-button" @click="cancel()">取消</el-button>
+      <el-button class="pixiu-confirm-button" type="primary" @click="confirm()">确定</el-button>
+    </div>
+  </div>
 </template>
 
 <script setup lang="jsx">
@@ -102,6 +128,14 @@ const getNamespace = async () => {
 
     data.yaml = jsYaml.dump(data.namespace);
   } catch (error) {}
+};
+
+const confirm = () => {
+  data.readOnly = true;
+};
+
+const cancel = () => {
+  data.readOnly = true;
 };
 
 const formatterTime = (row, column, cellValue) => {
