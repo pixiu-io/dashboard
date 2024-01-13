@@ -77,12 +77,11 @@
             <el-form-item
               v-for="(item, index) in data.configMapLabels"
               :key="index"
-              prop="item.key"
               style="margin-top: -20px"
             >
-              <div>
+              <el-form-item prop="item.key">
                 <el-input v-model="item.key" placeholder="变量名" style="width: 300px" />
-              </div>
+              </el-form-item>
               <div style="margin-right: 8px; margin-left: 8px"></div>
               =
               <div>
@@ -132,8 +131,7 @@
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
-import PixiuCard from '@/components/card/index.vue';
+import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 const { proxy } = getCurrentInstance();
 const ruleFormRef = ref();
 
@@ -171,7 +169,7 @@ const data = reactive({
 
 const rules = {
   'metadata.name': [{ required: true, message: '请输入 ConfigMap 名称', trigger: 'blur' }],
-  'item.key': [{ required: true, message: 'key 不能为空', trigger: 'blur' }],
+  // 'item.key': [{ required: true, message: 'key 不能为空', trigger: 'blur' }],
 };
 
 const comfirmCreate = () => {

@@ -139,7 +139,7 @@
       <div style="text-align: left; font-weight: bold; padding-left: 5px">编辑yaml</div>
     </template>
     <div style="margin-top: -18px"></div>
-    <MyCodeMirror :yaml="data.yaml"></MyCodeMirror>
+    <MyCodeMirror ref="editYaml" :yaml="data.yaml"></MyCodeMirror>
     <template #footer>
       <span class="dialog-footer">
         <el-button class="pixiu-small-cancel-button" @click="closeEditConfigmapYamlDialog"
@@ -163,6 +163,7 @@ import useClipboard from 'vue-clipboard3';
 import { formatTimestamp } from '@/utils/utils';
 const { proxy } = getCurrentInstance();
 const router = useRouter();
+const editYaml = ref();
 import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 const data = reactive({
@@ -310,21 +311,21 @@ const closeEditConfigmapYamlDialog = () => {
 };
 
 const confirmEditConfigmapYaml = async () => {
-  let yaml = jsYaml.load(data.yaml);
+  let yamlValue = jsYaml.load(editYaml.value.code);
   try {
-    const resp = await proxy.$http({
+    const res = await proxy.$http({
       method: 'put',
-      url:
-        `/proxy/pixiu/${data.cloud.cluster}/api/v1/namespaces/` +
-        data.configmapForm.metadata.namespace +
-        `/configmaps/` +
-        data.yamlName,
-      data: yaml,
+      url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/configmaps/${data.yamlName}`,
+      data: yamlValue,
     });
-  } catch (error) {}
+  } catch (error) {
+    proxy.$message.success(`configmap ${data.yamlName} 更新失败`);
+  }
   data.editConfigmapYamlDialog = false;
   data.yaml = '';
+  data.yamlName = '';
   proxy.$message.success(`configmap ${data.yamlName} 更新成功`);
+  getConfigMaps();
 };
 </script>
 

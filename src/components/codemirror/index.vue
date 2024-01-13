@@ -1,6 +1,6 @@
 <template>
   <Codemirror
-    v-model:value="data.code"
+    v-model:value="code"
     :options="data.cmOptions"
     border
     placeholder=""
@@ -23,13 +23,13 @@ import 'codemirror/addon/display/placeholder.js';
 // theme
 import 'codemirror/theme/dracula.css';
 
-import { ref, reactive, onMounted, watch } from 'vue';
+import { ref, reactive, onMounted, watch, defineExpose } from 'vue';
 const code = ref(null);
 const data = reactive({
-  code: '',
   cmOptions: {
     mode: 'yaml', // Language mode
     theme: 'dracula', // Theme
+    readOnly: false,
   },
 });
 const props = defineProps({
@@ -37,15 +37,23 @@ const props = defineProps({
     type: String,
     default: '张三',
   },
+  readOnly: {
+    type: Boolean,
+    default: false,
+  },
 });
 onMounted(() => {
-  data.code = props.yaml.valueOf();
+  code.value = props.yaml.valueOf();
+  // data.cmOptions.readOnly = props.readOnly.valueOf();
 });
 
 watch(() => {
-  data.code = props.yaml.valueOf();
+  code.value = props.yaml.valueOf();
+  // data.yaml = props.yaml.valueOf();
 });
+
 const change = () => {
-  data.code = props.yaml.valueOf();
+  // this.props.yaml = code.value;
 };
+defineExpose({ code });
 </script>
