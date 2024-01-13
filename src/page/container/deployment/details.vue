@@ -281,11 +281,23 @@
       </div>
     </el-card>
 
-    <div style="float: right">
+    <div style="float: right; margin-top: 8px">
       <el-switch v-model="data.autoRefresh" inline-prompt width="36px" /><span
         style="font-size: 13px; margin-left: 5px; margin-right: 10px"
         >自动刷新</span
       >
+      <pixiu-icon
+        name="icon-icon-refresh"
+        style="cursor: pointer"
+        size="16px"
+        type="iconfont"
+        color="#909399"
+        @click="getPodLog"
+      />
+    </div>
+
+    <div style="margin-top: 48px">
+      <el-card class="contend-card-container2" style="height: 480px"> </el-card>
     </div>
   </div>
 
