@@ -22,6 +22,18 @@
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
+
+    <div style="margin-top: 20px"></div>
+
+    <el-tabs
+      v-model="data.activeName"
+      class="namespace-tab"
+      @tab-click="handleClick"
+      @tab-change="handleChange"
+    >
+      <el-tab-pane label="基本信息" name="first"> </el-tab-pane>
+      <el-tab-pane label="YAML" name="second"></el-tab-pane>
+    </el-tabs>
   </el-card>
 </template>
 
@@ -50,6 +62,8 @@ const data = reactive({
 
   namespace: '',
 
+  activeName: 'second',
+
   yaml: '',
   yamlName: '',
   readOnly: true,
@@ -63,21 +77,6 @@ onMounted(async () => {
 });
 
 const { toClipboard } = useClipboard();
-const copy = async (val) => {
-  try {
-    await toClipboard(val.metadata.name);
-    ElMessage({
-      type: 'success',
-      message: '已复制',
-    });
-  } catch (e) {
-    ElMessage({
-      type: 'error',
-      message: e.valueOf().toString(),
-    });
-  }
-};
-
 const copyYmal = async () => {
   try {
     await toClipboard(data.yaml);
@@ -119,6 +118,9 @@ const formatterTime = (row, column, cellValue) => {
   );
 };
 
+const handleClick = (tab, event) => {};
+const handleChange = (name) => {};
+
 const goToNamespace = () => {
   const queryParams = { cluster: data.cluster };
   router.push({ path: '/kubernetes/namespaces', query: queryParams });
@@ -129,4 +131,9 @@ const editYaml = () => {
 };
 </script>
 
-<style scoped="scoped"></style>
+<style scoped="scoped">
+.namespace-tab {
+  margin-top: 1px;
+  margin-bottom: -32px;
+}
+</style>
