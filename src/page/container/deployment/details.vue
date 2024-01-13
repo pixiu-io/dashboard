@@ -302,7 +302,7 @@
           <div style="margin-left: 20px">
             <div v-if="data.podLogs.length === 0" style="font-size: 14px">暂无日志</div>
             <div v-else>
-              <div style="font-size: 14px" v-for="(item, index) in data.podLogs" :key="item">
+              <div v-for="(item, index) in data.podLogs" :key="item" style="font-size: 14px">
                 {{ index + 1 }} <span style="margin-left: 18px"></span> {{ item }}
               </div>
             </div>
@@ -319,7 +319,7 @@
   <div v-if="data.activeName === 'five'">
     <div style="margin-top: 20px">
       <el-col>
-        <button class="pixiu-two-button" style="width: 85px">编辑YAML</button>
+        <button class="pixiu-two-button" style="width: 85px" @click="editYaml">编辑YAML</button>
         <button class="pixiu-two-button" style="margin-left: 10px" @click="copyYmal">复制</button>
 
         <div style="margin-left: 8px; float: right; margin-top: 6px">
@@ -335,7 +335,13 @@
       </el-col>
     </div>
     <div style="margin-top: 10px"></div>
-    <MyCodeMirror :yaml="data.yaml"></MyCodeMirror>
+    <MyCodeMirror :yaml="data.yaml" :read-only="data.readOnly"></MyCodeMirror>
+    <div v-if="!data.readOnly" style="margin-top: 10px">
+      <el-button class="pixiu-cancel-button" @click="cancelCreate()">取消</el-button>
+      <el-button class="pixiu-confirm-button" type="primary" @click="comfirmCreate()"
+        >确定</el-button
+      >
+    </div>
   </div>
 
   <el-dialog v-model="showDialog" width="300" title="选择要链接的容器">
@@ -417,6 +423,7 @@ const data = reactive({
 
   yaml: '',
   yamlName: '',
+  readOnly: true,
 });
 
 onMounted(async () => {
@@ -664,6 +671,10 @@ const handleChange = (name) => {};
 const goToDeployment = () => {
   const queryParams = { cluster: data.cluster, namespace: data.namespace };
   router.push({ path: '/kubernetes/deployments', query: queryParams });
+};
+
+const editYaml = () => {
+  data.readOnly = false;
 };
 </script>
 

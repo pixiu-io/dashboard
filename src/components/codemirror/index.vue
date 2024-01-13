@@ -44,12 +44,12 @@ const props = defineProps({
 });
 onMounted(() => {
   code.value = props.yaml.valueOf();
-  // data.cmOptions.readOnly = props.readOnly.valueOf();
+  data.cmOptions.readOnly = props.readOnly.valueOf();
 });
 
 watch(() => {
   code.value = props.yaml.valueOf();
-  // data.yaml = props.yaml.valueOf();
+  data.cmOptions.readOnly = props.readOnly.valueOf();
 });
 
 const change = () => {
