@@ -317,7 +317,25 @@
   </div>
 
   <div v-if="data.activeName === 'five'">
-    <el-card class="contend-card-container2">YAML</el-card>
+    <div style="margin-top: 20px">
+      <el-col>
+        <button class="pixiu-two-button" style="width: 85px">编辑YAML</button>
+        <button class="pixiu-two-button" style="margin-left: 10px" @click="copyYmal">复制</button>
+
+        <div style="margin-left: 8px; float: right; margin-top: 6px">
+          <pixiu-icon
+            name="icon-icon-refresh"
+            style="cursor: pointer"
+            size="14px"
+            type="iconfont"
+            color="#909399"
+            @click="getDeployment"
+          />
+        </div>
+      </el-col>
+    </div>
+    <div style="margin-top: 10px"></div>
+    <MyCodeMirror :yaml="data.yaml"></MyCodeMirror>
   </div>
 
   <el-dialog v-model="showDialog" width="300" title="选择要链接的容器">
@@ -350,6 +368,8 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { formatTimestamp } from '@/utils/utils';
 import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
+import jsYaml from 'js-yaml';
+import MyCodeMirror from '@/components/codemirror/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -394,6 +414,9 @@ const data = reactive({
   logLines: ['50行日志', '100行日志', '200行日志', '500行日志'],
   selectedLog: 100,
   podLogs: [],
+
+  yaml: '',
+  yamlName: '',
 });
 
 onMounted(async () => {
@@ -410,6 +433,21 @@ const { toClipboard } = useClipboard();
 const copy = async (val) => {
   try {
     await toClipboard(val.metadata.name);
+    ElMessage({
+      type: 'success',
+      message: '已复制',
+    });
+  } catch (e) {
+    ElMessage({
+      type: 'error',
+      message: e.valueOf().toString(),
+    });
+  }
+};
+
+const copyYmal = async () => {
+  try {
+    await toClipboard(data.yaml);
     ElMessage({
       type: 'success',
       message: '已复制',
@@ -496,6 +534,8 @@ const getDeployment = async () => {
     url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${data.name}`,
   });
   data.deployment = res;
+
+  data.yaml = jsYaml.dump(data.deployment);
 };
 
 const deletePod = async (row) => {
