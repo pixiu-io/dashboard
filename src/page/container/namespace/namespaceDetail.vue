@@ -39,6 +39,25 @@
   <div v-if="data.activeName === 'first'">
     <el-card class="contend-card-container2">
       <div class="big-world-style" style="margin-bottom: 20px">基本信息</div>
+
+      <el-form-item label="名称" class="namespace-info">
+        <span class="namespace-detail-info" style="margin-left: 90px">
+          {{ data.namespace.metadata.name }}
+        </span>
+      </el-form-item>
+      <el-form-item label="状态" class="namespace-info">
+        <span class="namespace-detail-info" style="margin-left: 90px">
+          {{ data.namespace.status.phase }}
+        </span>
+      </el-form-item>
+      <el-form-item label="描述" class="namespace-info">
+        <span class="namespace-detail-info" style="margin-left: 90px"> - </span>
+      </el-form-item>
+      <el-form-item label="创建时间" class="namespace-info">
+        <span class="namespace-detail-info" style="margin-left: 65px">
+          {{ data.namespace.metadata.creationTimestamp }}
+        </span>
+      </el-form-item>
     </el-card>
   </div>
 
@@ -175,6 +194,12 @@ const editYaml = () => {
 .namespace-tab {
   margin-top: 1px;
   margin-bottom: -32px;
+}
+
+.namespace-info {
+  color: #909399;
+  font-size: 13px;
+  margin-left: 8px;
 }
 
 .namespace-detail-info {
