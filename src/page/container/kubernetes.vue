@@ -127,6 +127,11 @@ const data = reactive({
           name: 'ConfigMap',
           url: '/kubernetes/configmaps',
         },
+        {
+          id: 2.2,
+          name: 'Secret',
+          url: '/kubernetes/secrets',
+        },
       ],
     },
     {
