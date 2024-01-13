@@ -238,7 +238,7 @@ const routes = [
           },
           {
             path: 'secrets',
-            name: 'secret',
+            name: 'Secret',
             meta: {
               title: 'secret',
             },
