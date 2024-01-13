@@ -347,19 +347,59 @@
       </el-form-item>
     </el-card>
 
-    <div style="float: right; margin-top: 8px">
-      <el-switch v-model="data.eventAutoRefresh" inline-prompt width="36px" /><span
-        style="font-size: 13px; margin-left: 5px; margin-right: 10px"
-        >自动刷新</span
-      >
-      <pixiu-icon
-        name="icon-icon-refresh"
-        style="cursor: pointer"
-        size="16px"
-        type="iconfont"
-        color="#909399"
-        @click="getDeploymentEvents"
-      />
+    <el-col>
+      <button style="margin-top: 15px; width: 90px" class="pixiu-two-button">批量删除</button>
+      <div style="float: right; margin-top: 16px">
+        <el-switch v-model="data.eventAutoRefresh" inline-prompt width="36px" /><span
+          style="font-size: 13px; margin-left: 5px; margin-right: 10px"
+          >自动刷新</span
+        >
+        <pixiu-icon
+          name="icon-icon-refresh"
+          style="cursor: pointer"
+          size="16px"
+          type="iconfont"
+          color="#909399"
+          @click="getDeploymentEvents"
+        />
+      </div>
+    </el-col>
+
+    <div style="margin-top: 18px">
+      <el-card class="contend-card-container2">
+        <el-table
+          v-loading="data.loading"
+          :data="data.deploymentEvents"
+          stripe
+          style="margin-top: 10px; width: 100%; margin-bottom: 25px"
+          header-row-class-name="pixiu-table-header"
+          :cell-style="{
+            'font-size': '12px',
+            color: '#29292b',
+          }"
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column type="selection" width="30px" />
+          <el-table-column prop="lastTimestamp" label="最后出现时间" :formatter="formatterTime" />
+          <el-table-column prop="type" label="级别" />
+          <el-table-column prop="kind" label="资源类型"> </el-table-column>
+          <el-table-column prop="objectName" label="资源名称"> </el-table-column>
+          <el-table-column prop="message" label="内容" width="500ox" />
+
+          <el-table-column fixed="right" label="操作" width="100px">
+            <template #default="scope">
+              <el-button
+                size="small"
+                type="text"
+                style="margin-right: -25px; margin-left: -10px; color: #006eff"
+                @click="deleteEvent(scope.row)"
+              >
+                删除
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-card>
     </div>
   </div>
 
@@ -665,6 +705,10 @@ const getDeploymentEvents = async () => {
     url: `/pixiu/kubeproxy/clusters/${data.cluster}/namespaces/${data.namespace}/name/${data.name}/kind/deployment/events`,
   });
   data.deploymentEvents = events;
+};
+
+const deleteEvent = async () => {
+  console.log('delete event');
 };
 
 const formatterStatus = (row, column, cellValue) => {
