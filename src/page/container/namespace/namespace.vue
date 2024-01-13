@@ -192,7 +192,6 @@ const jumpNamespaceRoute = (row) => {
     name: 'NamespaceDetail',
     query: {
       cluster: data.cluster,
-      namespace: data.namespace,
       name: row.metadata.name,
     },
   });
