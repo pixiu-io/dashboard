@@ -383,7 +383,7 @@ const data = reactive({
   selectedPods: [],
   selectedPod: '',
   selectedContainers: [],
-  selectedContainer: '',
+  selectedContainer: 'nginx',
 
   crontab: true,
   autoRefresh: true,
@@ -502,15 +502,18 @@ const deletePod = async (row) => {
 };
 
 const getPodLog = async () => {
+  // 在指定 pod 和容器的情况下，才请求log
+  if (data.selectedPod === '' || data.selectedContainer === '') {
+    return;
+  }
+
   const log = await proxy.$http({
     method: 'get',
     url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${data.selectedPod}/log`,
-    data: { container: 'nginx' },
+    data: { container: data.selectedContainer },
   });
 
   data.podLogs = log.split('\n');
-
-  console.log(data.podLogs.length);
 };
 
 const getDeploymentPods = async () => {
