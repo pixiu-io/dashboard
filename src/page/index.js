@@ -31,6 +31,7 @@ import Pod from './container/pod/pod.vue';
 import StorageClass from './container/storageclass/storageclass.vue';
 import Namespace from './container/namespace/namespace.vue';
 import CreateNamespace from './container/namespace/createNamespace.vue';
+import NamespaceDetail from './container/namespace/namespaceDetail.vue';
 import NotFound from './notFound/notFound.vue';
 export {
   Home,
@@ -66,5 +67,6 @@ export {
   Info,
   Namespace,
   CreateNamespace,
+  NamespaceDetail,
   NotFound,
 };

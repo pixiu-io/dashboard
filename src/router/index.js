@@ -35,6 +35,7 @@ import {
   Pod,
   Namespace,
   CreateNamespace,
+  NamespaceDetail,
 } from '@/page';
 
 const routes = [
@@ -122,6 +123,14 @@ const routes = [
               title: 'createNamespace',
             },
             component: CreateNamespace,
+          },
+          {
+            path: 'namespaceDetail',
+            name: 'NamespaceDetail',
+            meta: {
+              title: 'namespaceDetail',
+            },
+            component: NamespaceDetail,
           },
           {
             path: 'deployments',
