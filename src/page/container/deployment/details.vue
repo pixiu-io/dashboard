@@ -282,7 +282,7 @@
     </el-card>
 
     <div style="float: right; margin-top: 8px">
-      <el-switch v-model="data.autoRefresh" inline-prompt width="36px" /><span
+      <el-switch v-model="data.logAutoRefresh" inline-prompt width="36px" /><span
         style="font-size: 13px; margin-left: 5px; margin-right: 10px"
         >自动刷新</span
       >
@@ -346,6 +346,21 @@
         </span>
       </el-form-item>
     </el-card>
+
+    <div style="float: right; margin-top: 8px">
+      <el-switch v-model="data.eventAutoRefresh" inline-prompt width="36px" /><span
+        style="font-size: 13px; margin-left: 5px; margin-right: 10px"
+        >自动刷新</span
+      >
+      <pixiu-icon
+        name="icon-icon-refresh"
+        style="cursor: pointer"
+        size="16px"
+        type="iconfont"
+        color="#909399"
+        @click="getDeploymentEvents"
+      />
+    </div>
   </div>
 
   <div v-if="data.activeName === 'five'">
@@ -436,7 +451,9 @@ const data = reactive({
 
   deployment: {},
   deploymentPods: [],
+
   deploymentEvents: [],
+  eventAutoRefresh: true,
 
   activeName: 'second',
 
@@ -447,9 +464,9 @@ const data = reactive({
   selectedPodMap: {},
 
   crontab: true,
-  autoRefresh: true,
   previous: false,
 
+  logAutoRefresh: true,
   logLine: '100行日志',
   logLines: ['50行日志', '100行日志', '200行日志', '500行日志'],
   selectedLog: 100,
