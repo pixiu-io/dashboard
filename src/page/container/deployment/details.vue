@@ -299,7 +299,14 @@
     <div style="margin-top: 48px">
       <el-card class="contend-card-container2">
         <div style="background-color: #29232b; color: white; min-height: 460px">
-          <div style="margin-left: 20px">暂无日志</div>
+          <div style="margin-left: 20px">
+            <div v-if="data.podLogs.length === 0" style="font-size: 14px">暂无日志</div>
+            <div v-else>
+              <div style="font-size: 14px" v-for="(item, index) in data.podLogs" :key="item">
+                {{ index + 1 }} {{ item }}
+              </div>
+            </div>
+          </div>
         </div>
       </el-card>
     </div>
@@ -385,7 +392,7 @@ const data = reactive({
   logLine: '100行日志',
   logLines: ['50行日志', '100行日志', '200行日志', '500行日志'],
   selectedLog: 100,
-  podLog: '',
+  podLogs: [],
 });
 
 onMounted(async () => {
@@ -501,7 +508,9 @@ const getPodLog = async () => {
     data: { container: 'nginx' },
   });
 
-  data.podLog = log;
+  data.podLogs = log.split('\n');
+
+  console.log(data.podLogs.length);
 };
 
 const getDeploymentPods = async () => {
