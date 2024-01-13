@@ -2,11 +2,10 @@
   <Codemirror
     v-model:value="code"
     :options="data.cmOptions"
-    border
     placeholder=""
-    :height="720"
+    :height="680"
     @change="change"
-    style="font-size: 15px; font-family: Tahoma, Verdana, Arial, sans-serif"
+    style="font-size: 15px; margin-top: 2px; font-family: Tahoma, Verdana, Arial, sans-serif"
   />
 </template>
 
