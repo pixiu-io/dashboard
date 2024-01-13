@@ -383,7 +383,8 @@ const data = reactive({
   selectedPods: [],
   selectedPod: '',
   selectedContainers: [],
-  selectedContainer: 'nginx',
+  selectedContainer: '',
+  selectedPodMap: {},
 
   crontab: true,
   autoRefresh: true,
@@ -448,6 +449,11 @@ const openWindowShell = () => {
 
 const changePod = async (val) => {
   data.selectedPod = val;
+  data.selectedContainers = data.selectedPodMap[data.selectedPod];
+
+  if (data.selectedContainers.length > 0) {
+    data.selectedContainer = data.selectedContainers[0];
+  }
 };
 
 const changeContainer = async (val) => {
@@ -534,11 +540,24 @@ const getDeploymentPods = async () => {
   data.deploymentPods = pods.items;
 
   data.selectedPods = [];
+  data.selectedContainers = [];
+  data.selectedPodMap = {};
   for (let item of data.deploymentPods) {
+    let cs = [];
+    for (let c of item.spec.containers) {
+      cs.push(c.name);
+    }
+
+    data.selectedPodMap[item.metadata.name] = cs;
     data.selectedPods.push(item.metadata.name);
   }
   if (data.selectedPods.length > 0) {
     data.selectedPod = data.selectedPods[0];
+
+    data.selectedContainers = data.selectedPodMap[data.selectedPod];
+    if (data.selectedContainers.length > 0) {
+      data.selectedContainer = data.selectedContainers[0];
+    }
   }
 };
 
