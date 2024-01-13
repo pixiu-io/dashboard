@@ -85,7 +85,7 @@
     <div style="margin-top: 20px">
       <el-row>
         <el-col>
-          <button class="pixiu-two-button2">监控</button>
+          <button class="pixiu-two-button">刷新</button>
           <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">销毁重建</button>
 
           <div style="margin-left: 8px; float: right; margin-top: 6px">
@@ -281,9 +281,7 @@
       </div>
     </el-card>
 
-    <button style="margin-top: 15px; width: 90px" class="pixiu-two-button" @click="getPodLog">
-      刷新
-    </button>
+    <button style="margin-top: 15px" class="pixiu-two-button" @click="getPodLog">刷新</button>
 
     <div style="float: right; margin-top: 8px">
       <el-switch v-model="data.logAutoRefresh" inline-prompt width="36px" /><span
@@ -355,7 +353,7 @@
       <button style="margin-top: 15px" class="pixiu-two-button" @click="getDeploymentEvents">
         刷新
       </button>
-      <button style="margin-top: 15px; margin-left: 10px; width: 90px" class="pixiu-two-button2">
+      <button style="margin-top: 15px; margin-left: 10px; width: 85px" class="pixiu-two-button2">
         批量删除
       </button>
 
