@@ -236,7 +236,12 @@
             style="width: 230px; float: right; margin-right: 10px"
             @change="changeContainer"
           >
-            <el-option v-for="item in data.selectedPods" :key="item" :value="item" :label="item" />
+            <el-option
+              v-for="item in data.selectedContainers"
+              :key="item"
+              :value="item"
+              :label="item"
+            />
           </el-select>
         </span>
 
@@ -247,7 +252,7 @@
             size="16px"
             type="iconfont"
             color="#909399"
-            @click="getNamespaceList"
+            @click="getDeploymentPods"
           />
         </div>
       </el-form-item>
@@ -357,6 +362,7 @@ const data = reactive({
 
   selectedPods: [],
   selectedPod: '',
+  selectedContainers: [],
   selectedContainer: '',
 
   crontab: true,
@@ -417,6 +423,10 @@ const openWindowShell = () => {
 
 const changePod = async (val) => {
   data.selectedPod = val;
+};
+
+const changeContainer = async (val) => {
+  data.selectedContainer = val;
 };
 
 const copyIP = async (val) => {
