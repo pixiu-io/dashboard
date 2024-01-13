@@ -320,7 +320,7 @@
     <div style="margin-top: 20px">
       <el-col>
         <button class="pixiu-two-button" style="width: 85px">编辑YAML</button>
-        <button class="pixiu-two-button" style="margin-left: 10px">复制</button>
+        <button class="pixiu-two-button" style="margin-left: 10px" @click="copyYmal">复制</button>
 
         <div style="margin-left: 8px; float: right; margin-top: 6px">
           <pixiu-icon
@@ -433,6 +433,21 @@ const { toClipboard } = useClipboard();
 const copy = async (val) => {
   try {
     await toClipboard(val.metadata.name);
+    ElMessage({
+      type: 'success',
+      message: '已复制',
+    });
+  } catch (e) {
+    ElMessage({
+      type: 'error',
+      message: e.valueOf().toString(),
+    });
+  }
+};
+
+const copyYmal = async () => {
+  try {
+    await toClipboard(data.yaml);
     ElMessage({
       type: 'success',
       message: '已复制',
