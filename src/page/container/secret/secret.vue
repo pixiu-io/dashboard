@@ -1,12 +1,28 @@
 <template>
   <el-card class="title-card-container">
     <div class="font-container">Secret</div>
+
+    <div
+      style="
+        display: block;
+        font-size: 12px;
+        margin-top: -20px;
+        float: right;
+        color: rgba(0, 0, 0, 0.9);
+        vertical-align: middle;
+      "
+    >
+      操作指南
+      <el-icon style="vertical-align: middle; margin-right: 10px">
+        <component :is="'Edit'" />
+      </el-icon>
+    </div>
   </el-card>
 
   <div style="margin-top: 25px">
     <el-row>
       <el-col>
-        <button class="pixiu-two-button" @click="createConfigMap">新建</button>
+        <button class="pixiu-two-button" @click="createSecret">新建</button>
         <el-input
           v-model="data.pageInfo.query"
           placeholder="名称搜索关键字"
@@ -33,7 +49,7 @@
     <el-card class="box-card">
       <el-table
         v-loading="loading"
-        :data="data.configMapsList"
+        :data="data.secretList"
         stripe
         style="margin-top: 2px; width: 100%"
         header-row-class-name="pixiu-table-header"
@@ -179,7 +195,7 @@ const data = reactive({
   yamlName: '',
   namespace: 'default',
   namespaces: [],
-  configMapsList: [],
+  secretList: [],
   editConfigmapYamlDialog: false,
   isShow: false,
   showTooltip: false, // 控制提示信息的显示状态，默认为隐藏
@@ -196,13 +212,13 @@ const handleCurrentChange = (newPage) => {
   getSecrets();
 };
 
-const createConfigMap = () => {
-  const url = `/kubernetes/configmaps/createConfigMap?cluster=${data.cluster}&namespace=${data.namespace}`;
+const createSecret = () => {
+  const url = `/kubernetes/secrets/createSecret?cluster=${data.cluster}&namespace=${data.namespace}`;
   router.push(url);
 };
 
-const editConfigMap = (row) => {
-  const url = `/kubernetes/configmaps/editConfigMap?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
+const editSecret = (row) => {
+  const url = `/kubernetes/secrets/editSecret?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
   router.push(url);
 };
 
@@ -271,8 +287,8 @@ const getSecrets = async () => {
   });
 
   data.loading = false;
-  data.configMapsList = res.items;
-  data.pageInfo.total = data.configMapsList.length;
+  data.secretList = res.items;
+  data.pageInfo.total = data.secretList.length;
 };
 
 const changeNamespace = async (val) => {
@@ -318,14 +334,14 @@ const confirmEditConfigmapYaml = async () => {
       url:
         `/proxy/pixiu/${data.cloud.cluster}/api/v1/namespaces/` +
         data.configmapForm.metadata.namespace +
-        `/configmaps/` +
+        `/secrets/` +
         data.yamlName,
       data: yaml,
     });
   } catch (error) {}
   data.editConfigmapYamlDialog = false;
   data.yaml = '';
-  proxy.$message.success(`configmap ${data.yamlName} 更新成功`);
+  proxy.$message.success(`secret ${data.yamlName} 更新成功`);
 };
 </script>
 

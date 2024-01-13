@@ -2,7 +2,7 @@
   <el-card class="title-card-container">
     <div class="font-container">
       <el-breadcrumb separator="/">
-        <el-breadcrumb-item @click="backToConfigmap"
+        <el-breadcrumb-item @click="backToSecret"
           ><span style="color: black; cursor: pointer"> ConfigMap </span>
         </el-breadcrumb-item>
         <el-breadcrumb-item style="color: black">{{ data.cluster }}</el-breadcrumb-item>
@@ -190,14 +190,14 @@ const comfirmCreate = () => {
           data: data.configmapForm,
         });
         proxy.$message.success(`configmap ${data.configmapForm.metadata.name} 创建成功`);
-        backToConfigmap();
+        backToSecret();
       } catch (error) {}
     }
   });
 };
 
 const cancelCreate = () => {
-  backToConfigmap();
+  backToSecret();
 };
 
 onMounted(() => {
@@ -229,9 +229,9 @@ const getNamespaceList = async () => {
 };
 
 // 回到 configmap 页面
-const backToConfigmap = () => {
+const backToSecret = () => {
   proxy.$router.push({
-    name: 'ConfigMap',
+    name: 'Secret',
     query: data.query,
   });
 };
