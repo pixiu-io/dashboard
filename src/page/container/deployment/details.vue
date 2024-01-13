@@ -530,6 +530,7 @@ const getDeploymentPods = async () => {
   });
   data.deploymentPods = pods.items;
 
+  data.selectedPods = [];
   for (let item of data.deploymentPods) {
     data.selectedPods.push(item.metadata.name);
   }
