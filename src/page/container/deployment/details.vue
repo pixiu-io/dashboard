@@ -313,7 +313,39 @@
   </div>
 
   <div v-if="data.activeName === 'four'">
-    <el-card class="contend-card-container2">事件</el-card>
+    <el-card class="contend-card-container2">
+      <div class="big-world-style">筛选条件</div>
+
+      <el-form-item
+        label="命令空间"
+        class="deployment-info"
+        style="font-size: 15px; margin-left: 8px"
+      >
+        <span class="deploy-detail-info" style="margin-left: 90px">
+          <el-select
+            v-model="data.namespace"
+            style="width: 230px; float: right; margin-right: 10px"
+          >
+          </el-select>
+        </span>
+      </el-form-item>
+
+      <el-form-item label="类型" class="deployment-info" style="font-size: 15px; margin-left: 8px">
+        <span class="deploy-detail-info" style="margin-left: 120px">
+          <el-select
+            v-model="data.workloadType"
+            style="width: 230px; float: right; margin-right: 10px"
+          >
+          </el-select>
+        </span>
+      </el-form-item>
+      <el-form-item label="名称" class="deployment-info" style="font-size: 15px; margin-left: 8px">
+        <span class="deploy-detail-info" style="margin-left: 120px">
+          <el-select v-model="data.name" style="width: 230px; float: right; margin-right: 10px">
+          </el-select>
+        </span>
+      </el-form-item>
+    </el-card>
   </div>
 
   <div v-if="data.activeName === 'five'">
@@ -389,6 +421,8 @@ const data = reactive({
   cluster: '',
   name: '',
   namespace: '',
+
+  workloadType: 'Deployment',
 
   pageInfo: {
     page: 1,
