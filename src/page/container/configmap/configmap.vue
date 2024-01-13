@@ -76,7 +76,6 @@
           prop="metadata.creationTimestamp"
           label="创建时间"
           sortable
-          width="220px"
           :formatter="formatterTime"
         />
 
