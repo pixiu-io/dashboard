@@ -2,12 +2,12 @@
   <el-card class="title-card-container">
     <div class="font-container">
       <el-breadcrumb separator="/">
-        <el-breadcrumb-item @click="backToConfigmap"
-          ><span style="color: black; cursor: pointer"> ConfigMap </span>
+        <el-breadcrumb-item @click="backToSecret"
+          ><span style="color: black; cursor: pointer"> Secret </span>
         </el-breadcrumb-item>
         <el-breadcrumb-item style="color: black">{{ data.cluster }}</el-breadcrumb-item>
         <el-breadcrumb-item>
-          <span style="color: black"> 新建ConfigMap </span>
+          <span style="color: black"> 新建 Secret </span>
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
@@ -39,34 +39,72 @@
               </div>
             </el-form-item>
 
-            <el-form-item label="命名空间" style="width: 500px; margin-right: 20px">
-              <div class="one-line-style">
-                <el-select
-                  v-model="data.configmapForm.metadata.namespace"
-                  @change="changeNamespace"
-                >
-                  <el-option
-                    v-for="item in data.namespaces"
-                    :key="item"
-                    :value="item"
-                    :label="item"
-                  />
-                </el-select>
-
-                <div style="margin-left: 12px; margin-top: 3px">
-                  <pixiu-icon
-                    name="icon-icon-refresh"
-                    style="cursor: pointer"
-                    size="16px"
-                    type="iconfont"
-                    color="#909399"
-                    @click="getNamespaceList"
-                  />
-                </div>
+            <el-form-item label="Secret类型" style="width: 500px; margin-right: 20px">
+              <div>
+                <el-radio-group v-model="data.secretType">
+                  <el-radio-button label="Opaque" />
+                  <el-radio-button label="TSL证书" />
+                  <el-radio-button label="Dockercfg(镜像仓库访问凭证)" />
+                </el-radio-group>
               </div>
             </el-form-item>
+            <el-form-item label="生效范围" style="margin-top: 20px"></el-form-item>
 
-            <el-divider />
+            <el-form-item style="margin-top: -25px">
+              <el-card
+                style="
+                  width: 90%;
+                  height: 185px;
+                  background-color: #f2f2f2;
+                  margin-top: 20px;
+                  border-radius: 0px;
+                "
+              >
+                <el-radio-group
+                  v-model="secretNameSpace"
+                  size="small"
+                  class="secretNameSpace-class"
+                >
+                  <el-radio label="1">指定命名空间</el-radio>
+                  <el-radio label="2"
+                    >存量所有命名空间 (不包括 kube-system、 kube-public
+                    和后续的增量命名空间)</el-radio
+                  >
+                </el-radio-group>
+                <!--                <div style="float: right; cursor: pointer" @click="deleteContainer(index)">-->
+                <!--                  <el-icon><Delete /></el-icon>-->
+                <!--                </div>-->
+                <!--                <el-col class="deploy-pixiu-column"-->
+                <!--                  >容器名称-->
+                <!--                  <el-input-->
+                <!--                    v-model="item.name"-->
+                <!--                    class="deploy-pixiu-incard"-->
+                <!--                    style="margin-left: 30px"-->
+                <!--                  />-->
+                <!--                </el-col>-->
+
+                <!--                <el-col style="margin-top: 10px" class="deploy-pixiu-column"-->
+                <!--                  >镜像-->
+                <!--                  <el-input-->
+                <!--                    v-model="item.image"-->
+                <!--                    style="margin-left: 56px"-->
+                <!--                    class="deploy-pixiu-incard"-->
+                <!--                  />-->
+                <!--                </el-col>-->
+
+                <!--                <el-col style="margin-top: 10px" class="deploy-pixiu-column"-->
+                <!--                  >拉取策略-->
+                <!--                  <el-radio-group v-model="item.imagePullPolicy" style="margin-left: 30px">-->
+                <!--                    <el-radio label="IfNotPresent" border>IfNotPresent</el-radio>-->
+                <!--                    <el-radio label="Always" border>Always</el-radio>-->
+                <!--                    <el-radio label="Never" border>Never</el-radio>-->
+                <!--                  </el-radio-group>-->
+                <!--                  <div class="container-line-describe">-->
+                <!--                    设置镜像拉取策略，默认使用 IfNotPresent 策略-->
+                <!--                  </div>-->
+                <!--                </el-col>-->
+              </el-card>
+            </el-form-item>
             <el-form-item label="内容" style="margin-top: 10px">
               <!-- <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button> -->
               <div class="configmap-label-title" style="margin-left: 5px">变量名</div>
@@ -133,9 +171,9 @@
 
 <script setup>
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
-import PixiuCard from '@/components/card/index.vue';
 const { proxy } = getCurrentInstance();
 const ruleFormRef = ref();
+const secretNameSpace = ref(1);
 
 const data = reactive({
   loading: false,
@@ -146,7 +184,8 @@ const data = reactive({
   },
 
   configMapLabels: [{ key: null, value: null }],
-
+  secretType: '',
+  secretNameSpace: '',
   // configmap 创建初始对象
   configmapForm: {
     metadata: {
@@ -170,7 +209,7 @@ const data = reactive({
 });
 
 const rules = {
-  'metadata.name': [{ required: true, message: '请输入 ConfigMap 名称', trigger: 'blur' }],
+  'metadata.name': [{ required: true, message: '请输入 Secret 名称', trigger: 'blur' }],
   'item.key': [{ required: true, message: 'key 不能为空', trigger: 'blur' }],
 };
 
@@ -190,14 +229,14 @@ const comfirmCreate = () => {
           data: data.configmapForm,
         });
         proxy.$message.success(`configmap ${data.configmapForm.metadata.name} 创建成功`);
-        backToConfigmap();
+        backToSecret();
       } catch (error) {}
     }
   });
 };
 
 const cancelCreate = () => {
-  backToConfigmap();
+  backToSecret();
 };
 
 onMounted(() => {
@@ -229,9 +268,9 @@ const getNamespaceList = async () => {
 };
 
 // 回到 configmap 页面
-const backToConfigmap = () => {
+const backToSecret = () => {
   proxy.$router.push({
-    name: 'ConfigMap',
+    name: 'Secret',
     query: data.query,
   });
 };
@@ -281,44 +320,9 @@ const deleteLabel = (index) => {
   vertical-align: middle;
 }
 
-.deploy-pixiu-column {
-  font-size: 13px;
-  color: #606266;
-}
-
-.deploy-pixiu-incard {
-  /* width: 323px; */
-  width: 53%;
-}
-
-.container-line-describe {
-  margin-left: 90px;
-  font-size: 12px;
-  color: #888888;
-}
-
-.deployee-class .el-radio {
-  background-color: white;
-  border-radius: 0;
-  margin-right: 0;
-  width: 99px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.deployee-class .el-radio.is-bordered.is-checked {
-  border-color: blue; /* 颜色待定 */
-}
-
-.deployee-class .el-radio__input.is-checked + .el-radio__label {
-  color: blue; /* 颜色待定 */
-}
-
-.deployee-class .el-radio__label {
-  font-size: 13px;
-}
-
-.deployee-class .el-radio__inner {
-  display: none;
+.secretNameSpace-class {
+  margin: 0 auto;
+  width: auto;
+  text-align: left;
 }
 </style>

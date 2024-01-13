@@ -1,11 +1,12 @@
 <template>
   <Codemirror
-    v-model:value="data.code"
+    v-model:value="code"
     :options="data.cmOptions"
     border
     placeholder=""
     :height="720"
     @change="change"
+    style="font-size: 15px; font-family: Tahoma, Verdana, Arial, sans-serif"
   />
 </template>
 
@@ -23,13 +24,22 @@ import 'codemirror/addon/display/placeholder.js';
 // theme
 import 'codemirror/theme/dracula.css';
 
-import { ref, reactive, onMounted, watch } from 'vue';
+import 'codemirror/mode/yaml/yaml.js';
+import 'codemirror/addon/fold/foldcode.js';
+import 'codemirror/addon/fold/foldgutter.css';
+import 'codemirror/addon/fold/indent-fold.js';
+import 'codemirror/addon/fold/brace-fold.js';
+import { ref, reactive, onMounted, watch, defineExpose } from 'vue';
 const code = ref(null);
 const data = reactive({
-  code: '',
   cmOptions: {
     mode: 'yaml', // Language mode
     theme: 'dracula', // Theme
+    readOnly: false,
+    spellcheck: true,
+    foldGutter: true,
+    smartIndent: true, //自动根据上下文缩进
+    gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'], // 添加折叠图标
   },
 });
 const props = defineProps({
@@ -37,15 +47,23 @@ const props = defineProps({
     type: String,
     default: '张三',
   },
+  readOnly: {
+    type: Boolean,
+    default: false,
+  },
 });
 onMounted(() => {
-  data.code = props.yaml.valueOf();
+  code.value = props.yaml.valueOf();
+  data.cmOptions.readOnly = props.readOnly.valueOf();
 });
 
 watch(() => {
-  data.code = props.yaml.valueOf();
+  code.value = props.yaml.valueOf();
+  data.cmOptions.readOnly = props.readOnly.valueOf();
 });
+
 const change = () => {
-  data.code = props.yaml.valueOf();
+  // this.props.yaml = code.value;
 };
+defineExpose({ code });
 </script>
