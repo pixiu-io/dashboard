@@ -3,7 +3,7 @@
     v-model:value="code"
     :options="data.cmOptions"
     placeholder=""
-    :height="680"
+    :height="650"
     @change="change"
     style="font-size: 15px; margin-top: 2px; font-family: Tahoma, Verdana, Arial, sans-serif"
   />
