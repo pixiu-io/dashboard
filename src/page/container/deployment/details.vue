@@ -264,11 +264,11 @@
       >
         <span class="deploy-detail-info" style="margin-left: 90px">
           <el-select
-            v-model="data.selectedContainer"
+            v-model="data.logLine"
             style="width: 230px; float: right; margin-right: 10px"
-            @change="changeContainer"
+            @change="changeLogLine"
           >
-            <el-option v-for="item in data.selectedPods" :key="item" :value="item" :label="item" />
+            <el-option v-for="item in data.logLines" :key="item" :value="item" :label="item" />
           </el-select>
         </span>
       </el-form-item>
@@ -358,7 +358,6 @@ const data = reactive({
   activeName: 'second',
 
   drawer: false,
-  podLog: '',
 
   selectedPods: [],
   selectedPod: '',
@@ -368,6 +367,11 @@ const data = reactive({
   crontab: true,
   autoRefresh: true,
   previous: false,
+
+  logLine: '100行日志',
+  logLines: ['50行日志', '100行日志', '200行日志', '500行日志'],
+  selectedLog: 100,
+  podLog: '',
 });
 
 onMounted(async () => {
@@ -427,6 +431,21 @@ const changePod = async (val) => {
 
 const changeContainer = async (val) => {
   data.selectedContainer = val;
+};
+
+const changeLogLine = async (val) => {
+  if (val === '50行日志') {
+    data.selectedLog = 50;
+  }
+  if (val === '100行日志') {
+    data.selectedLog = 100;
+  }
+  if (val === '200行日志') {
+    data.selectedLog = 200;
+  }
+  if (val === '500行日志') {
+    data.selectedLog = 500;
+  }
 };
 
 const copyIP = async (val) => {
