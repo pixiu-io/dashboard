@@ -38,7 +38,11 @@
         <!-- <el-table-column type="selection" width="30" /> -->
         <el-table-column prop="metadata.name" sortable label="名称" width="auto">
           <template #default="scope">
-            <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
+            <el-link
+              class="global-table-world"
+              type="primary"
+              @click="jumpNamespaceRoute(scope.row)"
+            >
               {{ scope.row.metadata.name }}
             </el-link>
 
@@ -181,6 +185,16 @@ const getNamespace = async () => {
 
   data.namespaceList = result.items;
   data.pageInfo.total = data.namespaceList.length;
+};
+
+const jumpNamespaceRoute = (row) => {
+  router.push({
+    name: 'NamespaceDetail',
+    query: {
+      cluster: data.cluster,
+      name: row.metadata.name,
+    },
+  });
 };
 
 const deleteNamespace = (row) => {
