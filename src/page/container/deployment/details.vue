@@ -236,7 +236,12 @@
             style="width: 230px; float: right; margin-right: 10px"
             @change="changeContainer"
           >
-            <el-option v-for="item in data.selectedPods" :key="item" :value="item" :label="item" />
+            <el-option
+              v-for="item in data.selectedContainers"
+              :key="item"
+              :value="item"
+              :label="item"
+            />
           </el-select>
         </span>
 
@@ -247,7 +252,7 @@
             size="16px"
             type="iconfont"
             color="#909399"
-            @click="getNamespaceList"
+            @click="getDeploymentPods"
           />
         </div>
       </el-form-item>
@@ -259,11 +264,11 @@
       >
         <span class="deploy-detail-info" style="margin-left: 90px">
           <el-select
-            v-model="data.selectedContainer"
+            v-model="data.logLine"
             style="width: 230px; float: right; margin-right: 10px"
-            @change="changeContainer"
+            @change="changeLogLine"
           >
-            <el-option v-for="item in data.selectedPods" :key="item" :value="item" :label="item" />
+            <el-option v-for="item in data.logLines" :key="item" :value="item" :label="item" />
           </el-select>
         </span>
       </el-form-item>
@@ -276,11 +281,34 @@
       </div>
     </el-card>
 
-    <div style="float: right">
+    <div style="float: right; margin-top: 8px">
       <el-switch v-model="data.autoRefresh" inline-prompt width="36px" /><span
         style="font-size: 13px; margin-left: 5px; margin-right: 10px"
         >自动刷新</span
       >
+      <pixiu-icon
+        name="icon-icon-refresh"
+        style="cursor: pointer"
+        size="16px"
+        type="iconfont"
+        color="#909399"
+        @click="getPodLog"
+      />
+    </div>
+
+    <div style="margin-top: 48px">
+      <el-card class="contend-card-container2">
+        <div style="background-color: #29232b; color: white; min-height: 460px">
+          <div style="margin-left: 20px">
+            <div v-if="data.podLogs.length === 0" style="font-size: 14px">暂无日志</div>
+            <div v-else>
+              <div style="font-size: 14px" v-for="(item, index) in data.podLogs" :key="item">
+                {{ index + 1 }} <span style="margin-left: 18px"></span> {{ item }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </el-card>
     </div>
   </div>
 
@@ -352,16 +380,20 @@ const data = reactive({
 
   activeName: 'second',
 
-  drawer: false,
-  podLog: '',
-
   selectedPods: [],
   selectedPod: '',
+  selectedContainers: [],
   selectedContainer: '',
+  selectedPodMap: {},
 
   crontab: true,
   autoRefresh: true,
   previous: false,
+
+  logLine: '100行日志',
+  logLines: ['50行日志', '100行日志', '200行日志', '500行日志'],
+  selectedLog: 100,
+  podLogs: [],
 });
 
 onMounted(async () => {
@@ -417,6 +449,30 @@ const openWindowShell = () => {
 
 const changePod = async (val) => {
   data.selectedPod = val;
+  data.selectedContainers = data.selectedPodMap[data.selectedPod];
+
+  if (data.selectedContainers.length > 0) {
+    data.selectedContainer = data.selectedContainers[0];
+  }
+};
+
+const changeContainer = async (val) => {
+  data.selectedContainer = val;
+};
+
+const changeLogLine = async (val) => {
+  if (val === '50行日志') {
+    data.selectedLog = 50;
+  }
+  if (val === '100行日志') {
+    data.selectedLog = 100;
+  }
+  if (val === '200行日志') {
+    data.selectedLog = 200;
+  }
+  if (val === '500行日志') {
+    data.selectedLog = 500;
+  }
 };
 
 const copyIP = async (val) => {
@@ -451,16 +507,19 @@ const deletePod = async (row) => {
   await getDeploymentPods();
 };
 
-const getPodLog = async (row) => {
-  const containers = row.spec.containers;
+const getPodLog = async () => {
+  // 在指定 pod 和容器的情况下，才请求log
+  if (data.selectedPod === '' || data.selectedContainer === '') {
+    return;
+  }
+
   const log = await proxy.$http({
     method: 'get',
-    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${row.metadata.namespace}/pods/${row.metadata.name}/log`,
-    data: { container: containers[0].name },
+    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${data.selectedPod}/log`,
+    data: { container: data.selectedContainer },
   });
 
-  data.drawer = true;
-  data.podLog = log;
+  data.podLogs = log.split('\n');
 };
 
 const getDeploymentPods = async () => {
@@ -480,11 +539,25 @@ const getDeploymentPods = async () => {
   });
   data.deploymentPods = pods.items;
 
+  data.selectedPods = [];
+  data.selectedContainers = [];
+  data.selectedPodMap = {};
   for (let item of data.deploymentPods) {
+    let cs = [];
+    for (let c of item.spec.containers) {
+      cs.push(c.name);
+    }
+
+    data.selectedPodMap[item.metadata.name] = cs;
     data.selectedPods.push(item.metadata.name);
   }
   if (data.selectedPods.length > 0) {
     data.selectedPod = data.selectedPods[0];
+
+    data.selectedContainers = data.selectedPodMap[data.selectedPod];
+    if (data.selectedContainers.length > 0) {
+      data.selectedContainer = data.selectedContainers[0];
+    }
   }
 };
 
