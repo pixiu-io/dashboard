@@ -297,7 +297,11 @@
     </div>
 
     <div style="margin-top: 48px">
-      <el-card class="contend-card-container2" style="height: 480px"> </el-card>
+      <el-card class="contend-card-container2" style="height: 480px">
+        <div style="background-color: #29232b; color: white; height: 440px">
+          <div style="margin-left: 20px">暂无日志</div>
+        </div>
+      </el-card>
     </div>
   </div>
 
@@ -368,8 +372,6 @@ const data = reactive({
   deploymentEvents: [],
 
   activeName: 'second',
-
-  drawer: false,
 
   selectedPods: [],
   selectedPod: '',
@@ -492,15 +494,13 @@ const deletePod = async (row) => {
   await getDeploymentPods();
 };
 
-const getPodLog = async (row) => {
-  const containers = row.spec.containers;
+const getPodLog = async () => {
   const log = await proxy.$http({
     method: 'get',
-    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${row.metadata.namespace}/pods/${row.metadata.name}/log`,
-    data: { container: containers[0].name },
+    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${data.selectedPod}/log`,
+    data: { container: 'nginx' },
   });
 
-  data.drawer = true;
   data.podLog = log;
 };
 
