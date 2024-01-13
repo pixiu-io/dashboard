@@ -317,7 +317,14 @@
   </div>
 
   <div v-if="data.activeName === 'five'">
-    <el-card class="contend-card-container2">YAML</el-card>
+    <div style="margin-top: 20px">
+      <el-col>
+        <button class="pixiu-two-button" style="width: 85px">编辑YAML</button>
+        <button class="pixiu-two-button" style="margin-left: 10px">复制</button>
+      </el-col>
+    </div>
+
+    <el-card class="contend-card-container2"> </el-card>
   </div>
 
   <el-dialog v-model="showDialog" width="300" title="选择要链接的容器">
