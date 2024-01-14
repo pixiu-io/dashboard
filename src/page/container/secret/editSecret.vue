@@ -15,9 +15,22 @@
     <el-main>
       <div class="app-pixiu-content-card">
         <el-card style="margin-top: 8px; width: 100%; border-radius: 0px">
-          <el-form>
+          <el-form
+            ref="ruleFormRef"
+            label-position="left"
+            require-asterisk-position="right"
+            label-width="100px"
+            :rules="rules"
+            status-icon
+            :model="data.configmapForm"
+            style="margin-left: 3%; width: 80%"
+          >
             <el-form-item label="基本信息" style="margin-top: 20px">
-              <el-form style="margin-top: 20px; margin-left: -70px">
+              <el-form
+                label-position="left"
+                require-asterisk-position="right"
+                style="margin-top: 20px; margin-left: -100px"
+              >
                 <el-form-item
                   class="configmap-info"
                   label="所在地域"
