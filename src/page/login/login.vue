@@ -104,6 +104,7 @@ const isButtonActive = computed(() => {
 .login-container {
   box-sizing: border-box;
   background: #fff;
+  margin-top: 50px;
   margin-left: 80px;
   transition: box-shadow 0.2s;
 }
@@ -159,8 +160,9 @@ const isButtonActive = computed(() => {
 .forget-button {
   font-size: 15px;
   color: #007cbb;
-  margin-top: -23px;
-  margin-left: 100px;
+  margin-top: -24px;
+  margin-right: -30px;
+  margin-left: 160px;
 }
 
 .checkbox {
@@ -169,7 +171,7 @@ const isButtonActive = computed(() => {
 }
 
 .login-button {
-  width: 105%;
+  width: 100%;
   margin-top: -50px;
   height: 35px;
   background: #e7eaea;
@@ -218,8 +220,8 @@ const isButtonActive = computed(() => {
 
 .more {
   position: absolute;
-  bottom: -10px;
-  right: 20px;
+  bottom: -15px;
+  right: -5px;
   color: #007cbb;
   font-size: 13px;
 }
