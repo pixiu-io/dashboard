@@ -272,7 +272,6 @@ const getSecret = async () => {
   data.secretType = res.type;
   if (res.type === 'kubernetes.io/dockercfg') {
     data.dockerRegister = JSON.parse(atob(res.data['.dockercfg']));
-    console.log(data.dockerRegister);
   }
 
   data.secretLabels = Object.entries(res.data).map(([key, value]) => ({ key, value }));

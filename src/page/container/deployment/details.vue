@@ -713,9 +713,7 @@ const getDeploymentEvents = async () => {
   data.deploymentEvents = events;
 };
 
-const deleteEvent = async () => {
-  console.log('delete event');
-};
+const deleteEvent = async () => {};
 
 const formatterStatus = (row, column, cellValue) => {
   let phase = cellValue.phase;
