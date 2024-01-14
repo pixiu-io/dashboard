@@ -7,7 +7,7 @@
         </el-breadcrumb-item>
         <el-breadcrumb-item style="color: black">{{ data.cluster }}</el-breadcrumb-item>
         <el-breadcrumb-item>
-          <span style="color: black"> 新建 Secret </span>
+          <span style="color: black"> 新建Secret </span>
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
