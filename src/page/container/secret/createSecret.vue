@@ -33,24 +33,27 @@
             <div style="margin-top: 20px" />
 
             <el-form-item label="名称" prop="metadata.name" style="width: 80%">
-              <el-input v-model="data.configmapForm.metadata.name" style="width: 40%" />
-              <div class="app-pixiu-line-describe2">
+              <el-input
+                v-model="data.configmapForm.metadata.name"
+                style="width: 40%; margin-left: 20px"
+              />
+              <div class="app-pixiu-line-describe2" style="margin-left: 20px">
                 最长63个字符，只能包含小写字母、数字及分隔符("-"),且必须以小写字母开头，数字或小写字母结尾
               </div>
             </el-form-item>
 
             <el-form-item label="Secret类型" style="width: 500px; margin-right: 20px">
-              <div>
+              <div style="margin-left: 20px">
                 <el-radio-group v-model="data.secretType">
                   <el-radio-button label="Opaque" />
                   <el-radio-button label="TSL证书" />
-                  <el-radio-button label="Dockercfg(镜像仓库访问凭证)" />
+                  <el-radio-button label="镜像仓库访问凭证" />
                 </el-radio-group>
               </div>
             </el-form-item>
-            <el-form-item label="生效范围" style="margin-top: 20px"></el-form-item>
+            <!-- <el-form-item label="生效范围" style="margin-top: 20px"></el-form-item> -->
 
-            <el-form-item style="margin-top: -25px">
+            <!-- <el-form-item style="margin-top: -25px">
               <el-card
                 style="
                   width: 90%;
@@ -71,90 +74,95 @@
                     和后续的增量命名空间)</el-radio
                   >
                 </el-radio-group>
-                <!--                <div style="float: right; cursor: pointer" @click="deleteContainer(index)">-->
-                <!--                  <el-icon><Delete /></el-icon>-->
-                <!--                </div>-->
-                <!--                <el-col class="deploy-pixiu-column"-->
-                <!--                  >容器名称-->
-                <!--                  <el-input-->
-                <!--                    v-model="item.name"-->
-                <!--                    class="deploy-pixiu-incard"-->
-                <!--                    style="margin-left: 30px"-->
-                <!--                  />-->
-                <!--                </el-col>-->
-
-                <!--                <el-col style="margin-top: 10px" class="deploy-pixiu-column"-->
-                <!--                  >镜像-->
-                <!--                  <el-input-->
-                <!--                    v-model="item.image"-->
-                <!--                    style="margin-left: 56px"-->
-                <!--                    class="deploy-pixiu-incard"-->
-                <!--                  />-->
-                <!--                </el-col>-->
-
-                <!--                <el-col style="margin-top: 10px" class="deploy-pixiu-column"-->
-                <!--                  >拉取策略-->
-                <!--                  <el-radio-group v-model="item.imagePullPolicy" style="margin-left: 30px">-->
-                <!--                    <el-radio label="IfNotPresent" border>IfNotPresent</el-radio>-->
-                <!--                    <el-radio label="Always" border>Always</el-radio>-->
-                <!--                    <el-radio label="Never" border>Never</el-radio>-->
-                <!--                  </el-radio-group>-->
-                <!--                  <div class="container-line-describe">-->
-                <!--                    设置镜像拉取策略，默认使用 IfNotPresent 策略-->
-                <!--                  </div>-->
-                <!--                </el-col>-->
               </el-card>
-            </el-form-item>
-            <el-form-item label="内容" style="margin-top: 10px">
-              <!-- <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button> -->
-              <div class="configmap-label-title" style="margin-left: 5px">变量名</div>
-              <div class="configmap-label-title" style="margin-left: 305px">变量值</div>
-              <el-divider />
-            </el-form-item>
+            </el-form-item> -->
 
-            <el-form-item
-              v-for="(item, index) in data.configMapLabels"
-              :key="index"
-              prop="item.key"
-              style="margin-top: -20px"
-            >
-              <div>
-                <el-input v-model="item.key" placeholder="变量名" style="width: 300px" />
-              </div>
-              <div style="margin-right: 8px; margin-left: 8px"></div>
-              =
-              <div>
+            <div v-if="data.secretType === '镜像仓库访问凭证'">
+              <el-form-item label="镜像仓库域名" prop="dockerRegister.domain" style="width: 80%">
                 <el-input
-                  v-model="item.value"
-                  placeholder="请输入变量值"
-                  autosize
-                  type="textarea"
-                  style="width: 350px; margin-left: 20px"
+                  v-model="data.dockerRegister.domain"
+                  style="width: 30%; margin-left: 20px"
                 />
-              </div>
-              <div
-                style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
-                @click="deleteLabel(index)"
+              </el-form-item>
+
+              <el-form-item label="用户名" prop="dockerRegister.userName" style="width: 80%">
+                <el-input
+                  v-model="data.dockerRegister.userName"
+                  style="width: 30%; margin-left: 20px"
+                />
+              </el-form-item>
+
+              <el-form-item label="密码" prop="dockerRegister.password" style="width: 80%">
+                <el-input
+                  v-model="data.dockerRegister.password"
+                  style="width: 30%; margin-left: 20px"
+                />
+              </el-form-item>
+
+              <el-form-item
+                label="密码确认"
+                prop="dockerRegister.confirmPassword"
+                style="width: 80%"
               >
-                <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
-              </div>
-              <el-divider />
-            </el-form-item>
-            <div class="app-pixiu-line-describe4">
-              只能包含字母、数字及分隔符"."; 变量名为空时，在变量名称中粘贴一行或多行 key=value key:
-              value 的键值对可以实现快速批量输入
+                <el-input
+                  v-model="data.dockerRegister.confirmPassword"
+                  style="width: 30%; margin-left: 20px"
+                />
+              </el-form-item>
             </div>
-            <el-form-item>
-              <el-button
-                class="table-inline-btn"
-                style="margin-left: -14px; margin-right: -20px; margin-top: 15px"
-                @click="addLabel"
-                >手动增加</el-button
+
+            <div v-else>
+              <el-form-item label="内容" style="margin-top: 10px">
+                <div class="configmap-label-title" style="margin-left: 5px">变量名</div>
+                <div class="configmap-label-title" style="margin-left: 305px">变量值</div>
+                <el-divider />
+              </el-form-item>
+
+              <el-form-item
+                v-for="(item, index) in data.configMapLabels"
+                :key="index"
+                prop="item.key"
+                style="margin-top: -20px"
               >
-              <el-button class="table-inline-btn" style="margin-top: 15px" @click="addLabel"
-                >文件导入</el-button
-              >
-            </el-form-item>
+                <div>
+                  <el-input v-model="item.key" placeholder="变量名" style="width: 300px" />
+                </div>
+                <div style="margin-right: 8px; margin-left: 8px"></div>
+                =
+                <div>
+                  <el-input
+                    v-model="item.value"
+                    placeholder="请输入变量值"
+                    autosize
+                    type="textarea"
+                    style="width: 350px; margin-left: 20px"
+                  />
+                </div>
+                <div
+                  style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
+                  @click="deleteLabel(index)"
+                >
+                  <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
+                </div>
+                <el-divider />
+              </el-form-item>
+              <div class="app-pixiu-line-describe4">
+                只能包含字母、数字及分隔符"."; 变量名为空时，在变量名称中粘贴一行或多行 key=value
+                key: value 的键值对可以实现快速批量输入
+              </div>
+              <el-form-item>
+                <el-button
+                  class="table-inline-btn"
+                  style="margin-left: -14px; margin-right: -20px; margin-top: 15px"
+                  @click="addLabel"
+                  >手动增加</el-button
+                >
+                <el-button class="table-inline-btn" style="margin-top: 15px" @click="addLabel"
+                  >文件导入</el-button
+                >
+              </el-form-item>
+            </div>
+
             <div style="margin-top: 30px" />
             <el-form-item style="margin-left: 30%">
               <el-button class="pixiu-cancel-button" @click="cancelCreate()">取消</el-button>
@@ -206,11 +214,26 @@ const data = reactive({
     value: '',
     target: 0,
   },
+  dockerRegister: {
+    domain: '',
+    userName: '',
+    password: '',
+    confirmPassword: '',
+  },
 });
 
 const rules = {
   'metadata.name': [{ required: true, message: '请输入 Secret 名称', trigger: 'blur' }],
   'item.key': [{ required: true, message: 'key 不能为空', trigger: 'blur' }],
+};
+
+const dockerRegisterRules = {
+  'dockerRegister.domain': [{ required: true, message: '请输入镜像仓库域名', trigger: 'blur' }],
+  'dockerRegister.userName': [{ required: true, message: '请输入镜像仓库用户名', trigger: 'blur' }],
+  'dockerRegister.password': [{ required: true, message: '请输入镜像仓库密码', trigger: 'blur' }],
+  'dockerRegister.confirmPassword': [
+    { required: true, message: '请输入确认密码', trigger: 'blur' },
+  ],
 };
 
 const comfirmCreate = () => {
