@@ -184,7 +184,7 @@ const data = reactive({
   },
 
   configMapLabels: [{ key: null, value: null }],
-  secretType: '',
+  secretType: 'Opaque',
   secretNameSpace: '',
   // configmap 创建初始对象
   configmapForm: {
