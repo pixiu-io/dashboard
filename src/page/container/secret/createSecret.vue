@@ -61,7 +61,7 @@
                   width: 60%;
                 "
               >
-                <div>ddddddd</div>
+                <div>ddd</div>
               </el-card>
             </el-form-item>
 
@@ -167,10 +167,10 @@
 
 <script setup>
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
+
 const { proxy } = getCurrentInstance();
 const ruleFormRef = ref();
 const secretNameSpace = ref(1);
-
 const data = reactive({
   loading: false,
   cluster: '',
