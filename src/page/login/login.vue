@@ -40,7 +40,7 @@
             </el-input>
           </el-form-item>
         </el-form>
-        <div style="display: grid; grid-template-columns: 1fr 1fr">
+        <div class="remember-and-forget">
           <div>
             <el-checkbox class="checkbox" label="记住我" size="large" />
           </div>
@@ -53,6 +53,7 @@
         <div class="button-group">
           <el-button
             class="login-button"
+            :class="{ 'button-active': isButtonActive }"
             size="large"
             :loading="loginStore.loading"
             @click="loginStore.loginFn"
@@ -67,29 +68,39 @@
         </div>
       </div>
     </div>
+    <div class="right-background"></div>
   </div>
 </template>
 
 <script setup>
 import useLoginStore from '@/stores/useLogin';
+import { computed } from 'vue';
 const loginStore = useLoginStore();
+
+const isButtonActive = computed(() => {
+  return loginStore.loginInfo.name && loginStore.loginInfo.password;
+});
 </script>
 
 <style scoped>
 /* 有用 */
 .login-page {
-  display: flex;
+  display: grid;
+  grid-template-columns: 35% 65%;
   width: 100%;
+  align-items: center;
   height: 100%;
 }
 
+.right-background {
+  height: 100%;
+  background-image: url('data:image/svg+xml;charset=utf8,%3C%3Fxml version%3D"1.0" encoding%3D"UTF-8" standalone%3D"no"%3F%3E%3Csvg width%3D"736px" height%3D"838px" viewBox%3D"0 0 736 838" version%3D"1.1" xmlns%3D"http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg" xmlns%3Axlink%3D"http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink"%3E%3Ctitle%3Evector art%3C%2Ftitle%3E%3Cdesc%3ECreated with Sketch.%3C%2Fdesc%3E%3Cdefs%3E%3C%2Fdefs%3E%3Cg id%3D"symbols" stroke%3D"none" stroke-width%3D"1" fill%3D"none" fill-rule%3D"evenodd"%3E%3Cg id%3D"Login" transform%3D"translate(-504.000000%2C 0.000000)"%3E%3Cg id%3D"replaceable-image" transform%3D"translate(504.000000%2C 0.000000)"%3E%3Cg id%3D"vector-art" transform%3D"translate(-78.000000%2C -82.000000)"%3E%3Crect id%3D"Rectangle-path" fill%3D"%2322343E" x%3D"0" y%3D"0.38" width%3D"1127.55" height%3D"921.62"%3E%3C%2Frect%3E%3Cpolygon id%3D"Shape" fill%3D"%232F657B" points%3D"0 3.06 0 599.24 298.14 301.43"%3E%3C%2Fpolygon%3E%3Cpolygon id%3D"Shape" fill%3D"%23438597" points%3D"0 408.65 0 599.24 95.29 504.06"%3E%3C%2Fpolygon%3E%3Cpolygon id%3D"Shape" fill%3D"%232F657B" points%3D"918.21 921.95 818.63 822.3 718.89 921.95"%3E%3C%2Fpolygon%3E%3Cpolygon id%3D"Shape" fill%3D"%233B758E" points%3D"818.63 822.3 298.14 301.43 0 599.24 0 655.02 266.51 921.95 718.89 921.95"%3E%3C%2Fpolygon%3E%3Cpolygon id%3D"Shape" fill%3D"%23579EB2" points%3D"512.67 921.95 95.29 504.06 0 599.24 0 654.97 267.06 921.95"%3E%3C%2Fpolygon%3E%3Cpolygon id%3D"Shape" fill%3D"%23344B57" points%3D"266.51 921.95 0 655.02 0 921.95"%3E%3C%2Fpolygon%3E%3Cpolygon id%3D"Shape" fill%3D"%23A7C9D5" points%3D"1128 0 799.58 0 1128 329.83"%3E%3C%2Fpolygon%3E%3Cpolygon id%3D"Shape" fill%3D"%23344B57" points%3D"1128 329.83 799.58 0 599.9 0 298.14 301.43 818.63 822.3 1128 513.18"%3E%3C%2Fpolygon%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E');
+}
+
 .login-container {
-  width: 500px;
-  height: 380px;
   box-sizing: border-box;
   background: #fff;
   margin-left: 80px;
-  margin-top: 230px;
   transition: box-shadow 0.2s;
 }
 
@@ -97,6 +108,7 @@ const loginStore = useLoginStore();
   height: 80%;
   width: 80%;
   display: flex;
+  position: relative;
   flex-direction: column;
   justify-content: space-between;
   align-items: flex-start;
@@ -154,6 +166,7 @@ const loginStore = useLoginStore();
 
 .login-button {
   width: 105%;
+  margin-top: -50px;
   height: 35px;
   background: #e7eaea;
   color: #ccc;
@@ -182,14 +195,27 @@ const loginStore = useLoginStore();
 }
 
 .txt-container {
-  margin-top: 125px;
   height: 100px;
   font-size: 35px;
 }
 
+.remember-and-forget {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: absolute;
+  right: 10px;
+  top: 80px;
+}
+
 .more {
-  margin-left: 335px;
-  font-size: 13px;
+  position: absolute;
+  bottom: -10px;
+  right: 20px;
   color: #007cbb;
+  font-size: 13px;
+}
+
+.button-active {
+  background-color: #007cbb;
 }
 </style>
