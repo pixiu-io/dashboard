@@ -139,7 +139,7 @@
       <div style="text-align: left; font-weight: bold; padding-left: 5px">编辑yaml</div>
     </template>
     <div style="margin-top: -18px"></div>
-    <MyCodeMirror ref="editYaml" :yaml="data.yaml"></MyCodeMirror>
+    <MyCodeMirror ref="editYaml" :yaml="data.yaml" :height="620"></MyCodeMirror>
     <template #footer>
       <span class="dialog-footer">
         <el-button class="pixiu-small-cancel-button" @click="closeEditConfigmapYamlDialog"
