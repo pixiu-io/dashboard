@@ -1,5 +1,9 @@
 <template>
-  <div class="header"></div>
+  <el-card class="login-page-header">
+    <div style="color: #e0e6ed; margin-left: 8px; font-size: 18px; margin-top: -8px">
+      Pixiu Cloud
+    </div>
+  </el-card>
   <div class="login-page">
     <div class="login-container">
       <div class="txt-container">Pixiu</div>
@@ -188,9 +192,14 @@ const isButtonActive = computed(() => {
   width: 160%;
   height: 30px;
 }
-.header {
+.login-page-header {
   width: 100%;
-  height: 60px;
+  height: 55px;
+  border-radius: 0px;
+  margin-top: -1px;
+  margin-bottom: -1px;
+  margin-left: -1px;
+  margin-right: -1px;
   background-color: rgb(0, 74, 112);
 }
 
