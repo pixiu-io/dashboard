@@ -47,7 +47,10 @@
         </el-form-item>
         <el-form-item label="状态" class="namespace-info">
           <span class="namespace-detail-info" style="margin-left: 90px">
-            {{ data.namespace.status.phase }}
+            <div v-if="data.namespace.status.phase === 'Active'" class="color-green-word">
+              {{ data.namespace.status.phase }}
+            </div>
+            <div v-else class="color-red-word">{{ data.namespace.status.phase }}</div>
           </span>
         </el-form-item>
         <el-form-item label="描述" class="namespace-info">
