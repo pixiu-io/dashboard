@@ -9,7 +9,6 @@
         margin-top: -20px;
         float: right;
         color: rgba(0, 0, 0, 0.9);
-        vertical-align: middle;
       "
     >
       操作指南1
@@ -92,7 +91,6 @@
           prop="metadata.creationTimestamp"
           label="创建时间"
           sortable
-          width="220px"
           :formatter="formatterTime"
         />
 
@@ -156,7 +154,8 @@
       <div style="text-align: left; font-weight: bold; padding-left: 5px">编辑yaml</div>
     </template>
     <div style="margin-top: -18px"></div>
-    <MyCodeMirror :yaml="data.yaml"></MyCodeMirror>
+    <MyCodeMirror :yaml="data.yaml" :height="560"></MyCodeMirror>
+
     <template #footer>
       <span class="dialog-footer">
         <el-button class="pixiu-small-cancel-button" @click="closeEditConfigmapYamlDialog"
@@ -172,16 +171,18 @@
     </template>
   </el-dialog>
 </template>
+
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import { formatTimestamp } from '@/utils/utils';
-const { proxy } = getCurrentInstance();
-const router = useRouter();
 import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
+
+const { proxy } = getCurrentInstance();
+const router = useRouter();
 const data = reactive({
   cluster: '',
   pageInfo: {
@@ -223,7 +224,7 @@ const editSecret = (row) => {
 };
 
 const deleteConfigMap = (row) => {
-  ElMessageBox.confirm('此操作将永久删除 ConfigMap ' + row.metadata.name + ' . 是否继续?', '提示', {
+  ElMessageBox.confirm('此操作将永久删除 Secret ' + row.metadata.name + ' . 是否继续?', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning',
