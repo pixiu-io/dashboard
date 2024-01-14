@@ -39,25 +39,26 @@
   <div v-if="data.activeName === 'first'">
     <el-card class="contend-card-container2">
       <div class="big-world-style" style="margin-bottom: 20px">基本信息</div>
-
-      <el-form-item label="名称" class="namespace-info">
-        <span class="namespace-detail-info" style="margin-left: 90px">
-          {{ data.namespace.metadata.name }}
-        </span>
-      </el-form-item>
-      <el-form-item label="状态" class="namespace-info">
-        <span class="namespace-detail-info" style="margin-left: 90px">
-          {{ data.namespace.status.phase }}
-        </span>
-      </el-form-item>
-      <el-form-item label="描述" class="namespace-info">
-        <span class="namespace-detail-info" style="margin-left: 90px"> - </span>
-      </el-form-item>
-      <el-form-item label="创建时间" class="namespace-info">
-        <span class="namespace-detail-info" style="margin-left: 65px">
-          {{ data.namespace.metadata.creationTimestamp }}
-        </span>
-      </el-form-item>
+      <div v-if="data.namespace.metadata" style="margin-top: 8px; width: 100%; border-radius: 0px">
+        <el-form-item label="名称" class="namespace-info">
+          <span class="namespace-detail-info" style="margin-left: 90px">
+            {{ data.namespace.metadata.name }}
+          </span>
+        </el-form-item>
+        <el-form-item label="状态" class="namespace-info">
+          <span class="namespace-detail-info" style="margin-left: 90px">
+            {{ data.namespace.status.phase }}
+          </span>
+        </el-form-item>
+        <el-form-item label="描述" class="namespace-info">
+          <span class="namespace-detail-info" style="margin-left: 90px"> - </span>
+        </el-form-item>
+        <el-form-item label="创建时间" class="namespace-info">
+          <span class="namespace-detail-info" style="margin-left: 65px">
+            {{ data.namespace.metadata.creationTimestamp }}
+          </span>
+        </el-form-item>
+      </div>
     </el-card>
   </div>
 
@@ -113,7 +114,7 @@ const data = reactive({
 
   namespace: '',
 
-  activeName: 'second',
+  activeName: 'first',
 
   yaml: '',
   yamlName: '',
