@@ -131,7 +131,7 @@ const isButtonActive = computed(() => {
   height: 30px;
   line-height: 30px;
   padding: 0 20px;
-  border: 1px solid #ece5e3;
+  border: 1px solid #006eff;
   border-bottom: none;
   /* margin-bottom: -1px; */
 }
@@ -139,9 +139,9 @@ const isButtonActive = computed(() => {
 /* 有用 */
 .u-tabs_item_3_DeFFee[selected] {
   background: #fff;
-  color: #508ae2;
+  color: #006eff;
   border-color: #e0e6ed;
-  border-top: 2px solid #508ae2;
+  border-top: 2px solid #006eff;
 }
 
 .button-group {
@@ -158,8 +158,8 @@ const isButtonActive = computed(() => {
 }
 
 .forget-button {
-  font-size: 15px;
-  color: #007cbb;
+  font-size: 14px;
+  color: #006eff;
   margin-top: -24px;
   margin-right: -30px;
   margin-left: 160px;
@@ -167,7 +167,7 @@ const isButtonActive = computed(() => {
 
 .checkbox {
   margin-top: 5px;
-  color: #007cbb;
+  color: #006eff;
 }
 
 .login-button {
@@ -222,11 +222,11 @@ const isButtonActive = computed(() => {
   position: absolute;
   bottom: -15px;
   right: -5px;
-  color: #007cbb;
+  color: #006eff;
   font-size: 13px;
 }
 
 .button-active {
-  background-color: #007cbb;
+  background-color: #006eff;
 }
 </style>
