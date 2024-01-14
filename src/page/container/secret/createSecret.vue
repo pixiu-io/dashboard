@@ -51,31 +51,19 @@
                 </el-radio-group>
               </div>
             </el-form-item>
-            <!-- <el-form-item label="生效范围" style="margin-top: 20px"></el-form-item> -->
-
-            <!-- <el-form-item style="margin-top: -25px">
+            <el-form-item label="适用范围">
               <el-card
                 style="
-                  width: 90%;
-                  height: 185px;
+                  margin-top: 10px;
+                  margin-left: 20px;
                   background-color: #f2f2f2;
-                  margin-top: 20px;
                   border-radius: 0px;
+                  width: 60%;
                 "
               >
-                <el-radio-group
-                  v-model="secretNameSpace"
-                  size="small"
-                  class="secretNameSpace-class"
-                >
-                  <el-radio label="1">指定命名空间</el-radio>
-                  <el-radio label="2"
-                    >存量所有命名空间 (不包括 kube-system、 kube-public
-                    和后续的增量命名空间)</el-radio
-                  >
-                </el-radio-group>
+                <div>ddddddd</div>
               </el-card>
-            </el-form-item> -->
+            </el-form-item>
 
             <div v-if="data.secretType === '镜像仓库访问凭证'">
               <el-form-item label="镜像仓库域名" prop="dockerRegister.domain" style="width: 80%">
