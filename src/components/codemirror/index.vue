@@ -4,8 +4,8 @@
     :options="data.cmOptions"
     placeholder=""
     :height="data.height"
-    @change="change"
     style="font-size: 15px; margin-top: 2px; font-family: Tahoma, Verdana, Arial, sans-serif"
+    @change="change"
   />
 </template>
 
@@ -28,7 +28,7 @@ import 'codemirror/addon/fold/foldcode.js';
 import 'codemirror/addon/fold/foldgutter.css';
 import 'codemirror/addon/fold/indent-fold.js';
 import 'codemirror/addon/fold/brace-fold.js';
-import { ref, reactive, onMounted, watch, defineExpose } from 'vue';
+import { ref, reactive, onMounted, watch } from 'vue';
 const code = ref(null);
 const data = reactive({
   cmOptions: {
