@@ -3,7 +3,7 @@
     v-model:value="code"
     :options="data.cmOptions"
     placeholder=""
-    :height="650"
+    :height="data.height"
     @change="change"
     style="font-size: 15px; margin-top: 2px; font-family: Tahoma, Verdana, Arial, sans-serif"
   />
@@ -40,6 +40,7 @@ const data = reactive({
     smartIndent: true, //自动根据上下文缩进
     gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'], // 添加折叠图标
   },
+  height: 600,
 });
 const props = defineProps({
   yaml: {
@@ -50,10 +51,15 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  height: {
+    type: Number,
+    default: 600,
+  },
 });
 onMounted(() => {
   code.value = props.yaml.valueOf();
   data.cmOptions.readOnly = props.readOnly.valueOf();
+  data.height = props.height.valueOf();
 });
 
 watch(() => {

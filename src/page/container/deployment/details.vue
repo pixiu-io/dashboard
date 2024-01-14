@@ -430,7 +430,7 @@
       </el-col>
     </div>
     <div style="margin-top: 10px"></div>
-    <MyCodeMirror :yaml="data.yaml" :read-only="data.readOnly"></MyCodeMirror>
+    <MyCodeMirror :yaml="data.yaml" :read-only="data.readOnly" :height="650"></MyCodeMirror>
     <div v-if="!data.readOnly" style="margin-top: 10px">
       <el-button class="pixiu-cancel-button" @click="cancel()">取消</el-button>
       <el-button class="pixiu-confirm-button" type="primary" @click="confirm()">确定</el-button>
