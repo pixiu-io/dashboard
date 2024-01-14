@@ -11,7 +11,7 @@
         color: rgba(0, 0, 0, 0.9);
       "
     >
-      操作指南
+      操作指南1
       <el-icon style="vertical-align: middle; margin-right: 10px">
         <component :is="'Edit'" />
       </el-icon>
@@ -100,7 +100,7 @@
               size="small"
               type="text"
               style="margin-right: -20px; margin-left: -10px; color: #006eff"
-              @click="editConfigMap(scope.row)"
+              @click="editSecret(scope.row)"
             >
               更新配置
             </el-button>
@@ -109,7 +109,7 @@
               type="text"
               size="small"
               style="margin-right: 1px; color: #006eff"
-              @click="handleEditConfigmapYamlDialog(scope.row)"
+              @click="handleEditSecretYamlDialog(scope.row)"
             >
               编辑yaml
             </el-button>
@@ -118,7 +118,7 @@
               type="text"
               size="small"
               style="margin-right: 1px; margin-left: -2px; color: #006eff"
-              @click="deleteConfigMap(scope.row)"
+              @click="deleteSecret(scope.row)"
             >
               删除
             </el-button>
@@ -144,11 +144,11 @@
   </div>
 
   <el-dialog
-    :model-value="data.editConfigmapYamlDialog"
+    :model-value="data.secretYamlDialog"
     style="color: #000000; font: 14px; margin-top: 50px"
     width="800px"
     center
-    @close="closeEditConfigmapYamlDialog"
+    @close="closeSecretYamlDialog"
   >
     <template #header>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">编辑yaml</div>
@@ -158,9 +158,7 @@
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button class="pixiu-small-cancel-button" @click="closeEditConfigmapYamlDialog"
-          >取消</el-button
-        >
+        <el-button class="pixiu-small-cancel-button" @click="closeSecretYamlDialog">取消</el-button>
         <el-button
           type="primary"
           class="pixiu-small-confirm-button"
@@ -197,7 +195,7 @@ const data = reactive({
   namespace: 'default',
   namespaces: [],
   secretList: [],
-  editConfigmapYamlDialog: false,
+  secretYamlDialog: false,
   isShow: false,
   showTooltip: false, // 控制提示信息的显示状态，默认为隐藏
   showIcon: false, // 控制图标的显示状态，默认为隐藏
@@ -223,7 +221,7 @@ const editSecret = (row) => {
   router.push(url);
 };
 
-const deleteConfigMap = (row) => {
+const deleteSecret = (row) => {
   ElMessageBox.confirm('此操作将永久删除 Secret ' + row.metadata.name + ' . 是否继续?', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
@@ -233,7 +231,7 @@ const deleteConfigMap = (row) => {
     .then(() => {
       const res = proxy.$http({
         method: 'delete',
-        url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/configmaps/${row.metadata.name}`,
+        url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/secrets/${row.metadata.name}`,
       });
       ElMessage({
         type: 'success',
@@ -316,14 +314,14 @@ const formatterTime = (row, column, cellValue) => {
   return <div>{time}</div>;
 };
 
-const handleEditConfigmapYamlDialog = (row) => {
+const handleEditSecretYamlDialog = (row) => {
   data.yaml = jsYaml.dump(row);
   data.yamlName = row.metadata.name;
-  data.editConfigmapYamlDialog = true;
+  data.secretYamlDialog = true;
 };
 
-const closeEditConfigmapYamlDialog = () => {
-  data.editConfigmapYamlDialog = false;
+const closeSecretYamlDialog = () => {
+  data.secretYamlDialog = false;
   data.yaml = '';
 };
 
@@ -340,7 +338,7 @@ const confirmEditConfigmapYaml = async () => {
       data: yaml,
     });
   } catch (error) {}
-  data.editConfigmapYamlDialog = false;
+  data.secretYamlDialog = false;
   data.yaml = '';
   proxy.$message.success(`secret ${data.yamlName} 更新成功`);
 };
