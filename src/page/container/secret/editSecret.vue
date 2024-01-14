@@ -1,7 +1,7 @@
 <template>
   <el-card class="title-card-container">
     <div class="font-container">
-      <span> ConfigMap :</span>
+      <span> Secret :</span>
       <span> {{ data.secretFrom.metadata.name }} </span>
       <span>({{ data.secretFrom.metadata.namespace }})</span>
       <span> / 更新配置</span>
@@ -111,7 +111,9 @@
                   style="width: 30%; margin-left: 20px"
                 />
               </el-form-item>
-
+              <div class="app-pixiu-line-describe5">
+                如镜像地址为 px.pixiu.com/library/nginx:latest 则请输入 px.pixiu.com。
+              </div>
               <el-form-item label="用户名" prop="dockerRegister.userName" style="width: 80%">
                 <el-input
                   v-model="data.dockerRegister.userName"
@@ -137,7 +139,53 @@
                 />
               </el-form-item>
             </div>
+            <div v-else-if="data.secretType === 'kubernetes.io/tls'">
+              <el-form-item label="内容" style="margin-top: 20px">
+                <div class="configmap-label-title" style="margin-left: 100px">变量名</div>
+                <div class="configmap-label-title" style="margin-left: 510px">变量值</div>
+                <el-divider style="margin-left: 80px" />
+              </el-form-item>
 
+              <el-form-item
+                v-for="(item, index) in data.secretLabels"
+                :key="index"
+                style="margin-top: -15px; margin-left: 120px"
+              >
+                <div>
+                  <el-input
+                    v-model="item.key"
+                    placeholder="变量名"
+                    style="width: 500px; height: 52px"
+                  />
+                </div>
+                <div style="margin-right: 10px; margin-left: 10px"></div>
+                =
+                <div>
+                  <el-input
+                    v-model="item.value"
+                    placeholder="请输入变量值"
+                    type="textarea"
+                    style="width: 500px; margin-left: 20px"
+                    :row="1"
+                  />
+                </div>
+                <div
+                  style="float: right; cursor: pointer; margin-left: 10px"
+                  @click="deleteLabel(index)"
+                >
+                  <el-icon><Delete /></el-icon>
+                </div>
+                <el-divider />
+              </el-form-item>
+              <div class="app-pixiu-line-describe4">
+                只能包含字母、数字及分隔符"、"”、";变量名为空时，在变量名称中粘贴一行或多行key=valuekey:
+                value的键值对可以实现快速批量输入
+              </div>
+              <el-form-item>
+                <el-button class="mt-4" style="width: 5%" @click="addLabel">手动增加</el-button>
+                <el-button class="mt-4" style="width: 5%" @click="addLabel">文件导入</el-button>
+              </el-form-item>
+            </div>
             <div style="margin-top: 30px" />
             <el-form-item style="margin-left: 30%">
               <el-button class="pixiu-cancel-button" @click="cancelUpdate()">取消</el-button>
@@ -310,6 +358,13 @@ const deleteLabel = (index) => {
   color: #888888;
 }
 
+.app-pixiu-line-describe5 {
+  margin-left: 120px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  color: #888888;
+}
 .font-container {
   margin-top: -5px;
   font-weight: bold;
