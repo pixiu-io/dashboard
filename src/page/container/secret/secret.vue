@@ -12,7 +12,7 @@
         vertical-align: middle;
       "
     >
-      操作指南
+      操作指南1
       <el-icon style="vertical-align: middle; margin-right: 10px">
         <component :is="'Edit'" />
       </el-icon>
