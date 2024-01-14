@@ -11,7 +11,7 @@
         color: rgba(0, 0, 0, 0.9);
       "
     >
-      操作指南1
+      操作指南
       <el-icon style="vertical-align: middle; margin-right: 10px">
         <component :is="'Edit'" />
       </el-icon>
