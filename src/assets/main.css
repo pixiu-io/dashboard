@@ -261,7 +261,8 @@
   margin-left: 8px;
 }
 
-/* .el-radio-button__inner {
+.el-radio-button__original-radio:checked + .el-radio-button__inner {
   color: #006eff;
   border-color: #006eff;
-} */
+  background-color: #fff;
+}

@@ -258,9 +258,4 @@ const handleRemove = (file, files) => {
 .el-main {
   background-color: #f3f4f7;
 }
-
-.el-radio-button__inner {
-  color: #006eff;
-  border-color: #006eff;
-}
 </style>
