@@ -30,8 +30,7 @@
             <el-form-item>
               <el-form style="margin-top: -20px; margin-left: -100px">
                 <el-form-item label="集群ID" style="margin-top: 10px; width: 200px">
-                  <el-form-item style="margin-left: 61px" :label="data.configmapForm.metadata.uid">
-                  </el-form-item>
+                  <el-form-item style="margin-left: 61px" :label="data.cluster"> </el-form-item>
                 </el-form-item>
                 <el-form-item label="所在命名空间" style="margin-top: 10px; width: 200px">
                   <el-form-item
@@ -111,7 +110,8 @@ const { proxy } = getCurrentInstance();
 
 const data = reactive({
   loading: false,
-  cluser: '',
+  cluster: '',
+  cloud: {},
   namespaces: [],
   autosize: {
     minRows: 5,
@@ -147,6 +147,8 @@ const cancelUpdate = () => {
 
 onMounted(() => {
   data.cloud = proxy.$route.query;
+  console.log(data.cloud);
+  data.cluster = proxy.$route.query.cluster;
   data.configmapForm.metadata.name = data.cloud.name;
   data.path = proxy.$route.fullPath;
   getConfigMap();
