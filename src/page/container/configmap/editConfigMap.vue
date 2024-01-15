@@ -25,14 +25,10 @@
             :model="data.configmapForm"
             style="margin-left: 3%; width: 80%"
           >
-            <el-form-item label="基本信息" style="margin-top: 20px">
-              <el-form style="margin-top: 20px; margin-left: -100px">
-                <el-form-item
-                  class="configmap-info"
-                  label="所在地域"
-                  style="margin-top: 20px; width: 200px"
-                  ><el-form-item style="margin-left: 50px" label="华东地区(南京)"></el-form-item>
-                </el-form-item>
+            <el-form-item label="基本信息" style="margin-top: 20px" class="base-info">
+            </el-form-item>
+            <el-form-item>
+              <el-form style="margin-top: -20px; margin-left: -100px">
                 <el-form-item label="集群ID" style="margin-top: 10px; width: 200px">
                   <el-form-item style="margin-left: 61px" :label="data.configmapForm.metadata.uid">
                   </el-form-item>
@@ -242,7 +238,10 @@ const deleteLabel = (index) => {
 .configmap-class .el-main {
   background-color: #f3f4f7;
 }
-
+.base-info .el-form-item__label {
+  color: black;
+  font-weight: bolder;
+}
 .app-pixiu-line-describe {
   margin-left: 100px;
   margin-top: -18px;
