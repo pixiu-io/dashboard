@@ -78,7 +78,7 @@
             size="14px"
             type="iconfont"
             color="#909399"
-            @click="getDeployment"
+            @click="GetPod"
           />
         </div>
       </el-col>
@@ -154,11 +154,11 @@ const GetPod = async () => {
   try {
     const res = await proxy.$http({
       method: 'get',
-      url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.name}`,
+      url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${data.name}`,
     });
-    data.namespace = res;
+    data.pod = res;
 
-    data.yaml = jsYaml.dump(data.namespace);
+    data.yaml = jsYaml.dump(data.pod);
   } catch (error) {}
 };
 
