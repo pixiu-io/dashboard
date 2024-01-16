@@ -18,7 +18,7 @@
         </el-breadcrumb-item>
 
         <el-breadcrumb-item
-          ><span class="breadcrumb-style">Namespace({{ data.name }})</span>
+          ><span class="breadcrumb-style">Pod({{ data.name }})</span>
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
@@ -110,6 +110,8 @@ const data = reactive({
 
   name: '',
 
+  pod: {},
+
   pageInfo: {
     page: 1,
     limit: 10,
@@ -127,10 +129,9 @@ const data = reactive({
 onMounted(async () => {
   data.cluster = proxy.$route.query.cluster;
   data.namespace = proxy.$route.query.namespace;
-
   data.name = proxy.$route.query.name;
 
-  await getNamespace();
+  await GetPod();
 });
 
 const { toClipboard } = useClipboard();
@@ -149,7 +150,7 @@ const copyYmal = async () => {
   }
 };
 
-const getNamespace = async () => {
+const GetPod = async () => {
   try {
     const res = await proxy.$http({
       method: 'get',
