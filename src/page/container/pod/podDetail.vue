@@ -27,7 +27,7 @@
   <div style="margin-top: 25px">
     <el-row>
       <el-col>
-        <button class="pixiu-two-button" @click="GetPod">刷新d</button>
+        <button class="pixiu-two-button" @click="GetPod">刷新</button>
         <button class="pixiu-two-button2" style="margin-left: 10px">删除</button>
         <!-- <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">查看YAML</button> -->
       </el-col>
@@ -35,9 +35,9 @@
   </div>
 
   <el-card class="contend-card-container2">
-    <div class="big-world-style" style="margin-bottom: 20px">基本信息</div>
+    <div class="big-world-style" style="margin-bottom: 20px; margin-top: 2px">基本信息</div>
     <div v-if="data.pod" style="margin-top: 8px; width: 100%; border-radius: 0px">
-      <el-form-item label="名称" class="namespace-info">
+      <el-form-item label="名称" class="namespace-info" style="">
         <span class="namespace-detail-info" style="margin-left: 90px">
           {{ data.pod.metadata.name }}
         </span>
@@ -50,11 +50,9 @@
       </el-form-item>
     </div>
 
-    <div style="margin-top: 20px"></div>
-
     <el-tabs
       v-model="data.activeName"
-      class="deployment-tab"
+      class="namespace-tab"
       @tab-click="handleClick"
       @tab-change="handleChange"
     >
@@ -66,6 +64,8 @@
       <el-tab-pane label="YAML" name="six"></el-tab-pane>
     </el-tabs>
   </el-card>
+
+  <el-card class="contend-card-container2"> </el-card>
 </template>
 
 <script setup lang="jsx">
@@ -176,6 +176,7 @@ const editYaml = () => {
 <style scoped="scoped">
 .namespace-tab {
   margin-top: 1px;
+  margin-left: 10px;
   margin-bottom: -32px;
 }
 
@@ -186,6 +187,7 @@ const editYaml = () => {
 
 .namespace-info {
   font-size: 13px;
+  margin-left: 10px;
   color: #29232b;
 }
 </style>
