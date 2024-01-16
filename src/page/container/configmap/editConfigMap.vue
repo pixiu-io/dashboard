@@ -15,18 +15,22 @@
     <el-main>
       <div class="app-pixiu-content-card">
         <el-card style="margin-top: 8px; width: 100%; border-radius: 0px">
-          <el-form>
-            <el-form-item label="基本信息" style="margin-top: 20px">
-              <el-form style="margin-top: 20px; margin-left: -70px">
-                <el-form-item
-                  class="configmap-info"
-                  label="所在地域"
-                  style="margin-top: 20px; width: 200px"
-                  ><el-form-item style="margin-left: 50px" label="华东地区(南京)"></el-form-item>
-                </el-form-item>
+          <el-form
+            ref="ruleFormRef"
+            label-position="left"
+            require-asterisk-position="right"
+            label-width="100px"
+            :rules="rules"
+            status-icon
+            :model="data.configmapForm"
+            style="margin-left: 3%; width: 80%"
+          >
+            <el-form-item label="基本信息" style="margin-top: 20px" class="base-info">
+            </el-form-item>
+            <el-form-item>
+              <el-form style="margin-top: -20px; margin-left: -100px">
                 <el-form-item label="集群ID" style="margin-top: 10px; width: 200px">
-                  <el-form-item style="margin-left: 61px" :label="data.configmapForm.metadata.uid">
-                  </el-form-item>
+                  <el-form-item style="margin-left: 61px" :label="data.cluster"> </el-form-item>
                 </el-form-item>
                 <el-form-item label="所在命名空间" style="margin-top: 10px; width: 200px">
                   <el-form-item
@@ -44,22 +48,18 @@
             </el-form-item>
             <el-divider />
             <el-form-item label="内容" style="margin-top: 20px">
-              <div class="configmap-label-title" style="margin-left: 100px">变量名</div>
+              <div class="configmap-label-title">变量名</div>
               <div class="configmap-label-title" style="margin-left: 510px">变量值</div>
-              <el-divider style="margin-left: 80px" />
+              <el-divider />
             </el-form-item>
 
             <el-form-item
               v-for="(item, index) in data.configMapLabels"
               :key="index"
-              style="margin-top: -15px; margin-left: 120px"
+              style="margin-top: -15px"
             >
               <div>
-                <el-input
-                  v-model="item.key"
-                  placeholder="变量名"
-                  style="width: 500px; height: 52px"
-                />
+                <el-input v-model="item.key" placeholder="变量名" style="width: 300px" />
               </div>
               <div style="margin-right: 10px; margin-left: 10px"></div>
               =
@@ -68,7 +68,8 @@
                   v-model="item.value"
                   placeholder="请输入变量值"
                   type="textarea"
-                  style="width: 500px; margin-left: 20px"
+                  autosize
+                  style="width: 350px; margin-left: 20px"
                   :row="1"
                 />
               </div>
@@ -84,7 +85,7 @@
               只能包含字母、数字及分隔符"、"”、";变量名为空时，在变量名称中粘贴一行或多行key=valuekey:
               value的键值对可以实现快速批量输入
             </div>
-            <el-form-item>
+            <el-form-item style="margin-left: -150px">
               <el-button class="mt-4" style="width: 5%" @click="addLabel">手动增加</el-button>
               <el-button class="mt-4" style="width: 5%" @click="addLabel">文件导入</el-button>
             </el-form-item>
@@ -109,7 +110,8 @@ const { proxy } = getCurrentInstance();
 
 const data = reactive({
   loading: false,
-  cluser: '',
+  cluster: '',
+  cloud: {},
   namespaces: [],
   autosize: {
     minRows: 5,
@@ -145,6 +147,8 @@ const cancelUpdate = () => {
 
 onMounted(() => {
   data.cloud = proxy.$route.query;
+  console.log(data.cloud);
+  data.cluster = proxy.$route.query.cluster;
   data.configmapForm.metadata.name = data.cloud.name;
   data.path = proxy.$route.fullPath;
   getConfigMap();
@@ -236,7 +240,10 @@ const deleteLabel = (index) => {
 .configmap-class .el-main {
   background-color: #f3f4f7;
 }
-
+.base-info .el-form-item__label {
+  color: black;
+  font-weight: bolder;
+}
 .app-pixiu-line-describe {
   margin-left: 100px;
   margin-top: -18px;
