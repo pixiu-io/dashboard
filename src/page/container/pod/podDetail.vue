@@ -22,74 +22,44 @@
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
-
-    <div style="margin-top: 20px"></div>
-
-    <el-tabs
-      v-model="data.activeName"
-      class="namespace-tab"
-      @tab-click="handleClick"
-      @tab-change="handleChange"
-    >
-      <el-tab-pane label="基本信息" name="first"> </el-tab-pane>
-      <el-tab-pane label="YAML" name="second"></el-tab-pane>
-    </el-tabs>
   </el-card>
 
-  <div v-if="data.activeName === 'first'">
-    <el-card class="contend-card-container2">
-      <div class="big-world-style" style="margin-bottom: 20px">基本信息</div>
-      <div v-if="data.namespace.metadata" style="margin-top: 8px; width: 100%; border-radius: 0px">
-        <el-form-item label="名称" class="namespace-info">
-          <span class="namespace-detail-info" style="margin-left: 90px">
-            {{ data.namespace.metadata.name }}
-          </span>
-        </el-form-item>
-        <el-form-item label="状态" class="namespace-info">
-          <span class="namespace-detail-info" style="margin-left: 90px">
-            <div v-if="data.namespace.status.phase === 'Active'" class="color-green-word">
-              {{ data.namespace.status.phase }}
-            </div>
-            <div v-else class="color-red-word">{{ data.namespace.status.phase }}</div>
-          </span>
-        </el-form-item>
-        <el-form-item label="描述" class="namespace-info">
-          <span class="namespace-detail-info" style="margin-left: 90px"> - </span>
-        </el-form-item>
-        <el-form-item label="创建时间" class="namespace-info">
-          <span class="namespace-detail-info" style="margin-left: 65px">
-            {{ data.namespace.metadata.creationTimestamp }}
-          </span>
-        </el-form-item>
-      </div>
-    </el-card>
-  </div>
-
-  <div v-if="data.activeName === 'second'">
-    <div style="margin-top: 20px">
+  <div style="margin-top: 25px">
+    <el-row>
       <el-col>
-        <button class="pixiu-two-button" style="width: 85px" @click="editYaml">编辑YAML</button>
-        <button class="pixiu-two-button" style="margin-left: 10px" @click="copyYmal">复制</button>
-
-        <div style="margin-left: 8px; float: right; margin-top: 6px">
-          <pixiu-icon
-            name="icon-icon-refresh"
-            style="cursor: pointer"
-            size="14px"
-            type="iconfont"
-            color="#909399"
-            @click="GetPod"
-          />
-        </div>
+        <button class="pixiu-two-button" @click="GetPod">刷新</button>
+        <button class="pixiu-two-button2" style="margin-left: 10px">删除</button>
+        <!-- <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">查看YAML</button> -->
       </el-col>
-    </div>
-    <div style="margin-top: 10px"></div>
-    <MyCodeMirror :yaml="data.yaml" :read-only="data.readOnly"></MyCodeMirror>
-    <div v-if="!data.readOnly" style="margin-top: 10px">
-      <el-button class="pixiu-cancel-button" @click="cancel()">取消</el-button>
-      <el-button class="pixiu-confirm-button" type="primary" @click="confirm()">确定</el-button>
-    </div>
+    </el-row>
   </div>
+
+  <el-card class="contend-card-container2">
+    <div class="big-world-style" style="margin-bottom: 20px">基本信息</div>
+    <div v-if="data.namespace.metadata" style="margin-top: 8px; width: 100%; border-radius: 0px">
+      <el-form-item label="名称" class="namespace-info">
+        <span class="namespace-detail-info" style="margin-left: 90px">
+          {{ data.namespace.metadata.name }}
+        </span>
+      </el-form-item>
+      <el-form-item label="状态" class="namespace-info">
+        <span class="namespace-detail-info" style="margin-left: 90px">
+          <div v-if="data.namespace.status.phase === 'Active'" class="color-green-word">
+            {{ data.namespace.status.phase }}
+          </div>
+          <div v-else class="color-red-word">{{ data.namespace.status.phase }}</div>
+        </span>
+      </el-form-item>
+      <el-form-item label="描述" class="namespace-info">
+        <span class="namespace-detail-info" style="margin-left: 90px"> - </span>
+      </el-form-item>
+      <el-form-item label="创建时间" class="namespace-info">
+        <span class="namespace-detail-info" style="margin-left: 65px">
+          {{ data.namespace.metadata.creationTimestamp }}
+        </span>
+      </el-form-item>
+    </div>
+  </el-card>
 </template>
 
 <script setup lang="jsx">
