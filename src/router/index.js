@@ -33,6 +33,7 @@ import {
   StorageClass,
   Info,
   Pod,
+  PodDetail,
   Namespace,
   CreateNamespace,
   NamespaceDetail,
@@ -163,6 +164,14 @@ const routes = [
               title: 'pod',
             },
             component: Pod,
+          },
+          {
+            path: 'pods/detail',
+            name: 'PodDetail',
+            meta: {
+              title: 'PodDetail',
+            },
+            component: PodDetail,
           },
           {
             path: 'deployment_create',
