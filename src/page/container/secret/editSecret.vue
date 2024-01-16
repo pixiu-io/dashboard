@@ -25,21 +25,16 @@
             :model="data.configmapForm"
             style="margin-left: 3%; width: 80%"
           >
-            <el-form-item label="基本信息" style="margin-top: 20px">
+            <el-form-item label="基本信息" style="margin-top: 20px" class="base-info">
+            </el-form-item>
+            <el-form-item>
               <el-form
                 label-position="left"
                 require-asterisk-position="right"
-                style="margin-top: 20px; margin-left: -100px"
+                style="margin-top: -20px; margin-left: -100px"
               >
-                <el-form-item
-                  class="configmap-info"
-                  label="所在地域"
-                  style="margin-top: 20px; width: 200px"
-                  ><el-form-item style="margin-left: 50px" label="华东地区(南京)"></el-form-item>
-                </el-form-item>
                 <el-form-item label="集群ID" style="margin-top: 10px; width: 200px">
-                  <el-form-item style="margin-left: 61px" :label="data.secretFrom.metadata.uid">
-                  </el-form-item>
+                  <el-form-item style="margin-left: 61px" :label="data.cluster"> </el-form-item>
                 </el-form-item>
                 <el-form-item label="所在命名空间" style="margin-top: 10px; width: 200px">
                   <el-form-item
@@ -206,7 +201,7 @@ const { proxy } = getCurrentInstance();
 
 const data = reactive({
   loading: false,
-  cluser: '',
+  cluster: '',
   namespaces: [],
   autosize: {
     minRows: 5,
@@ -214,7 +209,7 @@ const data = reactive({
   secretType: 'Opaque',
   secretLabels: [],
 
-  // configmap 创建初始对象
+  // secret 创建初始对象
   secretFrom: {
     metadata: {
       name: '',
@@ -247,8 +242,8 @@ const cancelUpdate = () => {
 
 onMounted(() => {
   data.cloud = proxy.$route.query;
+  data.cluster = proxy.$route.query.cluster;
   data.secretFrom.metadata.name = data.cloud.name;
-  data.path = proxy.$route.fullPath;
   getSecret();
   getNamespace();
   getNamespaceList();
@@ -369,6 +364,11 @@ const deleteLabel = (index) => {
   font-weight: bold;
   font-size: 16px;
   vertical-align: middle;
+}
+
+.base-info .el-form-item__label {
+  color: black;
+  font-weight: bolder;
 }
 
 .deploy-pixiu-column {
