@@ -116,6 +116,7 @@ const isButtonActive = computed(() => {
 /* 有用 */
 .login-page {
   display: grid;
+  /* 登陆页面比例调整 */
   grid-template-columns: 35% 65%;
   width: 100%;
   align-items: center;
