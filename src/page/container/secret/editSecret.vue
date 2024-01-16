@@ -34,11 +34,7 @@
                 style="margin-top: -20px; margin-left: -100px"
               >
                 <el-form-item label="集群ID" style="margin-top: 10px; width: 200px">
-                  <el-form-item
-                    style="margin-left: 61px"
-                    :label="data.cloud.name + '(' + data.cloud.name + ')'"
-                  >
-                  </el-form-item>
+                  <el-form-item style="margin-left: 61px" :label="data.cluster"> </el-form-item>
                 </el-form-item>
                 <el-form-item label="所在命名空间" style="margin-top: 10px; width: 200px">
                   <el-form-item
@@ -205,7 +201,7 @@ const { proxy } = getCurrentInstance();
 
 const data = reactive({
   loading: false,
-  cluser: '',
+  cluster: '',
   namespaces: [],
   autosize: {
     minRows: 5,
@@ -213,7 +209,7 @@ const data = reactive({
   secretType: 'Opaque',
   secretLabels: [],
 
-  // configmap 创建初始对象
+  // secret 创建初始对象
   secretFrom: {
     metadata: {
       name: '',
@@ -246,6 +242,7 @@ const cancelUpdate = () => {
 
 onMounted(() => {
   data.cloud = proxy.$route.query;
+  data.cluster = proxy.$route.query.cluster;
   data.secretFrom.metadata.name = data.cloud.name;
   getSecret();
   getNamespace();
