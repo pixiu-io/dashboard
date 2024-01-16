@@ -27,7 +27,7 @@
   <div style="margin-top: 25px">
     <el-row>
       <el-col>
-        <button class="pixiu-two-button" @click="GetPod">刷新</button>
+        <button class="pixiu-two-button" @click="GetPod">刷新d</button>
         <button class="pixiu-two-button2" style="margin-left: 10px">删除</button>
         <!-- <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">查看YAML</button> -->
       </el-col>
@@ -36,29 +36,35 @@
 
   <el-card class="contend-card-container2">
     <div class="big-world-style" style="margin-bottom: 20px">基本信息</div>
-    <div v-if="data.namespace.metadata" style="margin-top: 8px; width: 100%; border-radius: 0px">
+    <div v-if="data.pod" style="margin-top: 8px; width: 100%; border-radius: 0px">
       <el-form-item label="名称" class="namespace-info">
         <span class="namespace-detail-info" style="margin-left: 90px">
-          {{ data.namespace.metadata.name }}
+          {{ data.pod.metadata.name }}
         </span>
       </el-form-item>
-      <el-form-item label="状态" class="namespace-info">
-        <span class="namespace-detail-info" style="margin-left: 90px">
-          <div v-if="data.namespace.status.phase === 'Active'" class="color-green-word">
-            {{ data.namespace.status.phase }}
-          </div>
-          <div v-else class="color-red-word">{{ data.namespace.status.phase }}</div>
-        </span>
-      </el-form-item>
-      <el-form-item label="描述" class="namespace-info">
-        <span class="namespace-detail-info" style="margin-left: 90px"> - </span>
-      </el-form-item>
+
       <el-form-item label="创建时间" class="namespace-info">
         <span class="namespace-detail-info" style="margin-left: 65px">
-          {{ data.namespace.metadata.creationTimestamp }}
+          {{ data.pod.metadata.creationTimestamp }}
         </span>
       </el-form-item>
     </div>
+
+    <div style="margin-top: 20px"></div>
+
+    <el-tabs
+      v-model="data.activeName"
+      class="deployment-tab"
+      @tab-click="handleClick"
+      @tab-change="handleChange"
+    >
+      <el-tab-pane label="容器" name="first"> </el-tab-pane>
+      <el-tab-pane label="元数据" name="second"> </el-tab-pane>
+      <el-tab-pane label="环境变量" name="third"> </el-tab-pane>
+      <el-tab-pane label="监控" name="four"></el-tab-pane>
+      <el-tab-pane label="事件" name="five"></el-tab-pane>
+      <el-tab-pane label="YAML" name="six"></el-tab-pane>
+    </el-tabs>
   </el-card>
 </template>
 
@@ -80,7 +86,7 @@ const data = reactive({
 
   name: '',
 
-  pod: {},
+  pod: '',
 
   pageInfo: {
     page: 1,
@@ -173,13 +179,12 @@ const editYaml = () => {
   margin-bottom: -32px;
 }
 
-.namespace-info {
-  color: #909399;
+.namespace-detail-info {
   font-size: 13px;
-  margin-left: 8px;
+  color: #29232b;
 }
 
-.namespace-detail-info {
+.namespace-info {
   font-size: 13px;
   color: #29232b;
 }
