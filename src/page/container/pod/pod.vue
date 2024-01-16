@@ -301,7 +301,7 @@ const formatterLabels = (row, column, cellValue) => {
 };
 
 const formatterStatus = (row, column, status) => {
-  let s = <span style="color: green">Running</span>;
+  let s = <span class="color-green-word">Running</span>;
   if (status.phase === 'Running') {
     status.conditions.forEach((item) => {
       if (item.status !== 'True') {
@@ -327,7 +327,7 @@ const formatterStatus = (row, column, status) => {
             }
           }
         });
-        return (s = <span style="color: red">{res}</span>);
+        return (s = <span class="color-red-word">{res}</span>);
       }
     });
   } else if (status.phase === 'Succeeded') {
