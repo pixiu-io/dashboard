@@ -18,7 +18,7 @@
         </el-breadcrumb-item>
 
         <el-breadcrumb-item
-          ><span class="breadcrumb-style">Pod({{ data.name }})</span>
+          ><span class="breadcrumb-style">Pod:{{ data.name }}({{ data.namespace }})</span>
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
