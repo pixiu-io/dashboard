@@ -15,7 +15,13 @@
       <el-icon style="vertical-align: middle; margin-right: 10px">
         <component :is="'Edit'" />
       </el-icon>
-      <button class="pixiu-five-button" @click="handleEditSecretYamlDialog">YAML创建资源</button>
+      <button
+        class="pixiu-two-button"
+        style="width: 125px; margin-top: -10px"
+        @click="handleEditSecretYamlDialog"
+      >
+        YAML创建资源
+      </button>
     </div>
   </el-card>
 
@@ -370,7 +376,7 @@ const confirmEditConfigmapYaml = async () => {
 .pixiu-five-button {
   height: 31px;
   min-width: 25px;
-  width: 100px;
+  width: 120px;
   border-radius: 0%;
   font-size: 12px;
   color: #fff;
