@@ -42,6 +42,7 @@
         <el-form
           :ref="(el) => (loginStore.loginFormRef = el)"
           :model="loginStore.loginInfo"
+          :rules="rules"
           style="width: 100%; height: 30%"
         >
           <el-form-item prop="name" class="inputDeep">
@@ -106,6 +107,11 @@
 import useLoginStore from '@/stores/useLogin';
 import { computed } from 'vue';
 const loginStore = useLoginStore();
+
+const rules = {
+  name: [{ required: true, message: '用户名为必填项', trigger: 'blur' }],
+  password: [{ required: true, message: '密码为必填项', trigger: 'blur' }],
+};
 
 const isButtonActive = computed(() => {
   return loginStore.loginInfo.name && loginStore.loginInfo.password;
