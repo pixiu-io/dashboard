@@ -66,7 +66,22 @@
         />
 
         <el-table-column prop="status.hostIP" label="所在节点" />
-        <el-table-column prop="status.podIP" label="PodIP" />
+        <el-table-column prop="status.podIP" label="实例IP">
+          <template #default="scope">
+            {{ scope.row.status.podIP }}
+            <el-tooltip content="复制">
+              <pixiu-icon
+                name="icon-copy"
+                size="11px"
+                type="iconfont"
+                class-name="icon-box"
+                color="#909399"
+                @click="copyIP(scope.row)"
+              />
+            </el-tooltip>
+          </template>
+        </el-table-column>
+        />
         <el-table-column prop="status" label="重启次数" :formatter="formatterRestartNumber" />
 
         <!-- <el-table-column label="镜像" prop="spec.containers" :formatter="formatterImage" /> -->
@@ -249,6 +264,29 @@ const copy = async (val) => {
   }
 };
 
+const copyIP = async (val) => {
+  try {
+    if (val.status.podIP === undefined) {
+      ElMessage({
+        type: 'warning',
+        message: '数据为空，无法复制',
+      });
+      return;
+    }
+
+    await toClipboard(val.status.podIP);
+    ElMessage({
+      type: 'success',
+      message: '已复制',
+    });
+  } catch (e) {
+    ElMessage({
+      type: 'error',
+      message: e.valueOf().toString(),
+    });
+  }
+};
+
 const podLog = (row) => {
   ElMessageBox.alert('暂不支持');
 };
@@ -406,7 +444,7 @@ const formatterRestartNumber = (row, column, status) => {
   status.containerStatuses.forEach((item) => {
     count += item.restartCount;
   });
-  return <div>{count}</div>;
+  return <div>{count} 次</div>;
 };
 
 const formatterTime = (row, column, cellValue) => {
