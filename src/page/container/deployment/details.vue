@@ -61,7 +61,16 @@
         </el-form-item>
         <el-form-item label="Labels" class="deployment-info">
           <span class="deploy-detail-info" style="margin-left: 75px">
-            {{ data.deployment.spec.selector.matchLabels }}
+            <div v-if="data.deployment.spec.selector.matchLabels === undefined">-</div>
+            <div v-else>
+              <div
+                v-for="(item, index) in data.deployment.spec.selector.matchLabels"
+                :key="item"
+                style="margin-top: -1px"
+              >
+                {{ index }}: {{ item }}
+              </div>
+            </div>
           </span>
         </el-form-item>
         <el-form-item label="更新策略" class="deployment-info">
