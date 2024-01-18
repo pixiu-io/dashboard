@@ -48,7 +48,7 @@
       >
         <el-table-column type="selection" width="30" />
 
-        <el-table-column prop="metadata.name" sortable label="实例名称" min-width="80px">
+        <el-table-column prop="metadata.name" sortable label="名称" min-width="80px">
           <template #default="scope">
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
@@ -299,79 +299,98 @@ const formatterLabels = (row, column, cellValue) => {
   );
 };
 
-const formatterStatus = (row, column, status) => {
-  let s = <span class="color-green-word">Running</span>;
-  if (status.phase === 'Running') {
-    status.conditions.forEach((item) => {
-      if (item.status !== 'True') {
-        let res = '';
-        status.containerStatuses.forEach((c) => {
-          if (!c.ready) {
-            if (c.state.waiting) {
-              res = (
-                <div>
-                  <div>${c.state.waiting.reason}</div>
-                  <div style="font-size: 10px">{c.state.waiting.message}</div>
-                </div>
-              );
-            }
-            if (c.state.terminated) {
-              res = (
-                <div>
-                  <div>{c.state.waiting.reason}</div>
-                  <div style="font-size: 11px">{c.state.waiting.message}</div>
-                  <div style="font-size: 11px">{c.state.terminated.reason}</div>
-                </div>
-              );
-            }
-          }
-        });
-        return (s = <span class="color-red-word">{res}</span>);
-      }
-    });
-  } else if (status.phase === 'Succeeded') {
-    let res = '';
-    status.containerStatuses.forEach((c) => {
-      if (!c.ready) {
-        if (c.state.terminated) {
-          res = (
-            <div>
-              <div>{c.state.waiting.reason}</div>
-              <div style="font-size: 11px">{c.state.waiting.message}</div>
-              <div style="font-size: 11px">{c.state.terminated.reason}</div>
-            </div>
-          );
-        }
-      }
-    });
-    return (s = <span style="color: #E6A23C">${res}</span>);
-  } else {
-    let res = status.phase;
-    status.containerStatuses.forEach((c) => {
-      if (!c.ready) {
-        if (c.state.waiting) {
-          res = (
-            <div>
-              <div>{c.state.waiting.reason}</div>
-              <div style="font-size: 11px">{c.state.waiting.message}</div>
-            </div>
-          );
-        }
-        if (c.state.terminated) {
-          res = (
-            <div>
-              <div>{c.state.waiting.reason}</div>
-              <div style="font-size: 11px">{c.state.waiting.message}</div>
-              <div style="font-size: 10px">{c.state.terminated.reason}</div>
-            </div>
-          );
-        }
-      }
-    });
-    return (s = <div style="color: red">{res}</div>);
+const formatterStatus = (row, column, cellValue) => {
+  let phase = cellValue.phase;
+  if (phase == 'Failed') {
+    phase = cellValue.reason;
+  } else if (phase == 'Pending') {
+    return <div class="color-yellow-word">{phase}</div>;
+    // const containerStatuses = cellValue.containerStatuses;
+    // for (let i = 0; i < containerStatuses.length; i++) {
+    //   phase = containerStatuses[i].state.waiting.reason;
+    //   break;
+    // }
   }
-  return s;
+
+  if (phase == 'Running') {
+    return <div class="color-green-word">{phase}</div>;
+  }
+  return <div>{phase}</div>;
 };
+
+// const formatterStatus = (row, column, status) => {
+//   let s = <span class="color-green-word">Running</span>;
+//   if (status.phase === 'Running') {
+//     status.conditions.forEach((item) => {
+//       if (item.status !== 'True') {
+//         let res = '';
+//         status.containerStatuses.forEach((c) => {
+//           if (!c.ready) {
+//             if (c.state.waiting) {
+//               res = (
+//                 <div>
+//                   <div>${c.state.waiting.reason}</div>
+//                   <div style="font-size: 10px">{c.state.waiting.message}</div>
+//                 </div>
+//               );
+//             }
+//             if (c.state.terminated) {
+//               res = (
+//                 <div>
+//                   <div>{c.state.waiting.reason}</div>
+//                   <div style="font-size: 11px">{c.state.waiting.message}</div>
+//                   <div style="font-size: 11px">{c.state.terminated.reason}</div>
+//                 </div>
+//               );
+//             }
+//           }
+//         });
+//         return (s = <span class="color-red-word">{res}</span>);
+//       }
+//     });
+//   } else if (status.phase === 'Succeeded') {
+//     let res = '';
+//     status.containerStatuses.forEach((c) => {
+//       if (!c.ready) {
+//         if (c.state.terminated) {
+//           res = (
+//             <div>
+//               <div>{c.state.waiting.reason}</div>
+//               <div style="font-size: 11px">{c.state.waiting.message}</div>
+//               <div style="font-size: 11px">{c.state.terminated.reason}</div>
+//             </div>
+//           );
+//         }
+//       }
+//     });
+//     return (s = <span style="color: #E6A23C">${res}</span>);
+//   } else {
+//     let res = status.phase;
+//     status.containerStatuses.forEach((c) => {
+//       if (!c.ready) {
+//         if (c.state.waiting) {
+//           res = (
+//             <div>
+//               <div>{c.state.waiting.reason}</div>
+//               <div style="font-size: 11px">{c.state.waiting.message}</div>
+//             </div>
+//           );
+//         }
+//         if (c.state.terminated) {
+//           res = (
+//             <div>
+//               <div>{c.state.waiting.reason}</div>
+//               <div style="font-size: 11px">{c.state.waiting.message}</div>
+//               <div style="font-size: 10px">{c.state.terminated.reason}</div>
+//             </div>
+//           );
+//         }
+//       }
+//     });
+//     return (s = <div style="color: red">{res}</div>);
+//   }
+//   return s;
+// };
 
 const formatterImage = (row, column, cellValue) => {
   return (
