@@ -619,6 +619,14 @@ const changeLogLine = async (val) => {
 
 const copyIP = async (val) => {
   try {
+    if (val.status.podIP === undefined) {
+      ElMessage({
+        type: 'warning',
+        message: '数据为空，无法复制',
+      });
+      return;
+    }
+
     await toClipboard(val.status.podIP);
     ElMessage({
       type: 'success',
@@ -720,11 +728,12 @@ const formatterStatus = (row, column, cellValue) => {
   if (phase == 'Failed') {
     phase = cellValue.reason;
   } else if (phase == 'Pending') {
-    const containerStatuses = cellValue.containerStatuses;
-    for (let i = 0; i < containerStatuses.length; i++) {
-      phase = containerStatuses[i].state.waiting.reason;
-      break;
-    }
+    return <div class="color-yellow-word">{phase}</div>;
+    // const containerStatuses = cellValue.containerStatuses;
+    // for (let i = 0; i < containerStatuses.length; i++) {
+    //   phase = containerStatuses[i].state.waiting.reason;
+    //   break;
+    // }
   }
 
   if (phase == 'Running') {
