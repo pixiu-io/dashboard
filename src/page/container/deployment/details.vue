@@ -61,7 +61,16 @@
         </el-form-item>
         <el-form-item label="Labels" class="deployment-info">
           <span class="deploy-detail-info" style="margin-left: 75px">
-            {{ data.deployment.spec.selector.matchLabels }}
+            <div v-if="data.deployment.spec.selector.matchLabels === undefined">-</div>
+            <div v-else>
+              <div
+                v-for="(item, index) in data.deployment.spec.selector.matchLabels"
+                :key="item"
+                style="margin-top: -1px"
+              >
+                {{ index }}: {{ item }}
+              </div>
+            </div>
           </span>
         </el-form-item>
         <el-form-item label="更新策略" class="deployment-info">
@@ -619,6 +628,14 @@ const changeLogLine = async (val) => {
 
 const copyIP = async (val) => {
   try {
+    if (val.status.podIP === undefined) {
+      ElMessage({
+        type: 'warning',
+        message: '数据为空，无法复制',
+      });
+      return;
+    }
+
     await toClipboard(val.status.podIP);
     ElMessage({
       type: 'success',
@@ -720,11 +737,12 @@ const formatterStatus = (row, column, cellValue) => {
   if (phase == 'Failed') {
     phase = cellValue.reason;
   } else if (phase == 'Pending') {
-    const containerStatuses = cellValue.containerStatuses;
-    for (let i = 0; i < containerStatuses.length; i++) {
-      phase = containerStatuses[i].state.waiting.reason;
-      break;
-    }
+    return <div class="color-yellow-word">{phase}</div>;
+    // const containerStatuses = cellValue.containerStatuses;
+    // for (let i = 0; i < containerStatuses.length; i++) {
+    //   phase = containerStatuses[i].state.waiting.reason;
+    //   break;
+    // }
   }
 
   if (phase == 'Running') {
