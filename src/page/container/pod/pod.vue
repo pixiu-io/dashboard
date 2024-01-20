@@ -136,7 +136,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import PixiuTag from '@/components/pixiuTag/index.vue';
 import { formatTimestamp } from '@/utils/utils';
 import useClipboard from 'vue-clipboard3';
-import PiXiuYaml from '@/components/pixiuYaml/index.vue';
+import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 
 const { toClipboard } = useClipboard();
 const { proxy } = getCurrentInstance();

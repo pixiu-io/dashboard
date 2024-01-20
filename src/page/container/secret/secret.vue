@@ -183,7 +183,7 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import { formatTimestamp } from '@/utils/utils';
-import PiXiuYaml from '@/components/pixiuYaml/index.vue';
+import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import jsYaml from 'js-yaml';
 
