@@ -1,6 +1,7 @@
 <template>
   <el-card class="title-card-container">
     <div class="font-container">Pod</div>
+    <PiXiuYaml :yaml-create-url="data.createSecretUrl"></PiXiuYaml>
   </el-card>
 
   <div style="margin-top: 25px">
@@ -135,6 +136,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import PixiuTag from '@/components/pixiuTag/index.vue';
 import { formatTimestamp } from '@/utils/utils';
 import useClipboard from 'vue-clipboard3';
+import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 
 const { toClipboard } = useClipboard();
 const { proxy } = getCurrentInstance();
@@ -149,6 +151,8 @@ const data = reactive({
     total: 0,
   },
   loading: false,
+
+  createSecretUrl: '',
 
   namespace: 'default',
   namespaces: [],

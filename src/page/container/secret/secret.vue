@@ -183,9 +183,10 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import { formatTimestamp } from '@/utils/utils';
-import jsYaml from 'js-yaml';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import MyCodeMirror from '@/components/codemirror/index.vue';
+import jsYaml from 'js-yaml';
+
 const { proxy } = getCurrentInstance();
 const router = useRouter();
 const editYaml = ref();
