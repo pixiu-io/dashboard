@@ -57,8 +57,9 @@ const editYaml = ref();
 const data = reactive({
   cluster: '',
 
-  yaml: '',
   yamlDialog: false,
+  yaml: '',
+  yamlCreateUrl: '',
 });
 
 const props = defineProps({
