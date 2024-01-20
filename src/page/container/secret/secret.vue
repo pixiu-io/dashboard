@@ -1,28 +1,28 @@
 <template>
   <el-card class="title-card-container">
     <div class="font-container">Secret</div>
-
-    <div
-      style="
-        display: block;
-        font-size: 12px;
-        margin-top: -20px;
-        float: right;
-        color: rgba(0, 0, 0, 0.9);
-      "
-    >
-      操作指南
-      <el-icon style="vertical-align: middle; margin-right: 10px">
-        <component :is="'Edit'" />
-      </el-icon>
-      <button
-        class="pixiu-two-button"
-        style="width: 125px; margin-top: -10px"
-        @click="handleEditSecretYamlDialog"
-      >
-        YAML创建资源
-      </button>
-    </div>
+    <PiXiuYaml :yaml-create-url="data.createSecretUrl"></PiXiuYaml>
+    <!--    <div-->
+    <!--      style="-->
+    <!--        display: block;-->
+    <!--        font-size: 12px;-->
+    <!--        margin-top: -20px;-->
+    <!--        float: right;-->
+    <!--        color: rgba(0, 0, 0, 0.9);-->
+    <!--      "-->
+    <!--    >-->
+    <!--      操作指南-->
+    <!--      <el-icon style="vertical-align: middle; margin-right: 10px">-->
+    <!--        <component :is="'Edit'" />-->
+    <!--      </el-icon>-->
+    <!--      <button-->
+    <!--        class="pixiu-two-button"-->
+    <!--        style="width: 125px; margin-top: -10px"-->
+    <!--        @click="handleEditSecretYamlDialog"-->
+    <!--      >-->
+    <!--        YAML创建资源-->
+    <!--      </button>-->
+    <!--    </div>-->
   </el-card>
 
   <div style="margin-top: 25px">
@@ -161,7 +161,7 @@
       <div style="text-align: left; font-weight: bold; padding-left: 5px">编辑yaml</div>
     </template>
     <div style="margin-top: -18px"></div>
-    <MyCodeMirror :yaml="data.yaml" :height="560"></MyCodeMirror>
+    <MyCodeMirror ref="editYaml" :yaml="data.yaml" :height="560"></MyCodeMirror>
 
     <template #footer>
       <span class="dialog-footer">
@@ -184,10 +184,11 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import { formatTimestamp } from '@/utils/utils';
 import jsYaml from 'js-yaml';
+import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import MyCodeMirror from '@/components/codemirror/index.vue';
-
 const { proxy } = getCurrentInstance();
 const router = useRouter();
+const editYaml = ref();
 const data = reactive({
   cluster: '',
   pageInfo: {
@@ -199,6 +200,7 @@ const data = reactive({
   loading: false,
   yaml: '',
   yamlName: '',
+  createSecretUrl: '',
   namespace: 'default',
   namespaces: [],
   secretList: [],
@@ -313,6 +315,7 @@ const getNamespaceList = async () => {
     for (let item of result.items) {
       data.namespaces.push(item.metadata.name);
     }
+    data.createSecretUrl = `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/secrets`;
   } catch (error) {}
 };
 
@@ -333,7 +336,7 @@ const closeSecretYamlDialog = () => {
 };
 
 const confirmEditConfigmapYaml = async () => {
-  let yaml = jsYaml.load(data.yaml);
+  let yaml = jsYaml.load(editYaml.value.code);
   try {
     const resp = await proxy.$http({
       method: 'put',
@@ -371,18 +374,5 @@ const confirmEditConfigmapYaml = async () => {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-}
-
-.pixiu-five-button {
-  height: 31px;
-  min-width: 25px;
-  width: 120px;
-  border-radius: 0%;
-  font-size: 12px;
-  color: #fff;
-  text-align: center;
-  border: none;
-  background-color: #006eff;
-  cursor: pointer;
 }
 </style>
