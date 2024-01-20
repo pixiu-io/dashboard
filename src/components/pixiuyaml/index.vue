@@ -14,7 +14,7 @@
     </el-icon>
     <button
       class="pixiu-two-button"
-      style="width: 125px; margin-top: -10px"
+      style="width: 120px; margin-top: -10px"
       @click="handleCreateYamlDialog"
     >
       YAML创建资源
