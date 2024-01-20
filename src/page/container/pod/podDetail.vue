@@ -43,6 +43,42 @@
         </span>
       </el-form-item>
 
+      <el-form-item label="镜像" class="namespace-info">
+        <span class="namespace-detail-info" style="margin-left: 65px">
+          {{ data.pod.metadata.creationTimestamp }}
+        </span>
+      </el-form-item>
+
+      <el-form-item label="状态" class="namespace-info">
+        <span class="namespace-detail-info" style="margin-left: 65px">
+          {{ data.pod.metadata.creationTimestamp }}
+        </span>
+      </el-form-item>
+
+      <el-form-item label="命名空间" class="namespace-info">
+        <span class="namespace-detail-info" style="margin-left: 65px">
+          {{ data.pod.metadata.creationTimestamp }}
+        </span>
+      </el-form-item>
+
+      <el-form-item label="所在节点" class="namespace-info">
+        <span class="namespace-detail-info" style="margin-left: 65px">
+          {{ data.pod.metadata.creationTimestamp }}
+        </span>
+      </el-form-item>
+
+      <el-form-item label="实例IP" class="namespace-info">
+        <span class="namespace-detail-info" style="margin-left: 65px">
+          {{ data.pod.metadata.creationTimestamp }}
+        </span>
+      </el-form-item>
+
+      <el-form-item label="QoS类别" class="namespace-info">
+        <span class="namespace-detail-info" style="margin-left: 65px">
+          {{ data.pod.metadata.creationTimestamp }}
+        </span>
+      </el-form-item>
+
       <el-form-item label="创建时间" class="namespace-info">
         <span class="namespace-detail-info" style="margin-left: 65px">
           {{ data.pod.metadata.creationTimestamp }}
