@@ -80,12 +80,12 @@ const data = reactive({
       iconType: 'el',
       url: '/kubernetes/namespaces',
     },
-    {
-      name: 'Pixiu Shell',
-      icon: 'icon-terminal',
-      iconType: 'iconfont',
-      url: '/kubernetes/terminal',
-    },
+    // {
+    //   name: 'Pixiu Shell',
+    //   icon: 'icon-terminal',
+    //   iconType: 'iconfont',
+    //   url: '/kubernetes/terminal',
+    // },
   ],
   items: [
     {

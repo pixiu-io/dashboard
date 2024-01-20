@@ -14,7 +14,7 @@
     </el-icon>
     <button
       class="pixiu-two-button"
-      style="width: 125px; margin-top: -10px"
+      style="width: 120px; margin-top: -10px"
       @click="handleCreateYamlDialog"
     >
       YAML创建资源
@@ -45,19 +45,19 @@
   </el-dialog>
 </template>
 
-<script setup type="jsx">
-import jsYaml from "js-yaml";
+<script setup lang="jsx">
+import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
-import {reactive, getCurrentInstance, onMounted, ref, watch} from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
 
 const { proxy } = getCurrentInstance();
 const editYaml = ref();
-const  data = reactive({
+const data = reactive({
   title: '编辑 yaml',
   yaml: '',
   yamlDialog: false,
   yamlCreateUrl: '',
-  yamlMethod: 'post'
+  yamlMethod: 'post',
 });
 
 const props = defineProps({
@@ -75,8 +75,7 @@ const props = defineProps({
   },
 });
 
-onMounted(() => {
-});
+onMounted(() => {});
 
 watch(() => {
   data.title = props.title.valueOf();
@@ -96,7 +95,6 @@ const closeYamlDialog = () => {
 
 const confirmYaml = async () => {
   let yaml = jsYaml.load(editYaml.value.code);
-  console.log(yaml);
   try {
     const resp = await proxy.$http({
       method: data.yamlMethod,
