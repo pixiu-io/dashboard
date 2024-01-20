@@ -49,6 +49,7 @@
 import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
+import { ElMessage } from 'element-plus';
 
 const { proxy } = getCurrentInstance();
 const editYaml = ref();
@@ -95,12 +96,13 @@ const closeYamlDialog = () => {
 
 const confirmYaml = async () => {
   const data = jsYaml.load(editYaml.value.code);
-
   if (data === undefined) {
-    console.log('body');
+    ElMessage({
+      message: 'YAML创建资源不能为空',
+      type: 'warning',
+    });
+    return;
   }
-
-  console.log('yaml content', data);
 
   // try {
   //   const resp = await proxy.$http({
