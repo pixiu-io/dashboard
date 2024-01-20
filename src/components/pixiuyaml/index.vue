@@ -45,19 +45,19 @@
   </el-dialog>
 </template>
 
-<script setup type="jsx">
-import jsYaml from "js-yaml";
+<script setup lang="jsx">
+import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
-import {reactive, getCurrentInstance, onMounted, ref, watch} from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
 
 const { proxy } = getCurrentInstance();
 const editYaml = ref();
-const  data = reactive({
+const data = reactive({
   title: '编辑 yaml',
   yaml: '',
   yamlDialog: false,
   yamlCreateUrl: '',
-  yamlMethod: 'post'
+  yamlMethod: 'post',
 });
 
 const props = defineProps({
@@ -75,8 +75,7 @@ const props = defineProps({
   },
 });
 
-onMounted(() => {
-});
+onMounted(() => {});
 
 watch(() => {
   data.title = props.title.valueOf();
