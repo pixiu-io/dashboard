@@ -1,6 +1,7 @@
 <template>
   <el-card class="title-card-container">
     <div class="font-container">ConfigMap</div>
+    <PiXiuYaml></PiXiuYaml>
   </el-card>
 
   <div style="margin-top: 25px">
@@ -161,11 +162,14 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import { formatTimestamp } from '@/utils/utils';
+import jsYaml from 'js-yaml';
+import MyCodeMirror from '@/components/codemirror/index.vue';
+import PiXiuYaml from '@/components/pixiuyaml/index.vue';
+
 const { proxy } = getCurrentInstance();
 const router = useRouter();
 const editYaml = ref();
-import jsYaml from 'js-yaml';
-import MyCodeMirror from '@/components/codemirror/index.vue';
+
 const data = reactive({
   cluster: '',
   pageInfo: {
