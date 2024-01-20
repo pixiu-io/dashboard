@@ -24,7 +24,7 @@
   <el-dialog
     :model-value="data.yamlDialog"
     style="color: #000000; font: 14px; margin-top: 50px"
-    width="800px"
+    width="50%"
     center
     @close="closeYamlDialog"
   >
@@ -94,16 +94,23 @@ const closeYamlDialog = () => {
 };
 
 const confirmYaml = async () => {
-  let yaml = jsYaml.load(editYaml.value.code);
-  try {
-    const resp = await proxy.$http({
-      method: data.yamlMethod,
-      url: data.yamlCreateUrl,
-      data: yaml,
-    });
-  } catch (error) {}
-  data.yamlDialog = false;
-  data.yaml = '';
-  proxy.$message.success(`创建成功`);
+  const data = jsYaml.load(editYaml.value.code);
+
+  if (data === undefined) {
+    console.log('body');
+  }
+
+  console.log('yaml content', data);
+
+  // try {
+  //   const resp = await proxy.$http({
+  //     method: data.yamlMethod,
+  //     url: data.yamlCreateUrl,
+  //     data: yaml,
+  //   });
+  // } catch (error) {}
+  // data.yamlDialog = false;
+  // data.yaml = '';
+  // proxy.$message.success(`创建成功`);
 };
 </script>
