@@ -96,7 +96,6 @@ const closeYamlDialog = () => {
 
 const confirmYaml = async () => {
   let yaml = jsYaml.load(editYaml.value.code);
-  console.log(yaml);
   try {
     const resp = await proxy.$http({
       method: data.yamlMethod,
