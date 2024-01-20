@@ -137,10 +137,20 @@ const confirmYaml = async () => {
     return;
   }
 
-  let url = '';
-
+  let getUrl = `/proxy/pixiu/${data.cluster}`;
+  let postUrl = `/proxy/pixiu/${data.cluster}`;
   if (kind === 'Secret') {
+    getUrl = getUrl + `/api/v1/namespaces/${namespace}/secrets/${name}`;
+    postUrl = postUrl + `/api/v1/namespaces/${namespace}/secrets`;
   } else if (kind === 'Service') {
+    getUrl = getUrl + `/api/v1/namespaces/${namespace}/services/${name}`;
+    postUrl = postUrl + `/api/v1/namespaces/${namespace}/services`;
+  } else if (kind === 'ConfigMap') {
+    getUrl = getUrl + `/api/v1/namespaces/${namespace}/configmaps/${name}`;
+    postUrl = postUrl + `/api/v1/namespaces/${namespace}/configmaps`;
+  } else if (kind === 'Deployment') {
+    getUrl = getUrl + `/apis/apps/v1/namespaces/${namespace}/deployments/${name}`;
+    postUrl = postUrl + `/apis/apps/v1/namespaces/${namespace}/deployments`;
   } else {
     ElMessage({
       message: '资源类型 ' + kind + ' 暂不支持',
@@ -149,15 +159,17 @@ const confirmYaml = async () => {
     return;
   }
 
-  // try {
-  //   const resp = await proxy.$http({
-  //     method: data.yamlMethod,
-  //     url: data.yamlCreateUrl,
-  //     data: yaml,
-  //   });
-  // } catch (error) {}
-  // data.yamlDialog = false;
-  // data.yaml = '';
-  // proxy.$message.success(`创建成功`);
+  try {
+    const resp = await proxy.$http({
+      method: 'post',
+      url: postUrl,
+      data: yamlData,
+    });
+
+    proxy.$message.success(`${kind}: ${name}(${namespace}) 创建成功`);
+
+    data.yamlDialog = false;
+    data.yaml = '';
+  } catch (error) {}
 };
 </script>
