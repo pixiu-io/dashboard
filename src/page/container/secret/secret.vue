@@ -1,7 +1,7 @@
 <template>
   <el-card class="title-card-container">
     <div class="font-container">Secret</div>
-    <PiXiuYaml :yaml-create-url="data.createSecretUrl"></PiXiuYaml>
+    <PiXiuYaml :cluster="data.cluster"></PiXiuYaml>
     <!--    <div-->
     <!--      style="-->
     <!--        display: block;-->
