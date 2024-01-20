@@ -147,10 +147,10 @@ const cancelUpdate = () => {
 
 onMounted(() => {
   data.cloud = proxy.$route.query;
-  console.log(data.cloud);
   data.cluster = proxy.$route.query.cluster;
   data.configmapForm.metadata.name = data.cloud.name;
   data.path = proxy.$route.fullPath;
+
   getConfigMap();
   getNamespace();
   getNamespaceList();
