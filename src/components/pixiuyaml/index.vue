@@ -102,6 +102,7 @@ const confirmYaml = async () => {
     return;
   }
 
+  // TODO: 待优化
   const kind = yamlData.kind;
   if (kind === undefined || kind === '' || kind === null) {
     ElMessage({
@@ -119,7 +120,6 @@ const confirmYaml = async () => {
     });
     return;
   }
-
   const name = metadata.name;
   if (name === undefined || name === '' || name === null) {
     ElMessage({
@@ -132,6 +132,18 @@ const confirmYaml = async () => {
   if (namespace === undefined || namespace === '' || namespace === null) {
     ElMessage({
       message: 'metadata.namespace 为必填项',
+      type: 'warning',
+    });
+    return;
+  }
+
+  let url = '';
+
+  if (kind === 'Secret') {
+  } else if (kind === 'Service') {
+  } else {
+    ElMessage({
+      message: '资源类型 ' + kind + ' 暂不支持',
       type: 'warning',
     });
     return;
