@@ -8,6 +8,7 @@
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createStorageClass">新建</button>
+        <button class="pixiu-two-button2" @click="getNodes" style="margin-left: 10px">刷新</button>
 
         <div style="margin-left: 8px; float: right; margin-top: 6px">
           <pixiu-icon
