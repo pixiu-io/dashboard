@@ -230,6 +230,11 @@
   color: #c62828;
 }
 
+/* 告警状态字体 */
+.color-yellow-word {
+  color: #e6a23c;
+}
+
 .app-pixiu-line-describe4 {
   margin-left: 100px;
   margin-top: -35px;
