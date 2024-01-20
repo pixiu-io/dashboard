@@ -37,7 +37,7 @@
   <el-card class="contend-card-container2">
     <div class="big-world-style" style="margin-bottom: 20px; margin-top: 2px">基本信息</div>
     <div v-if="data.pod" style="margin-top: 8px; width: 100%; border-radius: 0px">
-      <el-form-item label="名称" class="namespace-info" style="">
+      <el-form-item label="名称" class="namespace-info">
         <span class="namespace-detail-info" style="margin-left: 90px">
           {{ data.pod.metadata.name }}
         </span>

@@ -29,7 +29,7 @@
                 />
               </el-radio-group>
             </el-form-item>
-            <div class="app-pixiu-describe">
+            <div class="app-pixiu-describe" style="margin-top: -6px">
               处在不同地域的云产品内网不通，导入后无法更换。建议选择合适的地域，以提高使用体验。
             </div>
 
