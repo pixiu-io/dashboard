@@ -66,6 +66,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  yamlCreateUrl: {
+    type: String,
+    default: '',
+  },
 });
 
 onMounted(() => {
@@ -74,6 +78,7 @@ onMounted(() => {
 
 watch(() => {
   // data.cluster = props.cluster.valueOf();
+  data.yamlCreateUrl = props.yamlCreateUrl.valueOf();
 });
 
 const handleCreateYamlDialog = () => {
