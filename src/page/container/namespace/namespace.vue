@@ -1,6 +1,7 @@
 <template>
   <el-card class="title-card-container">
     <div class="font-container">命名空间</div>
+    <PiXiuYaml></PiXiuYaml>
   </el-card>
 
   <div style="margin-top: 25px">
@@ -120,6 +121,7 @@ import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { getNamespaces } from '@/services/cloudService';
 import useClipboard from 'vue-clipboard3';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();

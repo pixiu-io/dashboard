@@ -1,7 +1,7 @@
 <template>
   <el-card class="title-card-container">
     <div class="font-container">Pod</div>
-    <PiXiuYaml :yaml-create-url="data.createSecretUrl"></PiXiuYaml>
+    <PiXiuYaml></PiXiuYaml>
   </el-card>
 
   <div style="margin-top: 25px">

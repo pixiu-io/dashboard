@@ -1,6 +1,7 @@
 <template>
   <el-card class="title-card-container">
     <div class="font-container">Release</div>
+    <PiXiuYaml></PiXiuYaml>
   </el-card>
 
   <div style="margin-top: 20px">
@@ -140,6 +141,7 @@
 import { useRouter } from 'vue-router';
 import { formatTimestamp } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
+import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
