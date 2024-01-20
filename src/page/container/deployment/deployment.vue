@@ -8,7 +8,9 @@
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createDeployment">新建</button>
-        <button class="pixiu-two-button2" style="margin-left: 10px">监控</button>
+        <button class="pixiu-two-button2" @click="getDeployments" style="margin-left: 10px">
+          刷新
+        </button>
 
         <el-input
           v-model="data.pageInfo.query"
