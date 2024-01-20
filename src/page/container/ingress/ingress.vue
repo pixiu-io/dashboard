@@ -1,6 +1,7 @@
 <template>
   <el-card class="title-card-container">
     <div class="font-container">Ingress</div>
+    <PiXiuYaml></PiXiuYaml>
   </el-card>
 
   <div style="margin-top: 25px">
@@ -110,6 +111,7 @@ import { formatTimestamp } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getNamespaces } from '@/services/cloudService';
+import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();

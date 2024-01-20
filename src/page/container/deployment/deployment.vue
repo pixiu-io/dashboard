@@ -1,22 +1,7 @@
 <template>
   <el-card class="title-card-container">
     <div class="font-container">Deployment</div>
-
-    <div
-      style="
-        display: block;
-        font-size: 12px;
-        margin-top: -20px;
-        float: right;
-        color: rgba(0, 0, 0, 0.9);
-        vertical-align: middle;
-      "
-    >
-      操作指南
-      <el-icon style="vertical-align: middle; margin-right: 10px">
-        <component :is="'Edit'" />
-      </el-icon>
-    </div>
+    <PiXiuYaml></PiXiuYaml>
   </el-card>
 
   <div style="margin-top: 25px">
@@ -204,6 +189,7 @@ import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import PixiuTag from '@/components/pixiuTag/index.vue';
+import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
