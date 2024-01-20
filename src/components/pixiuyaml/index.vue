@@ -53,35 +53,27 @@ import { ElMessage } from 'element-plus';
 
 const { proxy } = getCurrentInstance();
 const editYaml = ref();
+
 const data = reactive({
-  title: '编辑 yaml',
+  cluster: '',
+
   yaml: '',
   yamlDialog: false,
-  yamlCreateUrl: '',
-  yamlMethod: 'post',
 });
 
 const props = defineProps({
-  title: {
-    type: String,
-    default: '编辑 yaml',
-  },
-  yamlMethod: {
-    type: String,
-    default: 'post',
-  },
-  yamlCreateUrl: {
+  cluster: {
     type: String,
     default: '',
   },
 });
 
-onMounted(() => {});
+onMounted(() => {
+  data.cluster = proxy.$route.query.cluster;
+});
 
 watch(() => {
-  data.title = props.title.valueOf();
-  data.yamlMethod = props.yamlMethod.valueOf();
-  data.yamlCreateUrl = props.yamlCreateUrl.valueOf();
+  // data.cluster = props.cluster.valueOf();
 });
 
 const handleCreateYamlDialog = () => {
@@ -95,8 +87,8 @@ const closeYamlDialog = () => {
 };
 
 const confirmYaml = async () => {
-  const data = jsYaml.load(editYaml.value.code);
-  if (data === undefined) {
+  const d = jsYaml.load(editYaml.value.code);
+  if (d === undefined) {
     ElMessage({
       message: 'YAML创建资源不能为空',
       type: 'warning',
