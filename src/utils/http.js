@@ -49,6 +49,9 @@ instance.interceptors.response.use(
         localStorage.clear();
         location.href('/login');
       }
+
+      console.log('data111', data);
+
       return Promise.reject(data);
     }
   },
@@ -57,6 +60,7 @@ instance.interceptors.response.use(
       message: error.message,
       type: 'error',
     });
+    console.log('error', error);
 
     return Promise.reject(error);
   },
