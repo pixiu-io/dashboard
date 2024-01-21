@@ -4,7 +4,7 @@
     <PiXiuYaml></PiXiuYaml>
   </el-card>
 
-  <div style="margin-top: 20px">
+  <div style="margin-top: 25px">
     <el-row>
       <el-col>
         <button class="pixiu-two-button">新建</button>
@@ -15,7 +15,7 @@
         <el-input
           v-model="data.pageInfo.query"
           placeholder="名称搜索关键字"
-          style="width: 420px; float: right"
+          style="width: 480px; float: right"
           clearable
           @input="getReleases"
           @clear="getReleases"
@@ -29,7 +29,7 @@
 
         <el-select
           v-model="data.namespace"
-          style="width: 160px; float: right; margin-right: 10px"
+          style="width: 200px; float: right; margin-right: 10px"
           @change="changeNamespace"
         >
           <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />

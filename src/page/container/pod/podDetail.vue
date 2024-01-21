@@ -29,25 +29,81 @@
       <el-col>
         <button class="pixiu-two-button" @click="GetPod">刷新</button>
         <button class="pixiu-two-button2" style="margin-left: 10px">删除</button>
-        <!-- <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">查看YAML</button> -->
       </el-col>
     </el-row>
   </div>
 
   <el-card class="contend-card-container2">
-    <div class="big-world-style" style="margin-bottom: 20px; margin-top: 2px">基本信息</div>
-    <div v-if="data.pod" style="margin-top: 8px; width: 100%; border-radius: 0px">
-      <el-form-item label="名称" class="namespace-info">
-        <span class="namespace-detail-info" style="margin-left: 90px">
+    <div v-if="data.pod" style="margin-top: 6px; width: 100%; border-radius: 0px">
+      <el-descriptions
+        style="margin-left: 8px"
+        class="margin-top"
+        title="基本信息"
+        :column="3"
+        border
+      >
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">名称</div>
+          </template>
           {{ data.pod.metadata.name }}
-        </span>
-      </el-form-item>
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">命名空间</div>
+          </template>
+          {{ data.pod.metadata.namespace }}
+        </el-descriptions-item>
 
-      <el-form-item label="创建时间" class="namespace-info">
-        <span class="namespace-detail-info" style="margin-left: 65px">
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">QoS类别</div>
+          </template>
+          {{ data.pod.status.qosClass }}
+        </el-descriptions-item>
+
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">所在节点</div>
+          </template>
+          {{ data.pod.spec.nodeName }}
+        </el-descriptions-item>
+
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">实例IP</div>
+          </template>
+          {{ data.pod.status.podIP }}
+        </el-descriptions-item>
+
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">状态</div>
+          </template>
+          Running
+        </el-descriptions-item>
+
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">重启次数</div>
+          </template>
+          0
+        </el-descriptions-item>
+
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">创建时间</div>
+          </template>
           {{ data.pod.metadata.creationTimestamp }}
-        </span>
-      </el-form-item>
+        </el-descriptions-item>
+
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">镜像</div>
+          </template>
+          nginx
+        </el-descriptions-item>
+      </el-descriptions>
     </div>
 
     <el-tabs
@@ -59,13 +115,129 @@
       <el-tab-pane label="容器" name="first"> </el-tab-pane>
       <el-tab-pane label="元数据" name="second"> </el-tab-pane>
       <el-tab-pane label="环境变量" name="third"> </el-tab-pane>
-      <el-tab-pane label="监控" name="four"></el-tab-pane>
+      <el-tab-pane label="日志" name="four"></el-tab-pane>
       <el-tab-pane label="事件" name="five"></el-tab-pane>
       <el-tab-pane label="YAML" name="six"></el-tab-pane>
     </el-tabs>
   </el-card>
 
-  <el-card class="contend-card-container2"> </el-card>
+  <div v-if="data.activeName === 'first'">
+    <div v-for="item in data.pod.spec.containers" :key="item" style="font-size: 14px">
+      <el-card class="contend-card-container3">
+        <div>{{ item.name }}</div>
+        <div>镜像: {{ item.image }}</div>
+      </el-card>
+    </div>
+  </div>
+
+  <div v-if="data.activeName === 'second'">元数据</div>
+
+  <div v-if="data.activeName === 'third'">环境变量</div>
+
+  <div v-if="data.activeName === 'four'">
+    <button style="margin-top: 15px; width: 85px" class="pixiu-two-button" @click="getPodLog">
+      日志刷新
+    </button>
+
+    <div style="margin-top: 15px">
+      <el-card class="contend-card-container2">
+        <div style="background-color: #29232b; color: white; min-height: 400px">
+          <div style="margin-left: 20px">
+            <div v-if="data.podLogs.length === 0" style="font-size: 14px">暂无日志</div>
+            <div v-else>
+              <div v-for="(item, index) in data.podLogs" :key="item" style="font-size: 14px">
+                {{ index + 1 }} <span style="margin-left: 18px"></span> {{ item }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </el-card>
+    </div>
+  </div>
+
+  <div v-if="data.activeName === 'five'">
+    <el-col>
+      <button
+        style="margin-top: 15px; width: 85px"
+        class="pixiu-two-button"
+        @click="getDeploymentEvents"
+      >
+        事件刷新
+      </button>
+      <button style="margin-top: 15px; margin-left: 10px; width: 85px" class="pixiu-two-button2">
+        批量删除
+      </button>
+
+      <div style="float: right; margin-top: 16px">
+        <el-switch v-model="data.eventAutoRefresh" inline-prompt width="36px" /><span
+          style="font-size: 13px; margin-left: 5px; margin-right: 10px"
+          >自动刷新</span
+        >
+      </div>
+    </el-col>
+
+    <el-card class="contend-card-container2">
+      <el-table
+        v-loading="data.loading"
+        :data="data.deploymentEvents"
+        stripe
+        style="margin-top: 10px; width: 100%; margin-bottom: 25px"
+        header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#29292b',
+        }"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="30px" />
+        <el-table-column prop="lastTimestamp" label="最后出现时间" :formatter="formatterTime" />
+        <el-table-column prop="type" label="级别" />
+        <el-table-column prop="kind" label="资源类型"> </el-table-column>
+        <el-table-column prop="objectName" label="资源名称"> </el-table-column>
+        <el-table-column prop="message" label="内容" width="500ox" />
+
+        <el-table-column fixed="right" label="操作" width="100px">
+          <template #default="scope">
+            <el-button
+              size="small"
+              type="text"
+              style="margin-right: -25px; margin-left: -10px; color: #006eff"
+              @click="deleteEvent(scope.row)"
+            >
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
+  </div>
+
+  <div v-if="data.activeName === 'six'">
+    <div style="margin-top: 20px">
+      <el-col>
+        <button class="pixiu-two-button" style="width: 85px" @click="editYaml">编辑YAML</button>
+        <button class="pixiu-two-button" style="margin-left: 10px" @click="copyYmal">复制</button>
+
+        <div style="margin-left: 8px; float: right; margin-top: 6px">
+          <pixiu-icon
+            name="icon-icon-refresh"
+            style="cursor: pointer"
+            size="14px"
+            type="iconfont"
+            color="#909399"
+            @click="GetPod"
+          />
+        </div>
+      </el-col>
+    </div>
+    <div style="margin-top: 10px"></div>
+
+    <MyCodeMirror :yaml="data.yaml" :read-only="data.readOnly" :height="400"></MyCodeMirror>
+    <div v-if="!data.readOnly" style="margin-top: 10px">
+      <el-button class="pixiu-cancel-button" @click="cancel()">取消</el-button>
+      <el-button class="pixiu-confirm-button" type="primary" @click="confirm()">确定</el-button>
+    </div>
+  </div>
 </template>
 
 <script setup lang="jsx">
@@ -87,6 +259,7 @@ const data = reactive({
   name: '',
 
   pod: '',
+  podLogs: [],
 
   pageInfo: {
     page: 1,
@@ -95,7 +268,7 @@ const data = reactive({
     total: 0,
   },
 
-  activeName: 'first',
+  activeName: 'five',
 
   yaml: '',
   yamlName: '',
@@ -175,7 +348,7 @@ const editYaml = () => {
 
 <style scoped="scoped">
 .namespace-tab {
-  margin-top: 1px;
+  margin-top: 10px;
   margin-left: 10px;
   margin-bottom: -32px;
 }
