@@ -137,20 +137,15 @@ const confirmYaml = async () => {
     return;
   }
 
-  let getUrl = `/proxy/pixiu/${data.cluster}`;
-  let postUrl = `/proxy/pixiu/${data.cluster}`;
+  let baseUrl = `/proxy/pixiu/${data.cluster}`;
   if (kind === 'Secret') {
-    getUrl = getUrl + `/api/v1/namespaces/${namespace}/secrets/${name}`;
-    postUrl = postUrl + `/api/v1/namespaces/${namespace}/secrets`;
+    baseUrl = baseUrl + `/api/v1/namespaces/${namespace}/secrets`;
   } else if (kind === 'Service') {
-    getUrl = getUrl + `/api/v1/namespaces/${namespace}/services/${name}`;
-    postUrl = postUrl + `/api/v1/namespaces/${namespace}/services`;
+    baseUrl = baseUrl + `/api/v1/namespaces/${namespace}/services`;
   } else if (kind === 'ConfigMap') {
-    getUrl = getUrl + `/api/v1/namespaces/${namespace}/configmaps/${name}`;
-    postUrl = postUrl + `/api/v1/namespaces/${namespace}/configmaps`;
+    baseUrl = baseUrl + `/api/v1/namespaces/${namespace}/configmaps`;
   } else if (kind === 'Deployment') {
-    getUrl = getUrl + `/apis/apps/v1/namespaces/${namespace}/deployments/${name}`;
-    postUrl = postUrl + `/apis/apps/v1/namespaces/${namespace}/deployments`;
+    baseUrl = baseUrl + `/apis/apps/v1/namespaces/${namespace}/deployments`;
   } else {
     ElMessage({
       message: '资源类型 ' + kind + ' 暂不支持',
@@ -161,8 +156,18 @@ const confirmYaml = async () => {
 
   try {
     const resp = await proxy.$http({
+      method: 'get',
+      url: `${baseUrl}/${name}`,
+    });
+  } catch (error) {
+    console.log('err', error);
+    return;
+  }
+
+  try {
+    const resp = await proxy.$http({
       method: 'post',
-      url: postUrl,
+      url: baseUrl,
       data: yamlData,
     });
 
