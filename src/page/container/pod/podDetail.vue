@@ -29,7 +29,6 @@
       <el-col>
         <button class="pixiu-two-button" @click="GetPod">刷新</button>
         <button class="pixiu-two-button2" style="margin-left: 10px">删除</button>
-        <!-- <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">查看YAML</button> -->
       </el-col>
     </el-row>
   </div>
@@ -140,14 +139,6 @@
           style="font-size: 13px; margin-left: 5px; margin-right: 10px"
           >自动刷新</span
         >
-        <pixiu-icon
-          name="icon-icon-refresh"
-          style="cursor: pointer"
-          size="16px"
-          type="iconfont"
-          color="#909399"
-          @click="getDeploymentEvents"
-        />
       </div>
     </el-col>
 
@@ -185,6 +176,33 @@
         </el-table-column>
       </el-table>
     </el-card>
+  </div>
+
+  <div v-if="data.activeName === 'six'">
+    <div style="margin-top: 20px">
+      <el-col>
+        <button class="pixiu-two-button" style="width: 85px" @click="editYaml">编辑YAML</button>
+        <button class="pixiu-two-button" style="margin-left: 10px" @click="copyYmal">复制</button>
+
+        <div style="margin-left: 8px; float: right; margin-top: 6px">
+          <pixiu-icon
+            name="icon-icon-refresh"
+            style="cursor: pointer"
+            size="14px"
+            type="iconfont"
+            color="#909399"
+            @click="GetPod"
+          />
+        </div>
+      </el-col>
+    </div>
+    <div style="margin-top: 10px"></div>
+
+    <MyCodeMirror :yaml="data.yaml" :read-only="data.readOnly" :height="450"></MyCodeMirror>
+    <div v-if="!data.readOnly" style="margin-top: 10px">
+      <el-button class="pixiu-cancel-button" @click="cancel()">取消</el-button>
+      <el-button class="pixiu-confirm-button" type="primary" @click="confirm()">确定</el-button>
+    </div>
   </div>
 </template>
 
