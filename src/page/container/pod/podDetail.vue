@@ -35,55 +35,76 @@
   </div>
 
   <el-card class="contend-card-container2">
-    <div class="big-world-style" style="margin-bottom: 20px; margin-top: 2px">基本信息</div>
-    <div v-if="data.pod" style="margin-top: 8px; width: 100%; border-radius: 0px">
-      <el-form-item label="名称" class="namespace-info">
-        <span class="namespace-detail-info" style="margin-left: 90px">
+    <div v-if="data.pod" style="margin-top: 6px; width: 100%; border-radius: 0px">
+      <el-descriptions
+        style="margin-left: 8px"
+        class="margin-top"
+        title="基本信息"
+        :column="3"
+        border
+      >
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">名称</div>
+          </template>
           {{ data.pod.metadata.name }}
-        </span>
-      </el-form-item>
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">命名空间</div>
+          </template>
+          {{ data.pod.metadata.namespace }}
+        </el-descriptions-item>
 
-      <el-form-item label="镜像" class="namespace-info">
-        <span class="namespace-detail-info" style="margin-left: 65px">
-          {{ data.pod.metadata.creationTimestamp }}
-        </span>
-      </el-form-item>
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">QoS类别</div>
+          </template>
+          {{ data.pod.status.qosClass }}
+        </el-descriptions-item>
 
-      <el-form-item label="状态" class="namespace-info">
-        <span class="namespace-detail-info" style="margin-left: 65px">
-          {{ data.pod.metadata.creationTimestamp }}
-        </span>
-      </el-form-item>
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">所在节点</div>
+          </template>
+          {{ data.pod.spec.nodeName }}
+        </el-descriptions-item>
 
-      <el-form-item label="命名空间" class="namespace-info">
-        <span class="namespace-detail-info" style="margin-left: 65px">
-          {{ data.pod.metadata.creationTimestamp }}
-        </span>
-      </el-form-item>
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">实例IP</div>
+          </template>
+          {{ data.pod.status.podIP }}
+        </el-descriptions-item>
 
-      <el-form-item label="所在节点" class="namespace-info">
-        <span class="namespace-detail-info" style="margin-left: 65px">
-          {{ data.pod.metadata.creationTimestamp }}
-        </span>
-      </el-form-item>
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">状态</div>
+          </template>
+          Running
+        </el-descriptions-item>
 
-      <el-form-item label="实例IP" class="namespace-info">
-        <span class="namespace-detail-info" style="margin-left: 65px">
-          {{ data.pod.metadata.creationTimestamp }}
-        </span>
-      </el-form-item>
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">重启次数</div>
+          </template>
+          0
+        </el-descriptions-item>
 
-      <el-form-item label="QoS类别" class="namespace-info">
-        <span class="namespace-detail-info" style="margin-left: 65px">
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">创建时间</div>
+          </template>
           {{ data.pod.metadata.creationTimestamp }}
-        </span>
-      </el-form-item>
+        </el-descriptions-item>
 
-      <el-form-item label="创建时间" class="namespace-info">
-        <span class="namespace-detail-info" style="margin-left: 65px">
-          {{ data.pod.metadata.creationTimestamp }}
-        </span>
-      </el-form-item>
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">镜像</div>
+          </template>
+          nginx
+        </el-descriptions-item>
+      </el-descriptions>
     </div>
 
     <el-tabs
@@ -211,7 +232,7 @@ const editYaml = () => {
 
 <style scoped="scoped">
 .namespace-tab {
-  margin-top: 1px;
+  margin-top: 10px;
   margin-left: 10px;
   margin-bottom: -32px;
 }
