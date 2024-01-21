@@ -1,7 +1,7 @@
 <template>
   <el-card class="title-card-container">
     <div class="font-container">Secret</div>
-    <PiXiuYaml :yaml-create-url="data.createSecretUrl"></PiXiuYaml>
+    <PiXiuYaml :cluster="data.cluster"></PiXiuYaml>
     <!--    <div-->
     <!--      style="-->
     <!--        display: block;-->
@@ -29,6 +29,9 @@
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createSecret">新建</button>
+        <button class="pixiu-two-button2" @click="getSecrets" style="margin-left: 10px">
+          刷新
+        </button>
         <el-input
           v-model="data.pageInfo.query"
           placeholder="名称搜索关键字"

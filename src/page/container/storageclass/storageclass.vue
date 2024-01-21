@@ -8,6 +8,10 @@
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createStorageClass">新建</button>
+        <button class="pixiu-two-button2" @click="getStorageClass" style="margin-left: 10px">
+          刷新
+        </button>
+
         <el-input
           v-model="data.pageInfo.query"
           placeholder="名称搜索关键字"

@@ -24,7 +24,7 @@
   <el-dialog
     :model-value="data.yamlDialog"
     style="color: #000000; font: 14px; margin-top: 50px"
-    width="800px"
+    width="50%"
     center
     @close="closeYamlDialog"
   >
@@ -49,25 +49,23 @@
 import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
+import { ElMessage } from 'element-plus';
 
 const { proxy } = getCurrentInstance();
 const editYaml = ref();
+
 const data = reactive({
-  title: '编辑 yaml',
-  yaml: '',
+  cluster: '',
+
   yamlDialog: false,
+  yaml: '',
   yamlCreateUrl: '',
-  yamlMethod: 'post',
 });
 
 const props = defineProps({
-  title: {
+  cluster: {
     type: String,
-    default: '编辑 yaml',
-  },
-  yamlMethod: {
-    type: String,
-    default: 'post',
+    default: '',
   },
   yamlCreateUrl: {
     type: String,
@@ -75,11 +73,12 @@ const props = defineProps({
   },
 });
 
-onMounted(() => {});
+onMounted(() => {
+  data.cluster = proxy.$route.query.cluster;
+});
 
 watch(() => {
-  data.title = props.title.valueOf();
-  data.yamlMethod = props.yamlMethod.valueOf();
+  // data.cluster = props.cluster.valueOf();
   data.yamlCreateUrl = props.yamlCreateUrl.valueOf();
 });
 
@@ -94,16 +93,83 @@ const closeYamlDialog = () => {
 };
 
 const confirmYaml = async () => {
-  let yaml = jsYaml.load(editYaml.value.code);
+  const yamlData = jsYaml.load(editYaml.value.code);
+  if (yamlData === undefined) {
+    ElMessage({
+      message: 'YAML创建资源不能为空',
+      type: 'warning',
+    });
+    return;
+  }
+
+  // TODO: 待优化
+  const kind = yamlData.kind;
+  if (kind === undefined || kind === '' || kind === null) {
+    ElMessage({
+      message: 'kind 为必填项',
+      type: 'warning',
+    });
+    return;
+  }
+
+  const metadata = yamlData.metadata;
+  if (metadata === undefined || metadata === '' || metadata === null) {
+    ElMessage({
+      message: 'metadata 为必填项',
+      type: 'warning',
+    });
+    return;
+  }
+  const name = metadata.name;
+  if (name === undefined || name === '' || name === null) {
+    ElMessage({
+      message: 'metadata.name 为必填项',
+      type: 'warning',
+    });
+    return;
+  }
+  const namespace = metadata.namespace;
+  if (namespace === undefined || namespace === '' || namespace === null) {
+    ElMessage({
+      message: 'metadata.namespace 为必填项',
+      type: 'warning',
+    });
+    return;
+  }
+
+  let getUrl = `/proxy/pixiu/${data.cluster}`;
+  let postUrl = `/proxy/pixiu/${data.cluster}`;
+  if (kind === 'Secret') {
+    getUrl = getUrl + `/api/v1/namespaces/${namespace}/secrets/${name}`;
+    postUrl = postUrl + `/api/v1/namespaces/${namespace}/secrets`;
+  } else if (kind === 'Service') {
+    getUrl = getUrl + `/api/v1/namespaces/${namespace}/services/${name}`;
+    postUrl = postUrl + `/api/v1/namespaces/${namespace}/services`;
+  } else if (kind === 'ConfigMap') {
+    getUrl = getUrl + `/api/v1/namespaces/${namespace}/configmaps/${name}`;
+    postUrl = postUrl + `/api/v1/namespaces/${namespace}/configmaps`;
+  } else if (kind === 'Deployment') {
+    getUrl = getUrl + `/apis/apps/v1/namespaces/${namespace}/deployments/${name}`;
+    postUrl = postUrl + `/apis/apps/v1/namespaces/${namespace}/deployments`;
+  } else {
+    ElMessage({
+      message: '资源类型 ' + kind + ' 暂不支持',
+      type: 'warning',
+    });
+    return;
+  }
+
   try {
     const resp = await proxy.$http({
-      method: data.yamlMethod,
-      url: data.yamlCreateUrl,
-      data: yaml,
+      method: 'post',
+      url: postUrl,
+      data: yamlData,
     });
+
+    proxy.$message.success(`${kind}: ${name}(${namespace}) 创建成功`);
+
+    data.yamlDialog = false;
+    data.yaml = '';
   } catch (error) {}
-  data.yamlDialog = false;
-  data.yaml = '';
-  proxy.$message.success(`创建成功`);
 };
 </script>
