@@ -121,7 +121,14 @@
     </el-tabs>
   </el-card>
 
-  <div v-if="data.activeName === 'first'">容器详情</div>
+  <div v-if="data.activeName === 'first'">
+    <div v-for="item in data.pod.spec.containers" :key="item" style="font-size: 14px">
+      <el-card class="contend-card-container3">
+        <div>{{ item.name }}</div>
+        <div>镜像: {{ item.image }}</div>
+      </el-card>
+    </div>
+  </div>
 
   <div v-if="data.activeName === 'second'">元数据</div>
 
