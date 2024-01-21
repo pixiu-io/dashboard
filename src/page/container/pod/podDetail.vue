@@ -115,11 +115,32 @@
       <el-tab-pane label="容器" name="first"> </el-tab-pane>
       <el-tab-pane label="元数据" name="second"> </el-tab-pane>
       <el-tab-pane label="环境变量" name="third"> </el-tab-pane>
-      <el-tab-pane label="监控" name="four"></el-tab-pane>
+      <el-tab-pane label="日志" name="four"></el-tab-pane>
       <el-tab-pane label="事件" name="five"></el-tab-pane>
       <el-tab-pane label="YAML" name="six"></el-tab-pane>
     </el-tabs>
   </el-card>
+
+  <div v-if="data.activeName === 'four'">
+    <button style="margin-top: 15px; width: 85px" class="pixiu-two-button" @click="getPodLog">
+      日志刷新
+    </button>
+
+    <div style="margin-top: 15px">
+      <el-card class="contend-card-container2">
+        <div style="background-color: #29232b; color: white; min-height: 440px">
+          <div style="margin-left: 20px">
+            <div v-if="data.podLogs.length === 0" style="font-size: 14px">暂无日志</div>
+            <div v-else>
+              <div v-for="(item, index) in data.podLogs" :key="item" style="font-size: 14px">
+                {{ index + 1 }} <span style="margin-left: 18px"></span> {{ item }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </el-card>
+    </div>
+  </div>
 
   <div v-if="data.activeName === 'five'">
     <el-col>
@@ -225,6 +246,7 @@ const data = reactive({
   name: '',
 
   pod: '',
+  podLogs: [],
 
   pageInfo: {
     page: 1,
