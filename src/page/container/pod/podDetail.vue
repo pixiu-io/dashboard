@@ -121,6 +121,12 @@
     </el-tabs>
   </el-card>
 
+  <div v-if="data.activeName === 'first'">容器详情</div>
+
+  <div v-if="data.activeName === 'second'">元数据</div>
+
+  <div v-if="data.activeName === 'third'">环境变量</div>
+
   <div v-if="data.activeName === 'four'">
     <button style="margin-top: 15px; width: 85px" class="pixiu-two-button" @click="getPodLog">
       日志刷新
