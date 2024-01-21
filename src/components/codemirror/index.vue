@@ -3,6 +3,7 @@
     v-model:value="code"
     :options="data.cmOptions"
     placeholder=""
+    v-if="data.autoRefesh"
     :height="data.height"
     style="font-size: 15px; margin-top: 2px; font-family: Tahoma, Verdana, Arial, sans-serif"
     @change="change"
@@ -41,6 +42,7 @@ const data = reactive({
     gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'], // 添加折叠图标
   },
   height: 600,
+  autoRefesh: false,
 });
 const props = defineProps({
   yaml: {
@@ -60,6 +62,7 @@ onMounted(() => {
   code.value = props.yaml.valueOf();
   data.cmOptions.readOnly = props.readOnly.valueOf();
   data.height = props.height.valueOf();
+  data.autoRefesh = true;
 });
 
 watch(() => {
