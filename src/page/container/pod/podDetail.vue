@@ -128,7 +128,7 @@
 
     <div style="margin-top: 15px">
       <el-card class="contend-card-container2">
-        <div style="background-color: #29232b; color: white; min-height: 440px">
+        <div style="background-color: #29232b; color: white; min-height: 400px">
           <div style="margin-left: 20px">
             <div v-if="data.podLogs.length === 0" style="font-size: 14px">暂无日志</div>
             <div v-else>
