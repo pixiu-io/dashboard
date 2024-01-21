@@ -137,20 +137,15 @@ const confirmYaml = async () => {
     return;
   }
 
-  let getUrl = `/proxy/pixiu/${data.cluster}`;
-  let postUrl = `/proxy/pixiu/${data.cluster}`;
+  let baseUrl = `/proxy/pixiu/${data.cluster}`;
   if (kind === 'Secret') {
-    getUrl = getUrl + `/api/v1/namespaces/${namespace}/secrets/${name}`;
-    postUrl = postUrl + `/api/v1/namespaces/${namespace}/secrets`;
+    baseUrl = baseUrl + `/api/v1/namespaces/${namespace}/secrets`;
   } else if (kind === 'Service') {
-    getUrl = getUrl + `/api/v1/namespaces/${namespace}/services/${name}`;
-    postUrl = postUrl + `/api/v1/namespaces/${namespace}/services`;
+    baseUrl = baseUrl + `/api/v1/namespaces/${namespace}/services`;
   } else if (kind === 'ConfigMap') {
-    getUrl = getUrl + `/api/v1/namespaces/${namespace}/configmaps/${name}`;
-    postUrl = postUrl + `/api/v1/namespaces/${namespace}/configmaps`;
+    baseUrl = baseUrl + `/api/v1/namespaces/${namespace}/configmaps`;
   } else if (kind === 'Deployment') {
-    getUrl = getUrl + `/apis/apps/v1/namespaces/${namespace}/deployments/${name}`;
-    postUrl = postUrl + `/apis/apps/v1/namespaces/${namespace}/deployments`;
+    baseUrl = baseUrl + `/apis/apps/v1/namespaces/${namespace}/deployments`;
   } else {
     ElMessage({
       message: '资源类型 ' + kind + ' 暂不支持',
@@ -161,15 +156,37 @@ const confirmYaml = async () => {
 
   try {
     const resp = await proxy.$http({
-      method: 'post',
-      url: postUrl,
-      data: yamlData,
+      method: 'get',
+      url: `${baseUrl}/${name}`,
     });
+    ElMessage({
+      message: `${kind}: ${name}(${namespace}) 已存在`,
+      type: 'warning',
+    });
+    return;
+  } catch (error) {
+    if (error.response.status !== 404) {
+      ElMessage({
+        message: error.response.data.message,
+        type: 'error',
+      });
+      return;
+    }
 
-    proxy.$message.success(`${kind}: ${name}(${namespace}) 创建成功`);
+    //  对象不存在时，下发创建请求
+    try {
+      const resp = await proxy.$http({
+        method: 'post',
+        url: baseUrl,
+        data: yamlData,
+      });
 
-    data.yamlDialog = false;
-    data.yaml = '';
-  } catch (error) {}
+      proxy.$message.success(`${kind}: ${name}(${namespace}) 创建成功`);
+      data.yamlDialog = false;
+      data.yaml = '';
+    } catch (error) {
+      proxy.$message.error(error.response.data.message);
+    }
+  }
 };
 </script>
