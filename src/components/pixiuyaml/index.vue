@@ -159,22 +159,34 @@ const confirmYaml = async () => {
       method: 'get',
       url: `${baseUrl}/${name}`,
     });
-  } catch (error) {
-    console.log('111err', error.response);
-    return;
-  }
-
-  try {
-    const resp = await proxy.$http({
-      method: 'post',
-      url: baseUrl,
-      data: yamlData,
+    ElMessage({
+      message: `${kind}: ${name}(${namespace}) 已存在`,
+      type: 'warning',
     });
+    return;
+  } catch (error) {
+    if (error.response.status !== 404) {
+      ElMessage({
+        message: error.response.data.message,
+        type: 'error',
+      });
+      return;
+    }
 
-    proxy.$message.success(`${kind}: ${name}(${namespace}) 创建成功`);
+    //  对象不存在时，下发创建请求
+    try {
+      const resp = await proxy.$http({
+        method: 'post',
+        url: baseUrl,
+        data: yamlData,
+      });
 
-    data.yamlDialog = false;
-    data.yaml = '';
-  } catch (error) {}
+      proxy.$message.success(`${kind}: ${name}(${namespace}) 创建成功`);
+      data.yamlDialog = false;
+      data.yaml = '';
+    } catch (error) {
+      proxy.$message.error(error.response.data.message);
+    }
+  }
 };
 </script>
