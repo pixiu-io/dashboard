@@ -160,7 +160,7 @@ const confirmYaml = async () => {
       url: `${baseUrl}/${name}`,
     });
   } catch (error) {
-    console.log('err', error);
+    console.log('111err', error.response);
     return;
   }
 

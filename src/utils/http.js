@@ -50,17 +50,17 @@ instance.interceptors.response.use(
         location.href('/login');
       }
 
-      console.log('data111', data);
-
       return Promise.reject(data);
     }
   },
   (error) => {
-    ElMessage({
-      message: error.message,
-      type: 'error',
-    });
-    console.log('error', error);
+    // 临时处理 k8s 的 get 请求，404 是正常回显，axios 会处理成异常
+    if (error.response.status !== 404) {
+      ElMessage({
+        message: error.message,
+        type: 'error',
+      });
+    }
 
     return Promise.reject(error);
   },
