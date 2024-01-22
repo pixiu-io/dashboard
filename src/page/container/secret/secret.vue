@@ -2,6 +2,27 @@
   <el-card class="title-card-container">
     <div class="font-container">Secret</div>
     <PiXiuYaml :cluster="data.cluster"></PiXiuYaml>
+    <!--    <div-->
+    <!--      style="-->
+    <!--        display: block;-->
+    <!--        font-size: 12px;-->
+    <!--        margin-top: -20px;-->
+    <!--        float: right;-->
+    <!--        color: rgba(0, 0, 0, 0.9);-->
+    <!--      "-->
+    <!--    >-->
+    <!--      操作指南-->
+    <!--      <el-icon style="vertical-align: middle; margin-right: 10px">-->
+    <!--        <component :is="'Edit'" />-->
+    <!--      </el-icon>-->
+    <!--      <button-->
+    <!--        class="pixiu-two-button"-->
+    <!--        style="width: 125px; margin-top: -10px"-->
+    <!--        @click="handleEditSecretYamlDialog"-->
+    <!--      >-->
+    <!--        YAML创建资源-->
+    <!--      </button>-->
+    <!--    </div>-->
   </el-card>
 
   <div style="margin-top: 25px">
