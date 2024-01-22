@@ -127,7 +127,7 @@
     <div style="margin-top: 20px">
       <el-row>
         <el-col>
-          <button class="pixiu-two-button4">高级特性</button>
+          <button class="pixiu-two-button3">高级特性</button>
 
           <el-input
             v-model="data.pageInfo.query"
@@ -150,7 +150,7 @@
           <div style="float: right">
             <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
               style="font-size: 13px; margin-left: 5px; margin-right: 10px"
-              >自动刷新</span
+              >列表</span
             >
           </div>
         </el-col>
