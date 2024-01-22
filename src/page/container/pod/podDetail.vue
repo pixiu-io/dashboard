@@ -95,7 +95,6 @@
             <div class="cell-item">创建时间</div>
           </template>
           {{ data.pod.metadata.creationTimestamp }}
-          <!-- {{formatterTime(data.pod.metadata.creationTimestamp) }} -->
         </el-descriptions-item>
 
         <el-descriptions-item>
@@ -147,12 +146,6 @@
               />
             </template>
           </el-input>
-          <div style="float: right">
-            <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
-              style="font-size: 13px; margin-left: 5px; margin-right: 10px"
-              >列表</span
-            >
-          </div>
         </el-col>
       </el-row>
     </div>
@@ -339,6 +332,8 @@ const data = reactive({
   yaml: '',
   yamlName: '',
   readOnly: true,
+
+  card: true,
 });
 
 onMounted(async () => {
