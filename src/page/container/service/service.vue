@@ -8,7 +8,7 @@
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createService">新建</button>
-        <button class="pixiu-two-button2" @click="getServices" style="margin-left: 10px">
+        <button class="pixiu-two-button2" style="margin-left: 10px" @click="getServices">
           刷新
         </button>
 

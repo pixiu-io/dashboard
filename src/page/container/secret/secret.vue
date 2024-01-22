@@ -29,7 +29,7 @@
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createSecret">新建</button>
-        <button class="pixiu-two-button2" @click="getSecrets" style="margin-left: 10px">
+        <button class="pixiu-two-button2" style="margin-left: 10px" @click="getSecrets">
           刷新
         </button>
         <el-input

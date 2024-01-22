@@ -34,7 +34,7 @@
   </div>
 
   <el-card class="contend-card-container2">
-    <div v-if="data.pod" style="margin-top: 6px; width: 100%; border-radius: 0px">
+    <div v-if="data.pod" style="width: 100%; border-radius: 0px">
       <el-descriptions
         style="margin-left: 8px"
         class="margin-top"
@@ -52,7 +52,7 @@
           <template #label>
             <div class="cell-item">命名空间</div>
           </template>
-          {{ data.pod.metadata.namespace }}
+          <div style="color: 000000e6">{{ data.pod.metadata.namespace }}</div>
         </el-descriptions-item>
 
         <el-descriptions-item>
@@ -109,6 +109,7 @@
     <el-tabs
       v-model="data.activeName"
       class="namespace-tab"
+      style="margin-top: 12px"
       @tab-click="handleClick"
       @tab-change="handleChange"
     >
@@ -122,12 +123,70 @@
   </el-card>
 
   <div v-if="data.activeName === 'first'">
-    <div v-for="item in data.pod.spec.containers" :key="item" style="font-size: 14px">
-      <el-card class="contend-card-container3">
-        <div>{{ item.name }}</div>
-        <div>镜像: {{ item.image }}</div>
-      </el-card>
+    <div style="margin-top: 20px">
+      <el-row>
+        <el-col>
+          <button class="pixiu-two-button3">容器列表</button>
+
+          <el-input
+            v-model="data.pageInfo.query"
+            placeholder="名称搜索关键字"
+            style="width: 480px; float: right"
+            clearable
+            @clear="getDeploymentPods"
+          >
+            <template #suffix>
+              <pixiu-icon
+                name="icon-search"
+                style="cursor: pointer"
+                size="15px"
+                type="iconfont"
+                color="#909399"
+                @click="getDeploymentPods"
+              />
+            </template>
+          </el-input>
+        </el-col>
+      </el-row>
     </div>
+
+    <el-card class="contend-card-container2">
+      <el-table
+        v-loading="data.loading"
+        :data="data.pod.spec.containers"
+        stripe
+        style="margin-top: 4px; width: 100%; margin-bottom: 25px"
+        header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#29292b',
+        }"
+      >
+        <el-table-column type="selection" width="30px" />
+        <el-table-column prop="name" label="容器名称" />
+        <el-table-column prop="type" label="状态"> Running</el-table-column>
+
+        <el-table-column prop="image" label="镜像"> </el-table-column>
+        <el-table-column prop="imagePullPolicy" label="镜像拉取策略"> </el-table-column>
+        <el-table-column prop="kind" label="启动时间"> </el-table-column>
+
+        <el-table-column prop="-" label="CPU资源" />
+        <el-table-column prop="-" label="内存资源" />
+
+        <el-table-column fixed="right" label="操作" width="100px">
+          <template #default="scope">
+            <el-button
+              size="small"
+              type="text"
+              style="margin-right: -25px; margin-left: -10px; color: #006eff"
+              @click="deleteEvent(scope.row)"
+            >
+              远程登录
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-card>
   </div>
 
   <div v-if="data.activeName === 'second'">元数据</div>
@@ -273,6 +332,8 @@ const data = reactive({
   yaml: '',
   yamlName: '',
   readOnly: true,
+
+  card: true,
 });
 
 onMounted(async () => {
@@ -323,12 +384,7 @@ const formatterTime = (row, column, cellValue) => {
   const time = formatTimestamp(cellValue);
   return (
     <el-tooltip effect="light" placement="top" content={time}>
-      <div
-        class="pixiu-table-formatter"
-        style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;"
-      >
-        {time}
-      </div>
+      <div class="pixiu-ellipsis-style">{time}</div>
     </el-tooltip>
   );
 };
