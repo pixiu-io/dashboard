@@ -1,9 +1,9 @@
 <template>
   <Codemirror
+    v-if="data.autoRefesh"
     v-model:value="code"
     :options="data.cmOptions"
     placeholder=""
-    v-if="data.autoRefesh"
     :height="data.height"
     style="font-size: 15px; margin-top: 2px; font-family: Tahoma, Verdana, Arial, sans-serif"
     @change="change"
