@@ -126,7 +126,7 @@
     <div style="margin-top: 20px">
       <el-row>
         <el-col>
-          <button class="pixiu-two-button3">高级特性</button>
+          <button class="pixiu-two-button3">容器列表</button>
 
           <el-input
             v-model="data.pageInfo.query"
@@ -164,11 +164,11 @@
       >
         <el-table-column type="selection" width="30px" />
         <el-table-column prop="name" label="容器名称" />
-        <el-table-column prop="type" label="状态" />
+        <el-table-column prop="type" label="状态"> Running</el-table-column>
 
         <el-table-column prop="image" label="镜像"> </el-table-column>
         <el-table-column prop="imagePullPolicy" label="镜像拉取策略"> </el-table-column>
-        <el-table-column prop="kind" label="上次重启时间"> </el-table-column>
+        <el-table-column prop="kind" label="启动时间"> </el-table-column>
 
         <el-table-column prop="-" label="CPU资源" />
         <el-table-column prop="-" label="内存资源" />
