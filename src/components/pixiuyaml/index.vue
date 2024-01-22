@@ -115,7 +115,6 @@ const confirmYaml = async () => {
     checkEmpty('kind', kind) ||
     checkEmpty('metadata', yamlData.metadata) ||
     checkEmpty('metadata.name', yamlData.metadata.name) ||
-    checkEmpty('metadata.name', yamlData.metadata.name) ||
     checkEmpty('metadata.namespace', yamlData.metadata.namespace)
   ) {
     return;
