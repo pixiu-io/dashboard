@@ -44,6 +44,19 @@
   cursor: pointer;
 }
 
+.pixiu-two-button4 {
+  height: 31px;
+  min-width: 25px;
+  width: 68px;
+  border-radius: 0%;
+  font-size: 12px;
+  border: 1px solid #cfd5de;
+  color: #0366e7;
+  background-color: white;
+  cursor: pointer;
+  width: 85px;
+}
+
 /* 通用确认按钮 */
 .pixiu-confirm-button {
   height: 35px;

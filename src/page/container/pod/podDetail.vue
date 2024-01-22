@@ -52,7 +52,7 @@
           <template #label>
             <div class="cell-item">命名空间</div>
           </template>
-          {{ data.pod.metadata.namespace }}
+          <div style="color: 000000e6">{{ data.pod.metadata.namespace }}</div>
         </el-descriptions-item>
 
         <el-descriptions-item>
@@ -124,6 +124,39 @@
   </el-card>
 
   <div v-if="data.activeName === 'first'">
+    <div style="margin-top: 20px">
+      <el-row>
+        <el-col>
+          <button class="pixiu-two-button4">销毁重建</button>
+
+          <el-input
+            v-model="data.pageInfo.query"
+            placeholder="名称搜索关键字"
+            style="width: 480px; float: right"
+            clearable
+            @clear="getDeploymentPods"
+          >
+            <template #suffix>
+              <pixiu-icon
+                name="icon-search"
+                style="cursor: pointer"
+                size="15px"
+                type="iconfont"
+                color="#909399"
+                @click="getDeploymentPods"
+              />
+            </template>
+          </el-input>
+          <div style="float: right">
+            <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
+              style="font-size: 13px; margin-left: 5px; margin-right: 10px"
+              >自动刷新</span
+            >
+          </div>
+        </el-col>
+      </el-row>
+    </div>
+
     <el-card class="contend-card-container2">
       <el-table
         v-loading="data.loading"
