@@ -43,7 +43,7 @@
     </el-row>
     <el-card class="box-card">
       <el-table
-        v-loading="loading"
+        v-loading="data.loading"
         :data="data.deploymentList"
         stripe
         style="margin-top: 2px; width: 100%"
