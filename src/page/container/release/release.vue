@@ -8,7 +8,7 @@
     <el-row>
       <el-col>
         <button class="pixiu-two-button">新建</button>
-        <button class="pixiu-two-button2" @click="getReleases" style="margin-left: 10px">
+        <button class="pixiu-two-button2" style="margin-left: 10px" @click="getReleases">
           刷新
         </button>
 
@@ -38,7 +38,7 @@
     </el-row>
     <el-card class="box-card">
       <el-table
-        v-loading="loading"
+        v-loading="data.loading"
         :data="data.releasesList"
         stripe
         style="margin-top: 2px; width: 100%"
