@@ -127,7 +127,7 @@
     <div style="margin-top: 20px">
       <el-row>
         <el-col>
-          <button class="pixiu-two-button4">销毁重建</button>
+          <button class="pixiu-two-button4">高级特性</button>
 
           <el-input
             v-model="data.pageInfo.query"
