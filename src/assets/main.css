@@ -278,3 +278,12 @@
   border-color: #006eff;
   background-color: #fff;
 }
+
+/* 隐藏样式 */
+.pixiu-ellipsis-style {
+  font-size: 12px;
+  color: #29292b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
