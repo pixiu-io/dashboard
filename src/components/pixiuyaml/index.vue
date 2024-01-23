@@ -26,7 +26,7 @@
     style="color: #000000; font: 14px; margin-top: 50px"
     width="50%"
     center
-    @closed="closeYamlDialog"
+    @close="closeYamlDialog"
   >
     <template #header>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">{{ data.title }}</div>
@@ -88,9 +88,9 @@ const handleCreateYamlDialog = () => {
 };
 
 const closeYamlDialog = () => {
+  data.yamlDialog = false;
   data.yaml = '';
   editYaml.value.code = '';
-  data.yamlDialog = false;
 };
 
 const checkEmpty = (name, value) => {
@@ -169,7 +169,7 @@ const confirmYaml = async () => {
 
       proxy.$message.success(`${kind}: ${name}(${namespace}) 创建成功`);
       data.yamlDialog = false;
-      editYaml.value.code = '';
+      data.yaml = '';
     } catch (error) {
       proxy.$message.error(error.response.data.message);
     }
