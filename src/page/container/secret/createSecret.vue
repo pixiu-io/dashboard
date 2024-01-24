@@ -98,8 +98,7 @@
                 />
               </el-form-item>
             </div>
-
-            <div v-else>
+            <div v-else-if="data.secretType === 'Opaque'">
               <el-form-item label="内容" style="margin-top: 10px">
                 <div class="configmap-label-title" style="margin-left: 5px">变量名</div>
                 <div class="configmap-label-title" style="margin-left: 305px">变量值</div>
@@ -148,6 +147,62 @@
                 <el-button class="table-inline-btn" style="margin-top: 15px" @click="addLabel"
                   >文件导入</el-button
                 >
+              </el-form-item>
+            </div>
+            <div v-else>
+              <el-form-item label="内容" style="margin-top: 10px"> </el-form-item>
+
+              <el-form-item style="margin-top: -20px">
+                <el-card>
+                  <div style="margin-top: -15px">
+                    <span class="app-pixiu-line-describe-tls">证书</span>
+                    <el-icon color=""><QuestionFilled /></el-icon>
+                    <span style="display: inline-block"
+                      ><el-upload
+                        class="pixiu-upload"
+                        :style="{ background: '#ffffff', border: 'none' }"
+                      >
+                        <button class="pixiu-two-button2" style="margin-left: 300px; border: none">
+                          文件导入
+                        </button></el-upload
+                      ></span
+                    >
+                  </div>
+                  <el-input
+                    v-model="data.tlsCertificate.crt"
+                    type="textarea"
+                    :rows="10"
+                    style="width: 400px"
+                  />
+                </el-card>
+                <div style="margin-right: 10px; margin-left: 10px"></div>
+                <div>
+                  <el-card>
+                    <div style="margin-top: -15px">
+                      <span class="app-pixiu-line-describe-tls">私钥</span>
+                      <el-icon><QuestionFilled /></el-icon>
+                      <span style="display: inline-block"
+                        ><el-upload
+                          class="pixiu-upload"
+                          :style="{ background: '#ffffff', border: 'none', width: '40px' }"
+                        >
+                          <button
+                            class="pixiu-two-button2"
+                            style="margin-left: 300px; border: none"
+                          >
+                            文件导入
+                          </button></el-upload
+                        ></span
+                      >
+                    </div>
+                    <el-input
+                      v-model="data.tlsCertificate.key"
+                      type="textarea"
+                      :rows="10"
+                      style="width: 400px"
+                    />
+                  </el-card>
+                </div>
               </el-form-item>
             </div>
 
@@ -202,6 +257,10 @@ const data = reactive({
     value: '',
     target: 0,
   },
+  tlsCertificate: {
+    crt: '',
+    key: '',
+  },
   dockerRegister: {
     domain: '',
     userName: '',
@@ -236,10 +295,10 @@ const comfirmCreate = () => {
           url:
             `/proxy/pixiu/${data.cluster}/api/v1/namespaces/` +
             data.configmapForm.metadata.namespace +
-            `/configmaps`,
+            `/secrets`,
           data: data.configmapForm,
         });
-        proxy.$message.success(`configmap ${data.configmapForm.metadata.name} 创建成功`);
+        proxy.$message.success(`Secret ${data.configmapForm.metadata.name} 创建成功`);
         backToSecret();
       } catch (error) {}
     }
@@ -318,7 +377,16 @@ const deleteLabel = (index) => {
   font-size: 12px;
   color: #888888;
 }
+.pixiu-upload {
+  background: #ffffff; /* 设置背景色为白色 */
+  border: none; /* 去除边框 */
+}
 
+.app-pixiu-line-describe-tls {
+  margin-top: -28px;
+  font-size: 10px;
+  color: #888888;
+}
 .configmap-label-title {
   font-size: 12px;
   color: #888888;
