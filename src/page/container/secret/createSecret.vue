@@ -46,7 +46,7 @@
               <div style="margin-left: 20px">
                 <el-radio-group v-model="data.secretType">
                   <el-radio-button label="Opaque" />
-                  <el-radio-button label="TSL证书" />
+                  <el-radio-button label="TLS证书" />
                   <el-radio-button label="镜像仓库访问凭证" />
                 </el-radio-group>
               </div>
@@ -99,60 +99,62 @@
               </el-form-item>
             </div>
             <div v-else-if="data.secretType === 'Opaque'">
-              <el-form-item label="内容" style="margin-top: 10px">
-                <div class="configmap-label-title" style="margin-left: 5px">变量名</div>
-                <div class="configmap-label-title" style="margin-left: 305px">变量值</div>
-                <el-divider />
-              </el-form-item>
+              <div>
+                <el-form-item label="内容" style="margin-top: 10px">
+                  <div class="configmap-label-title" style="margin-left: 20px">变量名</div>
+                  <div class="configmap-label-title" style="margin-left: 320px">变量值</div>
+                  <el-divider style="left: 20px; width: 98%" />
+                </el-form-item>
 
-              <el-form-item
-                v-for="(item, index) in data.configMapLabels"
-                :key="index"
-                prop="item.key"
-                style="margin-top: -20px"
-              >
-                <div>
-                  <el-input v-model="item.key" placeholder="变量名" style="width: 300px" />
-                </div>
-                <div style="margin-right: 8px; margin-left: 8px"></div>
-                =
-                <div>
-                  <el-input
-                    v-model="item.value"
-                    placeholder="请输入变量值"
-                    autosize
-                    type="textarea"
-                    style="width: 350px; margin-left: 20px"
-                  />
-                </div>
-                <div
-                  style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
-                  @click="deleteLabel(index)"
+                <el-form-item
+                  v-for="(item, index) in data.configMapLabels"
+                  :key="index"
+                  prop="item.key"
+                  style="margin-top: -20px; margin-left: 20px"
                 >
-                  <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
+                  <div>
+                    <el-input v-model="item.key" placeholder="变量名" style="width: 300px" />
+                  </div>
+                  <div style="margin-right: 8px; margin-left: 8px"></div>
+                  =
+                  <div>
+                    <el-input
+                      v-model="item.value"
+                      placeholder="请输入变量值"
+                      autosize
+                      type="textarea"
+                      style="width: 350px; margin-left: 20px"
+                    />
+                  </div>
+                  <div
+                    style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
+                    @click="deleteLabel(index)"
+                  >
+                    <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
+                  </div>
+                  <el-divider />
+                </el-form-item>
+                <div class="app-pixiu-line-describe4" style="margin-left: 120px">
+                  只能包含字母、数字及分隔符"."; 变量名为空时，在变量名称中粘贴一行或多行 key=value
+                  key: value 的键值对可以实现快速批量输入
                 </div>
-                <el-divider />
-              </el-form-item>
-              <div class="app-pixiu-line-describe4">
-                只能包含字母、数字及分隔符"."; 变量名为空时，在变量名称中粘贴一行或多行 key=value
-                key: value 的键值对可以实现快速批量输入
+                <el-form-item>
+                  <el-button
+                    class="table-inline-btn"
+                    style="margin-left: 4px; margin-right: -20px; margin-top: 15px"
+                    @click="addLabel"
+                    >手动增加</el-button
+                  >
+                  <el-button class="table-inline-btn" style="margin-top: 15px" @click="addLabel"
+                    >文件导入</el-button
+                  >
+                </el-form-item>
               </div>
-              <el-form-item>
-                <el-button
-                  class="table-inline-btn"
-                  style="margin-left: -14px; margin-right: -20px; margin-top: 15px"
-                  @click="addLabel"
-                  >手动增加</el-button
-                >
-                <el-button class="table-inline-btn" style="margin-top: 15px" @click="addLabel"
-                  >文件导入</el-button
-                >
-              </el-form-item>
             </div>
             <div v-else>
               <el-form-item label="内容" style="margin-top: 10px"> </el-form-item>
 
-              <el-form-item style="margin-top: -20px">
+              <el-form-item style="margin-top: -40px; margin-left: 20px">
                 <el-card>
                   <div style="margin-top: -15px">
                     <span class="app-pixiu-line-describe-tls">证书</span>
