@@ -46,7 +46,7 @@
               <div style="margin-left: 20px">
                 <el-radio-group v-model="data.secretType">
                   <el-radio-button label="Opaque" />
-                  <el-radio-button label="TSL证书" />
+                  <el-radio-button label="TLS证书" />
                   <el-radio-button label="镜像仓库访问凭证" />
                 </el-radio-group>
               </div>
