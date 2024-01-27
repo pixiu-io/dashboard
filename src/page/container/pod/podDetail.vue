@@ -87,14 +87,7 @@
           <template #label>
             <div class="cell-item">创建时间</div>
           </template>
-          {{ data.pod.metadata.creationTimestamp }}
-        </el-descriptions-item>
-
-        <el-descriptions-item>
-          <template #label>
-            <div class="cell-item">镜像</div>
-          </template>
-          nginx
+          {{ data.createTime }}
         </el-descriptions-item>
       </el-descriptions>
     </div>
@@ -336,6 +329,7 @@ const data = reactive({
 
   containerMap: {},
   containerStatusMap: {},
+  createTime: '',
 });
 
 onMounted(async () => {
@@ -369,20 +363,23 @@ const GetPod = async () => {
       url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${data.name}`,
     });
     data.pod = res;
-
     data.yaml = jsYaml.dump(data.pod);
+    data.createTime = formatTimestamp(data.pod.metadata.creationTimestamp);
 
     data.containerMap = {};
     for (let c of data.pod.spec.containers) {
       data.containerMap[c.name] = c;
     }
-
     data.containerStatusMap = {};
     for (let cs of data.pod.status.containerStatuses) {
       data.containerStatusMap[cs.name] = cs;
     }
+
+    initItems();
   } catch (error) {}
 };
+
+const initItems = () => {};
 
 const confirm = () => {
   data.readOnly = true;
