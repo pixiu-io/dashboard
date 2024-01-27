@@ -401,38 +401,72 @@ const formatterTime = (row, column, cellValue) => {
 const formatterRestartCount = (row, column, cellValue) => {
   let rc = '-';
   const cs = data.containerStatusMap[cellValue];
-  if (cs === undefined) {
-    return <div>-</div>;
+  if (cs !== undefined) {
+    rc = cs.restartCount;
   }
 
-  return <div>{cs.restartCount} 次</div>;
+  return <div>{rc} 次</div>;
 };
 
 const formatterCPUResource = (row, column, cellValue) => {
+  let requests = '-';
+  let limits = '-';
+
+  const container = data.containerMap[cellValue];
+  if (container !== undefined) {
+    if (container.resources.requests !== undefined) {
+      if (container.resources.requests.cpu !== undefined) {
+        requests = container.resources.requests.cpu;
+      }
+    }
+    if (container.resources.limits !== undefined) {
+      if (container.resources.limits.cpu !== undefined) {
+        limits = container.resources.limits.cpu;
+      }
+    }
+  }
+
   return (
     <div style="display:flex;flex-direction:column">
       <el-space>
-        <span style="font-size: 12px">request: </span>
-        <span style="font-size: 12px">-</span>
+        <span style="font-size: 12px">requests: </span>
+        <span style="font-size: 12px">{requests}</span>
       </el-space>
       <el-space>
-        <span style="font-size: 12px">limit: </span>
-        <span style="font-size: 12px">-</span>
+        <span style="font-size: 12px">limits: </span>
+        <span style="font-size: 12px">{limits}</span>
       </el-space>
     </div>
   );
 };
 
 const formatterMemoryResource = (row, column, cellValue) => {
+  let requests = '-';
+  let limits = '-';
+
+  const container = data.containerMap[cellValue];
+  if (container !== undefined) {
+    if (container.resources.requests !== undefined) {
+      if (container.resources.requests.memory !== undefined) {
+        requests = container.resources.requests.memory;
+      }
+    }
+    if (container.resources.limits !== undefined) {
+      if (container.resources.limits.memory !== undefined) {
+        limits = container.resources.limits.memory;
+      }
+    }
+  }
+
   return (
     <div style="display:flex;flex-direction:column">
       <el-space>
-        <span style="font-size: 12px">request: </span>
-        <span style="font-size: 12px">-</span>
+        <span style="font-size: 12px">requests: </span>
+        <span style="font-size: 12px">{requests}</span>
       </el-space>
       <el-space>
-        <span style="font-size: 12px">limit: </span>
-        <span style="font-size: 12px">-</span>
+        <span style="font-size: 12px">limits: </span>
+        <span style="font-size: 12px">{limits}</span>
       </el-space>
     </div>
   );
