@@ -85,23 +85,9 @@
 
         <el-descriptions-item>
           <template #label>
-            <div class="cell-item">重启次数</div>
-          </template>
-          0
-        </el-descriptions-item>
-
-        <el-descriptions-item>
-          <template #label>
             <div class="cell-item">创建时间</div>
           </template>
-          {{ data.pod.metadata.creationTimestamp }}
-        </el-descriptions-item>
-
-        <el-descriptions-item>
-          <template #label>
-            <div class="cell-item">镜像</div>
-          </template>
-          nginx
+          {{ data.createTime }}
         </el-descriptions-item>
       </el-descriptions>
     </div>
@@ -164,14 +150,14 @@
       >
         <el-table-column type="selection" width="30px" />
         <el-table-column prop="name" label="容器名称" />
+        <el-table-column prop="name" label="镜像" :formatter="formatterImage" min-width="110px" />
+
         <el-table-column prop="type" label="状态"> Running</el-table-column>
 
-        <el-table-column prop="image" label="镜像"> </el-table-column>
-        <el-table-column prop="imagePullPolicy" label="镜像拉取策略"> </el-table-column>
-        <el-table-column prop="kind" label="启动时间"> </el-table-column>
-
-        <el-table-column prop="-" label="CPU资源" />
-        <el-table-column prop="-" label="内存资源" />
+        <el-table-column prop="name" label="启动时间" :formatter="formatterStartedTime" />
+        <el-table-column prop="name" label="CPU资源" :formatter="formatterCPUResource" />
+        <el-table-column prop="name" label="内存资源" :formatter="formatterMemoryResource" />
+        <el-table-column prop="name" label="重启次数" :formatter="formatterRestartCount" />
 
         <el-table-column fixed="right" label="操作" width="100px">
           <template #default="scope">
@@ -179,9 +165,16 @@
               size="small"
               type="text"
               style="margin-right: -25px; margin-left: -10px; color: #006eff"
-              @click="deleteEvent(scope.row)"
             >
-              远程登录
+              远程连接
+            </el-button>
+            <el-button
+              size="small"
+              type="text"
+              style="margin-right: -25px; margin-left: 10px; color: #006eff"
+              @click="shell(scope.row)"
+            >
+              日志
             </el-button>
           </template>
         </el-table-column>
@@ -334,6 +327,10 @@ const data = reactive({
   readOnly: true,
 
   card: true,
+
+  containerMap: {},
+  containerStatusMap: {},
+  createTime: '',
 });
 
 onMounted(async () => {
@@ -367,10 +364,23 @@ const GetPod = async () => {
       url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${data.name}`,
     });
     data.pod = res;
-
     data.yaml = jsYaml.dump(data.pod);
+    data.createTime = formatTimestamp(data.pod.metadata.creationTimestamp);
+
+    data.containerMap = {};
+    for (let c of data.pod.spec.containers) {
+      data.containerMap[c.name] = c;
+    }
+    data.containerStatusMap = {};
+    for (let cs of data.pod.status.containerStatuses) {
+      data.containerStatusMap[cs.name] = cs;
+    }
+
+    initItems();
   } catch (error) {}
 };
+
+const initItems = () => {};
 
 const confirm = () => {
   data.readOnly = true;
@@ -387,6 +397,123 @@ const formatterTime = (row, column, cellValue) => {
       <div class="pixiu-ellipsis-style">{time}</div>
     </el-tooltip>
   );
+};
+
+const formatterRestartCount = (row, column, cellValue) => {
+  let rc = '-';
+  const cs = data.containerStatusMap[cellValue];
+  if (cs !== undefined) {
+    rc = cs.restartCount;
+  }
+
+  return <div>{rc} 次</div>;
+};
+
+const formatterCPUResource = (row, column, cellValue) => {
+  let requests = '-';
+  let limits = '-';
+
+  const container = data.containerMap[cellValue];
+  if (container !== undefined) {
+    if (container.resources.requests !== undefined) {
+      if (container.resources.requests.cpu !== undefined) {
+        requests = container.resources.requests.cpu;
+      }
+    }
+    if (container.resources.limits !== undefined) {
+      if (container.resources.limits.cpu !== undefined) {
+        limits = container.resources.limits.cpu;
+      }
+    }
+  }
+
+  return (
+    <div style="display:flex;flex-direction:column">
+      <el-space>
+        <span style="font-size: 12px">requests: </span>
+        <span style="font-size: 12px">{requests}</span>
+      </el-space>
+      <el-space>
+        <span style="font-size: 12px">limits: </span>
+        <span style="font-size: 12px">{limits}</span>
+      </el-space>
+    </div>
+  );
+};
+
+const formatterMemoryResource = (row, column, cellValue) => {
+  let requests = '-';
+  let limits = '-';
+
+  const container = data.containerMap[cellValue];
+  if (container !== undefined) {
+    if (container.resources.requests !== undefined) {
+      if (container.resources.requests.memory !== undefined) {
+        requests = container.resources.requests.memory;
+      }
+    }
+    if (container.resources.limits !== undefined) {
+      if (container.resources.limits.memory !== undefined) {
+        limits = container.resources.limits.memory;
+      }
+    }
+  }
+
+  return (
+    <div style="display:flex;flex-direction:column">
+      <el-space>
+        <span style="font-size: 12px">requests: </span>
+        <span style="font-size: 12px">{requests}</span>
+      </el-space>
+      <el-space>
+        <span style="font-size: 12px">limits: </span>
+        <span style="font-size: 12px">{limits}</span>
+      </el-space>
+    </div>
+  );
+};
+
+const formatterImage = (row, column, cellValue) => {
+  let image = '-';
+  let policy = '-';
+  const container = data.containerMap[cellValue];
+  if (container !== undefined) {
+    image = container.image;
+    policy = container.imagePullPolicy;
+  }
+
+  return (
+    <div style="display:flex;flex-direction:column">
+      <el-space>
+        <span style="font-size: 12px">镜像: </span>
+        <span style="font-size: 12px">{image}</span>
+      </el-space>
+      <el-space>
+        <span style="font-size: 12px">策略: </span>
+        <span style="font-size: 12px">{policy}</span>
+      </el-space>
+    </div>
+  );
+};
+
+const formatterStartedTime = (row, column, cellValue) => {
+  const cs = data.containerStatusMap[cellValue];
+  if (cs === undefined || !cs.started) {
+    return (
+      <div class="pixiu-table-formatter">
+        <el-space>
+          <div>-</div>
+        </el-space>
+      </div>
+    );
+  } else {
+    const time = formatTimestamp(cs.state.running.startedAt);
+    return (
+      <el-tooltip effect="light" placement="top" content={time}>
+        <div class="pixiu-ellipsis-style">{time}</div>
+      </el-tooltip>
+    );
+  }
 };
 
 const handleClick = (tab, event) => {};
