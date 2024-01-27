@@ -166,9 +166,9 @@
         <el-table-column prop="name" label="容器名称" />
         <el-table-column prop="type" label="状态"> Running</el-table-column>
 
-        <el-table-column prop="image" label="镜像"> </el-table-column>
-        <el-table-column prop="imagePullPolicy" label="镜像拉取策略"> </el-table-column>
-        <el-table-column prop="kind" label="启动时间"> </el-table-column>
+        <el-table-column prop="name" label="镜像" :formatter="formatterImage"> </el-table-column>
+        <el-table-column prop="name" label="启动时间" :formatter="formatterStartedTime">
+        </el-table-column>
 
         <el-table-column prop="-" label="CPU资源" />
         <el-table-column prop="-" label="内存资源" />
@@ -343,6 +343,7 @@ const data = reactive({
   card: true,
 
   containerMap: {},
+  containerStatusMap: {},
 });
 
 onMounted(async () => {
@@ -380,11 +381,14 @@ const GetPod = async () => {
     data.yaml = jsYaml.dump(data.pod);
 
     data.containerMap = {};
-    for (let container of data.pod.spec.containers) {
-      data.containerMap[container.name] = container;
+    for (let c of data.pod.spec.containers) {
+      data.containerMap[c.name] = c;
     }
 
-    console.log('data.containerMap ', data.containerMap);
+    data.containerStatusMap = {};
+    for (let cs of data.pod.status.containerStatuses) {
+      data.containerStatusMap[cs.name] = cs;
+    }
   } catch (error) {}
 };
 
@@ -405,13 +409,63 @@ const formatterTime = (row, column, cellValue) => {
   );
 };
 
-const formatterImage = (row, column, cellValue) => (
-  <div class="pixiu-table-formatter">
-    <el-space>
-      <div class="color-green-word">运行中</div>
-    </el-space>
-  </div>
-);
+const formatterResource = (row, column, cellValue) => {
+  return (
+    <div style="display:flex;flex-direction:column">
+      <el-space>
+        <span style="font-weight:bold;font-size: 12px">CPU:</span>
+        <span style="font-weight:bold;font-size: 12px">{cellValue['cpu']}</span>
+      </el-space>
+      <el-space>
+        <span style="font-weight:bold;font-size: 12px">内存:</span>
+        <span style="font-weight:bold;font-size: 12px">{cellValue['memory']}</span>
+      </el-space>
+    </div>
+  );
+};
+
+const formatterImage = (row, column, cellValue) => {
+  let image = '-';
+  let policy = '-';
+  const container = data.containerMap[cellValue];
+  if (container !== undefined) {
+    image = container.image;
+    policy = container.imagePullPolicy;
+  }
+
+  return (
+    <div style="display:flex;flex-direction:column">
+      <el-space>
+        <span style="font-size: 12px">镜像: </span>
+        <span style="font-size: 12px">{image}</span>
+      </el-space>
+      <el-space>
+        <span style="font-size: 12px">策略: </span>
+        <span style="font-size: 12px">{policy}</span>
+      </el-space>
+    </div>
+  );
+};
+
+const formatterStartedTime = (row, column, cellValue) => {
+  const cs = data.containerStatusMap[cellValue];
+  if (cs === undefined || !cs.started) {
+    return (
+      <div class="pixiu-table-formatter">
+        <el-space>
+          <div>-</div>
+        </el-space>
+      </div>
+    );
+  } else {
+    const time = formatTimestamp(cs.state.running.startedAt);
+    return (
+      <el-tooltip effect="light" placement="top" content={time}>
+        <div class="pixiu-ellipsis-style">{time}</div>
+      </el-tooltip>
+    );
+  }
+};
 
 const handleClick = (tab, event) => {};
 const handleChange = (name) => {};
