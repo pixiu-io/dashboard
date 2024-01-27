@@ -85,13 +85,6 @@
 
         <el-descriptions-item>
           <template #label>
-            <div class="cell-item">重启次数</div>
-          </template>
-          0
-        </el-descriptions-item>
-
-        <el-descriptions-item>
-          <template #label>
             <div class="cell-item">创建时间</div>
           </template>
           {{ data.pod.metadata.creationTimestamp }}
