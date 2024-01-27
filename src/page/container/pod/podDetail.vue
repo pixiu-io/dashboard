@@ -150,9 +150,10 @@
       >
         <el-table-column type="selection" width="30px" />
         <el-table-column prop="name" label="容器名称" />
+        <el-table-column prop="name" label="镜像" :formatter="formatterImage" min-width="100px" />
+
         <el-table-column prop="type" label="状态"> Running</el-table-column>
 
-        <el-table-column prop="name" label="镜像" :formatter="formatterImage"> </el-table-column>
         <el-table-column prop="name" label="启动时间" :formatter="formatterStartedTime" />
         <el-table-column prop="name" label="CPU资源" :formatter="formatterCPUResource" />
         <el-table-column prop="name" label="内存资源" :formatter="formatterMemoryResource" />
