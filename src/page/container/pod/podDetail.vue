@@ -167,13 +167,12 @@
         <el-table-column prop="type" label="状态"> Running</el-table-column>
 
         <el-table-column prop="name" label="镜像" :formatter="formatterImage"> </el-table-column>
-        <el-table-column prop="name" label="启动时间" :formatter="formatterStartedTime">
-        </el-table-column>
-
+        <el-table-column prop="name" label="启动时间" :formatter="formatterStartedTime" />
         <el-table-column prop="name" label="CPU资源" :formatter="formatterCPUResource" />
         <el-table-column prop="name" label="内存资源" :formatter="formatterMemoryResource" />
+        <el-table-column prop="name" label="重启次数" :formatter="formatterRestartCount" />
 
-        <el-table-column fixed="right" label="操作" width="110px">
+        <el-table-column fixed="right" label="操作" width="100px">
           <template #default="scope">
             <el-button
               size="small"
@@ -407,6 +406,16 @@ const formatterTime = (row, column, cellValue) => {
       <div class="pixiu-ellipsis-style">{time}</div>
     </el-tooltip>
   );
+};
+
+const formatterRestartCount = (row, column, cellValue) => {
+  let rc = '-';
+  const cs = data.containerStatusMap[cellValue];
+  if (cs === undefined) {
+    return <div>-</div>;
+  }
+
+  return <div>{cs.restartCount} 次</div>;
 };
 
 const formatterCPUResource = (row, column, cellValue) => {
