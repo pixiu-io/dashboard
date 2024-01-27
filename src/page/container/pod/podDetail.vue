@@ -170,8 +170,8 @@
         <el-table-column prop="name" label="启动时间" :formatter="formatterStartedTime">
         </el-table-column>
 
-        <el-table-column prop="-" label="CPU资源" />
-        <el-table-column prop="-" label="内存资源" />
+        <el-table-column prop="name" label="CPU资源" :formatter="formatterCPUResource" />
+        <el-table-column prop="name" label="内存资源" :formatter="formatterMemoryResource" />
 
         <el-table-column fixed="right" label="操作" width="110px">
           <template #default="scope">
@@ -409,16 +409,31 @@ const formatterTime = (row, column, cellValue) => {
   );
 };
 
-const formatterResource = (row, column, cellValue) => {
+const formatterCPUResource = (row, column, cellValue) => {
   return (
     <div style="display:flex;flex-direction:column">
       <el-space>
-        <span style="font-weight:bold;font-size: 12px">CPU:</span>
-        <span style="font-weight:bold;font-size: 12px">{cellValue['cpu']}</span>
+        <span style="font-size: 12px">request: </span>
+        <span style="font-size: 12px">-</span>
       </el-space>
       <el-space>
-        <span style="font-weight:bold;font-size: 12px">内存:</span>
-        <span style="font-weight:bold;font-size: 12px">{cellValue['memory']}</span>
+        <span style="font-size: 12px">limit: </span>
+        <span style="font-size: 12px">-</span>
+      </el-space>
+    </div>
+  );
+};
+
+const formatterMemoryResource = (row, column, cellValue) => {
+  return (
+    <div style="display:flex;flex-direction:column">
+      <el-space>
+        <span style="font-size: 12px">request: </span>
+        <span style="font-size: 12px">-</span>
+      </el-space>
+      <el-space>
+        <span style="font-size: 12px">limit: </span>
+        <span style="font-size: 12px">-</span>
       </el-space>
     </div>
   );
