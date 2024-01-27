@@ -150,7 +150,7 @@
       >
         <el-table-column type="selection" width="30px" />
         <el-table-column prop="name" label="容器名称" />
-        <el-table-column prop="name" label="镜像" :formatter="formatterImage" min-width="100px" />
+        <el-table-column prop="name" label="镜像" :formatter="formatterImage" min-width="110px" />
 
         <el-table-column prop="type" label="状态"> Running</el-table-column>
 
