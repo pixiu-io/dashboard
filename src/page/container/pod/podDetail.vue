@@ -173,15 +173,22 @@
         <el-table-column prop="-" label="CPU资源" />
         <el-table-column prop="-" label="内存资源" />
 
-        <el-table-column fixed="right" label="操作" width="100px">
+        <el-table-column fixed="right" label="操作" width="110px">
           <template #default="scope">
             <el-button
               size="small"
               type="text"
               style="margin-right: -25px; margin-left: -10px; color: #006eff"
-              @click="deleteEvent(scope.row)"
             >
-              远程登录
+              远程连接
+            </el-button>
+            <el-button
+              size="small"
+              type="text"
+              style="margin-right: -25px; margin-left: 10px; color: #006eff"
+              @click="shell(scope.row)"
+            >
+              日志
             </el-button>
           </template>
         </el-table-column>
@@ -334,6 +341,8 @@ const data = reactive({
   readOnly: true,
 
   card: true,
+
+  containerMap: {},
 });
 
 onMounted(async () => {
@@ -369,6 +378,13 @@ const GetPod = async () => {
     data.pod = res;
 
     data.yaml = jsYaml.dump(data.pod);
+
+    data.containerMap = {};
+    for (let container of data.pod.spec.containers) {
+      data.containerMap[container.name] = container;
+    }
+
+    console.log('data.containerMap ', data.containerMap);
   } catch (error) {}
 };
 
@@ -388,6 +404,14 @@ const formatterTime = (row, column, cellValue) => {
     </el-tooltip>
   );
 };
+
+const formatterImage = (row, column, cellValue) => (
+  <div class="pixiu-table-formatter">
+    <el-space>
+      <div class="color-green-word">运行中</div>
+    </el-space>
+  </div>
+);
 
 const handleClick = (tab, event) => {};
 const handleChange = (name) => {};
