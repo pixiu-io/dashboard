@@ -182,9 +182,38 @@
     </el-card>
   </div>
 
-  <div v-if="data.activeName === 'second'">元数据</div>
+  <div v-if="data.activeName === 'second'">
+    <div style="margin-top: 14px">标签</div>
+    <el-card class="contend-card-container3">
+      <div v-if="data.pod.metadata.labels === undefined">-</div>
+      <div v-else style="margin-top: -8px">
+        <div v-for="(item, index) in data.pod.metadata.labels" :key="item" style="font-size: 14px">
+          <el-tag type="info" style="margin-top: 5px">{{ index }}: {{ item }}</el-tag>
+        </div>
+      </div>
+    </el-card>
 
-  <div v-if="data.activeName === 'third'">环境变量</div>
+    <div style="margin-top: 14px">注解</div>
+    <el-card class="contend-card-container3">
+      <div v-if="data.pod.metadata.annotations === undefined">-</div>
+      <div v-else style="margin-top: -8px">
+        <div
+          v-for="(item, index) in data.pod.metadata.annotations"
+          :key="item"
+          style="font-size: 14px"
+        >
+          <el-tag type="info" style="margin-top: 5px">{{ index }}: {{ item }}</el-tag>
+        </div>
+      </div></el-card
+    >
+  </div>
+
+  <div v-if="data.activeName === 'third'">
+    <div style="margin-top: 14px">环境变量</div>
+    <el-card class="contend-card-container3">
+      <div>-</div>
+    </el-card>
+  </div>
 
   <div v-if="data.activeName === 'four'">
     <button style="margin-top: 15px; width: 85px" class="pixiu-two-button" @click="getPodLog">
