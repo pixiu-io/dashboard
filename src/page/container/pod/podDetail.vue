@@ -182,7 +182,16 @@
     </el-card>
   </div>
 
-  <div v-if="data.activeName === 'second'">元数据</div>
+  <div v-if="data.activeName === 'second'">
+    <div class="one-line-style">
+      <el-card class="contend-card-container3">
+        <div style="height: 200px">ddd</div>
+      </el-card>
+      <el-card class="contend-card-container3" style="margin-left: 20px">
+        <div style="height: 200px">ddd</div>
+      </el-card>
+    </div>
+  </div>
 
   <div v-if="data.activeName === 'third'">环境变量</div>
 
