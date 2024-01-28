@@ -186,9 +186,9 @@
     <div style="margin-top: 20px">注解</div>
     <el-card class="contend-card-container3">
       <div v-if="data.pod.metadata.labels === undefined">-</div>
-      <div v-else>
-        <div v-for="(item, index) in data.pod.metadata.labels" :key="item" style="margin-top: -1px">
-          {{ index }}: {{ item }}
+      <div v-else style="margin-top: -8px">
+        <div v-for="(item, index) in data.pod.metadata.labels" :key="item" style="font-size: 14px">
+          <el-tag type="info" style="margin-top: 5px">{{ index }}: {{ item }}</el-tag>
         </div>
       </div>
     </el-card>
@@ -196,13 +196,13 @@
     <div style="margin-top: 20px">标签</div>
     <el-card class="contend-card-container3">
       <div v-if="data.pod.metadata.annotations === undefined">-</div>
-      <div v-else>
+      <div v-else style="margin-top: -8px">
         <div
           v-for="(item, index) in data.pod.metadata.annotations"
           :key="item"
-          style="margin-top: -1px"
+          style="font-size: 14px"
         >
-          {{ index }}: {{ item }}
+          <el-tag type="info" style="margin-top: 5px">{{ index }}: {{ item }}</el-tag>
         </div>
       </div></el-card
     >
