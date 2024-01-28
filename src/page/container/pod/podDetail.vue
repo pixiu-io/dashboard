@@ -183,14 +183,29 @@
   </div>
 
   <div v-if="data.activeName === 'second'">
-    <div class="one-line-style">
-      <el-card class="contend-card-container3">
-        <div style="height: 200px">ddd</div>
-      </el-card>
-      <el-card class="contend-card-container3" style="margin-left: 20px">
-        <div style="height: 200px">ddd</div>
-      </el-card>
-    </div>
+    <div style="margin-top: 20px">注解</div>
+    <el-card class="contend-card-container3">
+      <div v-if="data.pod.metadata.labels === undefined">-</div>
+      <div v-else>
+        <div v-for="(item, index) in data.pod.metadata.labels" :key="item" style="margin-top: -1px">
+          {{ index }}: {{ item }}
+        </div>
+      </div>
+    </el-card>
+
+    <div style="margin-top: 20px">标签</div>
+    <el-card class="contend-card-container3">
+      <div v-if="data.pod.metadata.annotations === undefined">-</div>
+      <div v-else>
+        <div
+          v-for="(item, index) in data.pod.metadata.annotations"
+          :key="item"
+          style="margin-top: -1px"
+        >
+          {{ index }}: {{ item }}
+        </div>
+      </div></el-card
+    >
   </div>
 
   <div v-if="data.activeName === 'third'">环境变量</div>
