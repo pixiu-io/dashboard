@@ -44,6 +44,33 @@
   cursor: pointer;
 }
 
+.pixiu-two-button3 {
+  height: 31px;
+  min-width: 25px;
+  width: 68px;
+  border-radius: 0%;
+  font-size: 12px;
+  color: #fff;
+  text-align: center;
+  border: none;
+  background-color: #006eff;
+  cursor: pointer;
+  width: 85px;
+}
+
+.pixiu-two-button4 {
+  height: 31px;
+  min-width: 25px;
+  width: 68px;
+  border-radius: 0%;
+  font-size: 12px;
+  border: 1px solid #cfd5de;
+  color: #0366e7;
+  background-color: white;
+  cursor: pointer;
+  width: 85px;
+}
+
 /* 通用确认按钮 */
 .pixiu-confirm-button {
   height: 35px;
@@ -198,6 +225,13 @@
   border-radius: 0px;
 }
 
+.contend-card-container3 {
+  margin-top: 20px;
+  border-radius: 0px;
+  width: 50%;
+  height: 400px;
+}
+
 /* 全局详情 */
 .glabal-detail-card {
   height: 120%;
@@ -270,4 +304,13 @@
   color: #006eff;
   border-color: #006eff;
   background-color: #fff;
+}
+
+/* 隐藏样式 */
+.pixiu-ellipsis-style {
+  font-size: 12px;
+  color: #29292b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

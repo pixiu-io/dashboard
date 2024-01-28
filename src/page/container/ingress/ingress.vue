@@ -8,7 +8,7 @@
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createService">新建</button>
-        <button class="pixiu-two-button2" @click="getIngresses" style="margin-left: 10px">
+        <button class="pixiu-two-button2" style="margin-left: 10px" @click="getIngresses">
           刷新
         </button>
 
@@ -37,7 +37,7 @@
     </el-row>
     <el-card class="box-card">
       <el-table
-        v-loading="loading"
+        v-loading="data.loading"
         :data="data.serviceList"
         stripe
         style="margin-top: 2px; width: 100%"

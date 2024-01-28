@@ -8,7 +8,7 @@
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createStorageClass">新建</button>
-        <button class="pixiu-two-button2" @click="getNodes" style="margin-left: 10px">刷新</button>
+        <button class="pixiu-two-button2" style="margin-left: 10px" @click="getNodes">刷新</button>
 
         <div style="margin-left: 8px; float: right; margin-top: 6px">
           <pixiu-icon
@@ -47,7 +47,7 @@
     </el-row>
     <el-card class="box-card">
       <el-table
-        v-loading="loading"
+        v-loading="data.loading"
         :data="data.nodeList"
         stripe
         style="margin-top: 2px; width: 100%"

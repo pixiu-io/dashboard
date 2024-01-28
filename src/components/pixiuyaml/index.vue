@@ -92,6 +92,14 @@ const closeYamlDialog = () => {
   data.yaml = '';
 };
 
+const checkEmpty = (name, value) => {
+  if (value === undefined || value === '' || value === null) {
+    ElMessage.warning(`${name} 为必填项`);
+    return true;
+  }
+  return false;
+};
+
 const confirmYaml = async () => {
   const yamlData = jsYaml.load(editYaml.value.code);
   if (yamlData === undefined) {
@@ -102,38 +110,13 @@ const confirmYaml = async () => {
     return;
   }
 
-  // TODO: 待优化
   const kind = yamlData.kind;
-  if (kind === undefined || kind === '' || kind === null) {
-    ElMessage({
-      message: 'kind 为必填项',
-      type: 'warning',
-    });
-    return;
-  }
-
-  const metadata = yamlData.metadata;
-  if (metadata === undefined || metadata === '' || metadata === null) {
-    ElMessage({
-      message: 'metadata 为必填项',
-      type: 'warning',
-    });
-    return;
-  }
-  const name = metadata.name;
-  if (name === undefined || name === '' || name === null) {
-    ElMessage({
-      message: 'metadata.name 为必填项',
-      type: 'warning',
-    });
-    return;
-  }
-  const namespace = metadata.namespace;
-  if (namespace === undefined || namespace === '' || namespace === null) {
-    ElMessage({
-      message: 'metadata.namespace 为必填项',
-      type: 'warning',
-    });
+  if (
+    checkEmpty('kind', kind) ||
+    checkEmpty('metadata', yamlData.metadata) ||
+    checkEmpty('metadata.name', yamlData.metadata.name) ||
+    checkEmpty('metadata.namespace', yamlData.metadata.namespace)
+  ) {
     return;
   }
 
