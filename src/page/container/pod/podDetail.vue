@@ -183,7 +183,7 @@
   </div>
 
   <div v-if="data.activeName === 'second'">
-    <div style="margin-top: 20px">注解</div>
+    <div style="margin-top: 16px">注解</div>
     <el-card class="contend-card-container3">
       <div v-if="data.pod.metadata.labels === undefined">-</div>
       <div v-else style="margin-top: -8px">
@@ -193,7 +193,7 @@
       </div>
     </el-card>
 
-    <div style="margin-top: 20px">标签</div>
+    <div style="margin-top: 16px">标签</div>
     <el-card class="contend-card-container3">
       <div v-if="data.pod.metadata.annotations === undefined">-</div>
       <div v-else style="margin-top: -8px">
