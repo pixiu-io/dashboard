@@ -66,9 +66,9 @@
                     <div>
                       <input
                         id="huey"
+                        v-model="data.namespaceFlag"
                         type="radio"
                         name="drone"
-                        v-model="data.namespaceFlag"
                         :value="true"
                         checked
                       />
@@ -80,8 +80,8 @@
                     <div>
                       <input
                         id="dewey"
-                        type="radio"
                         v-model="data.namespaceFlag"
+                        type="radio"
                         name="drone"
                         :value="false"
                       />
