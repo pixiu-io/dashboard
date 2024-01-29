@@ -17,6 +17,7 @@ import {
   Terminal,
   Monitor,
   Node,
+  NodeDetail,
   InsertCluster,
   CreateCluster,
   NotFound,
@@ -108,6 +109,14 @@ const routes = [
               title: 'node',
             },
             component: Node,
+          },
+          {
+            path: 'nodes/detail',
+            name: 'NodeDetail',
+            meta: {
+              title: 'NodeDetail',
+            },
+            component: NodeDetail,
           },
           {
             path: 'namespaces',
