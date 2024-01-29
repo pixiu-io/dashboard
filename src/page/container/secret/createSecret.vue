@@ -63,7 +63,7 @@
               >
                 <div>
                   <div>
-                    <div>
+                    <div style="margin-top: -10px">
                       <input
                         id="huey"
                         v-model="data.namespaceFlag"
@@ -73,11 +73,13 @@
                         checked
                       />
                       <label for="huey" class="el-radio-label"
-                        ><span class="el-radio-label-value">指定命名空间</span></label
+                        ><span class="el-radio-label-value" style="font-size: 12px"
+                          >指定命名空间</span
+                        ></label
                       >
                     </div>
 
-                    <div>
+                    <div style="margin-top: -4px">
                       <input
                         id="dewey"
                         v-model="data.namespaceFlag"
@@ -86,7 +88,7 @@
                         :value="false"
                       />
                       <label for="dewey" class="el-radio-label">
-                        <span class="el-radio-label-value"
+                        <span class="el-radio-label-value" style="font-size: 12px"
                           >存量所有命名空间（不包括 kube-system、kube-public
                           和后续增量命名空间）</span
                         ></label
@@ -453,6 +455,7 @@ const deleteLabel = (index) => {
 .el-radio-label {
   margin-top: 15px;
 }
+
 .el-radio-label-value {
   font-size: 13px;
   color: #888888;
