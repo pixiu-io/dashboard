@@ -89,8 +89,7 @@
                       />
                       <label for="dewey" class="el-radio-label">
                         <span class="el-radio-label-value" style="font-size: 12px"
-                          >存量所有命名空间（不包括 kube-system、kube-public
-                          和后续增量命名空间）</span
+                          >存量所有命名空间（不包括系统命名空间和后续增量命名空间）</span
                         ></label
                       >
                     </div>
@@ -99,10 +98,7 @@
                     v-if="data.namespaceFlag === true"
                     v-model="data.transferData"
                     :filterable="true"
-                    :titles="[
-                      '当前集群有以下可用命名空间',
-                      '已选择 (' + data.transferData.length + ')',
-                    ]"
+                    :titles="['当前集群可用命名空间', '已选择 (' + data.transferData.length + ')']"
                     :filter-method="filterMethod"
                     :show-arrow="false"
                     filter-placeholder="请输入命名空间"
@@ -472,5 +468,11 @@ const deleteLabel = (index) => {
   line-height: 1;
   font-size: 13px;
   color: black;
+}
+
+.el-transfer-panel .el-transfer-panel__header .el-checkbox .el-checkbox__label {
+  font-size: 12px;
+  color: black;
+  font-weight: 400;
 }
 </style>
