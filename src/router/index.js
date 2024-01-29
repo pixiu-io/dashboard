@@ -17,11 +17,13 @@ import {
   Terminal,
   Monitor,
   Node,
+  NodeDetail,
   InsertCluster,
   CreateCluster,
   NotFound,
   Operator,
   Service,
+  ServiceDetail,
   Ingress,
   ConfigMap,
   CreateConfigMap,
@@ -108,6 +110,14 @@ const routes = [
               title: 'node',
             },
             component: Node,
+          },
+          {
+            path: 'nodes/detail',
+            name: 'NodeDetail',
+            meta: {
+              title: 'NodeDetail',
+            },
+            component: NodeDetail,
           },
           {
             path: 'namespaces',
@@ -221,6 +231,14 @@ const routes = [
               title: 'service',
             },
             component: Service,
+          },
+          {
+            path: 'services/detail',
+            name: 'ServiceDetail',
+            meta: {
+              title: 'ServiceDetail',
+            },
+            component: ServiceDetail,
           },
           {
             path: 'ingress',

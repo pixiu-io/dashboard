@@ -10,6 +10,7 @@ import Release from './container/release/release.vue';
 import Terminal from './container/terminal.vue';
 import Monitor from './container/monitor.vue';
 import Node from './container/node/node.vue';
+import NodeDetail from './container/node/nodeDetail.vue';
 import Info from './container/info/info.vue';
 import Home from './home/home.vue';
 import Login from './login/login.vue';
@@ -20,6 +21,7 @@ import Role from './user/role.vue';
 import InsertCluster from './container/insertCluster.vue';
 import CreateCluster from './container/createCluster.vue';
 import Service from './container/service/service.vue';
+import ServiceDetail from './container/service/serviceDetail.vue';
 import ConfigMap from './container/configmap/configmap.vue';
 import CreateConfigMap from './container/configmap/createConfigMap.vue';
 import EditConfigMap from './container/configmap/editConfigMap.vue';
@@ -49,12 +51,14 @@ export {
   DeploymentDetail,
   Release,
   Node,
+  NodeDetail,
   Terminal,
   Monitor,
   InsertCluster,
   CreateCluster,
   Operator,
   Service,
+  ServiceDetail,
   StatefulSet,
   ConfigMap,
   CreateConfigMap,
