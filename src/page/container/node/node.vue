@@ -225,6 +225,16 @@ const drain = (row) => {
     .catch(() => {}); // 取消
 };
 
+const jumpRoute = (row) => {
+  router.push({
+    name: 'NodeDetail',
+    query: {
+      cluster: data.cluster,
+      name: row.metadata.name,
+    },
+  });
+};
+
 const cordon = (row) => {
   if (row.spec.unschedulable === true) {
     return;
