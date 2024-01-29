@@ -58,7 +58,7 @@
                   margin-left: 20px;
                   background-color: #f2f2f2;
                   border-radius: 0px;
-                  width: 60%;
+                  width: 61%;
                 "
               >
                 <div>
@@ -99,7 +99,10 @@
                     v-if="data.namespaceFlag === true"
                     v-model="data.transferData"
                     :filterable="true"
-                    :titles="['当前集群有以下可用命名空间', '已选择' + data.transferData.length]"
+                    :titles="[
+                      '当前集群有以下可用命名空间',
+                      '已选择 (' + data.transferData.length + ')',
+                    ]"
                     :filter-method="filterMethod"
                     :show-arrow="false"
                     filter-placeholder="请输入命名空间"
@@ -461,5 +464,13 @@ const deleteLabel = (index) => {
   color: #888888;
   padding-left: 3px;
   padding-top: -40px;
+}
+
+.el-checkbox__label {
+  display: inline-block;
+  padding-left: 8px;
+  line-height: 1;
+  font-size: 13px;
+  color: black;
 }
 </style>
