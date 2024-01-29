@@ -58,37 +58,38 @@
                   margin-left: 20px;
                   background-color: #f2f2f2;
                   border-radius: 0px;
-                  width: 60%;
+                  width: 61%;
                 "
               >
                 <div>
                   <div>
-                    <div>
+                    <div style="margin-top: -10px">
                       <input
                         id="huey"
+                        v-model="data.namespaceFlag"
                         type="radio"
                         name="drone"
-                        v-model="data.namespaceFlag"
                         :value="true"
                         checked
                       />
                       <label for="huey" class="el-radio-label"
-                        ><span class="el-radio-label-value">指定命名空间</span></label
+                        ><span class="el-radio-label-value" style="font-size: 12px"
+                          >指定命名空间</span
+                        ></label
                       >
                     </div>
 
-                    <div>
+                    <div style="margin-top: -4px">
                       <input
                         id="dewey"
-                        type="radio"
                         v-model="data.namespaceFlag"
+                        type="radio"
                         name="drone"
                         :value="false"
                       />
                       <label for="dewey" class="el-radio-label">
-                        <span class="el-radio-label-value"
-                          >存量所有命名空间（不包括 kube-system、kube-public
-                          和后续增量命名空间）</span
+                        <span class="el-radio-label-value" style="font-size: 12px"
+                          >存量所有命名空间（不包括系统命名空间和后续增量命名空间）</span
                         ></label
                       >
                     </div>
@@ -97,7 +98,7 @@
                     v-if="data.namespaceFlag === true"
                     v-model="data.transferData"
                     :filterable="true"
-                    :titles="['当前集群有以下可用命名空间', '已选择' + data.transferData.length]"
+                    :titles="['当前集群可用命名空间', '已选择 (' + data.transferData.length + ')']"
                     :filter-method="filterMethod"
                     :show-arrow="false"
                     filter-placeholder="请输入命名空间"
@@ -453,10 +454,25 @@ const deleteLabel = (index) => {
 .el-radio-label {
   margin-top: 15px;
 }
+
 .el-radio-label-value {
   font-size: 13px;
   color: #888888;
   padding-left: 3px;
   padding-top: -40px;
+}
+
+.el-checkbox__label {
+  display: inline-block;
+  padding-left: 8px;
+  line-height: 1;
+  font-size: 13px;
+  color: black;
+}
+
+.el-transfer-panel .el-transfer-panel__header .el-checkbox .el-checkbox__label {
+  font-size: 12px;
+  color: black;
+  font-weight: 400;
 }
 </style>
