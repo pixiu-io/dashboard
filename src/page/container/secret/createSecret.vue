@@ -98,7 +98,7 @@
                     v-if="data.namespaceFlag === true"
                     v-model="data.transferData"
                     :filterable="true"
-                    :titles="['当前集群可用命名空间', '已选择 (' + data.transferData.length + ')']"
+                    :titles="['可用命名空间', '已选择 (' + data.transferData.length + ')']"
                     :filter-method="filterMethod"
                     :show-arrow="false"
                     filter-placeholder="请输入命名空间"
