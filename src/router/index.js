@@ -23,6 +23,7 @@ import {
   NotFound,
   Operator,
   Service,
+  ServiceDetail,
   Ingress,
   ConfigMap,
   CreateConfigMap,
@@ -230,6 +231,14 @@ const routes = [
               title: 'service',
             },
             component: Service,
+          },
+          {
+            path: 'services/detail',
+            name: 'ServiceDetail',
+            meta: {
+              title: 'ServiceDetail',
+            },
+            component: ServiceDetail,
           },
           {
             path: 'ingress',
