@@ -61,7 +61,49 @@
                   width: 60%;
                 "
               >
-                <div>ddd</div>
+                <div>
+                  <div>
+                    <div>
+                      <input
+                        id="huey"
+                        type="radio"
+                        name="drone"
+                        v-model="data.namespaceFlag"
+                        :value="true"
+                        checked
+                      />
+                      <label for="huey" class="el-radio-label"
+                        ><span class="el-radio-label-value">指定命名空间</span></label
+                      >
+                    </div>
+
+                    <div>
+                      <input
+                        id="dewey"
+                        type="radio"
+                        v-model="data.namespaceFlag"
+                        name="drone"
+                        :value="false"
+                      />
+                      <label for="dewey" class="el-radio-label">
+                        <span class="el-radio-label-value"
+                          >存量所有命名空间（不包括 kube-system、kube-public
+                          和后续增量命名空间）</span
+                        ></label
+                      >
+                    </div>
+                  </div>
+                  <el-transfer
+                    v-if="data.namespaceFlag === true"
+                    v-model="data.transferData"
+                    :filterable="true"
+                    :titles="['当前集群有以下可用命名空间', '已选择' + data.transferData.length]"
+                    :filter-method="filterMethod"
+                    :show-arrow="false"
+                    filter-placeholder="请输入命名空间"
+                    :data="data.transferOptions"
+                  />
+                </div>
               </el-card>
             </el-form-item>
 
@@ -232,6 +274,7 @@ const data = reactive({
   loading: false,
   cluster: '',
   namespaces: [],
+  namespaceFlag: true,
   autosize: {
     minRows: 2,
   },
@@ -259,6 +302,8 @@ const data = reactive({
     value: '',
     target: 0,
   },
+  transferData: [],
+  transferOptions: [],
   tlsCertificate: {
     crt: '',
     key: '',
@@ -336,6 +381,10 @@ const getNamespaceList = async () => {
     for (let item of result.items) {
       data.namespaces.push(item.metadata.name);
     }
+
+    for (let item of result.items) {
+      data.transferOptions.push({ key: item.metadata.name, label: item.metadata.name });
+    }
   } catch (error) {}
 };
 
@@ -401,9 +450,13 @@ const deleteLabel = (index) => {
   vertical-align: middle;
 }
 
-.secretNameSpace-class {
-  margin: 0 auto;
-  width: auto;
-  text-align: left;
+.el-radio-label {
+  margin-top: 15px;
+}
+.el-radio-label-value {
+  font-size: 13px;
+  color: #888888;
+  padding-left: 3px;
+  padding-top: -40px;
 }
 </style>
