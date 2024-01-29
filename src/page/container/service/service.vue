@@ -216,6 +216,17 @@ const formatterPorts = (row, column, cellValue) => {
   }
   return <div>{ports.join(',')}</div>;
 };
+
+const jumpRoute = (row) => {
+  router.push({
+    name: 'ServiceDetail',
+    query: {
+      cluster: data.cluster,
+      namespace: data.namespace,
+      name: row.metadata.name,
+    },
+  });
+};
 </script>
 
 <style scoped="scoped">
