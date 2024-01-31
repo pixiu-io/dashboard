@@ -808,6 +808,7 @@ const editYaml = () => {
   margin-top: 1px;
   margin-bottom: -32px;
 }
+
 .demo-tabs .el-tabs__content {
   padding: 32px;
   color: #6b778c;
