@@ -47,14 +47,18 @@ const data = reactive({
     query: '',
     total: 0,
   },
+
+  service: '',
+  yaml: '',
+
   activeName: 'five',
 });
 
 onMounted(async () => {
   data.cluster = proxy.$route.query.cluster;
-  data.name = proxy.$route.query.namespace;
-
+  data.namespace = proxy.$route.query.namespace;
   data.name = proxy.$route.query.name;
+
   await GetService();
 });
 const { toClipboard } = useClipboard();
@@ -75,6 +79,12 @@ const copyYmal = async () => {
 
 const GetService = async () => {
   try {
+    const res = await proxy.$http({
+      method: 'get',
+      url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/services/${data.name}`,
+    });
+    data.service = res;
+    data.yaml = jsYaml.dump(data.service);
   } catch (error) {}
 };
 
