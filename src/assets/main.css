@@ -313,3 +313,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.detail-tab-style {
+  margin-top: 1px;
+  margin-bottom: -32px;
+}

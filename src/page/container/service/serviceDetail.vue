@@ -16,10 +16,24 @@
           <span class="breadcrumb-style">{{ data.cluster }}</span>
         </el-breadcrumb-item>
         <el-breadcrumb-item
-          ><span class="breadcrumb-style">Service:{{ data.name }}({{ data.namespace }})</span>
+          ><span class="breadcrumb-style">Service: {{ data.name }}({{ data.namespace }})</span>
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
+    <div style="margin-top: 20px"></div>
+
+    <el-tabs
+      v-model="data.activeName"
+      class="detail-tab-style"
+      @tab-click="handleClick"
+      @tab-change="handleChange"
+    >
+      <el-tab-pane label="基本信息" name="first"> </el-tab-pane>
+      <el-tab-pane label="Pod管理" name="second"> </el-tab-pane>
+      <el-tab-pane label="日志" name="third"> </el-tab-pane>
+      <el-tab-pane label="事件" name="four"></el-tab-pane>
+      <el-tab-pane label="YAML" name="five"></el-tab-pane>
+    </el-tabs>
   </el-card>
 </template>
 
