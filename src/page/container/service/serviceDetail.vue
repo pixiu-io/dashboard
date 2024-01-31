@@ -12,11 +12,9 @@
 
       <el-breadcrumb separator="/" style="margin-left: 20px">
         <el-breadcrumb-item><span class="breadcrumb-style">集群</span></el-breadcrumb-item>
-
         <el-breadcrumb-item>
           <span class="breadcrumb-style">{{ data.cluster }}</span>
         </el-breadcrumb-item>
-
         <el-breadcrumb-item
           ><span class="breadcrumb-style">Service:{{ data.name }}({{ data.namespace }})</span>
         </el-breadcrumb-item>
