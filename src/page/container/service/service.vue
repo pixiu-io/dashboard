@@ -76,7 +76,7 @@
               style="margin-right: -20px; margin-left: -10px; color: #006eff"
               @click="editService(scope.row)"
             >
-              配置
+              编辑
             </el-button>
 
             <el-button
@@ -143,6 +143,16 @@ const handleSizeChange = (newSize) => {
 const handleCurrentChange = (newPage) => {
   data.pageInfo.page = newPage;
   getServices();
+};
+
+const createService = () => {
+  const url = `/kubernetes/services/createService?cluster=${data.cluster}&namespace=${data.namespace}`;
+  router.push(url);
+};
+
+const editService = (row) => {
+  const url = `/kubernetes/services/editService?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
+  router.push(url);
 };
 
 onMounted(() => {
