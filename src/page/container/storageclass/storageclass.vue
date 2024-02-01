@@ -175,15 +175,19 @@ const getNamespaceList = async () => {
   }
 };
 
-const deleteService = (row) => {
-  ElMessageBox.confirm('此操作将永久删除 Service ' + row.metadata.name + ' . 是否继续?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-    draggable: true,
-  })
-    .then(() => {
-      const res = proxy.$http({
+const deleteStorageClasss = (row) => {
+  ElMessageBox.confirm(
+    '此操作将永久删除 ' + row.metadata.name + ' StorageClasss. 是否继续?',
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+      draggable: true,
+    },
+  )
+    .then(async () => {
+      await proxy.$http({
         method: 'delete',
         url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/services/${row.metadata.name}`,
       });
@@ -191,6 +195,8 @@ const deleteService = (row) => {
         type: 'success',
         message: '删除 ' + row.metadata.name + ' 成功',
       });
+
+      await getStorageClass();
     })
     .catch(() => {}); // 取消
 };
