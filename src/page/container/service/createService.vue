@@ -23,10 +23,10 @@
         </el-form-item>
 
         <el-form-item label="类型" style="width: 500px">
-          <el-radio-group v-model="data.form.spec.type">
-            <el-radio label="ClusterIp" border>ClusterIp</el-radio>
-            <el-radio label="NodePort" border>NodePort</el-radio>
-            <el-radio label="LoadBalancer" border>LoadBalancer</el-radio>
+          <el-radio-group v-model="data.form.spec.type" style="margin-top: 4px">
+            <el-radio-button label="ClusterIp" border>ClusterIp</el-radio-button>
+            <el-radio-button label="NodePort" border>NodePort</el-radio-button>
+            <el-radio-button label="LoadBalancer" border>LoadBalancer</el-radio-button>
           </el-radio-group>
           <div class="app-pixiu-line-describe2">
             <div v-if="data.form.spec.type === 'ClusterIp'">TODO: clusterIP 的文案</div>
