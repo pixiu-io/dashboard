@@ -7,7 +7,7 @@
   <div style="margin-top: 25px">
     <el-row>
       <el-col>
-        <button class="pixiu-two-button" @click="createService">新建</button>
+        <button class="pixiu-two-button" @click="createIngress">新建</button>
         <button class="pixiu-two-button2" style="margin-left: 10px" @click="getIngresses">
           刷新
         </button>
@@ -76,7 +76,7 @@
               style="margin-right: -20px; margin-left: -10px; color: #006eff"
               @click="editIngress(scope.row)"
             >
-              更新配置
+              编辑
             </el-button>
 
             <el-button
@@ -165,6 +165,16 @@ const getIngresses = async () => {
   data.pageInfo.total = data.serviceList.length;
 };
 
+const createIngress = () => {
+  const url = `/kubernetes/ingresses/createIngress?cluster=${data.cluster}&namespace=${data.namespace}`;
+  router.push(url);
+};
+
+const editIngress = (row) => {
+  const url = `/kubernetes/ingresses/editIngress?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
+  router.push(url);
+};
+
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
   data.namespace = val;
@@ -190,18 +200,17 @@ const deleteIngress = (row) => {
     type: 'warning',
     draggable: true,
   })
-    .then(() => {
-      const res = proxy.$http({
+    .then(async () => {
+      await proxy.$http({
         method: 'delete',
         url: `/proxy/pixiu/${data.cluster}/apis/networking.k8s.io/v1/namespaces/${data.namespace}/ingresses/${row.metadata.name}`,
       });
-
-      getIngresses();
-
       ElMessage({
         type: 'success',
         message: '删除 ' + row.metadata.name + ' 成功',
       });
+
+      await getIngresses();
     })
     .catch(() => {}); // 取消
 };
