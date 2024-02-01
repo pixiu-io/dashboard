@@ -24,8 +24,6 @@ import {
   Operator,
   Service,
   ServiceDetail,
-  CreateService,
-  EditService,
   Ingress,
   ConfigMap,
   CreateConfigMap,
@@ -233,22 +231,6 @@ const routes = [
               title: 'service',
             },
             component: Service,
-          },
-          {
-            path: 'services/createService',
-            name: 'CreateService',
-            meta: {
-              title: 'CreateService',
-            },
-            component: CreateService,
-          },
-          {
-            path: 'services/editService',
-            name: 'EditService',
-            meta: {
-              title: 'EditService',
-            },
-            component: EditService,
           },
           {
             path: 'services/detail',

@@ -22,8 +22,6 @@ import InsertCluster from './container/insertCluster.vue';
 import CreateCluster from './container/createCluster.vue';
 import Service from './container/service/service.vue';
 import ServiceDetail from './container/service/serviceDetail.vue';
-import CreateService from './container/service/createService.vue';
-import EditService from './container/service/editService.vue';
 import ConfigMap from './container/configmap/configmap.vue';
 import CreateConfigMap from './container/configmap/createConfigMap.vue';
 import EditConfigMap from './container/configmap/editConfigMap.vue';
@@ -61,8 +59,6 @@ export {
   Operator,
   Service,
   ServiceDetail,
-  CreateService,
-  EditService,
   StatefulSet,
   ConfigMap,
   CreateConfigMap,
