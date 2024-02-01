@@ -67,9 +67,9 @@
               size="small"
               type="text"
               style="margin-right: -20px; margin-left: -10px; color: #006eff"
-              @click="editDeployment(scope.row)"
+              @click="editStorageClass(scope.row)"
             >
-              更新配置
+              编辑
             </el-button>
 
             <el-button
@@ -155,6 +155,16 @@ const getStorageClass = async () => {
   data.loading = false;
   data.straogeClassList = res.items;
   data.pageInfo.total = data.straogeClassList.length;
+};
+
+const createStorageClass = () => {
+  const url = `/kubernetes/storageClasses/createStorageClass?cluster=${data.cluster}&namespace=${data.namespace}`;
+  router.push(url);
+};
+
+const editStorageClass = (row) => {
+  const url = `/kubernetes/storageClasses/editStorageClass?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
+  router.push(url);
 };
 
 const changeNamespace = async (val) => {
