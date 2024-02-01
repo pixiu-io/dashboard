@@ -23,9 +23,15 @@
         </el-form-item>
 
         <el-form-item label="类型" style="width: 500px">
-          <el-input v-model="data.form.metadata.name" />
+          <el-radio-group v-model="data.form.spec.type" style="margin-left: 30px">
+            <el-radio label="ClusterIp" border>ClusterIp</el-radio>
+            <el-radio label="NodePort" border>NodePort</el-radio>
+            <el-radio label="LoadBalancer" border>LoadBalancer</el-radio>
+          </el-radio-group>
           <div class="app-pixiu-line-describe2">
-            最长63个字符，只能包含小写字母、数字及分隔符("-")
+            <div v-if="data.form.spec.type === 'ClusterIp'">TODO: clusterIP 的文案</div>
+            <div v-else-if="data.form.spec.type === 'NodePort'">TODO: NodePort 的文案</div>
+            <div v-else>TODO: LoadBalancer 的文案</div>
           </div>
         </el-form-item>
       </el-form>
@@ -56,6 +62,9 @@ const data = reactive({
     metadata: {
       name: '',
       namespace: 'default',
+    },
+    spec: {
+      type: 'ClusterIp',
     },
   },
 });
