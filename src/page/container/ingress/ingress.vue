@@ -7,7 +7,7 @@
   <div style="margin-top: 25px">
     <el-row>
       <el-col>
-        <button class="pixiu-two-button" @click="createService">新建</button>
+        <button class="pixiu-two-button" @click="createIngress">新建</button>
         <button class="pixiu-two-button2" style="margin-left: 10px" @click="getIngresses">
           刷新
         </button>
@@ -76,7 +76,7 @@
               style="margin-right: -20px; margin-left: -10px; color: #006eff"
               @click="editIngress(scope.row)"
             >
-              更新配置
+              编辑
             </el-button>
 
             <el-button
@@ -163,6 +163,16 @@ const getIngresses = async () => {
   data.loading = false;
   data.serviceList = res.items;
   data.pageInfo.total = data.serviceList.length;
+};
+
+const createIngress = () => {
+  const url = `/kubernetes/ingresses/createIngress?cluster=${data.cluster}&namespace=${data.namespace}`;
+  router.push(url);
+};
+
+const editIngress = (row) => {
+  const url = `/kubernetes/ingresses/editIngress?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
+  router.push(url);
 };
 
 const changeNamespace = async (val) => {
