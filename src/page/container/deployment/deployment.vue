@@ -105,7 +105,7 @@
               style="margin-right: -20px; margin-left: -10px; color: #006eff"
               @click="editDeployment(scope.row)"
             >
-              设置
+              编辑
             </el-button>
 
             <el-button
@@ -229,7 +229,12 @@ const handleCurrentChange = (newPage) => {
 };
 
 const createDeployment = () => {
-  const url = `/kubernetes/deployment_create?cluster=${data.cluster}&namespace=${data.namespace}`;
+  const url = `/kubernetes/deployments/createDeployment?cluster=${data.cluster}&namespace=${data.namespace}`;
+  router.push(url);
+};
+
+const editDeployment = (row) => {
+  const url = `/kubernetes/deployments/editDeployment?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
   router.push(url);
 };
 

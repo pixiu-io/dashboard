@@ -3,7 +3,8 @@ import Container from './container/container.vue';
 import Kubernetes from './container/kubernetes.vue';
 import Operator from './container/operator.vue';
 import Deployment from './container/deployment/deployment.vue';
-import DeploymentCreate from './container/deployment/createDeployment.vue';
+import CreateDeployment from './container/deployment/createDeployment.vue';
+import EditDeployment from './container/deployment/editDeployment.vue';
 import DeploymentDetail from './container/deployment/details.vue';
 import StatefulSet from './container/statefulset/statefulset.vue';
 import Release from './container/release/release.vue';
@@ -53,7 +54,8 @@ export {
   Container,
   Kubernetes,
   Deployment,
-  DeploymentCreate,
+  CreateDeployment,
+  EditDeployment,
   DeploymentDetail,
   Release,
   Node,
