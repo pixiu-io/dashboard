@@ -31,6 +31,8 @@ import Secret from './container/secret/secret.vue';
 import CreateSecret from './container/secret/createSecret.vue';
 import EditSecret from './container/secret/editSecret.vue';
 import Ingress from './container/ingress/ingress.vue';
+import CreateIngress from './container/ingress/createIngress.vue';
+import EditIngress from './container/ingress/editIngress.vue';
 import Pod from './container/pod/pod.vue';
 import PodDetail from './container/pod/podDetail.vue';
 import StorageClass from './container/storageclass/storageclass.vue';
@@ -71,6 +73,8 @@ export {
   CreateSecret,
   EditSecret,
   Ingress,
+  CreateIngress,
+  EditIngress,
   Pod,
   PodDetail,
   StorageClass,

@@ -27,6 +27,8 @@ import {
   CreateService,
   EditService,
   Ingress,
+  CreateIngress,
+  EditIngress,
   ConfigMap,
   CreateConfigMap,
   EditConfigMap,
@@ -265,6 +267,22 @@ const routes = [
               title: 'ingress',
             },
             component: Ingress,
+          },
+          {
+            path: 'ingresses/createIngress',
+            name: 'CreateIngress',
+            meta: {
+              title: 'CreateIngress',
+            },
+            component: CreateIngress,
+          },
+          {
+            path: 'ingresses/editIngress',
+            name: 'EditIngress',
+            meta: {
+              title: 'EditIngress',
+            },
+            component: EditIngress,
           },
           {
             path: 'configmaps',
