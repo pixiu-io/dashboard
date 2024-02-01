@@ -37,6 +37,8 @@ import {
   EditSecret,
   StatefulSet,
   StorageClass,
+  CreateStorageClass,
+  EditStorageClass,
   Info,
   Pod,
   PodDetail,
@@ -339,6 +341,22 @@ const routes = [
               title: 'storageclass',
             },
             component: StorageClass,
+          },
+          {
+            path: 'storageclasses/createStorageClass',
+            name: 'CreateStorageClass',
+            meta: {
+              title: 'CreateStorageclass',
+            },
+            component: CreateStorageClass,
+          },
+          {
+            path: 'storageclasses/editStorageClass',
+            name: 'EditStorageClass',
+            meta: {
+              title: 'EditStorageClass',
+            },
+            component: EditStorageClass,
           },
         ],
       },

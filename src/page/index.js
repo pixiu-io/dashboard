@@ -36,6 +36,8 @@ import EditIngress from './container/ingress/editIngress.vue';
 import Pod from './container/pod/pod.vue';
 import PodDetail from './container/pod/podDetail.vue';
 import StorageClass from './container/storageclass/storageclass.vue';
+import CreateStorageClass from './container/storageclass/createStorageclass.vue';
+import EditStorageClass from './container/storageclass/editStorageclass.vue';
 import Namespace from './container/namespace/namespace.vue';
 import CreateNamespace from './container/namespace/createNamespace.vue';
 import NamespaceDetail from './container/namespace/namespaceDetail.vue';
@@ -78,6 +80,8 @@ export {
   Pod,
   PodDetail,
   StorageClass,
+  CreateStorageClass,
+  EditStorageClass,
   Info,
   Namespace,
   CreateNamespace,
