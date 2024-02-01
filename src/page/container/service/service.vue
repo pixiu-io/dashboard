@@ -49,7 +49,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="30" />
-        <el-table-column prop="metadata.name" sortable label="名称" width="180">
+        <el-table-column prop="metadata.name" sortable label="名称">
           <template #default="scope">
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
@@ -57,34 +57,33 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="spec.type" label="类型" width="110"> </el-table-column>
-        <el-table-column label="访问入口" prop="spec.clusterIP" width="180"> </el-table-column>
+        <el-table-column prop="spec.type" label="类型"> </el-table-column>
+        <el-table-column label="访问入口" prop="spec.clusterIP"> </el-table-column>
         <el-table-column prop="spec.ports" label="端口组" :formatter="formatterPorts">
         </el-table-column>
         <el-table-column
           label="创建时间"
           prop="metadata.creationTimestamp"
-          width="170px"
           :formatter="formatterTime"
         >
         </el-table-column>
 
-        <el-table-column fixed="right" label="操作" width="180">
+        <el-table-column fixed="right" label="操作" width="150">
           <template #default="scope">
             <el-button
               size="small"
               type="text"
               style="margin-right: -20px; margin-left: -10px; color: #006eff"
-              @click="editDeployment(scope.row)"
+              @click="editService(scope.row)"
             >
-              更新配置
+              配置
             </el-button>
 
             <el-button
               type="text"
               size="small"
               style="margin-right: 1px; color: #006eff"
-              @click="handleDeploymentScaleDialog(scope.row)"
+              @click="deleteService(scope.row)"
             >
               删除
             </el-button>
@@ -185,14 +184,14 @@ const getNamespaceList = async () => {
 };
 
 const deleteService = (row) => {
-  ElMessageBox.confirm('此操作将永久删除 Service ' + row.metadata.name + ' . 是否继续?', '提示', {
+  ElMessageBox.confirm('此操作将永久删除 ' + row.metadata.name + 'Service . 是否继续?', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning',
     draggable: true,
   })
-    .then(() => {
-      const res = proxy.$http({
+    .then(async () => {
+      await proxy.$http({
         method: 'delete',
         url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/services/${row.metadata.name}`,
       });
@@ -200,6 +199,8 @@ const deleteService = (row) => {
         type: 'success',
         message: '删除 ' + row.metadata.name + ' 成功',
       });
+
+      await getServices();
     })
     .catch(() => {}); // 取消
 };
