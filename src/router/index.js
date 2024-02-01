@@ -11,7 +11,8 @@ import {
   Container,
   Kubernetes,
   Deployment,
-  DeploymentCreate,
+  CreateDeployment,
+  EditDeployment,
   DeploymentDetail,
   Release,
   Terminal,
@@ -190,12 +191,20 @@ const routes = [
             component: PodDetail,
           },
           {
-            path: 'deployment_create',
-            name: 'DeploymentCreate',
+            path: 'deployments/createDeployment',
+            name: 'CreateDeployment',
             meta: {
-              title: 'DeploymentCreate',
+              title: 'CreateDeployment',
             },
-            component: DeploymentCreate,
+            component: CreateDeployment,
+          },
+          {
+            path: 'deployments/editDeployment',
+            name: 'EditDeployment',
+            meta: {
+              title: 'EditDeployment',
+            },
+            component: EditDeployment,
           },
           {
             path: 'deployments/detail',
