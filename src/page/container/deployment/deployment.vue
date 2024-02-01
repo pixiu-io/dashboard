@@ -292,7 +292,7 @@ const deleteDeployment = (row) => {
     draggable: true,
   })
     .then(async () => {
-      const res = await proxy.$http({
+      await proxy.$http({
         method: 'delete',
         url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${row.metadata.name}`,
       });
@@ -301,7 +301,7 @@ const deleteDeployment = (row) => {
         message: '删除 ' + row.metadata.name + ' 成功',
       });
 
-      getDeployments();
+      await getDeployments();
     })
     .catch(() => {}); // 取消
 };

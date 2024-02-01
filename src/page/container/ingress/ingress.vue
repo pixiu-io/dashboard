@@ -190,18 +190,17 @@ const deleteIngress = (row) => {
     type: 'warning',
     draggable: true,
   })
-    .then(() => {
-      const res = proxy.$http({
+    .then(async () => {
+      await proxy.$http({
         method: 'delete',
         url: `/proxy/pixiu/${data.cluster}/apis/networking.k8s.io/v1/namespaces/${data.namespace}/ingresses/${row.metadata.name}`,
       });
-
-      getIngresses();
-
       ElMessage({
         type: 'success',
         message: '删除 ' + row.metadata.name + ' 成功',
       });
+
+      await getIngresses();
     })
     .catch(() => {}); // 取消
 };

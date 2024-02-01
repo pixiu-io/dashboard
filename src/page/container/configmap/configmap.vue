@@ -220,8 +220,8 @@ const deleteConfigMap = (row) => {
     type: 'warning',
     draggable: true,
   })
-    .then(() => {
-      const res = proxy.$http({
+    .then(async () => {
+      await proxy.$http({
         method: 'delete',
         url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/configmaps/${row.metadata.name}`,
       });
@@ -229,7 +229,7 @@ const deleteConfigMap = (row) => {
         type: 'success',
         message: '删除 ' + row.metadata.name + ' 成功',
       });
-      getConfigMaps();
+      await getConfigMaps();
     })
     .catch(() => {}); // 取消
 };
@@ -332,6 +332,7 @@ const confirmEditConfigmapYaml = async () => {
   data.yaml = '';
   data.yamlName = '';
   proxy.$message.success(`configmap ${data.yamlName} 更新成功`);
+
   getConfigMaps();
 };
 </script>
