@@ -23,7 +23,7 @@
         </el-form-item>
 
         <el-form-item label="类型" style="width: 500px">
-          <el-radio-group v-model="data.form.spec.type" style="margin-left: 30px">
+          <el-radio-group v-model="data.form.spec.type">
             <el-radio label="ClusterIp" border>ClusterIp</el-radio>
             <el-radio label="NodePort" border>NodePort</el-radio>
             <el-radio label="LoadBalancer" border>LoadBalancer</el-radio>
