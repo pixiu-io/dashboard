@@ -32,7 +32,7 @@
           >
             <div style="margin-top: 20px" />
 
-            <el-form-item label="名称" prop="metadata.name" style="width: 80%">
+            <el-form-item label="名称" prop="metadata.name">
               <el-input
                 v-model="data.configmapForm.metadata.name"
                 style="width: 40%; margin-left: 20px"
@@ -51,7 +51,8 @@
                 </el-radio-group>
               </div>
             </el-form-item>
-            <el-form-item label="适用范围">
+
+            <el-form-item label="适用范围" style="width: 1100px">
               <el-card
                 style="
                   margin-top: 10px;
