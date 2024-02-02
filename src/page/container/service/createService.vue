@@ -14,14 +14,27 @@
           </div>
         </el-form-item>
 
-        <el-form-item label="命名空间" style="width: 300px">
+        <div style="margin-top: -10px" />
+        <el-form-item label="命名空间" style="width: 380px">
           <div class="namespace-select-container">
             <el-select v-model="data.form.metadata.namespace" @change="changeNamespace">
               <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
             </el-select>
           </div>
+
+          <div style="margin-left: 10px; margin-top: 6px">
+            <pixiu-icon
+              name="icon-icon-refresh"
+              style="cursor: pointer"
+              size="16px"
+              type="iconfont"
+              color="#909399"
+              @click="getNamespaceList"
+            />
+          </div>
         </el-form-item>
 
+        <div style="margin-top: 20px" />
         <el-form-item label="类型" style="width: 600px">
           <el-radio-group v-model="data.form.spec.type" style="margin-top: 4px">
             <el-radio-button label="ClusterIP" border>ClusterIP</el-radio-button>
@@ -132,6 +145,7 @@ const getNamespaceList = async () => {
       url: '/proxy/pixiu/' + data.cloud.cluster + '/api/v1/namespaces',
     });
 
+    data.namespaces = [];
     for (let item of result.items) {
       data.namespaces.push(item.metadata.name);
     }
