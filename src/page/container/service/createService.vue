@@ -140,6 +140,12 @@
             Selector 以字母、数字开头和结尾, 且只能包含字母、数字及分隔符。
           </div>
         </div>
+
+        <div style="margin-top: 30px" />
+        <el-form-item style="margin-left: 30%">
+          <el-button class="pixiu-cancel-button" @click="cancel()">取消</el-button>
+          <el-button class="pixiu-confirm-button" type="primary" @click="comfirm()">确定</el-button>
+        </el-form-item>
       </el-form>
     </el-card>
   </el-main>
