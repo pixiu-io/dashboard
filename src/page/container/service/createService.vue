@@ -64,20 +64,26 @@
             </div>
           </div>
         </el-form-item>
-        s
+
         <el-form-item label="标签" style="margin-top: 10px">
           <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button>
         </el-form-item>
         <el-form-item v-for="(item, index) in data.labels" :key="index" style="margin-top: -15px">
           <div>
-            <el-input v-model="item.key" placeholder="标签键" style="width: 200px" />
+            <el-input v-model="item.key" placeholder="标签键" style="width: 280px" />
           </div>
-          <div style="margin-right: 10px; margin-left: 10px"></div>
+          <div style="margin-right: 10px; margin-left: 10px">=</div>
           <div>
-            <el-input v-model="item.value" placeholder="标签值" style="width: 200px" />
+            <el-input v-model="item.value" placeholder="标签值" style="width: 280px" />
           </div>
           <div style="float: right; cursor: pointer; margin-left: 10px" @click="deleteLabel(index)">
-            <el-icon><Delete /></el-icon>
+            <pixiu-icon
+              name="icon-shanchu"
+              size="14px"
+              type="iconfont"
+              style="margin-top: 10px; margin-left: 4px"
+              color="#909399"
+            />
           </div>
         </el-form-item>
         <div class="app-pixiu-line-describe" style="margin-top: -10px">
