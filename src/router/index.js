@@ -11,7 +11,8 @@ import {
   Container,
   Kubernetes,
   Deployment,
-  DeploymentCreate,
+  CreateDeployment,
+  EditDeployment,
   DeploymentDetail,
   Release,
   Terminal,
@@ -24,7 +25,11 @@ import {
   Operator,
   Service,
   ServiceDetail,
+  CreateService,
+  EditService,
   Ingress,
+  CreateIngress,
+  EditIngress,
   ConfigMap,
   CreateConfigMap,
   EditConfigMap,
@@ -33,6 +38,8 @@ import {
   EditSecret,
   StatefulSet,
   StorageClass,
+  CreateStorageClass,
+  EditStorageClass,
   Info,
   Pod,
   PodDetail,
@@ -184,12 +191,20 @@ const routes = [
             component: PodDetail,
           },
           {
-            path: 'deployment_create',
-            name: 'DeploymentCreate',
+            path: 'deployments/createDeployment',
+            name: 'CreateDeployment',
             meta: {
-              title: 'DeploymentCreate',
+              title: 'CreateDeployment',
             },
-            component: DeploymentCreate,
+            component: CreateDeployment,
+          },
+          {
+            path: 'deployments/editDeployment',
+            name: 'EditDeployment',
+            meta: {
+              title: 'EditDeployment',
+            },
+            component: EditDeployment,
           },
           {
             path: 'deployments/detail',
@@ -233,6 +248,22 @@ const routes = [
             component: Service,
           },
           {
+            path: 'services/createService',
+            name: 'CreateService',
+            meta: {
+              title: 'CreateService',
+            },
+            component: CreateService,
+          },
+          {
+            path: 'services/editService',
+            name: 'EditService',
+            meta: {
+              title: 'EditService',
+            },
+            component: EditService,
+          },
+          {
             path: 'services/detail',
             name: 'ServiceDetail',
             meta: {
@@ -247,6 +278,22 @@ const routes = [
               title: 'ingress',
             },
             component: Ingress,
+          },
+          {
+            path: 'ingresses/createIngress',
+            name: 'CreateIngress',
+            meta: {
+              title: 'CreateIngress',
+            },
+            component: CreateIngress,
+          },
+          {
+            path: 'ingresses/editIngress',
+            name: 'EditIngress',
+            meta: {
+              title: 'EditIngress',
+            },
+            component: EditIngress,
           },
           {
             path: 'configmaps',
@@ -303,6 +350,22 @@ const routes = [
               title: 'storageclass',
             },
             component: StorageClass,
+          },
+          {
+            path: 'storageclasses/createStorageClass',
+            name: 'CreateStorageClass',
+            meta: {
+              title: 'CreateStorageclass',
+            },
+            component: CreateStorageClass,
+          },
+          {
+            path: 'storageclasses/editStorageClass',
+            name: 'EditStorageClass',
+            meta: {
+              title: 'EditStorageClass',
+            },
+            component: EditStorageClass,
           },
         ],
       },

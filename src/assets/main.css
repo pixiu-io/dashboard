@@ -313,3 +313,19 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.detail-head-style {
+  margin-top: 1px;
+  margin-bottom: -32px;
+}
+
+.detail-tab-style {
+  color: #909399;
+  font-size: 13px;
+  margin-left: 8px;
+}
+
+.detail-base-info-style {
+  font-size: 13px;
+  color: #29232b;
+}

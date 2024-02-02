@@ -3,7 +3,8 @@ import Container from './container/container.vue';
 import Kubernetes from './container/kubernetes.vue';
 import Operator from './container/operator.vue';
 import Deployment from './container/deployment/deployment.vue';
-import DeploymentCreate from './container/deployment/createDeployment.vue';
+import CreateDeployment from './container/deployment/createDeployment.vue';
+import EditDeployment from './container/deployment/editDeployment.vue';
 import DeploymentDetail from './container/deployment/details.vue';
 import StatefulSet from './container/statefulset/statefulset.vue';
 import Release from './container/release/release.vue';
@@ -22,6 +23,8 @@ import InsertCluster from './container/insertCluster.vue';
 import CreateCluster from './container/createCluster.vue';
 import Service from './container/service/service.vue';
 import ServiceDetail from './container/service/serviceDetail.vue';
+import CreateService from './container/service/createService.vue';
+import EditService from './container/service/editService.vue';
 import ConfigMap from './container/configmap/configmap.vue';
 import CreateConfigMap from './container/configmap/createConfigMap.vue';
 import EditConfigMap from './container/configmap/editConfigMap.vue';
@@ -29,9 +32,13 @@ import Secret from './container/secret/secret.vue';
 import CreateSecret from './container/secret/createSecret.vue';
 import EditSecret from './container/secret/editSecret.vue';
 import Ingress from './container/ingress/ingress.vue';
+import CreateIngress from './container/ingress/createIngress.vue';
+import EditIngress from './container/ingress/editIngress.vue';
 import Pod from './container/pod/pod.vue';
 import PodDetail from './container/pod/podDetail.vue';
 import StorageClass from './container/storageclass/storageclass.vue';
+import CreateStorageClass from './container/storageclass/createStorageclass.vue';
+import EditStorageClass from './container/storageclass/editStorageclass.vue';
 import Namespace from './container/namespace/namespace.vue';
 import CreateNamespace from './container/namespace/createNamespace.vue';
 import NamespaceDetail from './container/namespace/namespaceDetail.vue';
@@ -47,7 +54,8 @@ export {
   Container,
   Kubernetes,
   Deployment,
-  DeploymentCreate,
+  CreateDeployment,
+  EditDeployment,
   DeploymentDetail,
   Release,
   Node,
@@ -59,6 +67,8 @@ export {
   Operator,
   Service,
   ServiceDetail,
+  CreateService,
+  EditService,
   StatefulSet,
   ConfigMap,
   CreateConfigMap,
@@ -67,9 +77,13 @@ export {
   CreateSecret,
   EditSecret,
   Ingress,
+  CreateIngress,
+  EditIngress,
   Pod,
   PodDetail,
   StorageClass,
+  CreateStorageClass,
+  EditStorageClass,
   Info,
   Namespace,
   CreateNamespace,

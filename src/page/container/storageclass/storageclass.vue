@@ -67,9 +67,9 @@
               size="small"
               type="text"
               style="margin-right: -20px; margin-left: -10px; color: #006eff"
-              @click="editDeployment(scope.row)"
+              @click="editStorageClass(scope.row)"
             >
-              更新配置
+              编辑
             </el-button>
 
             <el-button
@@ -157,6 +157,16 @@ const getStorageClass = async () => {
   data.pageInfo.total = data.straogeClassList.length;
 };
 
+const createStorageClass = () => {
+  const url = `/kubernetes/storageClasses/createStorageClass?cluster=${data.cluster}&namespace=${data.namespace}`;
+  router.push(url);
+};
+
+const editStorageClass = (row) => {
+  const url = `/kubernetes/storageClasses/editStorageClass?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
+  router.push(url);
+};
+
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
   data.namespace = val;
@@ -175,15 +185,19 @@ const getNamespaceList = async () => {
   }
 };
 
-const deleteService = (row) => {
-  ElMessageBox.confirm('此操作将永久删除 Service ' + row.metadata.name + ' . 是否继续?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-    draggable: true,
-  })
-    .then(() => {
-      const res = proxy.$http({
+const deleteStorageClasss = (row) => {
+  ElMessageBox.confirm(
+    '此操作将永久删除 ' + row.metadata.name + ' StorageClasss. 是否继续?',
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+      draggable: true,
+    },
+  )
+    .then(async () => {
+      await proxy.$http({
         method: 'delete',
         url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/services/${row.metadata.name}`,
       });
@@ -191,6 +205,8 @@ const deleteService = (row) => {
         type: 'success',
         message: '删除 ' + row.metadata.name + ' 成功',
       });
+
+      await getStorageClass();
     })
     .catch(() => {}); // 取消
 };
