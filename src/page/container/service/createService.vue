@@ -152,7 +152,7 @@
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance, onMounted } from 'vue';
+import { reactive, getCurrentInstance, onMounted, watch } from 'vue';
 import PixiuCard from '@/components/card/index.vue';
 
 const { proxy } = getCurrentInstance();
@@ -179,9 +179,25 @@ const data = reactive({
   },
 });
 
-const handleChange = (value) => {
-  data.deploymentForm.spec.replicas = value;
-};
+onMounted(() => {
+  data.cloud = proxy.$route.query;
+  data.path = proxy.$route.fullPath;
+
+  getNamespaceList();
+
+  data.labels.push({
+    key: '',
+    value: '',
+  });
+});
+
+watch(
+  () => data.selectorType,
+  (newActive, oldActive) => {
+    console.log('newActive', newActive);
+    console.log('oldActive', oldActive);
+  },
+);
 
 const comfirm = async () => {
   data.deploymentForm.spec.selector.matchLabels['pixiu.io/app'] = data.deploymentForm.metadata.name;
@@ -211,18 +227,6 @@ const comfirm = async () => {
 const cancel = () => {
   backToService();
 };
-
-onMounted(() => {
-  data.cloud = proxy.$route.query;
-  data.path = proxy.$route.fullPath;
-
-  getNamespaceList();
-
-  data.labels.push({
-    key: '',
-    value: '',
-  });
-});
 
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
