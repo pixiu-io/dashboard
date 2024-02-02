@@ -51,7 +51,6 @@
                 </el-radio-group>
               </div>
             </el-form-item>
-
             <el-form-item label="适用范围" style="width: 1100px">
               <el-card
                 style="
