@@ -255,44 +255,16 @@ watch(
 );
 
 const comfirm = async () => {
-  data.deploymentForm.spec.selector.matchLabels['pixiu.io/app'] = data.deploymentForm.metadata.name;
-  data.deploymentForm.spec.selector.matchLabels['pixiu.io/kind'] = 'deployment';
-  data.deploymentForm.spec.template.metadata.labels = data.deploymentForm.spec.selector.matchLabels;
-
-  for (let i = 0; i < data.deploymentLabels.length; i++) {
-    data.deploymentForm.spec.template.metadata.labels[data.deploymentLabels[i].key] =
-      data.deploymentLabels[i].value;
-  }
-
-  try {
-    const resp = await proxy.$http({
-      method: 'post',
-      url:
-        `/proxy/pixiu/${data.cloud.cluster}/apis/apps/v1/namespaces/` +
-        data.deploymentForm.metadata.namespace +
-        `/deployments`,
-      data: data.deploymentForm,
-    });
-  } catch (error) {}
-
-  proxy.$message.success(`deployment ${data.deploymentForm.metadata.name} 创建成功`);
-  backToService();
+  console.log('data', data.form);
 };
 
 const cancel = () => {
-  backToService();
+  console.log('data', data.form);
 };
 
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
   data.form.metadata.namespace = val;
-};
-
-const getNamespace = async () => {
-  const namespace = localStorage.getItem('namespace');
-  if (namespace) {
-    data.namespace = namespace;
-  }
 };
 
 const getNamespaceList = async () => {
