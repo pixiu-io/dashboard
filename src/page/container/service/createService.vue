@@ -174,6 +174,14 @@ const data = reactive({
       namespace: 'default',
     },
     spec: {
+      ports: [
+        {
+          port: '',
+          protocol: 'TCP',
+          targetPort: '',
+        },
+      ],
+      selector: {},
       type: 'ClusterIP',
     },
   },
@@ -231,7 +239,7 @@ const cancel = () => {
 
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
-  data.deploymentForm.metadata.namespace = val;
+  data.form.metadata.namespace = val;
 };
 
 const getNamespace = async () => {
