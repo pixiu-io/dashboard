@@ -22,16 +22,20 @@
           </div>
         </el-form-item>
 
-        <el-form-item label="类型" style="width: 500px">
+        <el-form-item label="类型" style="width: 600px">
           <el-radio-group v-model="data.form.spec.type" style="margin-top: 4px">
-            <el-radio-button label="ClusterIp" border>ClusterIp</el-radio-button>
+            <el-radio-button label="ClusterIP" border>ClusterIP</el-radio-button>
             <el-radio-button label="NodePort" border>NodePort</el-radio-button>
             <el-radio-button label="LoadBalancer" border>LoadBalancer</el-radio-button>
           </el-radio-group>
           <div class="app-pixiu-line-describe2">
-            <div v-if="data.form.spec.type === 'ClusterIp'">TODO: clusterIP 的文案</div>
-            <div v-else-if="data.form.spec.type === 'NodePort'">TODO: NodePort 的文案</div>
-            <div v-else>TODO: LoadBalancer 的文案</div>
+            <div v-if="data.form.spec.type === 'ClusterIP'">
+              通过集群的内部 IP 公开 Service，选择该值时 Service 只能够在集群内部访问。
+            </div>
+            <div v-else-if="data.form.spec.type === 'NodePort'">
+              通过每个节点上的 IP 和静态端口公开 Service
+            </div>
+            <div v-else>使用云平台的负载均衡器向外部公开 Service。</div>
           </div>
         </el-form-item>
       </el-form>
@@ -64,7 +68,7 @@ const data = reactive({
       namespace: 'default',
     },
     spec: {
-      type: 'ClusterIp',
+      type: 'ClusterIP',
     },
   },
 });
