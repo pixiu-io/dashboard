@@ -341,3 +341,8 @@
   display: flex;
   justify-content: space-around;
 }
+
+.el-switch {
+  --el-switch-on-color: #3377ff;
+  --el-switch-off-color: var(--el-border-color);
+}

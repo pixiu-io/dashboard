@@ -53,19 +53,7 @@
         </el-form-item>
 
         <div style="margin-top: -10px" />
-        <el-form-item label="使用方式" style="width: 500px">
-          <el-radio-group v-model="data.serviceType" style="margin-top: 4px">
-            <el-radio-button label="常规服务" border>常规服务</el-radio-button>
-            <el-radio-button label="Headless 服务" border>Headless 服务</el-radio-button>
-          </el-radio-group>
-          <div class="app-pixiu-line-describe2">
-            <div v-if="data.serviceType === 'Headless 服务'">
-              不需要负载均衡，也不需要单独的 Service IP。
-            </div>
-          </div>
-        </el-form-item>
-
-        <el-form-item label="标签" style="margin-top: 10px">
+        <el-form-item label="标签" style="margin-top: 10px; color: #3377ff">
           <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button>
         </el-form-item>
         <el-form-item v-for="(item, index) in data.labels" :key="index" style="margin-top: -15px">
@@ -87,16 +75,22 @@
           </div>
         </el-form-item>
         <div class="app-pixiu-line-describe" style="margin-top: -10px">
-          标签键值以字母、数字开头和结尾, 且只能包含字母、数字及分隔符.
+          标签键值以字母、数字开头和结尾, 且只能包含字母、数字及分隔符。
         </div>
+
+        <div style="margin-top: 10px" />
+        <el-form-item label="Selector" style="width: 600px">
+          <div style="float: right">
+            <el-switch v-model="data.enableSelector" inline-prompt width="40px" />
+          </div>
+        </el-form-item>
       </el-form>
     </el-card>
   </el-main>
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
-
+import { reactive, getCurrentInstance, onMounted } from 'vue';
 import PixiuCard from '@/components/card/index.vue';
 
 const { proxy } = getCurrentInstance();
@@ -108,6 +102,7 @@ const data = reactive({
   namespaces: [],
   labels: [],
 
+  enableSelector: true,
   serviceType: '常规服务',
   form: {
     metadata: {
@@ -124,7 +119,7 @@ const handleChange = (value) => {
   data.deploymentForm.spec.replicas = value;
 };
 
-const comfirmCreate = async () => {
+const comfirm = async () => {
   data.deploymentForm.spec.selector.matchLabels['pixiu.io/app'] = data.deploymentForm.metadata.name;
   data.deploymentForm.spec.selector.matchLabels['pixiu.io/kind'] = 'deployment';
   data.deploymentForm.spec.template.metadata.labels = data.deploymentForm.spec.selector.matchLabels;
@@ -146,11 +141,11 @@ const comfirmCreate = async () => {
   } catch (error) {}
 
   proxy.$message.success(`deployment ${data.deploymentForm.metadata.name} 创建成功`);
-  backToDeployment();
+  backToService();
 };
 
-const cancelCreate = () => {
-  backToDeployment();
+const cancel = () => {
+  backToService();
 };
 
 onMounted(() => {
@@ -158,6 +153,11 @@ onMounted(() => {
   data.path = proxy.$route.fullPath;
 
   getNamespaceList();
+
+  data.labels.push({
+    key: '',
+    value: '',
+  });
 });
 
 const changeNamespace = async (val) => {
