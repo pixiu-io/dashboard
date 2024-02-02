@@ -66,8 +66,10 @@
         </el-form-item>
 
         <div style="margin-top: -10px" />
-        <el-form-item label="标签" style="margin-top: 10px; color: #3377ff">
-          <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button>
+        <el-form-item label="标签" style="margin-top: 10px">
+          <el-button type="text" class="app-action-btn" style="color: #3377ff" @click="addLabel"
+            >新增</el-button
+          >
         </el-form-item>
         <el-form-item v-for="(item, index) in data.labels" :key="index" style="margin-top: -15px">
           <div>
@@ -98,6 +100,46 @@
             <el-radio-button label="高级" border>高级</el-radio-button>
           </el-radio-group>
         </el-form-item>
+
+        <div v-if="data.selectorType === '高级'">
+          <el-form-item style="margin-top: -15px">
+            <el-button
+              type="text"
+              class="app-action-btn"
+              style="color: #3377ff"
+              @click="addSelector"
+              >新增</el-button
+            >
+          </el-form-item>
+          <el-form-item
+            v-for="(item, index) in data.selectors"
+            :key="index"
+            style="margin-top: -15px"
+          >
+            <div>
+              <el-input v-model="item.key" placeholder="标签键" style="width: 280px" />
+            </div>
+            <div style="margin-right: 10px; margin-left: 10px">=</div>
+            <div>
+              <el-input v-model="item.value" placeholder="标签值" style="width: 280px" />
+            </div>
+            <div
+              style="float: right; cursor: pointer; margin-left: 10px"
+              @click="deleteSelector(index)"
+            >
+              <pixiu-icon
+                name="icon-shanchu"
+                size="14px"
+                type="iconfont"
+                style="margin-top: 10px; margin-left: 4px"
+                color="#909399"
+              />
+            </div>
+          </el-form-item>
+          <div class="app-pixiu-line-describe" style="margin-top: -10px">
+            Selector 以字母、数字开头和结尾, 且只能包含字母、数字及分隔符。
+          </div>
+        </div>
       </el-form>
     </el-card>
   </el-main>
@@ -114,7 +156,9 @@ const data = reactive({
 
   cluser: '',
   namespaces: [],
+
   labels: [],
+  selectors: [],
 
   serviceType: '常规服务',
   selectorType: '高级',
@@ -209,6 +253,17 @@ const addLabel = () => {
 
 const deleteLabel = (index) => {
   data.labels.splice(index, 1);
+};
+
+const addSelector = () => {
+  data.selectors.push({
+    key: '',
+    value: '',
+  });
+};
+
+const deleteSelector = (index) => {
+  data.selectors.splice(index, 1);
 };
 
 const backToService = () => {
