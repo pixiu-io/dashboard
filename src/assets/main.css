@@ -329,3 +329,20 @@
   font-size: 13px;
   color: #29232b;
 }
+
+/* 创建页面卡片通用样式 */
+.create-card-style {
+  margin-top: 8px;
+  width: 100%;
+  border-radius: 0px;
+}
+
+.app-pixiu-content-card {
+  display: flex;
+  justify-content: space-around;
+}
+
+.el-switch {
+  --el-switch-on-color: #3377ff;
+  --el-switch-off-color: var(--el-border-color);
+}
