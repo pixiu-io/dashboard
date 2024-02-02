@@ -185,17 +185,18 @@ onMounted(() => {
 
   getNamespaceList();
 
-  data.labels.push({
-    key: '',
-    value: '',
-  });
+  addLabel();
+  addSelector();
 });
 
 watch(
   () => data.selectorType,
   (newActive, oldActive) => {
-    console.log('newActive', newActive);
-    console.log('oldActive', oldActive);
+    if (newActive === '高级') {
+      addSelector();
+    } else {
+      data.selectors = [];
+    }
   },
 );
 
