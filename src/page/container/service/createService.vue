@@ -141,6 +141,46 @@
           </div>
         </div>
 
+        <el-form-item label="Ports" style="margin-top: 20px">
+          <div class="label-title-style" style="font-size: 13px">目标端口</div>
+          <div class="label-title-style" style="margin-left: 148px; font-size: 13px">协议</div>
+          <div class="label-title-style" style="margin-left: 175px; font-size: 13px">服务端口</div>
+
+          <el-divider style="width: 90%; margin-top: 2px" />
+
+          <el-form-item
+            v-for="(item, index) in data.form.spec.ports"
+            :key="index"
+            style="margin-top: -15px"
+          >
+            <div>
+              <el-input v-model="item.port" placeholder="1-65535内的整数" style="width: 180px" />
+            </div>
+            <div style="margin-left: 20px">
+              <el-input v-model="item.protocol" placeholder="TCP/UDP" style="width: 180px" />
+            </div>
+            <div style="margin-left: 20px">
+              <el-input
+                v-model="item.targetPort"
+                placeholder="1-65535内的整数"
+                style="width: 180px"
+              />
+            </div>
+            <div
+              style="float: right; cursor: pointer; margin-left: 10px"
+              @click="deletePort(index)"
+            >
+              <pixiu-icon
+                name="icon-shanchu"
+                size="14px"
+                type="iconfont"
+                style="margin-top: 10px; margin-left: 4px"
+                color="#909399"
+              />
+            </div>
+          </el-form-item>
+        </el-form-item>
+
         <div style="margin-top: 30px" />
         <el-form-item style="margin-left: 30%">
           <el-button class="pixiu-cancel-button" @click="cancel()">取消</el-button>
@@ -177,7 +217,7 @@ const data = reactive({
       ports: [
         {
           port: '',
-          protocol: 'TCP',
+          protocol: '',
           targetPort: '',
         },
       ],
@@ -285,6 +325,17 @@ const deleteSelector = (index) => {
   data.selectors.splice(index, 1);
 };
 
+const addPort = () => {
+  data.form.spec.ports.push({
+    key: '',
+    value: '',
+  });
+};
+
+const deletePort = (index) => {
+  data.form.spec.ports.splice(index, 1);
+};
+
 const backToService = () => {
   proxy.$router.push({
     name: 'Service',
@@ -293,4 +344,9 @@ const backToService = () => {
 };
 </script>
 
-<style></style>
+<style>
+.label-title-style {
+  font-size: 12px;
+  color: #888888;
+}
+</style>
