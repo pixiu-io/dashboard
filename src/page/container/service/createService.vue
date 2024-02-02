@@ -146,12 +146,18 @@
           <div class="label-title-style" style="margin-left: 148px; font-size: 13px">协议</div>
           <div class="label-title-style" style="margin-left: 175px; font-size: 13px">服务端口</div>
 
-          <el-divider style="width: 90%; margin-top: 2px" />
+          <el-divider style="width: 85%; margin-top: 2px" />
+
+          <el-form-item style="margin-top: -15px">
+            <el-button type="text" class="app-action-btn" style="color: #3377ff" @click="addPort"
+              >新增</el-button
+            >
+          </el-form-item>
 
           <el-form-item
             v-for="(item, index) in data.form.spec.ports"
             :key="index"
-            style="margin-top: -15px"
+            style="margin-top: -10px"
           >
             <div>
               <el-input v-model="item.port" placeholder="1-65535内的整数" style="width: 180px" />
