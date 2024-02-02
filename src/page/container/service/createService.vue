@@ -93,9 +93,10 @@
 
         <div style="margin-top: 10px" />
         <el-form-item label="Selector" style="width: 600px">
-          <div style="float: right">
-            <el-switch v-model="data.enableSelector" inline-prompt width="40px" />
-          </div>
+          <el-radio-group v-model="data.selectorType" style="margin-top: 4px">
+            <el-radio-button label="普通" border>普通</el-radio-button>
+            <el-radio-button label="高级" border>高级</el-radio-button>
+          </el-radio-group>
         </el-form-item>
       </el-form>
     </el-card>
@@ -115,8 +116,8 @@ const data = reactive({
   namespaces: [],
   labels: [],
 
-  enableSelector: true,
   serviceType: '常规服务',
+  selectorType: '高级',
   form: {
     metadata: {
       name: '',
