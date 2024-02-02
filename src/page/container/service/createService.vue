@@ -51,6 +51,38 @@
             <div v-else>使用云平台的负载均衡器向外部公开 Service。</div>
           </div>
         </el-form-item>
+
+        <div style="margin-top: -10px" />
+        <el-form-item label="使用方式" style="width: 500px">
+          <el-radio-group v-model="data.serviceType" style="margin-top: 4px">
+            <el-radio-button label="常规服务" border>常规服务</el-radio-button>
+            <el-radio-button label="Headless 服务" border>Headless 服务</el-radio-button>
+          </el-radio-group>
+          <div class="app-pixiu-line-describe2">
+            <div v-if="data.serviceType === 'Headless 服务'">
+              不需要负载均衡，也不需要单独的 Service IP。
+            </div>
+          </div>
+        </el-form-item>
+        s
+        <el-form-item label="标签" style="margin-top: 10px">
+          <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button>
+        </el-form-item>
+        <el-form-item v-for="(item, index) in data.labels" :key="index" style="margin-top: -15px">
+          <div>
+            <el-input v-model="item.key" placeholder="标签键" style="width: 200px" />
+          </div>
+          <div style="margin-right: 10px; margin-left: 10px"></div>
+          <div>
+            <el-input v-model="item.value" placeholder="标签值" style="width: 200px" />
+          </div>
+          <div style="float: right; cursor: pointer; margin-left: 10px" @click="deleteLabel(index)">
+            <el-icon><Delete /></el-icon>
+          </div>
+        </el-form-item>
+        <div class="app-pixiu-line-describe" style="margin-top: -10px">
+          标签键值以字母、数字开头和结尾, 且只能包含字母、数字及分隔符.
+        </div>
       </el-form>
     </el-card>
   </el-main>
@@ -68,13 +100,9 @@ const data = reactive({
 
   cluser: '',
   namespaces: [],
-  autosize: {
-    minRows: 5,
-  },
-
   labels: [],
 
-  // deployment 创建初始对象
+  serviceType: '常规服务',
   form: {
     metadata: {
       name: '',
