@@ -273,6 +273,21 @@ const comfirm = async () => {
     proxy.$message.error('selector 为必选项');
     return;
   }
+
+  if (data.form.spec.ports.length == 0) {
+    proxy.$message.error('ports 为必选项');
+    return;
+  }
+  // 转换 port，从字符串转换成 int32
+  for (var i = 0; i < data.form.spec.ports.length; i++) {
+    let p = data.form.spec.ports[i];
+    const portInt = parseInt(p.port);
+    const targetPortInt = parseInt(p.targetPort);
+
+    p.port = portInt;
+    p.targetPort = targetPortInt;
+  }
+
   for (let selector of data.selectors) {
     data.form.spec.selector[selector.key] = selector.value;
   }
@@ -294,7 +309,8 @@ const comfirm = async () => {
     proxy.$message.success(`service ${data.form.metadata.name} 创建成功`);
     backToService();
   } catch (error) {
-    console.log('error', error.response);
+    proxy.$message.error(error.response.data.message);
+    return;
   }
 };
 
@@ -344,14 +360,16 @@ const deleteSelector = (index) => {
 };
 
 const addPort = () => {
-  data.form.spec.ports.push({
-    key: '',
-    value: '',
+  data.spec.ports.push({
+    name: '',
+    port: '',
+    protocol: '',
+    targetPort: '',
   });
 };
 
 const deletePort = (index) => {
-  data.form.spec.ports.splice(index, 1);
+  data.spec.ports.splice(index, 1);
 };
 
 const backToService = () => {
