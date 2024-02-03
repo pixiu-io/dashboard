@@ -27,14 +27,14 @@
             label-width="100px"
             :rules="rules"
             status-icon
-            :model="data.configmapForm"
+            :model="data.secretForm"
             style="margin-left: 3%; width: 80%"
           >
             <div style="margin-top: 20px" />
 
-            <el-form-item label="名称" prop="metadata.name" style="width: 80%">
+            <el-form-item label="名称" prop="metadata.name">
               <el-input
-                v-model="data.configmapForm.metadata.name"
+                v-model="data.secretForm.metadata.name"
                 style="width: 40%; margin-left: 20px"
               />
               <div class="app-pixiu-line-describe2" style="margin-left: 20px">
@@ -51,7 +51,7 @@
                 </el-radio-group>
               </div>
             </el-form-item>
-            <el-form-item label="适用范围">
+            <el-form-item label="适用范围" style="width: 1100px">
               <el-card
                 style="
                   margin-top: 10px;
@@ -267,6 +267,7 @@
 
 <script setup>
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
+import { ElMessage } from 'element-plus';
 
 const { proxy } = getCurrentInstance();
 const ruleFormRef = ref();
@@ -279,15 +280,14 @@ const data = reactive({
   autosize: {
     minRows: 2,
   },
-
+  systemNameSpaces: ['default', 'kube-node-lease', 'kube-public', 'kube-system'],
   configMapLabels: [{ key: null, value: null }],
   secretType: 'Opaque',
   secretNameSpace: '',
-  // configmap 创建初始对象
-  configmapForm: {
+  // secret 创建初始对象
+  secretForm: {
     metadata: {
       name: '',
-      namespace: 'default',
     },
     data: {},
   },
@@ -319,7 +319,6 @@ const data = reactive({
 
 const rules = {
   'metadata.name': [{ required: true, message: '请输入 Secret 名称', trigger: 'blur' }],
-  'item.key': [{ required: true, message: 'key 不能为空', trigger: 'blur' }],
 };
 
 const dockerRegisterRules = {
@@ -334,23 +333,79 @@ const dockerRegisterRules = {
 const comfirmCreate = () => {
   ruleFormRef.value.validate(async (valid) => {
     if (valid) {
-      data.configMapLabels.forEach((item) => {
-        data.configmapForm.data[item.key] = item.value;
-      });
-      try {
-        const resp = await proxy.$http({
-          method: 'post',
-          url:
-            `/proxy/pixiu/${data.cluster}/api/v1/namespaces/` +
-            data.configmapForm.metadata.namespace +
-            `/secrets`,
-          data: data.configmapForm,
+      let kind = 'Secret';
+      let name = data.secretForm.metadata.name;
+      let namespaces = data.systemNameSpaces;
+      if (data.namespaceFlag) {
+        if (data.transferData.length === 0) {
+          ElMessage.warning('请指定命名空间或存量所有命名空间');
+          return;
+        }
+        namespaces = data.transferData;
+      }
+      for (let namespace of namespaces) {
+        let url =
+          `/proxy/pixiu/${data.cluster}/api/v1/namespaces/` + namespace + `/secrets/` + name;
+        const result = await checkExist(kind, name, namespace, url);
+        if (!result) {
+          return;
+        }
+      }
+      let form = {
+        metadata: {
+          name: name,
+        },
+        data: {},
+      };
+
+      if (data.secretType === 'Opaque') {
+        data.configMapLabels.forEach((item) => {
+          form.data[item.key] = btoa(item.value);
         });
-        proxy.$message.success(`Secret ${data.configmapForm.metadata.name} 创建成功`);
-        backToSecret();
-      } catch (error) {}
+        form.type = 'Opaque';
+      } else if (data.secretType === 'TLS证书') {
+        form.type = 'kubernetes.io/tls';
+        form.data['tls.crt'] = data.tlsCertificate.crt;
+        form.data['tls.key'] = data.tlsCertificate.key;
+      } else {
+        form.type = 'kubernetes.io/dockercfg';
+        form.data['.dockercfg'] = btoa(JSON.stringify(data.dockerRegister));
+      }
+
+      for (let namespace of namespaces) {
+        let url = `/proxy/pixiu/${data.cluster}/api/v1/namespaces/` + namespace + `/secrets`;
+        await createSecret(url, form);
+      }
+
+      backToSecret();
     }
   });
+};
+
+const checkExist = async (kind, name, namespace, url) => {
+  try {
+    const resp = await proxy.$http({
+      method: 'get',
+      url: url,
+    });
+    ElMessage.warning(`${kind}: ${name}(${namespace}) 已存在`);
+    return false;
+  } catch (error) {
+    if (error.response.status === 404) {
+      return true;
+    }
+  }
+};
+
+const createSecret = async (url, data) => {
+  try {
+    const resp = await proxy.$http({
+      method: 'post',
+      url: url,
+      data: data,
+    });
+    proxy.$message.success(`Secret ${data.metadata.name} 创建成功`);
+  } catch (error) {}
 };
 
 const cancelCreate = () => {
@@ -363,12 +418,12 @@ onMounted(() => {
 
   data.path = proxy.$route.fullPath;
 
-  data.configmapForm.metadata.namespace = proxy.$route.query.namespace;
+  data.secretForm.metadata.namespace = proxy.$route.query.namespace;
   getNamespaceList();
 });
 
 const changeNamespace = async (val) => {
-  data.configmapForm.metadata.namespace = val;
+  data.secretForm.metadata.namespace = val;
 };
 
 const getNamespaceList = async () => {

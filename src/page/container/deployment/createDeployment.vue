@@ -10,7 +10,7 @@
     <el-main>
       <div class="app-pixiu-content-card">
         <el-card style="margin-top: 8px; width: 100%; border-radius: 0px">
-          <el-form label-position="left" label-width="100px" style="margin-left: 3%; width: 80%">
+          <el-form label-position="left" label-width="100px" style="margin-left: 3%; width: 70%">
             <div style="margin-top: 20px" />
             <el-form-item label="名称" style="width: 500px">
               <el-input v-model="data.deploymentForm.metadata.name" />
@@ -150,7 +150,7 @@ const { proxy } = getCurrentInstance();
 
 const data = reactive({
   loading: false,
-  cluser: '',
+  cluster: '',
   namespaces: [],
   autosize: {
     minRows: 5,
@@ -287,11 +287,6 @@ const backToDeployment = () => {
 <style>
 .box-card {
   margin-top: 20px;
-}
-
-.app-pixiu-content-card {
-  display: flex;
-  justify-content: space-around;
 }
 
 .deployee-class .el-main {
