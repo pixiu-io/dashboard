@@ -359,7 +359,7 @@ const deleteSelector = (index) => {
 };
 
 const addPort = () => {
-  data.spec.ports.push({
+  data.form.spec.ports.push({
     name: '',
     port: '',
     protocol: '',
@@ -368,7 +368,7 @@ const addPort = () => {
 };
 
 const deletePort = (index) => {
-  data.spec.ports.splice(index, 1);
+  data.form.spec.ports.splice(index, 1);
 };
 
 const backToService = () => {
