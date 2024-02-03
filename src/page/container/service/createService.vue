@@ -103,13 +103,13 @@
 
         <div v-if="data.selectorType === '普通'">
           <el-form-item style="margin-top: -8px">
-            <el-select v-model="data.deployment" @change="changeDeployment" style="width: 25%">
+            <el-select v-model="data.deployment" style="width: 25%" @change="changeDeployment">
               <el-option v-for="item in data.deployments" :key="item" :value="item" :label="item" />
             </el-select>
           </el-form-item>
 
           <div class="app-pixiu-line-describe" style="margin-top: -10px">
-            选择 Service 的 Endpoints
+            选择 Service 需要关联的后端 workload。
           </div>
         </div>
 
@@ -238,7 +238,7 @@ const data = reactive({
   selectors: [],
 
   serviceType: '常规服务',
-  selectorType: '高级',
+  selectorType: '普通',
   form: {
     metadata: {
       name: '',
@@ -274,7 +274,9 @@ onMounted(() => {
   getDeploymentList(data.cluster, data.form.metadata.namespace);
 
   // addLabel();
-  addSelector();
+  if (data.selectorType === '高级') {
+    addSelector();
+  }
 });
 
 watch(
@@ -308,8 +310,17 @@ const comfirm = async () => {
     p.targetPort = targetPortInt;
   }
 
-  for (let selector of data.selectors) {
-    data.form.spec.selector[selector.key] = selector.value;
+  if (data.selectorType === '普通') {
+    const d = data.deploymentMap[data.deployment];
+    if (d === undefined) {
+      proxy.$message.error('未获取到必选的 workload');
+      return;
+    }
+    data.form.spec.selector = d.spec.template.metadata.labels;
+  } else {
+    for (let selector of data.selectors) {
+      data.form.spec.selector[selector.key] = selector.value;
+    }
   }
 
   if (data.labels.length > 0) {
@@ -322,7 +333,7 @@ const comfirm = async () => {
   try {
     await proxy.$http({
       method: 'post',
-      url: `/proxy/pixiu/${data.cloud.cluster}/api/v1/namespaces/${data.form.metadata.namespace}/services`,
+      url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.form.metadata.namespace}/services`,
       data: data.form,
     });
 
