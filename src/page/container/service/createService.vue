@@ -249,7 +249,6 @@ const data = reactive({
 
 onMounted(() => {
   data.cloud = proxy.$route.query;
-  data.path = proxy.$route.fullPath;
 
   getNamespaceList();
 
@@ -315,7 +314,7 @@ const comfirm = async () => {
 };
 
 const cancel = () => {
-  console.log('data', data.form);
+  backToService();
 };
 
 const changeNamespace = async (val) => {
