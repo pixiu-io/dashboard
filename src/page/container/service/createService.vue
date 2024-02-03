@@ -291,11 +291,6 @@ watch(
 );
 
 const comfirm = async () => {
-  if (data.selectors.length == 0) {
-    proxy.$message.error('selector 为必选项');
-    return;
-  }
-
   if (data.form.spec.ports.length == 0) {
     proxy.$message.error('ports 为必选项');
     return;
@@ -318,6 +313,11 @@ const comfirm = async () => {
     }
     data.form.spec.selector = d.spec.template.metadata.labels;
   } else {
+    if (data.selectors.length == 0) {
+      proxy.$message.error('selector 为必选项');
+      return;
+    }
+
     for (let selector of data.selectors) {
       data.form.spec.selector[selector.key] = selector.value;
     }
