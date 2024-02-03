@@ -101,6 +101,18 @@
           </el-radio-group>
         </el-form-item>
 
+        <div v-if="data.selectorType === '普通'">
+          <el-form-item style="margin-top: -8px">
+            <el-select v-model="data.deployment" style="width: 25%" @change="changeDeployment">
+              <el-option v-for="item in data.deployments" :key="item" :value="item" :label="item" />
+            </el-select>
+          </el-form-item>
+
+          <div class="app-pixiu-line-describe" style="margin-top: -10px">
+            选择 Service 需要关联的后端 workload。
+          </div>
+        </div>
+
         <div v-if="data.selectorType === '高级'">
           <el-form-item style="margin-top: -15px">
             <el-button
@@ -219,14 +231,14 @@ const data = reactive({
   loading: false,
   Session: false,
 
-  cluser: '',
+  clutser: '',
   namespaces: [],
 
   labels: [],
   selectors: [],
 
   serviceType: '常规服务',
-  selectorType: '高级',
+  selectorType: '普通',
   form: {
     metadata: {
       name: '',
@@ -245,15 +257,26 @@ const data = reactive({
       type: 'ClusterIP',
     },
   },
+
+  deployment: '',
+  deployments: [],
+  deploymentMap: {},
 });
 
 onMounted(() => {
-  data.cloud = proxy.$route.query;
+  data.query = proxy.$route.query;
+  data.cluster = data.query.cluster;
+
+  data.path = proxy.$route.fullPath;
 
   getNamespaceList();
+  // 获取 deployment 列表
+  getDeploymentList(data.cluster, data.form.metadata.namespace);
 
-  addLabel();
-  addSelector();
+  // addLabel();
+  if (data.selectorType === '高级') {
+    addSelector();
+  }
 });
 
 watch(
@@ -287,8 +310,17 @@ const comfirm = async () => {
     p.targetPort = targetPortInt;
   }
 
-  for (let selector of data.selectors) {
-    data.form.spec.selector[selector.key] = selector.value;
+  if (data.selectorType === '普通') {
+    const d = data.deploymentMap[data.deployment];
+    if (d === undefined) {
+      proxy.$message.error('未获取到必选的 workload');
+      return;
+    }
+    data.form.spec.selector = d.spec.template.metadata.labels;
+  } else {
+    for (let selector of data.selectors) {
+      data.form.spec.selector[selector.key] = selector.value;
+    }
   }
 
   if (data.labels.length > 0) {
@@ -301,7 +333,7 @@ const comfirm = async () => {
   try {
     await proxy.$http({
       method: 'post',
-      url: `/proxy/pixiu/${data.cloud.cluster}/api/v1/namespaces/${data.form.metadata.namespace}/services`,
+      url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.form.metadata.namespace}/services`,
       data: data.form,
     });
 
@@ -320,13 +352,39 @@ const cancel = () => {
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
   data.form.metadata.namespace = val;
+
+  getDeploymentList(data.cluster, data.form.metadata.namespace);
+};
+
+const changeDeployment = async (val) => {};
+
+const getDeploymentList = async (cluster, namespace) => {
+  try {
+    const result = await proxy.$http({
+      method: 'get',
+      url: `/proxy/pixiu/${cluster}/apis/apps/v1/namespaces/${namespace}/deployments`,
+      data: {
+        limit: 500,
+      },
+    });
+
+    data.deployments = [];
+    data.deploymentMap = {};
+    for (let d of result.items) {
+      data.deployments.push(d.metadata.name);
+      data.deploymentMap[d.metadata.name] = d;
+    }
+    if (data.deployments.length > 0) {
+      data.deployment = data.deployments[0];
+    }
+  } catch (error) {}
 };
 
 const getNamespaceList = async () => {
   try {
     const result = await proxy.$http({
       method: 'get',
-      url: '/proxy/pixiu/' + data.cloud.cluster + '/api/v1/namespaces',
+      url: '/proxy/pixiu/' + data.cluster + '/api/v1/namespaces',
     });
 
     data.namespaces = [];
@@ -374,7 +432,7 @@ const deletePort = (index) => {
 const backToService = () => {
   proxy.$router.push({
     name: 'Service',
-    query: data.cloud,
+    query: data.query,
   });
 };
 </script>
