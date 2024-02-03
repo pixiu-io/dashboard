@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "5681620",
+      "name": "问号",
+      "font_class": "wenhao",
+      "unicode": "e647",
+      "unicode_decimal": 58951
+    },
+    {
+      "icon_id": "5951895",
+      "name": "感叹号",
+      "font_class": "gantanhao",
+      "unicode": "e614",
+      "unicode_decimal": 58900
+    },
+    {
       "icon_id": "880316",
       "name": "back",
       "font_class": "back",
