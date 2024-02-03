@@ -91,7 +91,7 @@ onMounted(() => {
     },
     {
       name: '容器服务',
-      url: '/container',
+      url: '/clusters',
       icon: 'icon-acrrongqijingxiangfuwu',
       iconType: 'iconfont',
     },

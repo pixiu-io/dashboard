@@ -8,7 +8,9 @@ import {
   User,
   Menu,
   Cicd,
-  Container,
+  Cluster,
+  InsertCluster,
+  CreateCluster,
   Kubernetes,
   Deployment,
   CreateDeployment,
@@ -19,8 +21,6 @@ import {
   Monitor,
   Node,
   NodeDetail,
-  InsertCluster,
-  CreateCluster,
   NotFound,
   Operator,
   Service,
@@ -71,15 +71,15 @@ const routes = [
         component: Home,
       },
       {
-        path: 'container',
-        name: 'Container',
+        path: 'clusters',
+        name: 'Cluster',
         meta: {
           title: '容器服务',
         },
-        component: Container,
+        component: Cluster,
       },
       {
-        path: 'insertCluster',
+        path: 'clusters/insertCluster',
         name: 'InsertCluster',
         meta: {
           title: '导入集群',
@@ -87,7 +87,7 @@ const routes = [
         component: InsertCluster,
       },
       {
-        path: 'createCluster',
+        path: 'clusters/createCluster',
         name: 'CreateCluster',
         meta: {
           title: '创建集群',

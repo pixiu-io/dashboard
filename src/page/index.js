@@ -1,5 +1,7 @@
 import Cicd from './cicd/cicd.vue';
-import Container from './container/container.vue';
+import Cluster from './container/cluster/cluster.vue';
+import InsertCluster from './container/cluster/insertCluster.vue';
+import CreateCluster from './container/cluster/createCluster.vue';
 import Kubernetes from './container/kubernetes.vue';
 import Operator from './container/operator.vue';
 import Deployment from './container/deployment/deployment.vue';
@@ -19,8 +21,6 @@ import Setting from './setting/setting.vue';
 import User from './user/user.vue';
 import Menu from './user/menu.vue';
 import Role from './user/role.vue';
-import InsertCluster from './container/insertCluster.vue';
-import CreateCluster from './container/createCluster.vue';
 import Service from './container/service/service.vue';
 import ServiceDetail from './container/service/serviceDetail.vue';
 import CreateService from './container/service/createService.vue';
@@ -51,7 +51,6 @@ export {
   Setting,
   User,
   Cicd,
-  Container,
   Kubernetes,
   Deployment,
   CreateDeployment,
@@ -62,6 +61,7 @@ export {
   NodeDetail,
   Terminal,
   Monitor,
+  Cluster,
   InsertCluster,
   CreateCluster,
   Operator,
