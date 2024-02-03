@@ -219,7 +219,7 @@ const data = reactive({
   loading: false,
   Session: false,
 
-  cluser: '',
+  clutser: '',
   namespaces: [],
 
   labels: [],
@@ -248,11 +248,16 @@ const data = reactive({
 });
 
 onMounted(() => {
-  data.cloud = proxy.$route.query;
+  data.query = proxy.$route.query;
+  data.cluster = data.query.cluster;
+
+  data.path = proxy.$route.fullPath;
 
   getNamespaceList();
+  // 获取 deployment 列表
+  getDeploymentList(data.cluster, data.form.metadata.namespace);
 
-  addLabel();
+  // addLabel();
   addSelector();
 });
 
@@ -320,13 +325,27 @@ const cancel = () => {
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
   data.form.metadata.namespace = val;
+
+  getDeploymentList(data.cluster, data.form.metadata.namespace);
+};
+
+const getDeploymentList = async (cluster, namespace) => {
+  const res = await proxy.$http({
+    method: 'get',
+    url: `/proxy/pixiu/${cluster}/apis/apps/v1/namespaces/${namespace}/deployments`,
+    data: {
+      limit: 500,
+    },
+  });
+
+  console.log('res', res);
 };
 
 const getNamespaceList = async () => {
   try {
     const result = await proxy.$http({
       method: 'get',
-      url: '/proxy/pixiu/' + data.cloud.cluster + '/api/v1/namespaces',
+      url: '/proxy/pixiu/' + data.cluster + '/api/v1/namespaces',
     });
 
     data.namespaces = [];
@@ -374,7 +393,7 @@ const deletePort = (index) => {
 const backToService = () => {
   proxy.$router.push({
     name: 'Service',
-    query: data.cloud,
+    query: data.query,
   });
 };
 </script>

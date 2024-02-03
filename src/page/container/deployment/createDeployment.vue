@@ -150,7 +150,7 @@ const { proxy } = getCurrentInstance();
 
 const data = reactive({
   loading: false,
-  cluser: '',
+  cluster: '',
   namespaces: [],
   autosize: {
     minRows: 5,
