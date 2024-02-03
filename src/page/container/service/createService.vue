@@ -101,6 +101,18 @@
           </el-radio-group>
         </el-form-item>
 
+        <div v-if="data.selectorType === '普通'">
+          <el-form-item style="margin-top: -8px">
+            <el-select v-model="data.deployment" @change="changeDeployment" style="width: 25%">
+              <el-option v-for="item in data.deployments" :key="item" :value="item" :label="item" />
+            </el-select>
+          </el-form-item>
+
+          <div class="app-pixiu-line-describe" style="margin-top: -10px">
+            选择 Service 的 Endpoints
+          </div>
+        </div>
+
         <div v-if="data.selectorType === '高级'">
           <el-form-item style="margin-top: -15px">
             <el-button
@@ -245,6 +257,10 @@ const data = reactive({
       type: 'ClusterIP',
     },
   },
+
+  deployment: '',
+  deployments: [],
+  deploymentMap: {},
 });
 
 onMounted(() => {
@@ -329,16 +345,28 @@ const changeNamespace = async (val) => {
   getDeploymentList(data.cluster, data.form.metadata.namespace);
 };
 
-const getDeploymentList = async (cluster, namespace) => {
-  const res = await proxy.$http({
-    method: 'get',
-    url: `/proxy/pixiu/${cluster}/apis/apps/v1/namespaces/${namespace}/deployments`,
-    data: {
-      limit: 500,
-    },
-  });
+const changeDeployment = async (val) => {};
 
-  console.log('res', res);
+const getDeploymentList = async (cluster, namespace) => {
+  try {
+    const result = await proxy.$http({
+      method: 'get',
+      url: `/proxy/pixiu/${cluster}/apis/apps/v1/namespaces/${namespace}/deployments`,
+      data: {
+        limit: 500,
+      },
+    });
+
+    data.deployments = [];
+    data.deploymentMap = {};
+    for (let d of result.items) {
+      data.deployments.push(d.metadata.name);
+      data.deploymentMap[d.metadata.name] = d;
+    }
+    if (data.deployments.length > 0) {
+      data.deployment = data.deployments[0];
+    }
+  } catch (error) {}
 };
 
 const getNamespaceList = async () => {
