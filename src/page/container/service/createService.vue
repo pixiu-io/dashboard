@@ -142,9 +142,10 @@
         </div>
 
         <el-form-item label="Ports" style="margin-top: 20px">
-          <div class="label-title-style" style="font-size: 13px">目标端口</div>
+          <div class="label-title-style" style="font-size: 13px">服务端口</div>
           <div class="label-title-style" style="margin-left: 148px; font-size: 13px">协议</div>
-          <div class="label-title-style" style="margin-left: 175px; font-size: 13px">服务端口</div>
+          <div class="label-title-style" style="margin-left: 175px; font-size: 13px">目标端口</div>
+          <div class="label-title-style" style="margin-left: 146px; font-size: 13px">端口名</div>
 
           <el-divider style="width: 85%; margin-top: 2px" />
 
@@ -170,6 +171,13 @@
                 v-model="item.targetPort"
                 placeholder="1-65535内的整数"
                 style="width: 180px"
+              />
+            </div>
+            <div style="margin-left: 20px">
+              <el-input
+                v-model="item.name"
+                placeholder="1-63位小写字母、数字或下划线组成"
+                style="width: 250px"
               />
             </div>
             <div
@@ -222,6 +230,7 @@ const data = reactive({
     spec: {
       ports: [
         {
+          name: '',
           port: '',
           protocol: '',
           targetPort: '',
@@ -255,7 +264,22 @@ watch(
 );
 
 const comfirm = async () => {
-  console.log('data', data.form);
+  if (data.selectors.length == 0) {
+    proxy.$message.error('selector 为必选项');
+    return;
+  }
+  for (let selector of data.selectors) {
+    data.form.spec.selector[selector.key] = selector.value;
+  }
+
+  if (data.labels.length > 0) {
+    data.form.metadata['labels'] = {};
+    for (let label of data.labels) {
+      data.form.metadata['labels'][label.key] = label.value;
+    }
+  }
+
+  console.log(' data.form', data.form);
 };
 
 const cancel = () => {
