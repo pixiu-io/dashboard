@@ -55,7 +55,11 @@ instance.interceptors.response.use(
   },
   (error) => {
     // 临时处理 k8s 的 get 请求，404 是正常回显，axios 会处理成异常
-    if (error.response.status !== 404 && error.response.status !== 422) {
+    if (
+      error.response.status !== 404 &&
+      error.response.status !== 422 &&
+      error.response.status !== 409
+    ) {
       ElMessage({
         message: error.message,
         type: 'error',

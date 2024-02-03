@@ -142,9 +142,10 @@
         </div>
 
         <el-form-item label="Ports" style="margin-top: 20px">
-          <div class="label-title-style" style="font-size: 13px">目标端口</div>
+          <div class="label-title-style" style="font-size: 13px">服务端口</div>
           <div class="label-title-style" style="margin-left: 148px; font-size: 13px">协议</div>
-          <div class="label-title-style" style="margin-left: 175px; font-size: 13px">服务端口</div>
+          <div class="label-title-style" style="margin-left: 175px; font-size: 13px">目标端口</div>
+          <div class="label-title-style" style="margin-left: 146px; font-size: 13px">端口名</div>
 
           <el-divider style="width: 85%; margin-top: 2px" />
 
@@ -172,6 +173,13 @@
                 style="width: 180px"
               />
             </div>
+            <div style="margin-left: 20px">
+              <el-input
+                v-model="item.name"
+                placeholder="1-63位小写字母、数字或下划线组成"
+                style="width: 250px"
+              />
+            </div>
             <div
               style="float: right; cursor: pointer; margin-left: 10px"
               @click="deletePort(index)"
@@ -185,6 +193,10 @@
               />
             </div>
           </el-form-item>
+        </el-form-item>
+
+        <el-form-item label="会话保持" style="margin-top: 20px">
+          <el-switch v-model="data.Session" inline-prompt width="40px" />
         </el-form-item>
 
         <div style="margin-top: 30px" />
@@ -205,6 +217,7 @@ const { proxy } = getCurrentInstance();
 
 const data = reactive({
   loading: false,
+  Session: false,
 
   cluser: '',
   namespaces: [],
@@ -222,6 +235,7 @@ const data = reactive({
     spec: {
       ports: [
         {
+          name: '',
           port: '',
           protocol: '',
           targetPort: '',
@@ -235,7 +249,6 @@ const data = reactive({
 
 onMounted(() => {
   data.cloud = proxy.$route.query;
-  data.path = proxy.$route.fullPath;
 
   getNamespaceList();
 
@@ -255,11 +268,53 @@ watch(
 );
 
 const comfirm = async () => {
-  console.log('data', data.form);
+  if (data.selectors.length == 0) {
+    proxy.$message.error('selector 为必选项');
+    return;
+  }
+
+  if (data.form.spec.ports.length == 0) {
+    proxy.$message.error('ports 为必选项');
+    return;
+  }
+  // 转换 port，从字符串转换成 int32
+  for (var i = 0; i < data.form.spec.ports.length; i++) {
+    let p = data.form.spec.ports[i];
+    const portInt = parseInt(p.port);
+    const targetPortInt = parseInt(p.targetPort);
+
+    p.port = portInt;
+    p.targetPort = targetPortInt;
+  }
+
+  for (let selector of data.selectors) {
+    data.form.spec.selector[selector.key] = selector.value;
+  }
+
+  if (data.labels.length > 0) {
+    data.form.metadata['labels'] = {};
+    for (let label of data.labels) {
+      data.form.metadata['labels'][label.key] = label.value;
+    }
+  }
+
+  try {
+    await proxy.$http({
+      method: 'post',
+      url: `/proxy/pixiu/${data.cloud.cluster}/api/v1/namespaces/${data.form.metadata.namespace}/services`,
+      data: data.form,
+    });
+
+    proxy.$message.success(`service ${data.form.metadata.name} 创建成功`);
+    backToService();
+  } catch (error) {
+    proxy.$message.error(error.response.data.message);
+    return;
+  }
 };
 
 const cancel = () => {
-  console.log('data', data.form);
+  backToService();
 };
 
 const changeNamespace = async (val) => {
@@ -305,8 +360,10 @@ const deleteSelector = (index) => {
 
 const addPort = () => {
   data.form.spec.ports.push({
-    key: '',
-    value: '',
+    name: '',
+    port: '',
+    protocol: '',
+    targetPort: '',
   });
 };
 
