@@ -71,7 +71,7 @@ const routes = [
         component: Home,
       },
       {
-        path: 'cluster',
+        path: 'clusters',
         name: 'Cluster',
         meta: {
           title: '容器服务',
@@ -79,7 +79,7 @@ const routes = [
         component: Cluster,
       },
       {
-        path: 'insertCluster',
+        path: 'clusters/insertCluster',
         name: 'InsertCluster',
         meta: {
           title: '导入集群',
@@ -87,7 +87,7 @@ const routes = [
         component: InsertCluster,
       },
       {
-        path: 'createCluster',
+        path: 'clusters/createCluster',
         name: 'CreateCluster',
         meta: {
           title: '创建集群',
