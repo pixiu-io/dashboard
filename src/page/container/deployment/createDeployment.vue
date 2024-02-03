@@ -10,9 +10,18 @@
     <el-main>
       <div class="app-pixiu-content-card">
         <el-card style="margin-top: 8px; width: 100%; border-radius: 0px">
-          <el-form label-position="left" label-width="100px" style="margin-left: 3%; width: 70%">
+          <el-form
+            ref="ruleFormRef"
+            label-position="left"
+            require-asterisk-position="right"
+            label-width="100px"
+            :rules="rules"
+            status-icon
+            :model="data.deploymentForm"
+            style="margin-left: 3%; width: 70%"
+          >
             <div style="margin-top: 20px" />
-            <el-form-item label="名称" style="width: 500px">
+            <el-form-item label="名称" prop="metadata.name" style="width: 500px">
               <el-input v-model="data.deploymentForm.metadata.name" />
               <div class="app-pixiu-line-describe2">
                 最长63个字符，只能包含小写字母、数字及分隔符("-")
@@ -147,6 +156,11 @@ import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 import PixiuCard from '@/components/card/index.vue';
 
 const { proxy } = getCurrentInstance();
+const ruleFormRef = ref();
+
+const rules = {
+  'metadata.name': [{ required: true, message: '请输入 Deployment 名称', trigger: 'blur' }],
+};
 
 const data = reactive({
   loading: false,
@@ -192,28 +206,34 @@ const handleChange = (value) => {
 };
 
 const comfirmCreate = async () => {
-  data.deploymentForm.spec.selector.matchLabels['pixiu.io/app'] = data.deploymentForm.metadata.name;
-  data.deploymentForm.spec.selector.matchLabels['pixiu.io/kind'] = 'deployment';
-  data.deploymentForm.spec.template.metadata.labels = data.deploymentForm.spec.selector.matchLabels;
+  ruleFormRef.value.validate(async (valid) => {
+    if (valid) {
+      data.deploymentForm.spec.selector.matchLabels['pixiu.io/app'] =
+        data.deploymentForm.metadata.name;
+      data.deploymentForm.spec.selector.matchLabels['pixiu.io/kind'] = 'deployment';
+      data.deploymentForm.spec.template.metadata.labels =
+        data.deploymentForm.spec.selector.matchLabels;
 
-  for (let i = 0; i < data.deploymentLabels.length; i++) {
-    data.deploymentForm.spec.template.metadata.labels[data.deploymentLabels[i].key] =
-      data.deploymentLabels[i].value;
-  }
+      for (let i = 0; i < data.deploymentLabels.length; i++) {
+        data.deploymentForm.spec.template.metadata.labels[data.deploymentLabels[i].key] =
+          data.deploymentLabels[i].value;
+      }
 
-  try {
-    const resp = await proxy.$http({
-      method: 'post',
-      url:
-        `/proxy/pixiu/${data.cloud.cluster}/apis/apps/v1/namespaces/` +
-        data.deploymentForm.metadata.namespace +
-        `/deployments`,
-      data: data.deploymentForm,
-    });
-  } catch (error) {}
+      try {
+        const resp = await proxy.$http({
+          method: 'post',
+          url:
+            `/proxy/pixiu/${data.cloud.cluster}/apis/apps/v1/namespaces/` +
+            data.deploymentForm.metadata.namespace +
+            `/deployments`,
+          data: data.deploymentForm,
+        });
 
-  proxy.$message.success(`deployment ${data.deploymentForm.metadata.name} 创建成功`);
-  backToDeployment();
+        proxy.$message.success(`deployment ${data.deploymentForm.metadata.name} 创建成功`);
+        backToDeployment();
+      } catch (error) {}
+    }
+  });
 };
 
 const cancelCreate = () => {
