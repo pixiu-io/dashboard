@@ -204,17 +204,6 @@ const routes = [
             meta: {
               title: 'EditDeployment',
             },
-            meta: {
-              title: 'CreateDeployment',
-            },
-            component: CreateDeployment,
-          },
-          {
-            path: 'deployments/editDeployment',
-            name: 'EditDeployment',
-            meta: {
-              title: 'EditDeployment',
-            },
             component: EditDeployment,
           },
           {
