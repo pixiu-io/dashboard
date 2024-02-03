@@ -195,6 +195,10 @@
           </el-form-item>
         </el-form-item>
 
+        <el-form-item label="会话保持" style="margin-top: 20px">
+          <el-switch v-model="data.Session" inline-prompt width="40px" />
+        </el-form-item>
+
         <div style="margin-top: 30px" />
         <el-form-item style="margin-left: 30%">
           <el-button class="pixiu-cancel-button" @click="cancel()">取消</el-button>
@@ -213,6 +217,7 @@ const { proxy } = getCurrentInstance();
 
 const data = reactive({
   loading: false,
+  Session: false,
 
   cluser: '',
   namespaces: [],
@@ -279,7 +284,18 @@ const comfirm = async () => {
     }
   }
 
-  console.log(' data.form', data.form);
+  try {
+    await proxy.$http({
+      method: 'post',
+      url: `/proxy/pixiu/${data.cloud.cluster}/api/v1/namespaces/${data.form.metadata.namespace}/services`,
+      data: data.form,
+    });
+
+    proxy.$message.success(`service ${data.form.metadata.name} 创建成功`);
+    backToService();
+  } catch (error) {
+    console.log('error', error.response);
+  }
 };
 
 const cancel = () => {
