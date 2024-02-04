@@ -90,11 +90,12 @@
             status-icon
             :model="data.form"
             require-asterisk-position="right"
-            style="margin-left: 3%; width: 80%"
+            style="margin-left: 1%; width: 80%"
           >
-            <div style="margin-top: 10px" />
-            <el-form-item label="域名" style="width: 500px">
-              <el-input v-model="item.domain" placeholder="" />
+            <div style="margin-top: 4px" />
+
+            <el-form-item label="域名">
+              <el-input v-model="item.domain" placeholder="" style="margin-left: -2%" />
             </el-form-item>
           </el-form>
         </el-card>
