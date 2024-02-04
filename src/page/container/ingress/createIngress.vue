@@ -71,8 +71,8 @@
       >
         <el-card
           style="
-            width: 80%;
-            height: 125px;
+            width: 90%;
+            height: 180px;
             background-color: #f2f2f2;
             margin-top: 20px;
             border-radius: 0px;
@@ -82,14 +82,52 @@
             <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
           </div>
 
-          <el-col class="deploy-pixiu-column"
-            >域名
-            <el-input v-model="item.name" class="deploy-pixiu-incard" style="margin-left: 30px" />
-          </el-col>
-          <el-col class="deploy-pixiu-column" style="margin-top: 10px"
-            >路径
-            <el-input v-model="item.name" class="deploy-pixiu-incard" style="margin-left: 30px" />
-          </el-col>
+          <el-form
+            ref="ruleFormRef"
+            :rules="rules"
+            label-position="left"
+            label-width="100px"
+            status-icon
+            :model="data.form"
+            require-asterisk-position="right"
+            style="margin-left: 2%; width: 80%"
+          >
+            <div style="margin-top: 4px" />
+
+            <el-form-item label="域名">
+              <el-input v-model="item.domain" placeholder="" style="width: 70%" />
+            </el-form-item>
+
+            <el-form-item label="路径" style="margin-top: 15px">
+              <div class="label-title-style" style="font-size: 13px">Path</div>
+              <div class="label-title-style" style="margin-left: 160px; font-size: 13px">服务</div>
+              <div class="label-title-style" style="margin-left: 185px; font-size: 13px">端口</div>
+              <el-divider style="width: 100%; margin-top: 2px" />
+            </el-form-item>
+
+            <el-form-item
+              v-for="(item, index) in data.form.spec.rules"
+              :key="index"
+              style="margin-top: -10px; margin-left: 100px"
+            >
+              <div>
+                <el-input v-model="item.port" placeholder="请输入路径或正则" />
+              </div>
+              <div style="margin-left: 20px">
+                <el-select v-model="data.service" @change="changeNamespace">
+                  <el-option
+                    v-for="item in data.services"
+                    :key="item"
+                    :value="item"
+                    :label="item"
+                  />
+                </el-select>
+              </div>
+              <div style="margin-left: 20px">
+                <el-input v-model="item.targetPort" placeholder="1-65535内的整数" />
+              </div>
+            </el-form-item>
+          </el-form>
         </el-card>
       </el-form-item>
 
@@ -132,6 +170,7 @@ const data = reactive({
 
   namespaces: [],
   services: [],
+  service: '',
 });
 
 const rules = {
@@ -144,7 +183,7 @@ onMounted(() => {
   data.path = proxy.$route.fullPath;
 
   syncNamespaces();
-  // syncServices();
+  syncServices();
 });
 
 watch(
@@ -155,6 +194,7 @@ watch(
 const comfirm = async () => {
   ruleFormRef.value.validate(async (valid) => {
     if (valid) {
+      console.log('data', data.form);
     }
   });
 };
@@ -191,6 +231,10 @@ const syncServices = async () => {
   data.services = [];
   for (let item of svc.items) {
     data.services.push(item.metadata.name);
+  }
+
+  if (data.services.length > 0) {
+    data.service = data.services[0];
   }
 };
 

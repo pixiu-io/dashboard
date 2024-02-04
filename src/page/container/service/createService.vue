@@ -216,7 +216,9 @@
             <el-input v-model="item.port" placeholder="1-65535内的整数" style="width: 180px" />
           </div>
           <div style="margin-left: 20px">
-            <el-input v-model="item.protocol" placeholder="TCP/UDP" style="width: 180px" />
+            <el-select v-model="item.protocol">
+              <el-option v-for="item in data.protocols" :key="item" :value="item" :label="item" />
+            </el-select>
           </div>
           <div style="margin-left: 20px">
             <el-input
@@ -288,7 +290,7 @@ const data = reactive({
         {
           name: '',
           port: '',
-          protocol: '',
+          protocol: 'TCP',
           targetPort: '',
         },
       ],
@@ -301,6 +303,8 @@ const data = reactive({
   deployment: '',
   deployments: [],
   deploymentMap: {},
+
+  protocols: ['TCP', 'UDP'],
 });
 
 const rules = {
