@@ -93,9 +93,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="Labels" width="auto">
-          <span>-</span>
-        </el-table-column>
+        <el-table-column label="类型" width="auto" prop="type"> </el-table-column>
 
         <el-table-column
           prop="metadata.creationTimestamp"
@@ -107,6 +105,11 @@
         <el-table-column fixed="right" label="操作" width="200">
           <template #default="scope">
             <el-button
+              :disabled="
+                scope.row.type !== 'kubernetes.io/dockercfg' &&
+                scope.row.type !== 'Opaque' &&
+                scope.row.type !== 'kubernetes.io/tls'
+              "
               size="small"
               type="text"
               style="margin-right: -20px; margin-left: -10px; color: #006eff"
@@ -114,7 +117,6 @@
             >
               更新配置
             </el-button>
-
             <el-button
               type="text"
               size="small"
