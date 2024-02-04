@@ -13,11 +13,11 @@
     </div>
   </el-card>
 
-  <!-- 
-    本身就是在一个el-main下面了，没有特殊需求 
-    就不要再套一层el-main 
+  <!--
+    本身就是在一个el-main下面了，没有特殊需求
+    就不要再套一层el-main
     因为el-card下面引用了create-card-style的样式里面width=100%
-    导致了下面出现了滚动条 
+    导致了下面出现了滚动条
   -->
   <!-- <el-main> -->
   <el-card class="create-card-style">
@@ -96,10 +96,10 @@
           >新增</el-button
         >
       </el-form-item>
-      <!-- 
-          el-form的model绑定的是data.form 
+      <!--
+          el-form的model绑定的是data.form
           所以下面所有要经过表单校验的内容都必须在form里面，
-          原来的labels是直接写在data下的会导致校验不成功，需要调整 
+          原来的labels是直接写在data下的会导致校验不成功，需要调整
           其余的参考这个内容去实现
         -->
       <el-form-item
@@ -489,18 +489,5 @@ const backToService = () => {
 .label-title-style {
   font-size: 12px;
   color: #888888;
-}
-/*
-  将第一个和最后一个元素的圆角变成0
-*/
-.create-card-style .el-radio-button:first-child .el-radio-button__inner {
-  border-radius: 0;
-}
-.create-card-style .el-radio-button:last-child .el-radio-button__inner {
-  border-radius: 0;
-}
-.create-card-style .labels-item-style {
-  display: flex;
-  margin-top: 15px;
 }
 </style>
