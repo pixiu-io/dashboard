@@ -103,8 +103,8 @@
 
 <script setup>
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
-import { getServiceList } from '@/services/kubernetes/serviceService.js';
-import { getNamespaceList } from '@/services/kubernetes/namespaceService.js';
+import { getServiceList } from '@/services/kubernetes/serviceService';
+import { getNamespaceList } from '@/services/kubernetes/namespaceService';
 
 const ruleFormRef = ref();
 const { proxy } = getCurrentInstance();
@@ -138,8 +138,8 @@ onMounted(() => {
   data.cluster = data.query.cluster;
   data.path = proxy.$route.fullPath;
 
-  // syncNamespaces();
-  syncServices();
+  syncNamespaces();
+  // syncServices();
 });
 
 watch(
@@ -165,8 +165,8 @@ const changeNamespace = async (val) => {
   syncServices();
 };
 
-const syncNamespaces = () => {
-  const [err, ns] = getNamespaceList(data.cluster, data.form.metadata.namespace);
+const syncNamespaces = async () => {
+  const [err, ns] = await getNamespaceList(data.cluster, data.form.metadata.namespace);
   if (err) {
     return;
   }
@@ -177,11 +177,8 @@ const syncNamespaces = () => {
   }
 };
 
-const syncServices = () => {
-  console.log('syncServices', data.cluster);
-  console.log('data.form.metadata.namespace', data.form.metadata.namespace);
-
-  const [err, svc] = getServiceList(data.cluster, data.form.metadata.namespace);
+const syncServices = async () => {
+  const [err, svc] = await getServiceList(data.cluster, data.form.metadata.namespace);
   if (err) {
     return;
   }
