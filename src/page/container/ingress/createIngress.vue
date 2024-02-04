@@ -67,11 +67,11 @@
       <el-form-item
         v-for="(item, index) in data.form.spec.rules"
         :key="index"
-        style="margin-top: -25px"
+        style="margin-top: -30px"
       >
         <el-card
           style="
-            width: 90%;
+            width: 80%;
             height: 185px;
             background-color: #f2f2f2;
             margin-top: 20px;
@@ -79,7 +79,7 @@
           "
         >
           <div style="float: right; cursor: pointer" @click="deleteRule(index)">
-            <el-icon><Delete /></el-icon>
+            <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
           </div>
           <el-col class="deploy-pixiu-column"
             >域名
