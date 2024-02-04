@@ -71,8 +71,8 @@
       >
         <el-card
           style="
-            width: 70%;
-            height: 250px;
+            width: 90%;
+            height: 180px;
             background-color: #f2f2f2;
             margin-top: 20px;
             border-radius: 0px;
@@ -90,12 +90,35 @@
             status-icon
             :model="data.form"
             require-asterisk-position="right"
-            style="margin-left: 1%; width: 80%"
+            style="margin-left: 2%; width: 80%"
           >
             <div style="margin-top: 4px" />
 
             <el-form-item label="域名">
-              <el-input v-model="item.domain" placeholder="" style="margin-left: -2%" />
+              <el-input v-model="item.domain" placeholder="" style="width: 70%" />
+            </el-form-item>
+
+            <el-form-item label="路径" style="margin-top: 15px">
+              <div class="label-title-style" style="font-size: 13px">Path</div>
+              <div class="label-title-style" style="margin-left: 148px; font-size: 13px">服务</div>
+              <div class="label-title-style" style="margin-left: 175px; font-size: 13px">端口</div>
+              <el-divider style="width: 100%; margin-top: 2px" />
+            </el-form-item>
+
+            <el-form-item
+              v-for="(item, index) in data.form.spec.rules"
+              :key="index"
+              style="margin-top: -10px; margin-left: 100px"
+            >
+              <div>
+                <el-input v-model="item.port" placeholder="请输入路径或正则" />
+              </div>
+              <div style="margin-left: 20px">
+                <el-input v-model="item.protocol" placeholder="service" />
+              </div>
+              <div style="margin-left: 20px">
+                <el-input v-model="item.targetPort" placeholder="1-65535内的整数" />
+              </div>
             </el-form-item>
           </el-form>
         </el-card>
@@ -152,7 +175,7 @@ onMounted(() => {
   data.path = proxy.$route.fullPath;
 
   syncNamespaces();
-  // syncServices();
+  syncServices();
 });
 
 watch(
