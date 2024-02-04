@@ -1,6 +1,16 @@
 <template>
   <el-card class="title-card-container">
-    <div class="font-container">创建 Service</div>
+    <div class="font-container">
+      <el-breadcrumb separator="/">
+        <el-breadcrumb-item @click="backToService"
+          ><span style="color: black; cursor: pointer"> Service </span>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item style="color: black">{{ data.cluster }}</el-breadcrumb-item>
+        <el-breadcrumb-item>
+          <span style="color: black"> 创建 Service </span>
+        </el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
   </el-card>
 
   <el-main>
