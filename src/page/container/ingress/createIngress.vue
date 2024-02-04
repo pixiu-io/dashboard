@@ -115,6 +115,10 @@
               </div>
               <div style="margin-left: 20px">
                 <el-select v-model="data.service">
+                <el-input v-model="item.port" placeholder="请输入路径或正则" />
+              </div>
+              <div style="margin-left: 20px">
+                <el-select v-model="data.service" @change="changeNamespace">
                   <el-option
                     v-for="item in data.services"
                     :key="item"
@@ -125,6 +129,7 @@
               </div>
               <div style="margin-left: 20px">
                 <el-input v-model="item.port" placeholder="1-65535内的整数" />
+
               </div>
             </el-form-item>
           </el-form>
