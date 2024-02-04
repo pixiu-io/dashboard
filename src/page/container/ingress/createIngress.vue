@@ -72,7 +72,7 @@
         <el-card
           style="
             width: 80%;
-            height: 125px;
+            height: 250px;
             background-color: #f2f2f2;
             margin-top: 20px;
             border-radius: 0px;
@@ -82,14 +82,21 @@
             <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
           </div>
 
-          <el-col class="deploy-pixiu-column"
-            >域名
-            <el-input v-model="item.name" class="deploy-pixiu-incard" style="margin-left: 30px" />
-          </el-col>
-          <el-col class="deploy-pixiu-column" style="margin-top: 10px"
-            >路径
-            <el-input v-model="item.name" class="deploy-pixiu-incard" style="margin-left: 30px" />
-          </el-col>
+          <el-form
+            ref="ruleFormRef"
+            :rules="rules"
+            label-position="left"
+            label-width="100px"
+            status-icon
+            :model="data.form"
+            require-asterisk-position="right"
+            style="margin-left: 3%; width: 80%"
+          >
+            <div style="margin-top: 10px" />
+            <el-form-item label="域名" style="width: 500px">
+              <el-input v-model="item.domain" placeholder="" />
+            </el-form-item>
+          </el-form>
         </el-card>
       </el-form-item>
 
@@ -155,6 +162,7 @@ watch(
 const comfirm = async () => {
   ruleFormRef.value.validate(async (valid) => {
     if (valid) {
+      console.log('data', data.form);
     }
   });
 };
