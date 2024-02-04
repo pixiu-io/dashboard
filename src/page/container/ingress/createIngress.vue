@@ -72,7 +72,7 @@
         <el-card
           style="
             width: 80%;
-            height: 185px;
+            height: 125px;
             background-color: #f2f2f2;
             margin-top: 20px;
             border-radius: 0px;
@@ -81,8 +81,13 @@
           <div style="float: right; cursor: pointer" @click="deleteRule(index)">
             <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
           </div>
+
           <el-col class="deploy-pixiu-column"
             >域名
+            <el-input v-model="item.name" class="deploy-pixiu-incard" style="margin-left: 30px" />
+          </el-col>
+          <el-col class="deploy-pixiu-column" style="margin-top: 10px"
+            >路径
             <el-input v-model="item.name" class="deploy-pixiu-incard" style="margin-left: 30px" />
           </el-col>
         </el-card>
