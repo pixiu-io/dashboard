@@ -2,8 +2,8 @@
   <el-card class="title-card-container">
     <div class="font-container">
       <span> Secret :</span>
-      <span> {{ data.secretFrom.metadata.name }} </span>
-      <span>({{ data.secretFrom.metadata.namespace }})</span>
+      <span> {{ data.secretForm.metadata.name }} </span>
+      <span>({{ data.secretForm.metadata.namespace }})</span>
       <span> / 更新配置</span>
     </div>
   </el-card>
@@ -19,106 +19,41 @@
             ref="ruleFormRef"
             label-position="left"
             require-asterisk-position="right"
-            label-width="100px"
-            :rules="rules"
+            label-width="110px"
+            :rules="dockerRegisterRules"
             status-icon
-            :model="data.configmapForm"
+            :model="data.secretForm"
             style="margin-left: 3%; width: 80%"
           >
             <el-form-item label="基本信息" style="margin-top: 20px" class="base-info">
             </el-form-item>
-            <el-form-item>
-              <el-form
-                label-position="left"
-                require-asterisk-position="right"
-                style="margin-top: -20px; margin-left: -100px"
-              >
-                <el-form-item label="集群ID" style="margin-top: 10px; width: 200px">
-                  <el-form-item style="margin-left: 61px" :label="data.cluster"> </el-form-item>
-                </el-form-item>
-                <el-form-item label="所在命名空间" style="margin-top: 10px; width: 200px">
-                  <el-form-item
-                    style="margin-left: 19px"
-                    :label="data.secretFrom.metadata.namespace"
-                  ></el-form-item>
-                </el-form-item>
-                <el-form-item label="资源名称" style="margin-top: 10px; width: 200px">
-                  <el-form-item
-                    style="margin-left: 47px"
-                    :label="data.secretFrom.metadata.name"
-                  ></el-form-item>
-                </el-form-item>
-              </el-form>
-            </el-form-item>
+            <el-form-item label="集群ID" style="margin-top: 10px">{{ data.cluster }}</el-form-item>
+            <el-form-item label="所在命名空间" style="margin-top: 10px">{{
+              data.secretForm.metadata.namespace
+            }}</el-form-item>
+            <el-form-item label="资源名称" style="margin-top: 10px">{{
+              data.secretForm.metadata.name
+            }}</el-form-item>
             <el-divider />
 
-            <div v-if="data.secretType === 'Opaque'">
-              <el-form-item label="内容" style="margin-top: 20px">
-                <div class="configmap-label-title" style="margin-left: 100px">变量名</div>
-                <div class="configmap-label-title" style="margin-left: 510px">变量值</div>
-                <el-divider style="margin-left: 80px" />
-              </el-form-item>
-
-              <el-form-item
-                v-for="(item, index) in data.secretLabels"
-                :key="index"
-                style="margin-top: -15px; margin-left: 120px"
-              >
-                <div>
-                  <el-input
-                    v-model="item.key"
-                    placeholder="变量名"
-                    style="width: 500px; height: 52px"
-                  />
-                </div>
-                <div style="margin-right: 10px; margin-left: 10px"></div>
-                =
-                <div>
-                  <el-input
-                    v-model="item.value"
-                    placeholder="请输入变量值"
-                    type="textarea"
-                    style="width: 500px; margin-left: 20px"
-                    :row="1"
-                  />
-                </div>
-                <div
-                  style="float: right; cursor: pointer; margin-left: 10px"
-                  @click="deleteLabel(index)"
-                >
-                  <el-icon><Delete /></el-icon>
-                </div>
-                <el-divider />
-              </el-form-item>
-              <div class="app-pixiu-line-describe4">
-                只能包含字母、数字及分隔符"、"”、";变量名为空时，在变量名称中粘贴一行或多行key=valuekey:
-                value的键值对可以实现快速批量输入
-              </div>
-              <el-form-item>
-                <el-button class="mt-4" style="width: 5%" @click="addLabel">手动增加</el-button>
-                <el-button class="mt-4" style="width: 5%" @click="addLabel">文件导入</el-button>
-              </el-form-item>
-            </div>
-            <div v-else-if="data.secretType === 'kubernetes.io/dockercfg'">
+            <div v-if="data.secretType === 'kubernetes.io/dockercfg'">
               <el-form-item label="镜像仓库域名" prop="dockerRegister.domain" style="width: 80%">
                 <el-input
-                  v-model="data.dockerRegister.domain"
+                  v-model="data.secretForm.dockerRegister.domain"
                   style="width: 30%; margin-left: 20px"
                 />
               </el-form-item>
-              <div class="app-pixiu-line-describe5">
-                如镜像地址为 px.pixiu.com/library/nginx:latest 则请输入 px.pixiu.com。
-              </div>
+
               <el-form-item label="用户名" prop="dockerRegister.userName" style="width: 80%">
                 <el-input
-                  v-model="data.dockerRegister.userName"
+                  v-model="data.secretForm.dockerRegister.userName"
                   style="width: 30%; margin-left: 20px"
                 />
               </el-form-item>
 
               <el-form-item label="密码" prop="dockerRegister.password" style="width: 80%">
                 <el-input
-                  v-model="data.dockerRegister.password"
+                  v-model="data.secretForm.dockerRegister.password"
                   style="width: 30%; margin-left: 20px"
                 />
               </el-form-item>
@@ -129,56 +64,151 @@
                 style="width: 80%"
               >
                 <el-input
-                  v-model="data.dockerRegister.confirmPassword"
+                  v-model="data.secretForm.dockerRegister.confirmPassword"
                   style="width: 30%; margin-left: 20px"
                 />
               </el-form-item>
             </div>
-            <div v-else-if="data.secretType === 'kubernetes.io/tls'">
-              <el-form-item label="内容" style="margin-top: 20px">
-                <div class="configmap-label-title" style="margin-left: 100px">变量名</div>
-                <div class="configmap-label-title" style="margin-left: 510px">变量值</div>
-                <el-divider style="margin-left: 80px" />
-              </el-form-item>
+            <div v-else-if="data.secretType === 'Opaque'">
+              <div>
+                <el-form-item label="内容" style="margin-top: 10px">
+                  <div class="configmap-label-title" style="margin-left: 20px">
+                    <span>变量名</span>
+                    <el-tooltip content="tls.crt" placement="top-start" popper-class="tooltip">
+                      <pixiu-icon
+                        name="icon-tishi"
+                        size="20px"
+                        type="iconfont"
+                        style="vertical-align: middle; padding-left: 5px"
+                        color="#909399"
+                      />
+                    </el-tooltip>
+                  </div>
+                  <div class="configmap-label-title" style="margin-left: 320px">变量值</div>
+                  <el-divider style="left: 20px; width: 98%" />
+                </el-form-item>
 
-              <el-form-item
-                v-for="(item, index) in data.secretLabels"
-                :key="index"
-                style="margin-top: -15px; margin-left: 120px"
-              >
-                <div>
-                  <el-input
-                    v-model="item.key"
-                    placeholder="变量名"
-                    style="width: 500px; height: 52px"
-                  />
-                </div>
-                <div style="margin-right: 10px; margin-left: 10px"></div>
-                =
-                <div>
-                  <el-input
-                    v-model="item.value"
-                    placeholder="请输入变量值"
-                    type="textarea"
-                    style="width: 500px; margin-left: 20px"
-                    :row="1"
-                  />
-                </div>
-                <div
-                  style="float: right; cursor: pointer; margin-left: 10px"
-                  @click="deleteLabel(index)"
+                <el-form-item
+                  v-for="(item, index) in data.secretForm.labels"
+                  :key="index"
+                  prop="item.key"
+                  style="margin-top: -20px; margin-left: 20px"
                 >
-                  <el-icon><Delete /></el-icon>
+                  <el-form-item
+                    :prop="'labels[' + index + '].key'"
+                    :rules="[{ required: true, message: '变量名不能为空', trigger: 'blur' }]"
+                  >
+                    <el-input v-model="item.key" placeholder="变量名" style="width: 300px" />
+                  </el-form-item>
+                  <div style="margin-right: 8px; margin-left: 8px"></div>
+                  =
+                  <el-form-item
+                    :prop="'labels[' + index + '].value'"
+                    :rules="[{ required: true, message: '变量值不能为空', trigger: 'blur' }]"
+                  >
+                    <el-input
+                      v-model="item.value"
+                      placeholder="请输入变量值"
+                      autosize
+                      type="textarea"
+                      style="width: 350px; margin-left: 20px"
+                    />
+                  </el-form-item>
+                  <div
+                    style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
+                    @click="deleteLabel(index)"
+                  >
+                    <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
+                  </div>
+                  <el-divider />
+                </el-form-item>
+                <div class="app-pixiu-line-describe4" style="margin-left: 120px">
+                  只能包含字母、数字及分隔符"."; 变量名为空时，在变量名称中粘贴一行或多行 key=value
+                  key: value 的键值对可以实现快速批量输入
                 </div>
-                <el-divider />
-              </el-form-item>
-              <div class="app-pixiu-line-describe4">
-                只能包含字母、数字及分隔符"、"”、";变量名为空时，在变量名称中粘贴一行或多行key=valuekey:
-                value的键值对可以实现快速批量输入
+                <el-form-item>
+                  <el-button
+                    class="table-inline-btn"
+                    style="margin-left: 4px; margin-right: -20px; margin-top: 15px"
+                    @click="addLabel"
+                    >手动增加</el-button
+                  >
+                  <el-button class="table-inline-btn" style="margin-top: 15px" @click="addLabel"
+                    >文件导入</el-button
+                  >
+                </el-form-item>
               </div>
-              <el-form-item>
-                <el-button class="mt-4" style="width: 5%" @click="addLabel">手动增加</el-button>
-                <el-button class="mt-4" style="width: 5%" @click="addLabel">文件导入</el-button>
+            </div>
+            <div v-else-if="data.secretType === 'kubernetes.io/tls'">
+              <el-form-item label="内容" style="margin-top: 10px"> </el-form-item>
+
+              <el-form-item style="margin-top: -40px; margin-left: 20px">
+                <el-card>
+                  <div style="margin-top: -15px">
+                    <span class="app-pixiu-line-describe-tls">证书</span>
+                    <el-tooltip content="tls.crt" placement="top-start" popper-class="tooltip">
+                      <pixiu-icon
+                        name="icon-wenhao1"
+                        size="15px"
+                        type="iconfont"
+                        style="vertical-align: middle; padding-left: 5px"
+                        color="#909399"
+                      />
+                    </el-tooltip>
+                    <span style="display: inline-block"
+                      ><el-upload
+                        class="pixiu-upload"
+                        :style="{ background: '#ffffff', border: 'none' }"
+                      >
+                        <button class="pixiu-two-button2" style="margin-left: 300px; border: none">
+                          文件导入
+                        </button></el-upload
+                      ></span
+                    >
+                  </div>
+                  <el-input
+                    v-model="data.tlsCertificate.crt"
+                    type="textarea"
+                    :rows="10"
+                    style="width: 400px"
+                  />
+                </el-card>
+                <div style="margin-right: 10px; margin-left: 10px"></div>
+                <div>
+                  <el-card>
+                    <div style="margin-top: -15px">
+                      <span class="app-pixiu-line-describe-tls">私钥</span>
+                      <el-tooltip content="tls.key" placement="top-start" popper-class="tooltip">
+                        <pixiu-icon
+                          name="icon-wenhao1"
+                          size="15px"
+                          type="iconfont"
+                          style="vertical-align: middle; padding-left: 5px"
+                          color="#909399"
+                        />
+                      </el-tooltip>
+                      <span style="display: inline-block"
+                        ><el-upload
+                          class="pixiu-upload"
+                          :style="{ background: '#ffffff', border: 'none', width: '40px' }"
+                        >
+                          <button
+                            class="pixiu-two-button2"
+                            style="margin-left: 300px; border: none"
+                          >
+                            文件导入
+                          </button></el-upload
+                        ></span
+                      >
+                    </div>
+                    <el-input
+                      v-model="data.tlsCertificate.key"
+                      type="textarea"
+                      :rows="10"
+                      style="width: 400px"
+                    />
+                  </el-card>
+                </div>
               </el-form-item>
             </div>
             <div style="margin-top: 30px" />
@@ -199,6 +229,7 @@
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 const { proxy } = getCurrentInstance();
 
+const ruleFormRef = ref();
 const data = reactive({
   loading: false,
   cluster: '',
@@ -206,19 +237,24 @@ const data = reactive({
   autosize: {
     minRows: 5,
   },
-  secretType: 'Opaque',
+  secretType: '',
   secretLabels: [],
-
   // secret 创建初始对象
-  secretFrom: {
+  secretForm: {
     metadata: {
       name: '',
-      namespace: 'default',
-      uid: '-',
+      namespace: '',
     },
     data: {},
+    labels: [{ key: null, value: null }],
+    dockerRegister: {
+      domain: '',
+      userName: '',
+      password: '',
+      confirmPassword: '',
+    },
   },
-  secretFromData: {
+  secretFormData: {
     data: {
       key: '',
       value: '',
@@ -229,12 +265,26 @@ const data = reactive({
     value: '',
     target: 0,
   },
+  tlsCertificate: {
+    crt: '',
+    key: '',
+  },
   dockerRegister: {
-    username: '',
+    domain: '',
+    userName: '',
     password: '',
-    auth: '',
+    confirmPassword: '',
   },
 });
+
+const dockerRegisterRules = {
+  'dockerRegister.domain': [{ required: true, message: '请输入镜像仓库域名', trigger: 'blur' }],
+  'dockerRegister.userName': [{ required: true, message: '请输入镜像仓库用户名', trigger: 'blur' }],
+  'dockerRegister.password': [{ required: true, message: '请输入镜像仓库密码', trigger: 'blur' }],
+  'dockerRegister.confirmPassword': [
+    { required: true, message: '请输入确认密码', trigger: 'blur' },
+  ],
+};
 
 const cancelUpdate = () => {
   backToSecret();
@@ -243,10 +293,9 @@ const cancelUpdate = () => {
 onMounted(() => {
   data.cloud = proxy.$route.query;
   data.cluster = proxy.$route.query.cluster;
-  data.secretFrom.metadata.name = data.cloud.name;
+  data.secretForm.metadata.name = data.cloud.name;
   getSecret();
   getNamespace();
-  getNamespaceList();
 });
 
 const getNamespace = async () => {
@@ -263,26 +312,16 @@ const getSecret = async () => {
     url: `/proxy/pixiu/${data.cloud.cluster}/api/v1/namespaces/${data.cloud.namespace}/secrets/${data.cloud.name}`,
     data: '',
   });
-  data.secretFrom.metadata = res.metadata;
+  data.secretForm.metadata = res.metadata;
   data.secretType = res.type;
   if (res.type === 'kubernetes.io/dockercfg') {
-    data.dockerRegister = JSON.parse(atob(res.data['.dockercfg']));
+    data.secretForm.dockerRegister = JSON.parse(atob(res.data['.dockercfg']));
+  }else if (res.type === 'Opaque'){
+    let labels = Object.entries(res.data).map(([key, value]) => ({ key, value }));
+    data.secretForm.labels = labels.map(label => ({ key: label.key, value: atob(label.value) }))
+  }else if (res.type === 'kubernetes.io/tls'){
+    data.tlsCertificate = Object.entries(res.data).map(([key, value]) => ({ key, value }));
   }
-
-  data.secretLabels = Object.entries(res.data).map(([key, value]) => ({ key, value }));
-};
-
-const getNamespaceList = async () => {
-  try {
-    const result = await proxy.$http({
-      method: 'get',
-      url: '/proxy/pixiu/' + data.cloud.cluster + '/api/v1/namespaces',
-    });
-
-    for (let item of result.items) {
-      data.namespaces.push(item.metadata.name);
-    }
-  } catch (error) {}
 };
 
 // 回到 secret 页面
@@ -294,34 +333,57 @@ const backToSecret = () => {
 };
 
 const comfirmUpdate = async () => {
-  data.secretLabels.forEach((item) => {
-    data.secretFrom.data[item.key] = item.value;
+  ruleFormRef.value.validate(async (valid) => {
+    if (valid) {
+      let name = data.secretForm.metadata.name;
+      let url =
+          `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/secrets/` + name;
+      let form = {
+        metadata: {
+          name: name,
+        },
+        data: {},
+      };
+
+      if (data.secretType === 'Opaque') {
+        data.secretForm.labels.forEach((item) => {
+          form.data[item.key] = btoa(item.value);
+        });
+        form.type = 'Opaque';
+      } else if (data.secretType === 'kubernetes.io/tls') {
+        form.type = 'kubernetes.io/tls';
+        form.data['tls.crt'] = data.tlsCertificate.crt;
+        form.data['tls.key'] = data.tlsCertificate.key;
+      } else {
+        form.type = 'kubernetes.io/dockercfg';
+        form.data['.dockercfg'] = btoa(JSON.stringify(data.secretForm.dockerRegister));
+      }
+      updateSecret(url, form);
+    }
   });
+};
+
+const updateSecret = async (url, data) => {
   try {
     const resp = await proxy.$http({
-      method: 'put',
-      url:
-        `/proxy/pixiu/${data.cloud.cluster}/api/v1/namespaces/` +
-        data.secretFrom.metadata.namespace +
-        `/secrets/` +
-        data.secretFrom.metadata.name,
-      data: data.secretFrom,
+      method: 'PUT',
+      url: url,
+      data: data,
     });
+    proxy.$message.success(`Secret ${data.metadata.name} 更新成功`);
+    backToSecret();
   } catch (error) {}
-
-  proxy.$message.success(`secret ${data.secretFrom.metadata.name} 更新成功`);
-  backToSecret();
 };
 
 const addLabel = () => {
-  data.secretLabels.push({
+  data.secretForm.labels.push({
     key: '',
     value: '',
   });
 };
 
 const deleteLabel = (index) => {
-  data.secretLabels.splice(index, 1);
+  data.secretForm.labels.splice(index, 1);
 };
 </script>
 
