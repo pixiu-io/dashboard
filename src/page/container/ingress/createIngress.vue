@@ -100,8 +100,8 @@
 
             <el-form-item label="路径" style="margin-top: 15px">
               <div class="label-title-style" style="font-size: 13px">Path</div>
-              <div class="label-title-style" style="margin-left: 148px; font-size: 13px">服务</div>
-              <div class="label-title-style" style="margin-left: 175px; font-size: 13px">端口</div>
+              <div class="label-title-style" style="margin-left: 160px; font-size: 13px">服务</div>
+              <div class="label-title-style" style="margin-left: 185px; font-size: 13px">端口</div>
               <el-divider style="width: 100%; margin-top: 2px" />
             </el-form-item>
 
@@ -114,7 +114,14 @@
                 <el-input v-model="item.port" placeholder="请输入路径或正则" />
               </div>
               <div style="margin-left: 20px">
-                <el-input v-model="item.protocol" placeholder="service" />
+                <el-select v-model="data.service" @change="changeNamespace">
+                  <el-option
+                    v-for="item in data.services"
+                    :key="item"
+                    :value="item"
+                    :label="item"
+                  />
+                </el-select>
               </div>
               <div style="margin-left: 20px">
                 <el-input v-model="item.targetPort" placeholder="1-65535内的整数" />
@@ -163,6 +170,7 @@ const data = reactive({
 
   namespaces: [],
   services: [],
+  service: '',
 });
 
 const rules = {
@@ -223,6 +231,10 @@ const syncServices = async () => {
   data.services = [];
   for (let item of svc.items) {
     data.services.push(item.metadata.name);
+  }
+
+  if (data.services.length > 0) {
+    data.service = data.services[0];
   }
 };
 
