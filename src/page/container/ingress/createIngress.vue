@@ -71,7 +71,7 @@
       >
         <el-card
           style="
-            width: 80%;
+            width: 70%;
             height: 250px;
             background-color: #f2f2f2;
             margin-top: 20px;
