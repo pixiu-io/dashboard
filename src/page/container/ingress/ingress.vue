@@ -228,12 +228,40 @@ const editYamlIngress = (row) => {
 };
 
 const formatterAnno = (row, column, cellValue) => {
-  return <div>-</div>;
+  if (cellValue.annotations === undefined) {
+    return <div>-</div>;
+  }
+
+  const annotations = Object.entries(cellValue.annotations).map(([key, value]) => {
+    return `${key}: ${value}`;
+  });
+  return (
+    <div>
+      {annotations.map((anno) => (
+        <div class="pixiu-table-formatter">{anno}</div>
+      ))}
+    </div>
+  );
 };
 
 const formatterIngressRules = (row, column, cellValue) => {
-  console.log(cellValue);
-  return <div>-</div>;
+  let ingress = [];
+  for (let item of cellValue) {
+    const host = item.host;
+    for (let path of item.http.paths) {
+      const ingressPath = path.path;
+      const name = path.backend.service.name;
+      const port = path.backend.service.port.number;
+      ingress.push(`${host}${ingressPath} -> ${name}:${port}`);
+    }
+  }
+  return (
+    <div>
+      {ingress.map((ing) => (
+        <div class="pixiu-table-formatter">{ing}</div>
+      ))}
+    </div>
+  );
 };
 
 const formatterTime = (row, column, cellValue) => {

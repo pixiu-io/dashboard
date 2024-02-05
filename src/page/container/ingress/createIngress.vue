@@ -213,6 +213,7 @@ const comfirm = async () => {
         let paths = [];
         paths.push({
           pathType: 'ImplementationSpecific',
+          path: rule.path,
           backend: {
             service: {
               name: rule.service,
