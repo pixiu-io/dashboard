@@ -252,7 +252,11 @@ const formatterIngressRules = (row, column, cellValue) => {
       const ingressPath = path.path;
       const name = path.backend.service.name;
       const port = path.backend.service.port.number;
-      ingress.push(`${host}${ingressPath} -> ${name}:${port}`);
+      if (ingressPath === '/') {
+        ingress.push(`${host} -> ${name}:${port}`);
+      } else {
+        ingress.push(`${host}${ingressPath} -> ${name}:${port}`);
+      }
     }
   }
   return (
