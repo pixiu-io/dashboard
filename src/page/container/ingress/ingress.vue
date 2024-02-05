@@ -56,9 +56,12 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="metadata" label="注解" :formatter="formatterAnno"> </el-table-column>
+        <!-- <el-table-column prop="metadata" label="注解" :formatter="formatterAnno"> </el-table-column> -->
         <el-table-column prop="spec.rules" label="转发规则" :formatter="formatterIngressRules">
         </el-table-column>
+
+        <el-table-column prop="metadata" label="地址">-</el-table-column>
+
         <el-table-column
           label="创建时间"
           prop="metadata.creationTimestamp"
