@@ -68,7 +68,7 @@
         >
         </el-table-column>
 
-        <el-table-column fixed="right" label="操作" width="150">
+        <el-table-column fixed="right" label="操作" width="170px">
           <template #default="scope">
             <el-button
               size="small"
@@ -76,16 +76,24 @@
               style="margin-right: -20px; margin-left: -10px; color: #006eff"
               @click="editService(scope.row)"
             >
-              编辑
+              设置
             </el-button>
 
             <el-button
               type="text"
               size="small"
-              style="margin-right: 1px; color: #006eff"
+              style="margin-right: -25px; margin-left: 8px; color: #006eff"
               @click="deleteService(scope.row)"
             >
               删除
+            </el-button>
+            <el-button
+              type="text"
+              size="small"
+              style="margin-right: 1px; color: #006eff"
+              @click="editYamlIngress(scope.row)"
+            >
+              YAML 设置
             </el-button>
           </template>
         </el-table-column>
