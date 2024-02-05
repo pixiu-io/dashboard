@@ -38,7 +38,7 @@
     <el-card class="box-card">
       <el-table
         v-loading="data.loading"
-        :data="data.serviceList"
+        :data="data.ingressList"
         stripe
         style="margin-top: 2px; width: 100%"
         :cell-style="{
@@ -46,10 +46,9 @@
           color: '#29292b',
         }"
         header-row-class-name="pixiu-table-header"
-        @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="30" />
-        <el-table-column prop="metadata.name" sortable label="名称" width="180">
+        <el-table-column prop="metadata.name" sortable label="名称">
           <template #default="scope">
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
@@ -57,18 +56,20 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="spec.type" label="HOSTS" width="110"> </el-table-column>
-        <el-table-column prop="spec.ports" label="端口组" :formatter="formatterPorts">
+        <!-- <el-table-column prop="metadata" label="注解" :formatter="formatterAnno"> </el-table-column> -->
+        <el-table-column prop="spec.rules" label="转发规则" :formatter="formatterIngressRules">
         </el-table-column>
+
+        <el-table-column prop="metadata" label="地址">-</el-table-column>
+
         <el-table-column
           label="创建时间"
           prop="metadata.creationTimestamp"
-          width="170px"
           :formatter="formatterTime"
         >
         </el-table-column>
 
-        <el-table-column fixed="right" label="操作" width="180">
+        <el-table-column fixed="right" label="操作" width="170px">
           <template #default="scope">
             <el-button
               size="small"
@@ -76,16 +77,25 @@
               style="margin-right: -20px; margin-left: -10px; color: #006eff"
               @click="editIngress(scope.row)"
             >
-              编辑
+              设置
+            </el-button>
+
+            <el-button
+              type="text"
+              size="small"
+              style="margin-right: -25px; margin-left: 8px; color: #006eff"
+              @click="deleteIngress(scope.row)"
+            >
+              删除
             </el-button>
 
             <el-button
               type="text"
               size="small"
               style="margin-right: 1px; color: #006eff"
-              @click="deleteIngress(scope.row)"
+              @click="editYamlIngress(scope.row)"
             >
-              删除
+              YAML 设置
             </el-button>
           </template>
         </el-table-column>
@@ -115,6 +125,7 @@ import { formatTimestamp } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getNamespaces } from '@/services/cloudService';
+import { getIngressList } from '@/services/kubernetes/ingressService';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 
 const { proxy } = getCurrentInstance();
@@ -132,7 +143,7 @@ const data = reactive({
 
   namespace: 'default',
   namespaces: [],
-  serviceList: [],
+  ingressList: [],
 });
 
 const handleSizeChange = (newSize) => {
@@ -154,15 +165,15 @@ onMounted(() => {
 
 const getIngresses = async () => {
   data.loading = true;
-  const res = await proxy.$http({
-    method: 'get',
-    url: `/proxy/pixiu/${data.cluster}/apis/networking.k8s.io/v1/namespaces/${data.namespace}/ingresses`,
-    data: data.pageInfo,
-  });
-
+  const [res, err] = await getIngressList(data.cluster, data.namespace);
   data.loading = false;
-  data.serviceList = res.items;
-  data.pageInfo.total = data.serviceList.length;
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+
+  data.ingressList = res.items;
+  data.pageInfo.total = data.ingressList.length;
 };
 
 const createIngress = () => {
@@ -194,7 +205,7 @@ const getNamespaceList = async () => {
 };
 
 const deleteIngress = (row) => {
-  ElMessageBox.confirm('此操作将永久删除 Ingress ' + row.metadata.name + ' . 是否继续?', '提示', {
+  ElMessageBox.confirm('此操作将永久删除 Ingress(' + row.metadata.name + ') 是否继续?', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning',
@@ -213,6 +224,51 @@ const deleteIngress = (row) => {
       await getIngresses();
     })
     .catch(() => {}); // 取消
+};
+
+const editYamlIngress = (row) => {
+  console.log('edit yaml ingress');
+};
+
+const formatterAnno = (row, column, cellValue) => {
+  if (cellValue.annotations === undefined) {
+    return <div>-</div>;
+  }
+
+  const annotations = Object.entries(cellValue.annotations).map(([key, value]) => {
+    return `${key}: ${value}`;
+  });
+  return (
+    <div>
+      {annotations.map((anno) => (
+        <div class="pixiu-table-formatter">{anno}</div>
+      ))}
+    </div>
+  );
+};
+
+const formatterIngressRules = (row, column, cellValue) => {
+  let ingress = [];
+  for (let item of cellValue) {
+    const host = item.host;
+    for (let path of item.http.paths) {
+      const ingressPath = path.path;
+      const name = path.backend.service.name;
+      const port = path.backend.service.port.number;
+      if (ingressPath === '/') {
+        ingress.push(`${host} -> ${name}:${port}`);
+      } else {
+        ingress.push(`${host}${ingressPath} -> ${name}:${port}`);
+      }
+    }
+  }
+  return (
+    <div>
+      {ingress.map((ing) => (
+        <div class="pixiu-table-formatter">{ing}</div>
+      ))}
+    </div>
+  );
 };
 
 const formatterTime = (row, column, cellValue) => {

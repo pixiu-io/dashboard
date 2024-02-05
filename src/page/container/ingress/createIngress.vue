@@ -52,11 +52,54 @@
         </div>
       </el-form-item>
 
+      <el-form-item label="注解" style="margin-top: 10px">
+        <el-button type="text" class="app-action-btn" style="color: #3377ff" @click="addAnnotation"
+          >新增</el-button
+        >
+      </el-form-item>
+      <!--
+          el-form的model绑定的是data.form
+          所以下面所有要经过表单校验的内容都必须在form里面，
+          原来的labels是直接写在data下的会导致校验不成功，需要调整
+          其余的参考这个内容去实现
+        -->
+      <el-form-item
+        v-for="(item, index) in data.annotations"
+        :key="index"
+        class="labels-item-style"
+      >
+        <el-form-item>
+          <el-input v-model="item.key" placeholder="注解键" style="width: 280px" />
+        </el-form-item>
+
+        <div style="margin-right: 10px; margin-left: 10px">=</div>
+
+        <el-form-item>
+          <el-input v-model="item.value" placeholder="注解值" style="width: 280px" />
+        </el-form-item>
+
+        <div
+          style="float: right; cursor: pointer; margin-left: 10px"
+          @click="deleteAnnotation(index)"
+        >
+          <pixiu-icon
+            name="icon-shanchu"
+            size="14px"
+            type="iconfont"
+            style="margin-top: 10px; margin-left: 4px"
+            color="#909399"
+          />
+        </div>
+      </el-form-item>
+      <div class="app-pixiu-line-describe" style="margin-top: -5px">
+        以字母、数字开头和结尾, 且只能包含字母、数字及分隔符。
+      </div>
+
       <div style="margin-top: 20px" />
       <el-form-item label="端口" style="width: 600px">
-        <el-radio-group v-model="data.targetPort" style="margin-top: 4px">
-          <el-radio-button label="80" border>80</el-radio-button>
-          <el-radio-button label="443" border>443</el-radio-button>
+        <el-radio-group v-model="data.ingressPort" style="margin-top: 4px">
+          <el-radio-button label="http" border>http</el-radio-button>
+          <el-radio-button label="https" border>https</el-radio-button>
         </el-radio-group>
       </el-form-item>
 
@@ -65,7 +108,7 @@
         <el-button type="text" class="app-action-btn" @click="addRule">增加</el-button>
       </el-form-item>
       <el-form-item
-        v-for="(item, index) in data.form.spec.rules"
+        v-for="(item, index) in data.ingressRules"
         :key="index"
         style="margin-top: -30px"
       >
@@ -83,48 +126,54 @@
           </div>
 
           <el-form
-            ref="ruleFormRef"
-            :rules="rules"
             label-position="left"
             label-width="100px"
             status-icon
-            :model="data.form"
+            :model="data.ingressRules"
             require-asterisk-position="right"
-            style="margin-left: 2%; width: 80%"
+            style="margin-left: 2%; width: 90%"
           >
             <div style="margin-top: 4px" />
 
             <el-form-item label="域名">
-              <el-input v-model="item.domain" placeholder="" style="width: 70%" />
+              <el-input
+                v-model="item.domain"
+                placeholder=""
+                style="width: 70%; margin-left: -40px"
+              />
             </el-form-item>
 
             <el-form-item label="路径" style="margin-top: 15px">
-              <div class="label-title-style" style="font-size: 13px">Path</div>
-              <div class="label-title-style" style="margin-left: 160px; font-size: 13px">服务</div>
-              <div class="label-title-style" style="margin-left: 185px; font-size: 13px">端口</div>
-              <el-divider style="width: 100%; margin-top: 2px" />
+              <div class="label-title-style" style="font-size: 13px; margin-left: -40px">Path</div>
+              <div class="label-title-style" style="margin-left: 150px; font-size: 13px">服务</div>
+              <div class="label-title-style" style="margin-left: 155px; font-size: 13px">端口</div>
+              <el-divider style="width: 100%; margin-top: 2px; margin-left: -40px" />
             </el-form-item>
 
             <el-form-item
-              v-for="(item, index) in data.form.spec.rules"
-              :key="index"
-              style="margin-top: -10px; margin-left: 100px"
+              v-for="(ruleItem, ruleIndex) in data.ingressRules"
+              :key="ruleIndex"
+              style="margin-top: -10px; margin-left: 60px"
             >
               <div>
-                <el-input v-model="item.port" placeholder="请输入路径或正则" />
+                <el-input
+                  v-model="ruleItem.path"
+                  placeholder="请输入路径或正则"
+                  style="width: 160px"
+                />
               </div>
-              <div style="margin-left: 20px">
-                <el-select v-model="data.service" @change="changeNamespace">
-                  <el-option
-                    v-for="item in data.services"
-                    :key="item"
-                    :value="item"
-                    :label="item"
-                  />
+              <div style="margin-left: 20px; width: 160px">
+                <el-select v-model="ruleItem.service">
+                  <el-option v-for="svc in data.services" :key="svc" :value="svc" :label="svc" />
                 </el-select>
               </div>
+
               <div style="margin-left: 20px">
-                <el-input v-model="item.targetPort" placeholder="1-65535内的整数" />
+                <el-input
+                  v-model="ruleItem.port"
+                  placeholder="1-65535内的整数"
+                  style="width: 130px"
+                />
               </div>
             </el-form-item>
           </el-form>
@@ -148,6 +197,7 @@
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 import { getServiceList } from '@/services/kubernetes/serviceService';
 import { getNamespaceList } from '@/services/kubernetes/namespaceService';
+import { createIngress } from '@/services/kubernetes/ingressService';
 
 const ruleFormRef = ref();
 const { proxy } = getCurrentInstance();
@@ -155,8 +205,8 @@ const data = reactive({
   loading: false,
   Session: false,
 
-  clutser: '',
-  targetPort: 80,
+  cluster: '',
+  ingressPort: 'http',
 
   form: {
     metadata: {
@@ -167,6 +217,9 @@ const data = reactive({
       rules: [],
     },
   },
+
+  ingressRules: [],
+  annotations: [],
 
   namespaces: [],
   services: [],
@@ -184,6 +237,7 @@ onMounted(() => {
 
   syncNamespaces();
   syncServices();
+  addRule();
 });
 
 watch(
@@ -194,7 +248,53 @@ watch(
 const comfirm = async () => {
   ruleFormRef.value.validate(async (valid) => {
     if (valid) {
-      console.log('data', data.form);
+      if (data.ingressRules.length === 0) {
+        proxy.$message.error('转发规则为必填项');
+        return;
+      }
+
+      for (let rule of data.ingressRules) {
+        let paths = [];
+        paths.push({
+          pathType: 'ImplementationSpecific',
+          path: rule.path,
+          backend: {
+            service: {
+              name: rule.service,
+              port: {
+                number: parseInt(rule.port),
+              },
+            },
+          },
+        });
+
+        data.form.spec.rules.push({
+          host: rule.domain,
+          http: {
+            paths: paths,
+          },
+        });
+      }
+
+      if (data.annotations.length > 0) {
+        data.form.metadata['annotations'] = {};
+        for (let anno of data.annotations) {
+          data.form.metadata['annotations'][anno.key] = anno.value;
+        }
+      }
+
+      const [result, err] = await createIngress(
+        data.cluster,
+        data.form.metadata.namespace,
+        data.form,
+      );
+      if (err) {
+        proxy.$message.error(err.response.data.message);
+        return;
+      }
+
+      proxy.$message.success(`Ingress ${data.form.metadata.name} 创建成功`);
+      backToIngress();
     }
   });
 };
@@ -222,6 +322,17 @@ const syncNamespaces = async () => {
   }
 };
 
+const addAnnotation = () => {
+  data.annotations.push({
+    key: '',
+    value: '',
+  });
+};
+
+const deleteAnnotation = (index) => {
+  data.annotations.splice(index, 1);
+};
+
 const syncServices = async () => {
   const [err, svc] = await getServiceList(data.cluster, data.form.metadata.namespace);
   if (err) {
@@ -235,17 +346,22 @@ const syncServices = async () => {
 
   if (data.services.length > 0) {
     data.service = data.services[0];
+  } else {
+    data.service = '';
   }
 };
 
 const addRule = () => {
-  data.form.spec.rules.push({
+  data.ingressRules.push({
     domain: '',
+    path: '',
+    service: '',
+    port: '',
   });
 };
 
 const deleteRule = (index) => {
-  data.form.spec.rules.splice(index, 1);
+  data.ingressRules.splice(index, 1);
 };
 
 const backToIngress = () => {
