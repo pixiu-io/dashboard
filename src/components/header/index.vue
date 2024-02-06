@@ -2,7 +2,7 @@
   <!-- header有两部分 -->
   <div style="display: flex; align-items: center">
     <!-- <img src="../../../static/huawei.logo.png" /> -->
-    <span style="font-size: large; margin-left: 30px">貔貅云</span>
+    <span style="font-size: large; margin-left: 18px">Pixiu Cloud</span>
 
     <el-button link style="margin-left: 35px; background-color: rgb(40, 43, 51)">
       <el-icon style="vertical-align: middle; margin-right: 0px; font-size: large">
