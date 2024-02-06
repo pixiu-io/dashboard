@@ -104,16 +104,7 @@
         </template>
       </el-table>
 
-      <el-pagination
-        v-model:currentPage="data.pageInfo.page"
-        v-model:page-size="data.pageInfo.page_size"
-        style="float: right; margin-right: 30px; margin-top: 20px; margin-bottom: 20px"
-        :page-sizes="[10, 20, 50]"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="data.pageInfo.total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+      <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
 </template>
@@ -126,6 +117,7 @@ import { getNamespaces } from '@/services/cloudService';
 import useClipboard from 'vue-clipboard3';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
+import Pagination from '@/components/pagination/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -144,6 +136,19 @@ const data = reactive({
   namespaceList: [],
 });
 
+onMounted(() => {
+  data.cluster = proxy.$route.query.cluster;
+
+  getNamespace();
+});
+
+const onChange = (v) => {
+  data.pageInfo.limit = 10;
+  data.pageInfo.page = v.page;
+
+  getNamespace();
+};
+
 const { toClipboard } = useClipboard();
 const copy = async (val) => {
   try {
@@ -159,22 +164,6 @@ const copy = async (val) => {
     });
   }
 };
-
-const handleSizeChange = (newSize) => {
-  data.pageInfo.limit = newSize;
-  getNamespace();
-};
-
-const handleCurrentChange = (newPage) => {
-  data.pageInfo.page = newPage;
-  getNamespace();
-};
-
-onMounted(() => {
-  data.cluster = proxy.$route.query.cluster;
-
-  getNamespace();
-});
 
 const createNamespace = () => {
   const url = `/kubernetes/createNamespace?cluster=${data.cluster}`;

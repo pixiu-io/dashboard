@@ -138,16 +138,7 @@
         </template>
       </el-table>
 
-      <el-pagination
-        v-model:currentPage="data.pageInfo.page"
-        v-model:page-size="data.pageInfo.page_size"
-        style="float: right; margin-right: 30px; margin-top: 20px; margin-bottom: 20px"
-        :page-sizes="[10, 20, 50]"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="data.pageInfo.total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+      <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
 
@@ -192,6 +183,7 @@ import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
+import Pagination from '@/components/pagination/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -218,13 +210,17 @@ const data = reactive({
   },
 });
 
-const handleSizeChange = (newSize) => {
-  data.pageInfo.limit = newSize;
-  getDeployments();
-};
+onMounted(() => {
+  data.cluster = proxy.$route.query.cluster;
 
-const handleCurrentChange = (newPage) => {
-  data.pageInfo.page = newPage;
+  getDeployments();
+  getNamespaceList();
+});
+
+const onChange = (v) => {
+  data.pageInfo.limit = 10;
+  data.pageInfo.page = v.page;
+
   getDeployments();
 };
 
@@ -237,13 +233,6 @@ const editDeployment = (row) => {
   const url = `/kubernetes/deployments/editDeployment?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
   router.push(url);
 };
-
-onMounted(() => {
-  data.cluster = proxy.$route.query.cluster;
-
-  getDeployments();
-  getNamespaceList();
-});
 
 const jumpRoute = (row) => {
   router.push({
