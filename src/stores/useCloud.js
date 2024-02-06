@@ -80,10 +80,12 @@ const useCloudStore = defineStore('cloud', () => {
     editAliasName.value = true;
   };
 
-  const changeAliasName = () => {
-    // 请求在这里处理，完成传递之后关闭窗口并且需要刷新列表
-
-    changeCluserAliasName(selectCloudId.value, resourceVersion.value, selectCloudAliasName.value);
+  const changeAliasName = async () => {
+    await changeCluserAliasName(
+      selectCloudId.value,
+      resourceVersion.value,
+      selectCloudAliasName.value,
+    );
 
     editAliasName.value = false;
     resourceVersion.value = 0;
@@ -104,6 +106,7 @@ const useCloudStore = defineStore('cloud', () => {
       name: 'Info',
       query: {
         cluster: row.name,
+        name: row.alias_name,
       },
     });
   };
