@@ -91,7 +91,7 @@
               type="text"
               size="small"
               style="margin-right: 1px; color: #006eff"
-              @click="editYamlIngress(scope.row)"
+              @click="handleEditYamlDialog(scope.row)"
             >
               YAML 设置
             </el-button>
@@ -115,18 +115,45 @@
       />
     </el-card>
   </div>
+
+  <!-- 编辑 yaml 页面 -->
+  <el-dialog
+    :model-value="data.editYamlDialog"
+    style="color: #000000; font: 14px; margin-top: 50px"
+    width="800px"
+    center
+    @close="closeEditYamlDialog"
+  >
+    <template #header>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">YAML 设置</div>
+    </template>
+    <div style="margin-top: -18px"></div>
+    <MyCodeMirror ref="editYaml" :yaml="data.yaml" :height="650"></MyCodeMirror>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-small-cancel-button" @click="closeEditYamlDialog">取消</el-button>
+        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmEditYaml"
+          >确认</el-button
+        >
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { formatTimestamp } from '@/utils/utils';
-import { reactive, getCurrentInstance, onMounted } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getNamespaces } from '@/services/cloudService';
+import jsYaml from 'js-yaml';
+import MyCodeMirror from '@/components/codemirror/index.vue';
+import { updateService } from '@/services/kubernetes/serviceService';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
+const editYaml = ref();
 
 const data = reactive({
   cluster: '',
@@ -141,6 +168,11 @@ const data = reactive({
   namespace: 'default',
   namespaces: [],
   serviceList: [],
+
+  //  yaml相关属性
+  yaml: '',
+  yamlName: '',
+  editYamlDialog: false,
 });
 
 const handleSizeChange = (newSize) => {
@@ -169,6 +201,31 @@ onMounted(() => {
   getServices();
   getNamespaceList();
 });
+
+const handleEditYamlDialog = (row) => {
+  data.yaml = jsYaml.dump(row);
+  data.yamlName = row.metadata.name;
+  data.editYamlDialog = true;
+};
+
+const closeEditYamlDialog = (row) => {
+  data.yaml = '';
+  data.yamlName = '';
+  data.editYamlDialog = false;
+};
+
+const confirmEditYaml = async () => {
+  const yamlData = jsYaml.load(editYaml.value.code);
+  const [result, err] = await updateService(data.cluster, data.namespace, data.yamlName, yamlData);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(`Service(${data.yamlName}) YAML 更新成功`);
+
+  closeEditYamlDialog();
+  await getServices();
+};
 
 const getServices = async () => {
   data.loading = true;
