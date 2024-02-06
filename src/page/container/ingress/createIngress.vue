@@ -52,49 +52,6 @@
         </div>
       </el-form-item>
 
-      <el-form-item label="注解" style="margin-top: 10px">
-        <el-button type="text" class="app-action-btn" style="color: #3377ff" @click="addAnnotation"
-          >新增</el-button
-        >
-      </el-form-item>
-      <!--
-          el-form的model绑定的是data.form
-          所以下面所有要经过表单校验的内容都必须在form里面，
-          原来的labels是直接写在data下的会导致校验不成功，需要调整
-          其余的参考这个内容去实现
-        -->
-      <el-form-item
-        v-for="(item, index) in data.annotations"
-        :key="index"
-        class="labels-item-style"
-      >
-        <el-form-item>
-          <el-input v-model="item.key" placeholder="注解键" style="width: 280px" />
-        </el-form-item>
-
-        <div style="margin-right: 10px; margin-left: 10px">=</div>
-
-        <el-form-item>
-          <el-input v-model="item.value" placeholder="注解值" style="width: 280px" />
-        </el-form-item>
-
-        <div
-          style="float: right; cursor: pointer; margin-left: 10px"
-          @click="deleteAnnotation(index)"
-        >
-          <pixiu-icon
-            name="icon-shanchu"
-            size="14px"
-            type="iconfont"
-            style="margin-top: 10px; margin-left: 4px"
-            color="#909399"
-          />
-        </div>
-      </el-form-item>
-      <div class="app-pixiu-line-describe" style="margin-top: -5px">
-        以字母、数字开头和结尾, 且只能包含字母、数字及分隔符。
-      </div>
-
       <div style="margin-top: 20px" />
       <el-form-item label="端口" style="width: 600px">
         <el-radio-group v-model="data.ingressPort" style="margin-top: 4px">
@@ -219,7 +176,6 @@ const data = reactive({
   },
 
   ingressRules: [],
-  annotations: [],
 
   namespaces: [],
   services: [],
@@ -257,7 +213,6 @@ const comfirm = async () => {
         let paths = [];
         paths.push({
           pathType: 'ImplementationSpecific',
-          path: rule.path,
           backend: {
             service: {
               name: rule.service,
@@ -274,13 +229,6 @@ const comfirm = async () => {
             paths: paths,
           },
         });
-      }
-
-      if (data.annotations.length > 0) {
-        data.form.metadata['annotations'] = {};
-        for (let anno of data.annotations) {
-          data.form.metadata['annotations'][anno.key] = anno.value;
-        }
       }
 
       const [result, err] = await createIngress(
@@ -320,17 +268,6 @@ const syncNamespaces = async () => {
   for (let item of ns.items) {
     data.namespaces.push(item.metadata.name);
   }
-};
-
-const addAnnotation = () => {
-  data.annotations.push({
-    key: '',
-    value: '',
-  });
-};
-
-const deleteAnnotation = (index) => {
-  data.annotations.splice(index, 1);
 };
 
 const syncServices = async () => {
