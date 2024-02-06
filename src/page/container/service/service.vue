@@ -148,7 +148,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { getNamespaces } from '@/services/cloudService';
 import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
-import { updateService } from '@/services/kubernetes/serviceService';
+import { updateService, getService } from '@/services/kubernetes/serviceService';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 
 const { proxy } = getCurrentInstance();
@@ -202,9 +202,15 @@ onMounted(() => {
   getNamespaceList();
 });
 
-const handleEditYamlDialog = (row) => {
-  data.yaml = jsYaml.dump(row);
+const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
+  const [result, err] = await getService(data.cluster, data.namespace, data.yamlName);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+
+  data.yaml = jsYaml.dump(result);
   data.editYamlDialog = true;
 };
 

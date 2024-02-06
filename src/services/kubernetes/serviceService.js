@@ -21,3 +21,13 @@ export const updateService = async (cluster, namespace, name, data) => {
   );
   return [result, err];
 };
+
+export const getService = async (cluster, namespace, name) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: `/proxy/pixiu/${cluster}/api/v1/namespaces/${namespace}/services/${name}`,
+    }),
+  );
+  return [result, err];
+};
