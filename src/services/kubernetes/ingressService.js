@@ -34,3 +34,24 @@ export const deleteIngress = async (cluster, namespace, name) => {
   );
   return [result, err];
 };
+
+export const updateIngress = async (cluster, namespace, name, data) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'put',
+      url: `/proxy/pixiu/${cluster}/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses/${name}`,
+      data: data,
+    }),
+  );
+  return [result, err];
+};
+
+export const getIngress = async (cluster, namespace, name) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: `/proxy/pixiu/${cluster}/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses/${name}`,
+    }),
+  );
+  return [result, err];
+};
