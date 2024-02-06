@@ -147,7 +147,7 @@ import { formatTimestamp } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getNamespaces } from '@/services/cloudService';
-import { getIngressList, updateIngress } from '@/services/kubernetes/ingressService';
+import { getIngressList, updateIngress, getIngress } from '@/services/kubernetes/ingressService';
 import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
@@ -256,9 +256,15 @@ const deleteIngress = (row) => {
     .catch(() => {}); // 取消
 };
 
-const handleEditYamlDialog = (row) => {
-  data.yaml = jsYaml.dump(row);
+const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
+  const [result, err] = await getIngress(data.cluster, data.namespace, data.yamlName);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+
+  data.yaml = jsYaml.dump(result);
   data.editYamlDialog = true;
 };
 
