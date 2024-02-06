@@ -103,16 +103,7 @@
         </template>
       </el-table>
 
-      <el-pagination
-        v-model:currentPage="data.pageInfo.page"
-        v-model:page-size="data.pageInfo.page_size"
-        style="float: right; margin-right: 30px; margin-top: 20px; margin-bottom: 20px"
-        :page-sizes="[10, 20, 50]"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="data.pageInfo.total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+      <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
 
@@ -145,11 +136,12 @@ import { useRouter } from 'vue-router';
 import { formatTimestamp } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { getNamespaces } from '@/services/cloudService';
 import jsYaml from 'js-yaml';
+import { getNamespaces } from '@/services/cloudService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import { updateService, getService } from '@/services/kubernetes/serviceService';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
+import Pagination from '@/components/pagination/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -175,13 +167,17 @@ const data = reactive({
   editYamlDialog: false,
 });
 
-const handleSizeChange = (newSize) => {
-  data.pageInfo.limit = newSize;
-  getServices();
-};
+onMounted(() => {
+  data.cluster = proxy.$route.query.cluster;
 
-const handleCurrentChange = (newPage) => {
-  data.pageInfo.page = newPage;
+  getServices();
+  getNamespaceList();
+});
+
+const onChange = (v) => {
+  data.pageInfo.limit = 10;
+  data.pageInfo.page = v.page;
+
   getServices();
 };
 
@@ -194,13 +190,6 @@ const editService = (row) => {
   const url = `/kubernetes/services/editService?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
   router.push(url);
 };
-
-onMounted(() => {
-  data.cluster = proxy.$route.query.cluster;
-
-  getServices();
-  getNamespaceList();
-});
 
 const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
