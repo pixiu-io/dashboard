@@ -105,7 +105,7 @@
         </template>
       </el-table>
 
-      <pagination :total="data.total" @on-change="onChange"></pagination>
+      <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
 
