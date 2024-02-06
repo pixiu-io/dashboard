@@ -2,27 +2,6 @@
   <el-card class="title-card-container">
     <div class="font-container">Secret</div>
     <PiXiuYaml :cluster="data.cluster"></PiXiuYaml>
-    <!--    <div-->
-    <!--      style="-->
-    <!--        display: block;-->
-    <!--        font-size: 12px;-->
-    <!--        margin-top: -20px;-->
-    <!--        float: right;-->
-    <!--        color: rgba(0, 0, 0, 0.9);-->
-    <!--      "-->
-    <!--    >-->
-    <!--      操作指南-->
-    <!--      <el-icon style="vertical-align: middle; margin-right: 10px">-->
-    <!--        <component :is="'Edit'" />-->
-    <!--      </el-icon>-->
-    <!--      <button-->
-    <!--        class="pixiu-two-button"-->
-    <!--        style="width: 125px; margin-top: -10px"-->
-    <!--        @click="handleEditSecretYamlDialog"-->
-    <!--      >-->
-    <!--        YAML创建资源-->
-    <!--      </button>-->
-    <!--    </div>-->
   </el-card>
 
   <div style="margin-top: 25px">
@@ -142,16 +121,7 @@
         </template>
       </el-table>
 
-      <el-pagination
-        v-model:currentPage="data.pageInfo.page"
-        v-model:page-size="data.pageInfo.page_size"
-        style="float: right; margin-right: 30px; margin-top: 20px; margin-bottom: 20px"
-        :page-sizes="[10, 20, 50]"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="data.pageInfo.total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+      <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
 
@@ -187,10 +157,12 @@ import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
-import { formatTimestamp } from '@/utils/utils';
 import jsYaml from 'js-yaml';
+import { formatTimestamp } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import MyCodeMirror from '@/components/codemirror/index.vue';
+import Pagination from '@/components/pagination/index.vue';
+
 const { proxy } = getCurrentInstance();
 const router = useRouter();
 const editYaml = ref();
@@ -215,13 +187,19 @@ const data = reactive({
   showIcon: false, // 控制图标的显示状态，默认为隐藏
 });
 
-const handleSizeChange = (newSize) => {
-  data.pageInfo.limit = newSize;
-  getSecrets();
-};
+onMounted(() => {
+  data.cluster = proxy.$route.query.cluster;
+  data.cloud = proxy.$route.query;
+  data.path = proxy.$route.fullPath;
 
-const handleCurrentChange = (newPage) => {
-  data.pageInfo.page = newPage;
+  getNamespaceList();
+  getSecrets();
+});
+
+const onChange = (v) => {
+  data.pageInfo.limit = 10;
+  data.pageInfo.page = v.page;
+
   getSecrets();
 };
 
@@ -255,14 +233,6 @@ const deleteSecret = (row) => {
     })
     .catch(() => {}); // 取消
 };
-
-onMounted(() => {
-  data.cluster = proxy.$route.query.cluster;
-  data.cloud = proxy.$route.query;
-  data.path = proxy.$route.fullPath;
-  getNamespaceList();
-  getSecrets();
-});
 
 const jumpRoute = (row) => {
   router.push({
