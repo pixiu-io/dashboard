@@ -11,3 +11,13 @@ export const createDeployment = async (data, cloud_name, namespace, name) => {
   );
   return [err, result];
 };
+
+export const getDeployment = async (cluster, namespace, name) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: `/proxy/pixiu/${cluster}/apis/apps/v1/namespaces/${namespace}/deployments/${name}`,
+    }),
+  );
+  return [result, err];
+};

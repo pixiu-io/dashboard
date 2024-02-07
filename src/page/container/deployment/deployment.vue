@@ -124,8 +124,17 @@
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
-                  <el-dropdown-item style="color: #006eff" @click="deleteDeployment(scope.row)">
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="deleteDeployment(scope.row)"
+                  >
                     删除
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleEditYamlDialog(scope.row)"
+                  >
+                    编辑yaml
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
@@ -175,18 +184,45 @@
       </span>
     </template>
   </el-dialog>
+
+  <!-- 编辑 yaml 页面 -->
+  <el-dialog
+    :model-value="data.editYamlDialog"
+    style="color: #000000; font: 14px; margin-top: 50px"
+    width="800px"
+    center
+    @close="closeEditYamlDialog"
+  >
+    <template #header>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">YAML 设置</div>
+    </template>
+    <div style="margin-top: -18px"></div>
+    <MyCodeMirror ref="editYaml" :yaml="data.yaml" :height="650"></MyCodeMirror>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-small-cancel-button" @click="closeEditYamlDialog">取消</el-button>
+        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmEditYaml"
+          >确认</el-button
+        >
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import jsYaml from 'js-yaml';
 import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
+import { getDeployment } from '@/services/kubernetes/deploymentService';
+import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
+const editYaml = ref();
 
 const data = reactive({
   cluster: '',
@@ -208,6 +244,11 @@ const data = reactive({
     origin: '',
     target: 0,
   },
+
+  // yaml相关属性
+  yaml: '',
+  yamlName: '',
+  editYamlDialog: false,
 });
 
 onMounted(() => {
@@ -222,6 +263,40 @@ const onChange = (v) => {
   data.pageInfo.page = v.page;
 
   getDeployments();
+};
+
+const handleEditYamlDialog = async (row) => {
+  data.yamlName = row.metadata.name;
+  const [result, err] = await getDeployment(data.cluster, data.namespace, data.yamlName);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  data.yaml = jsYaml.dump(result);
+  data.editYamlDialog = true;
+};
+
+const closeEditYamlDialog = (row) => {
+  data.yaml = '';
+  data.yamlName = '';
+  data.editYamlDialog = false;
+};
+
+const confirmEditYaml = async () => {
+  const yamlData = jsYaml.load(editYaml.value.code);
+  const [result, err] = await updateDeployment(
+    data.cluster,
+    data.namespace,
+    data.yamlName,
+    yamlData,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(`Service(${data.yamlName}) YAML 更新成功`);
+  closeEditYamlDialog();
+  await getDeployments();
 };
 
 const createDeployment = () => {
