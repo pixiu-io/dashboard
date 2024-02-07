@@ -216,7 +216,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import jsYaml from 'js-yaml';
 import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
-import { getDeployment } from '@/services/kubernetes/deploymentService';
+import { getDeployment, updateDeployment } from '@/services/kubernetes/deploymentService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 
@@ -294,7 +294,7 @@ const confirmEditYaml = async () => {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  proxy.$message.success(`Service(${data.yamlName}) YAML 更新成功`);
+  proxy.$message.success(`Deployment(${data.yamlName}) YAML 更新成功`);
   closeEditYamlDialog();
   await getDeployments();
 };

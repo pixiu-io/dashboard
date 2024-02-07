@@ -21,3 +21,14 @@ export const getDeployment = async (cluster, namespace, name) => {
   );
   return [result, err];
 };
+
+export const updateDeployment = async (cluster, namespace, name, data) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'put',
+      url: `/proxy/pixiu/${cluster}/apis/apps/v1/namespaces/${namespace}/deployments/${name}`,
+      data,
+    }),
+  );
+  return [result, err];
+};
