@@ -24,6 +24,15 @@
       此操作将永久删除{{ objectName }} (<span style="color: red">{{ deleteName }}</span
       >) 是否继续？
     </div>
+
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-delete-cancel-button" @click="onChange">取消</el-button>
+        <el-button type="primary" class="pixiu-delete-confirm-button" @click="onChange"
+          >确认</el-button
+        >
+      </span>
+    </template>
   </el-dialog>
 </template>
 
