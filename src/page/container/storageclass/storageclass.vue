@@ -8,7 +8,7 @@
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createStorageClass">新建</button>
-        <button class="pixiu-two-button2" style="margin-left: 10px" @click="getStorageClass">
+        <button class="pixiu-two-button2" style="margin-left: 10px" @click="syncStorageClasses">
           刷新
         </button>
 
@@ -17,10 +17,10 @@
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
-          @clear="getStorageClass"
+          @clear="syncStorageClasses"
         >
           <template #suffix>
-            <el-icon class="el-input__icon" @click="getStorageClass">
+            <el-icon class="el-input__icon" @click="syncStorageClasses">
               <component :is="'Search'" />
             </el-icon>
           </template>
@@ -41,7 +41,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="30" />
-        <el-table-column prop="metadata.name" sortable label="名称" width="220px">
+        <el-table-column prop="metadata.name" sortable label="名称">
           <template #default="scope">
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
@@ -50,35 +50,43 @@
         </el-table-column>
 
         <el-table-column prop="provisioner" label="PROVISIONER"> </el-table-column>
-        <el-table-column label="回收策略" prop="reclaimPolicy" width="160px"> </el-table-column>
-        <el-table-column label="绑定模式" prop="volumeBindingMode" width="160px"> </el-table-column>
+        <el-table-column label="回收策略" prop="reclaimPolicy"> </el-table-column>
+        <el-table-column label="绑定模式" prop="volumeBindingMode"> </el-table-column>
 
         <el-table-column
           label="创建时间"
           prop="metadata.creationTimestamp"
-          width="180px"
           :formatter="formatterTime"
         >
         </el-table-column>
 
-        <el-table-column fixed="right" label="操作" width="180px">
+        <el-table-column fixed="right" label="操作" width="170px">
           <template #default="scope">
             <el-button
               size="small"
               type="text"
               style="margin-right: -20px; margin-left: -10px; color: #006eff"
-              @click="editDeployment(scope.row)"
+              @click="editStorageClass(scope.row)"
             >
-              更新配置
+              设置
+            </el-button>
+
+            <el-button
+              type="text"
+              size="small"
+              style="margin-right: -25px; margin-left: 8px; color: #006eff"
+              @click="deleteStorageClasss(scope.row)"
+            >
+              删除
             </el-button>
 
             <el-button
               type="text"
               size="small"
               style="margin-right: 1px; color: #006eff"
-              @click="handleDeploymentScaleDialog(scope.row)"
+              @click="handleEditYamlDialog(scope.row)"
             >
-              删除
+              YAML 设置
             </el-button>
           </template>
         </el-table-column>
@@ -88,102 +96,122 @@
         </template>
       </el-table>
 
-      <el-pagination
-        v-model:currentPage="data.pageInfo.page"
-        v-model:page-size="data.pageInfo.page_size"
-        style="float: right; margin-right: 30px; margin-top: 20px; margin-bottom: 20px"
-        :page-sizes="[10, 20, 50]"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="data.pageInfo.total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+      <!-- 分页区域 -->
+      <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
+
+  <el-dialog
+    :model-value="data.editYamlDialog"
+    style="color: #000000; font: 14px; margin-top: 50px"
+    width="800px"
+    center
+    @close="closeEditYamlDialog"
+  >
+    <template #header>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">YAML 设置</div>
+    </template>
+    <div style="margin-top: -18px"></div>
+    <MyCodeMirror ref="editYaml" :yaml="data.yaml" :height="650"></MyCodeMirror>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-small-cancel-button" @click="closeEditYamlDialog">取消</el-button>
+        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmEditYaml"
+          >确认</el-button
+        >
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { formatTimestamp } from '@/utils/utils';
-import { reactive, getCurrentInstance, onMounted } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { getNamespaces } from '@/services/cloudService';
+import jsYaml from 'js-yaml';
+
+import Pagination from '@/components/pagination/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
+import {
+  getStorageClassList,
+  getStorageClass,
+  updateStorageClass,
+} from '@/services/kubernetes/storageClassService';
+import MyCodeMirror from '@/components/codemirror/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
+const editYaml = ref();
 
 const data = reactive({
   cluster: '',
+  loading: false,
+
   pageInfo: {
     page: 1,
     query: '',
     total: 0,
     limit: 100,
   },
-  loading: false,
 
-  namespace: [],
   straogeClassList: [],
+
+  //  yaml相关属性
+  yaml: '',
+  yamlName: '',
+  editYamlDialog: false,
 });
 
-const handleSizeChange = (newSize) => {
-  data.pageInfo.limit = newSize;
-  getStorageClass();
-};
+const onChange = (v) => {
+  data.pageInfo.limit = 10;
+  data.pageInfo.page = v.page;
 
-const handleCurrentChange = (newPage) => {
-  data.pageInfo.page = newPage;
-  getStorageClass();
+  syncStorageClasses();
 };
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
 
-  getStorageClass();
-  getNamespaceList();
+  syncStorageClasses();
 });
 
-const getStorageClass = async () => {
+const syncStorageClasses = async () => {
   data.loading = true;
-  const res = await proxy.$http({
-    method: 'get',
-    url: `/proxy/pixiu/${data.cluster}/apis/storage.k8s.io/v1/storageclasses`,
-    data: data.pageInfo,
-  });
-
+  const [res, err] = await getStorageClassList(data.cluster, data.pageInfo);
   data.loading = false;
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+
   data.straogeClassList = res.items;
   data.pageInfo.total = data.straogeClassList.length;
 };
 
-const changeNamespace = async (val) => {
-  localStorage.setItem('namespace', val);
-  data.namespace = val;
-
-  getStorageClass();
+const createStorageClass = () => {
+  const url = `/kubernetes/storageClasses/createStorageClass?cluster=${data.cluster}&namespace=${data.namespace}`;
+  router.push(url);
 };
 
-const getNamespaceList = async () => {
-  const [err, result] = await getNamespaces(data.cluster);
-  if (err) {
-    return;
-  }
-
-  for (let item of result.items) {
-    data.namespaces.push(item.metadata.name);
-  }
+const editStorageClass = (row) => {
+  const url = `/kubernetes/storageClasses/editStorageClass?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
+  router.push(url);
 };
 
-const deleteService = (row) => {
-  ElMessageBox.confirm('此操作将永久删除 Service ' + row.metadata.name + ' . 是否继续?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-    draggable: true,
-  })
-    .then(() => {
-      const res = proxy.$http({
+const deleteStorageClasss = (row) => {
+  ElMessageBox.confirm(
+    '此操作将永久删除 StorageClasss(' + row.metadata.name + ')。 是否继续?',
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+      draggable: true,
+    },
+  )
+    .then(async () => {
+      await proxy.$http({
         method: 'delete',
         url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/services/${row.metadata.name}`,
       });
@@ -191,8 +219,41 @@ const deleteService = (row) => {
         type: 'success',
         message: '删除 ' + row.metadata.name + ' 成功',
       });
+
+      await syncStorageClasses();
     })
     .catch(() => {}); // 取消
+};
+
+const handleEditYamlDialog = async (row) => {
+  data.yamlName = row.metadata.name;
+  // 列表中的属性缺少 Kind 和 apiVersion 属性，重新获取补充
+  const [result, err] = await getStorageClass(data.cluster, data.yamlName);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  data.yaml = jsYaml.dump(result);
+  data.editYamlDialog = true;
+};
+
+const closeEditYamlDialog = (row) => {
+  data.yaml = '';
+  data.yamlName = '';
+  data.editYamlDialog = false;
+};
+
+const confirmEditYaml = async () => {
+  const yamlData = jsYaml.load(editYaml.value.code);
+  const [result, err] = await updateStorageClass(data.cluster, data.yamlName, yamlData);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(`StorageClass(${data.yamlName}) YAML 更新成功`);
+
+  closeEditYamlDialog();
+  await syncStorageClasses();
 };
 
 const formatterTime = (row, column, cellValue) => {

@@ -90,6 +90,7 @@ const handleCreateYamlDialog = () => {
 const closeYamlDialog = () => {
   data.yamlDialog = false;
   data.yaml = '';
+  editYaml.value.code = '';
 };
 
 const checkEmpty = (name, value) => {
@@ -119,7 +120,9 @@ const confirmYaml = async () => {
   ) {
     return;
   }
-
+  const metadata = yamlData.metadata;
+  const name = metadata.name;
+  const namespace = metadata.namespace;
   let baseUrl = `/proxy/pixiu/${data.cluster}`;
   if (kind === 'Secret') {
     baseUrl = baseUrl + `/api/v1/namespaces/${namespace}/secrets`;

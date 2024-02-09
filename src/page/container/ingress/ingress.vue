@@ -7,7 +7,7 @@
   <div style="margin-top: 25px">
     <el-row>
       <el-col>
-        <button class="pixiu-two-button" @click="createService">新建</button>
+        <button class="pixiu-two-button" @click="createIngress">新建</button>
         <button class="pixiu-two-button2" style="margin-left: 10px" @click="getIngresses">
           刷新
         </button>
@@ -38,7 +38,7 @@
     <el-card class="box-card">
       <el-table
         v-loading="data.loading"
-        :data="data.serviceList"
+        :data="data.ingressList"
         stripe
         style="margin-top: 2px; width: 100%"
         :cell-style="{
@@ -46,10 +46,9 @@
           color: '#29292b',
         }"
         header-row-class-name="pixiu-table-header"
-        @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="30" />
-        <el-table-column prop="metadata.name" sortable label="名称" width="180">
+        <el-table-column prop="metadata.name" sortable label="名称">
           <template #default="scope">
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
@@ -57,18 +56,20 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="spec.type" label="HOSTS" width="110"> </el-table-column>
-        <el-table-column prop="spec.ports" label="端口组" :formatter="formatterPorts">
+        <!-- <el-table-column prop="metadata" label="注解" :formatter="formatterAnno"> </el-table-column> -->
+        <el-table-column prop="spec.rules" label="转发规则" :formatter="formatterIngressRules">
         </el-table-column>
+
+        <el-table-column prop="status" label="地址" :formatter="formatterAddress"></el-table-column>
+
         <el-table-column
           label="创建时间"
           prop="metadata.creationTimestamp"
-          width="170px"
           :formatter="formatterTime"
         >
         </el-table-column>
 
-        <el-table-column fixed="right" label="操作" width="180">
+        <el-table-column fixed="right" label="操作" width="170px">
           <template #default="scope">
             <el-button
               size="small"
@@ -76,16 +77,25 @@
               style="margin-right: -20px; margin-left: -10px; color: #006eff"
               @click="editIngress(scope.row)"
             >
-              更新配置
+              设置
+            </el-button>
+
+            <el-button
+              type="text"
+              size="small"
+              style="margin-right: -25px; margin-left: 8px; color: #006eff"
+              @click="deleteIngress(scope.row)"
+            >
+              删除
             </el-button>
 
             <el-button
               type="text"
               size="small"
               style="margin-right: 1px; color: #006eff"
-              @click="deleteIngress(scope.row)"
+              @click="handleEditYamlDialog(scope.row)"
             >
-              删除
+              YAML 设置
             </el-button>
           </template>
         </el-table-column>
@@ -95,30 +105,48 @@
         </template>
       </el-table>
 
-      <el-pagination
-        v-model:currentPage="data.pageInfo.page"
-        v-model:page-size="data.pageInfo.page_size"
-        style="float: right; margin-right: 30px; margin-top: 20px; margin-bottom: 20px"
-        :page-sizes="[10, 20, 50]"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="data.pageInfo.total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+      <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
+
+  <el-dialog
+    :model-value="data.editYamlDialog"
+    style="color: #000000; font: 14px; margin-top: 50px"
+    width="800px"
+    center
+    @close="closeEditYamlDialog"
+  >
+    <template #header>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">YAML 设置</div>
+    </template>
+    <div style="margin-top: -18px"></div>
+    <MyCodeMirror ref="editYaml" :yaml="data.yaml" :height="650"></MyCodeMirror>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-small-cancel-button" @click="closeEditYamlDialog">取消</el-button>
+        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmEditYaml"
+          >确认</el-button
+        >
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { formatTimestamp } from '@/utils/utils';
-import { reactive, getCurrentInstance, onMounted } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import jsYaml from 'js-yaml';
 import { getNamespaces } from '@/services/cloudService';
+import { getIngressList, updateIngress, getIngress } from '@/services/kubernetes/ingressService';
+import MyCodeMirror from '@/components/codemirror/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
+import Pagination from '@/components/pagination/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
+const editYaml = ref();
 
 const data = reactive({
   cluster: '',
@@ -132,18 +160,13 @@ const data = reactive({
 
   namespace: 'default',
   namespaces: [],
-  serviceList: [],
+  ingressList: [],
+
+  //  yaml相关属性
+  yaml: '',
+  yamlName: '',
+  editYamlDialog: false,
 });
-
-const handleSizeChange = (newSize) => {
-  data.pageInfo.limit = newSize;
-  getIngresses();
-};
-
-const handleCurrentChange = (newPage) => {
-  data.pageInfo.page = newPage;
-  getIngresses();
-};
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
@@ -152,17 +175,34 @@ onMounted(() => {
   getNamespaceList();
 });
 
+const onChange = (v) => {
+  data.pageInfo.limit = 10;
+  data.pageInfo.page = v.page;
+
+  getIngresses();
+};
+
 const getIngresses = async () => {
   data.loading = true;
-  const res = await proxy.$http({
-    method: 'get',
-    url: `/proxy/pixiu/${data.cluster}/apis/networking.k8s.io/v1/namespaces/${data.namespace}/ingresses`,
-    data: data.pageInfo,
-  });
-
+  const [res, err] = await getIngressList(data.cluster, data.namespace);
   data.loading = false;
-  data.serviceList = res.items;
-  data.pageInfo.total = data.serviceList.length;
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+
+  data.ingressList = res.items;
+  data.pageInfo.total = data.ingressList.length;
+};
+
+const createIngress = () => {
+  const url = `/kubernetes/ingresses/createIngress?cluster=${data.cluster}&namespace=${data.namespace}`;
+  router.push(url);
+};
+
+const editIngress = (row) => {
+  const url = `/kubernetes/ingresses/editIngress?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
+  router.push(url);
 };
 
 const changeNamespace = async (val) => {
@@ -184,31 +224,122 @@ const getNamespaceList = async () => {
 };
 
 const deleteIngress = (row) => {
-  ElMessageBox.confirm('此操作将永久删除 Ingress ' + row.metadata.name + ' . 是否继续?', '提示', {
+  ElMessageBox.confirm('此操作将永久删除 Ingress(' + row.metadata.name + ') 是否继续?', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning',
     draggable: true,
   })
-    .then(() => {
-      const res = proxy.$http({
+    .then(async () => {
+      await proxy.$http({
         method: 'delete',
         url: `/proxy/pixiu/${data.cluster}/apis/networking.k8s.io/v1/namespaces/${data.namespace}/ingresses/${row.metadata.name}`,
       });
-
-      getIngresses();
-
       ElMessage({
         type: 'success',
         message: '删除 ' + row.metadata.name + ' 成功',
       });
+
+      await getIngresses();
     })
     .catch(() => {}); // 取消
 };
 
+const handleEditYamlDialog = async (row) => {
+  data.yamlName = row.metadata.name;
+  const [result, err] = await getIngress(data.cluster, data.namespace, data.yamlName);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+
+  data.yaml = jsYaml.dump(result);
+  data.editYamlDialog = true;
+};
+
+const closeEditYamlDialog = (row) => {
+  data.yaml = '';
+  data.yamlName = '';
+  data.editYamlDialog = false;
+};
+
+const confirmEditYaml = async () => {
+  const yamlData = jsYaml.load(editYaml.value.code);
+  const [result, err] = await updateIngress(data.cluster, data.namespace, data.yamlName, yamlData);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(`Ingress(${data.yamlName}) YAML 更新成功`);
+
+  closeEditYamlDialog();
+  await getIngresses();
+};
+
+const formatterAnno = (row, column, cellValue) => {
+  if (cellValue.annotations === undefined) {
+    return <div>-</div>;
+  }
+
+  const annotations = Object.entries(cellValue.annotations).map(([key, value]) => {
+    return `${key}: ${value}`;
+  });
+  return (
+    <div>
+      {annotations.map((anno) => (
+        <div class="pixiu-table-formatter">{anno}</div>
+      ))}
+    </div>
+  );
+};
+
+const formatterAddress = (row, column, cellValue) => {
+  if (
+    cellValue === undefined ||
+    cellValue.loadBalancer === undefined ||
+    cellValue.loadBalancer.ingress === undefined ||
+    cellValue.loadBalancer.ingress.length === 0
+  ) {
+    return <div class="pixiu-table-formatter">-</div>;
+  }
+
+  const ingress = cellValue.loadBalancer.ingress;
+  return (
+    <div>
+      {ingress.map((ing) => (
+        <div class="pixiu-table-formatter">{ing}</div>
+      ))}
+    </div>
+  );
+};
+
+const formatterIngressRules = (row, column, cellValue) => {
+  let ingress = [];
+  for (let item of cellValue) {
+    const host = item.host;
+    for (let path of item.http.paths) {
+      const ingressPath = path.path;
+      const name = path.backend.service.name;
+      const port = path.backend.service.port.number;
+      if (ingressPath === '/') {
+        ingress.push(`${host} -> ${name}:${port}`);
+      } else {
+        ingress.push(`${host}${ingressPath} -> ${name}:${port}`);
+      }
+    }
+  }
+  return (
+    <div>
+      {ingress.map((ing) => (
+        <div class="pixiu-table-formatter">{ing}</div>
+      ))}
+    </div>
+  );
+};
+
 const formatterTime = (row, column, cellValue) => {
   const time = formatTimestamp(cellValue);
-  return <div>{time}</div>;
+  return <div class="pixiu-table-formatter">{time}</div>;
 };
 </script>
 

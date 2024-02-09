@@ -93,7 +93,7 @@
           :formatter="formatterTime"
         />
 
-        <el-table-column fixed="right" label="操作" width="140px">
+        <el-table-column fixed="right" label="操作" width="160px">
           <template #default="scope">
             <el-button
               size="small"
@@ -101,10 +101,15 @@
               style="margin-right: -25px; margin-left: -10px; color: #006eff"
               @click="deletePod(scope.row)"
             >
-              重启
+              销毁重建
             </el-button>
 
-            <el-button type="text" size="small" style="color: #006eff" @click="podLog(scope.row)">
+            <el-button
+              type="text"
+              size="small"
+              style="color: #006eff"
+              @click="openShell(scope.row)"
+            >
               远程登陆
             </el-button>
           </template>
@@ -115,32 +120,28 @@
         </template>
       </el-table>
 
-      <el-pagination
-        v-model:currentPage="data.pageInfo.page"
-        v-model:page-size="data.pageInfo.page_size"
-        style="float: right; margin-right: 30px; margin-top: 20px; margin-bottom: 20px"
-        :page-sizes="[10, 20, 50]"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="data.pageInfo.total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+      <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
 </template>
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import useClipboard from 'vue-clipboard3';
 import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { formatTimestamp } from '@/utils/utils';
-import useClipboard from 'vue-clipboard3';
+import Pagination from '@/components/pagination/index.vue';
 
 const { toClipboard } = useClipboard();
 const { proxy } = getCurrentInstance();
 const router = useRouter();
+
+const selectedContainers = ref([]);
+const selectedContainer = ref('');
+const selectedPod = ref('');
 
 const data = reactive({
   cluster: '',
@@ -164,13 +165,10 @@ const data = reactive({
   },
 });
 
-const handleSizeChange = (newSize) => {
-  data.pageInfo.limit = newSize;
-  getPods();
-};
+const onChange = (v) => {
+  data.pageInfo.limit = 10;
+  data.pageInfo.page = v.page;
 
-const handleCurrentChange = (newPage) => {
-  data.pageInfo.page = newPage;
   getPods();
 };
 
@@ -231,14 +229,14 @@ const getNamespaceList = async () => {
 };
 
 const deletePod = (row) => {
-  ElMessageBox.confirm('此操作将永久删除 Pod ' + row.metadata.name + ' . 是否继续?', '提示', {
+  ElMessageBox.confirm('此操作将永久删除 ' + row.metadata.name + ' Pod. 是否继续?', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning',
     draggable: true,
   })
-    .then(() => {
-      const res = proxy.$http({
+    .then(async () => {
+      await proxy.$http({
         method: 'delete',
         url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${row.metadata.name}`,
       });
@@ -246,7 +244,8 @@ const deletePod = (row) => {
         type: 'success',
         message: '删除 ' + row.metadata.name + ' 成功',
       });
-      getPods();
+
+      await getPods();
     })
     .catch(() => {}); // 取消
 };
@@ -289,8 +288,29 @@ const copyIP = async (val) => {
   }
 };
 
-const podLog = (row) => {
-  ElMessageBox.alert('暂不支持');
+const openShell = (val) => {
+  selectedPod.value = val.metadata.name;
+  selectedContainers.value = val.spec.containers;
+  if (val.spec.containers.length > 1) {
+    showDialog.value = true;
+  } else {
+    openWindowShell();
+  }
+};
+
+const openWindowShell = () => {
+  window.open(
+    '/#/podshell?pod=' +
+      selectedPod.value +
+      '&namespace=' +
+      data.namespace +
+      '&cluster=' +
+      data.cluster +
+      '&container=' +
+      selectedContainer.value,
+    '_blank',
+    'width=1000,height=600',
+  );
 };
 
 const closePodScaleDialog = (row) => {

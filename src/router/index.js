@@ -8,21 +8,28 @@ import {
   User,
   Menu,
   Cicd,
-  Container,
+  Cluster,
+  InsertCluster,
+  CreateCluster,
   Kubernetes,
   Deployment,
-  DeploymentCreate,
+  CreateDeployment,
+  EditDeployment,
   DeploymentDetail,
   Release,
   Terminal,
   Monitor,
   Node,
-  InsertCluster,
-  CreateCluster,
+  NodeDetail,
   NotFound,
   Operator,
   Service,
+  ServiceDetail,
+  CreateService,
+  EditService,
   Ingress,
+  CreateIngress,
+  EditIngress,
   ConfigMap,
   CreateConfigMap,
   EditConfigMap,
@@ -31,6 +38,8 @@ import {
   EditSecret,
   StatefulSet,
   StorageClass,
+  CreateStorageClass,
+  EditStorageClass,
   Info,
   Pod,
   PodDetail,
@@ -62,15 +71,15 @@ const routes = [
         component: Home,
       },
       {
-        path: 'container',
-        name: 'Container',
+        path: 'clusters',
+        name: 'Cluster',
         meta: {
           title: '容器服务',
         },
-        component: Container,
+        component: Cluster,
       },
       {
-        path: 'insertCluster',
+        path: 'clusters/insertCluster',
         name: 'InsertCluster',
         meta: {
           title: '导入集群',
@@ -78,7 +87,7 @@ const routes = [
         component: InsertCluster,
       },
       {
-        path: 'createCluster',
+        path: 'clusters/createCluster',
         name: 'CreateCluster',
         meta: {
           title: '创建集群',
@@ -108,6 +117,14 @@ const routes = [
               title: 'node',
             },
             component: Node,
+          },
+          {
+            path: 'nodes/detail',
+            name: 'NodeDetail',
+            meta: {
+              title: 'NodeDetail',
+            },
+            component: NodeDetail,
           },
           {
             path: 'namespaces',
@@ -174,12 +191,20 @@ const routes = [
             component: PodDetail,
           },
           {
-            path: 'deployment_create',
-            name: 'DeploymentCreate',
+            path: 'deployments/createDeployment',
+            name: 'CreateDeployment',
             meta: {
-              title: 'DeploymentCreate',
+              title: 'CreateDeployment',
             },
-            component: DeploymentCreate,
+            component: CreateDeployment,
+          },
+          {
+            path: 'deployments/editDeployment',
+            name: 'EditDeployment',
+            meta: {
+              title: 'EditDeployment',
+            },
+            component: EditDeployment,
           },
           {
             path: 'deployments/detail',
@@ -223,12 +248,52 @@ const routes = [
             component: Service,
           },
           {
+            path: 'services/createService',
+            name: 'CreateService',
+            meta: {
+              title: 'CreateService',
+            },
+            component: CreateService,
+          },
+          {
+            path: 'services/editService',
+            name: 'EditService',
+            meta: {
+              title: 'EditService',
+            },
+            component: EditService,
+          },
+          {
+            path: 'services/detail',
+            name: 'ServiceDetail',
+            meta: {
+              title: 'ServiceDetail',
+            },
+            component: ServiceDetail,
+          },
+          {
             path: 'ingress',
             name: 'Ingress',
             meta: {
               title: 'ingress',
             },
             component: Ingress,
+          },
+          {
+            path: 'ingresses/createIngress',
+            name: 'CreateIngress',
+            meta: {
+              title: 'CreateIngress',
+            },
+            component: CreateIngress,
+          },
+          {
+            path: 'ingresses/editIngress',
+            name: 'EditIngress',
+            meta: {
+              title: 'EditIngress',
+            },
+            component: EditIngress,
           },
           {
             path: 'configmaps',
@@ -285,6 +350,22 @@ const routes = [
               title: 'storageclass',
             },
             component: StorageClass,
+          },
+          {
+            path: 'storageclasses/createStorageClass',
+            name: 'CreateStorageClass',
+            meta: {
+              title: 'CreateStorageclass',
+            },
+            component: CreateStorageClass,
+          },
+          {
+            path: 'storageclasses/editStorageClass',
+            name: 'EditStorageClass',
+            meta: {
+              title: 'EditStorageClass',
+            },
+            component: EditStorageClass,
           },
         ],
       },

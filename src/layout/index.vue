@@ -38,7 +38,7 @@
               <el-icon @click="toggleCollapse">
                 <component :is="`${data.isCollapse ? 'Expand' : 'Fold'}`"></component>
               </el-icon>
-              <template #title> <span style="margin-left: 20px">体验调研</span></template>
+              <template #title> <span style="margin-left: 10px">体验调研</span></template>
             </el-menu-item>
           </el-menu>
         </el-col>
@@ -91,7 +91,7 @@ onMounted(() => {
     },
     {
       name: '容器服务',
-      url: '/container',
+      url: '/clusters',
       icon: 'icon-acrrongqijingxiangfuwu',
       iconType: 'iconfont',
     },
@@ -189,7 +189,7 @@ const handleSelect = (item) => {
 }
 
 .el-menu-vertical-no-collapse:not(.el-menu--collapse) {
-  width: 200px;
+  width: 185px;
   height: 100%;
 }
 

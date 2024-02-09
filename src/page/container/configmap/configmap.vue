@@ -119,16 +119,7 @@
         </template>
       </el-table>
 
-      <el-pagination
-        v-model:currentPage="data.pageInfo.page"
-        v-model:page-size="data.pageInfo.page_size"
-        style="float: right; margin-right: 30px; margin-top: 20px; margin-bottom: 20px"
-        :page-sizes="[10, 20, 50]"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="data.pageInfo.total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+      <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
 
@@ -164,10 +155,11 @@ import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
-import { formatTimestamp } from '@/utils/utils';
 import jsYaml from 'js-yaml';
+import { formatTimestamp } from '@/utils/utils';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
+import Pagination from '@/components/pagination/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -193,13 +185,19 @@ const data = reactive({
   showIcon: false, // 控制图标的显示状态，默认为隐藏
 });
 
-const handleSizeChange = (newSize) => {
-  data.pageInfo.limit = newSize;
-  getConfigMaps();
-};
+onMounted(() => {
+  data.cluster = proxy.$route.query.cluster;
+  data.cloud = proxy.$route.query;
+  data.path = proxy.$route.fullPath;
 
-const handleCurrentChange = (newPage) => {
-  data.pageInfo.page = newPage;
+  getNamespaceList();
+  getConfigMaps();
+});
+
+const onChange = (v) => {
+  data.pageInfo.limit = 10;
+  data.pageInfo.page = v.page;
+
   getConfigMaps();
 };
 
@@ -220,8 +218,8 @@ const deleteConfigMap = (row) => {
     type: 'warning',
     draggable: true,
   })
-    .then(() => {
-      const res = proxy.$http({
+    .then(async () => {
+      await proxy.$http({
         method: 'delete',
         url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/configmaps/${row.metadata.name}`,
       });
@@ -229,18 +227,10 @@ const deleteConfigMap = (row) => {
         type: 'success',
         message: '删除 ' + row.metadata.name + ' 成功',
       });
-      getConfigMaps();
+      await getConfigMaps();
     })
     .catch(() => {}); // 取消
 };
-
-onMounted(() => {
-  data.cluster = proxy.$route.query.cluster;
-  data.cloud = proxy.$route.query;
-  data.path = proxy.$route.fullPath;
-  getNamespaceList();
-  getConfigMaps();
-});
 
 const jumpRoute = (row) => {
   router.push({
@@ -332,6 +322,7 @@ const confirmEditConfigmapYaml = async () => {
   data.yaml = '';
   data.yamlName = '';
   proxy.$message.success(`configmap ${data.yamlName} 更新成功`);
+
   getConfigMaps();
 };
 </script>
