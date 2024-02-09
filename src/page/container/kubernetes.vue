@@ -18,7 +18,7 @@
           font-weight: bold;
         "
       >
-        {{ data.name }}
+        {{ data.aliasName }}
       </div>
     </div>
     <div style="font-size: 13px; margin-left: 45px; margin-top: 5px; color: #909399">
@@ -66,7 +66,7 @@ const handleOpen = (key, keyPath) => {
 
 const data = reactive({
   cluster: '',
-  name: '',
+  aliasName: '',
   cloud: {},
   clouds: [],
   namespace: 'default',
@@ -357,7 +357,8 @@ onMounted(() => {
 
   // 显示使用
   data.cluster = data.cloud.cluster;
-  data.name = data.cloud.name;
+  // 集群的中文名称
+  data.aliasName = localStorage.getItem(data.cluster);
 
   changeClouds(data.cloud.cluster);
 
