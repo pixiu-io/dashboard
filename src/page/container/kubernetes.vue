@@ -18,7 +18,7 @@
           font-weight: bold;
         "
       >
-        {{ data.name }}
+        {{ data.clusterName }}
       </div>
     </div>
     <div style="font-size: 13px; margin-left: 45px; margin-top: 5px; color: #909399">
@@ -357,7 +357,8 @@ onMounted(() => {
 
   // 显示使用
   data.cluster = data.cloud.cluster;
-  data.name = data.cloud.name;
+  // 集群的中文名称
+  data.clusterName = localStorage.getItem(data.cluster);
 
   changeClouds(data.cloud.cluster);
 
