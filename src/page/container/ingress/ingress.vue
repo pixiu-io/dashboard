@@ -60,7 +60,7 @@
         <el-table-column
           prop="spec.rules"
           label="转发规则"
-          min-width="100px"
+          min-width="120px"
           :formatter="formatterIngressRules"
         >
         </el-table-column>
