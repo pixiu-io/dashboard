@@ -107,7 +107,7 @@
     </el-card>
   </div>
 
-  <pixiuDialog :closeEvent="data.closeEvent"></pixiuDialog>
+  <pixiuDialog :closeEvent="data.deleteDialog.close"></pixiuDialog>
 </template>
 
 <script setup lang="jsx">
@@ -135,7 +135,10 @@ const data = reactive({
 
   loading: false,
 
-  closeEvent: false,
+  deleteDialog: {
+    close: false,
+    title: '删除命名空间',
+  },
 
   namespaceList: [],
 });
@@ -197,8 +200,7 @@ const jumpNamespaceRoute = (row) => {
 };
 
 const handleDeleteDialog = (row) => {
-  data.closeEvent = true;
-  console.log('data.closeEvent', data.closeEvent);
+  data.deleteDialog.close = true;
 };
 
 const deleteNamespace = (row) => {

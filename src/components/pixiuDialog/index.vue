@@ -14,11 +14,7 @@ import { reactive } from 'vue';
 
 defineProps({
   closeEvent: { type: Boolean, default: false },
-});
-
-const page = reactive({
-  page: 1,
-  limit: 10,
+  //   dialogTitle: { type: String, default: '' },
 });
 
 const emit = defineEmits(['onChange']);
