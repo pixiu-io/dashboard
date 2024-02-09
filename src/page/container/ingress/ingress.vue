@@ -57,7 +57,12 @@
         </el-table-column>
 
         <!-- <el-table-column prop="metadata" label="注解" :formatter="formatterAnno"> </el-table-column> -->
-        <el-table-column prop="spec.rules" label="转发规则" :formatter="formatterIngressRules">
+        <el-table-column
+          prop="spec.rules"
+          label="转发规则"
+          min-width="120px"
+          :formatter="formatterIngressRules"
+        >
         </el-table-column>
 
         <el-table-column prop="status" label="地址" :formatter="formatterAddress"></el-table-column>

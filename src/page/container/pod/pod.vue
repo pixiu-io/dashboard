@@ -49,7 +49,7 @@
       >
         <el-table-column type="selection" width="30" />
 
-        <el-table-column prop="metadata.name" sortable label="名称" min-width="80px">
+        <el-table-column prop="metadata.name" sortable label="名称" min-width="120px">
           <template #default="scope">
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
@@ -62,12 +62,12 @@
         <el-table-column
           prop="metadata.labels"
           label="Labels"
-          width="260"
+          min-width="200px"
           :formatter="formatterLabels"
         />
 
         <el-table-column prop="status.hostIP" label="所在节点" />
-        <el-table-column prop="status.podIP" label="实例IP">
+        <el-table-column prop="status.podIP" label="实例IP" min-width="100px">
           <template #default="scope">
             {{ scope.row.status.podIP }}
             <el-tooltip content="复制">
