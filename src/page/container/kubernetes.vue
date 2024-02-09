@@ -18,7 +18,9 @@
           font-weight: bold;
         "
       >
-        {{ data.aliasName }}
+        <el-tooltip effect="light" placement="top" content="{{data.aliasName}}">
+          <div class="pixiu-ellipsis-style" style="font-size: 14px">{{ data.aliasName }}</div>
+        </el-tooltip>
       </div>
     </div>
     <div style="font-size: 13px; margin-left: 45px; margin-top: 5px; color: #909399">
@@ -53,7 +55,7 @@
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance, onMounted, watch } from 'vue';
+import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 import PixiuMenu from '@/components/menu/index.vue';
 import { useRouter } from 'vue-router';
 
