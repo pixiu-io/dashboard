@@ -107,7 +107,11 @@
     </el-card>
   </div>
 
-  <pixiuDialog :closeEvent="data.deleteDialog.close"></pixiuDialog>
+  <pixiuDialog
+    :closeEvent="data.deleteDialog.close"
+    :dialogTitle="data.deleteDialog.title"
+    :objectName="data.deleteDialog.objectName"
+  ></pixiuDialog>
 </template>
 
 <script setup lang="jsx">
@@ -138,6 +142,7 @@ const data = reactive({
   deleteDialog: {
     close: false,
     title: '删除命名空间',
+    objectName: '命名空间',
   },
 
   namespaceList: [],
