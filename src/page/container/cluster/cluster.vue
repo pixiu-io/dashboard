@@ -355,6 +355,7 @@
     :model-value="cloudStore.showDeleteModal"
     style="color: #000000; font: 14px; height: 190px"
     width="500px"
+    align-center
     center
     @close="cloudStore.cancelDeleteCloud"
   >
@@ -372,7 +373,7 @@
       </div>
     </template>
     <div style="margin-top: -6px">
-      此操作将永久删除 {{ cloudStore.preDeleteCloudName }} 集群. 是否继续?
+      此操作将永久删除集群({{ cloudStore.preDeleteCloudName }}). 是否继续？
     </div>
 
     <template #footer>
