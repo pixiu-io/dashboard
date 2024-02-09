@@ -92,7 +92,7 @@
               type="text"
               size="small"
               style="margin-right: 1px; color: #006eff"
-              @click="deleteNamespace(scope.row)"
+              @click="handleDeleteDialog(scope.row)"
             >
               删除
             </el-button>
@@ -107,6 +107,8 @@
       <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
+
+  <pixiuDialog> :closeEvent="data.closeEvent"</pixiuDialog>
 </template>
 
 <script setup lang="jsx">
@@ -118,6 +120,7 @@ import useClipboard from 'vue-clipboard3';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
+import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -132,6 +135,8 @@ const data = reactive({
   },
 
   loading: false,
+
+  closeEvent: false,
 
   namespaceList: [],
 });
@@ -190,6 +195,11 @@ const jumpNamespaceRoute = (row) => {
       name: row.metadata.name,
     },
   });
+};
+
+const handleDeleteDialog = (row) => {
+  data.closeEvent = true;
+  console.log('data.closeEvent', data.closeEvent);
 };
 
 const deleteNamespace = (row) => {
