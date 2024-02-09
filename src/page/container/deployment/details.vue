@@ -755,12 +755,7 @@ const formatterTime = (row, column, cellValue) => {
   const time = formatTimestamp(cellValue);
   return (
     <el-tooltip effect="light" placement="top" content={time}>
-      <div
-        class="pixiu-table-formatter"
-        style="white-space: nowrap;overflow: hidden;text-overflow: ellipsis;"
-      >
-        {time}
-      </div>
+      <div class="pixiu-ellipsis-style">{time}</div>
     </el-tooltip>
   );
 };
