@@ -18,7 +18,7 @@
           font-weight: bold;
         "
       >
-        <el-tooltip effect="light" placement="bottom" content="data.aliasName">
+        <el-tooltip effect="light" placement="bottom" :content="data.clusterContent">
           <div class="pixiu-ellipsis-style" style="font-size: 14px">{{ data.aliasName }}</div>
         </el-tooltip>
       </div>
@@ -68,7 +68,10 @@ const handleOpen = (key, keyPath) => {
 
 const data = reactive({
   cluster: '',
+
   aliasName: '',
+  clusterContent: '',
+
   cloud: {},
   clouds: [],
   namespace: 'default',
@@ -361,6 +364,8 @@ onMounted(() => {
   data.cluster = data.cloud.cluster;
   // 集群的中文名称
   data.aliasName = localStorage.getItem(data.cluster);
+
+  data.clusterContent = data.aliasName + `(${data.cluster})`;
 
   changeClouds(data.cloud.cluster);
 
