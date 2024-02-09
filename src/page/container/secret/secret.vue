@@ -162,6 +162,8 @@ import { formatTimestamp } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
+import { getNamespaces } from '@/services/cloudService';
+import { updateSecret, getSecret } from '@/services/kubernetes/secretService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -281,17 +283,16 @@ const changeNamespace = async (val) => {
 };
 
 const getNamespaceList = async () => {
-  try {
-    const result = await proxy.$http({
-      method: 'get',
-      url: '/proxy/pixiu/' + data.cloud.cluster + '/api/v1/namespaces',
-    });
+  const [err, result] = await getNamespaces(data.cluster);
+  if (err) {
+    return;
+  }
 
-    for (let item of result.items) {
-      data.namespaces.push(item.metadata.name);
-    }
-    data.createSecretUrl = `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/secrets`;
-  } catch (error) {}
+  for (let item of result.items) {
+    data.namespaces.push(item.metadata.name);
+  }
+
+  data.createSecretUrl = `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/secrets`;
 };
 
 const formatterTime = (row, column, cellValue) => {
@@ -299,9 +300,14 @@ const formatterTime = (row, column, cellValue) => {
   return <div>{time}</div>;
 };
 
-const handleEditSecretYamlDialog = (row) => {
-  data.yaml = jsYaml.dump(row);
+const handleEditSecretYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
+  const [result, err] = await getSecret(data.cluster, data.namespace, data.yamlName);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  data.yaml = jsYaml.dump(result);
   data.secretYamlDialog = true;
 };
 
@@ -311,21 +317,14 @@ const closeSecretYamlDialog = () => {
 };
 
 const confirmEditConfigmapYaml = async () => {
-  let yaml = jsYaml.load(editYaml.value.code);
-  try {
-    const resp = await proxy.$http({
-      method: 'put',
-      url:
-        `/proxy/pixiu/${data.cloud.cluster}/api/v1/namespaces/` +
-        data.configmapForm.metadata.namespace +
-        `/secrets/` +
-        data.yamlName,
-      data: yaml,
-    });
-  } catch (error) {}
-  data.secretYamlDialog = false;
-  data.yaml = '';
-  proxy.$message.success(`secret ${data.yamlName} 更新成功`);
+  let yamlData = jsYaml.load(editYaml.value.code);
+  const [result, err] = await updateSecret(data.cluster, data.namespace, data.yamlName, yamlData);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  closeSecretYamlDialog();
+  proxy.$message.success(`Secret(${data.yamlName}) YAML 更新成功`);
 };
 </script>
 
