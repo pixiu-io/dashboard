@@ -160,6 +160,7 @@ import { formatTimestamp } from '@/utils/utils';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
+import { updateConfigMap, getConfigMap } from '@/services/kubernetes/configmapService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -296,34 +297,39 @@ const formatterTime = (row, column, cellValue) => {
   return <div>{time}</div>;
 };
 
-const handleEditConfigmapYamlDialog = (row) => {
-  data.yaml = jsYaml.dump(row);
+const handleEditConfigmapYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
+  const [result, err] = await getConfigMap(data.cluster, data.namespace, data.yamlName);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+
+  data.yaml = jsYaml.dump(result);
   data.editConfigmapYamlDialog = true;
 };
 
 const closeEditConfigmapYamlDialog = () => {
   data.editConfigmapYamlDialog = false;
   data.yaml = '';
+  data.yamlName = '';
 };
 
 const confirmEditConfigmapYaml = async () => {
-  let yamlValue = jsYaml.load(editYaml.value.code);
-  try {
-    const res = await proxy.$http({
-      method: 'put',
-      url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/configmaps/${data.yamlName}`,
-      data: yamlValue,
-    });
-  } catch (error) {
-    proxy.$message.success(`configmap ${data.yamlName} 更新失败`);
+  const yamlData = jsYaml.load(editYaml.value.code);
+  const [result, err] = await updateConfigMap(
+    data.cluster,
+    data.namespace,
+    data.yamlName,
+    yamlData,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
   }
-  data.editConfigmapYamlDialog = false;
-  data.yaml = '';
-  data.yamlName = '';
-  proxy.$message.success(`configmap ${data.yamlName} 更新成功`);
-
-  getConfigMaps();
+  proxy.$message.success(`Configmap(${data.yamlName}) YAML 更新成功`);
+  closeEditConfigmapYamlDialog();
+  await getConfigMaps();
 };
 </script>
 
