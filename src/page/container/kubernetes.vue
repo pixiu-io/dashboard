@@ -18,7 +18,7 @@
           font-weight: bold;
         "
       >
-        <el-tooltip effect="light" placement="top" content="{{data.aliasName}}">
+        <el-tooltip effect="light" placement="bottom" content="data.aliasName">
           <div class="pixiu-ellipsis-style" style="font-size: 14px">{{ data.aliasName }}</div>
         </el-tooltip>
       </div>
