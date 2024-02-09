@@ -359,7 +359,15 @@
     @close="cloudStore.cancelDeleteCloud"
   >
     <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px; font-size: 14.5px">
+      <div
+        style="
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+          margin-top: 5px;
+          font-size: 14.5px;
+        "
+      >
         删除集群
       </div>
     </template>
