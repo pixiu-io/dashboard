@@ -373,7 +373,8 @@
       </div>
     </template>
     <div style="margin-top: -6px; font-weight: bold; font-size: 13.5px; color: #000">
-      此操作将永久删除集群 ({{ cloudStore.preDeleteCloudName }}) 是否继续？
+      此操作将永久删除集群 (<span style="color: red">{{ cloudStore.preDeleteCloudName }}</span
+      >) 是否继续？
     </div>
 
     <template #footer>
