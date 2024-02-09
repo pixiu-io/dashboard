@@ -378,16 +378,12 @@
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button
-          class="pixiu-small-cancel-button"
-          style="height: 34px"
-          @click="cloudStore.cancelDeleteCloud"
+        <el-button class="pixiu-delete-cancel-button" @click="cloudStore.cancelDeleteCloud"
           >取消</el-button
         >
         <el-button
           type="primary"
-          class="pixiu-small-confirm-button"
-          style="height: 34px"
+          class="pixiu-delete-confirm-button"
           @click="cloudStore.confirmDeleteCloud"
           >确认</el-button
         >
