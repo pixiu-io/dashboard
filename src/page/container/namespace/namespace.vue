@@ -103,12 +103,11 @@
           <div class="table-inline-word">命名空间的列表为空</div>
         </template>
       </el-table>
-
       <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
 
-  <pixiuDialog> :closeEvent="data.closeEvent"</pixiuDialog>
+  <pixiuDialog :closeEvent="data.closeEvent"></pixiuDialog>
 </template>
 
 <script setup lang="jsx">
