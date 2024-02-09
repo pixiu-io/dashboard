@@ -115,6 +115,28 @@
   cursor: pointer;
 }
 
+/* 小号确认按钮 */
+.pixiu-delete-confirm-button {
+  height: 34px;
+  width: 80px;
+  border-radius: 0%;
+  color: white;
+  border: none;
+  background-color: #006eff;
+  cursor: pointer;
+}
+
+/* 小号取消按钮 */
+.pixiu-delete-cancel-button {
+  height: 34px;
+  width: 80px;
+  border-radius: 0%;
+  border: 1px solid #cfd5de;
+  color: #006eff;
+  background-color: white;
+  cursor: pointer;
+}
+
 /* 通用注释说明样式 */
 .app-pixiu-describe {
   margin-left: 120px;
