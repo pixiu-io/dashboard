@@ -124,7 +124,7 @@
             :prop="'containers[' + index + '].image'"
             :rules="[{ required: true, message: '镜像不能为空', trigger: 'blur' }]"
             >镜像
-            <el-input v-model="item.image" style="margin-left: 56px" class="deploy-pixiu-incard" />
+            <el-input v-model="item.image" style="margin-left: 58px" class="deploy-pixiu-incard" />
           </el-form-item>
 
           <el-col style="margin-top: 10px" class="deploy-pixiu-column"
