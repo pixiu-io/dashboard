@@ -160,6 +160,7 @@ import useClipboard from 'vue-clipboard3';
 import jsYaml from 'js-yaml';
 import { formatTimestamp } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
+import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 
@@ -192,7 +193,7 @@ onMounted(() => {
   data.cloud = proxy.$route.query;
   data.path = proxy.$route.fullPath;
 
-  getNamespaceList();
+  getNamespaces();
   getSecrets();
 });
 
@@ -280,18 +281,15 @@ const changeNamespace = async (val) => {
   getSecrets();
 };
 
-const getNamespaceList = async () => {
-  try {
-    const result = await proxy.$http({
-      method: 'get',
-      url: '/proxy/pixiu/' + data.cloud.cluster + '/api/v1/namespaces',
-    });
+const getNamespaces = async () => {
+  const [result, err] = await getNamespaceNames(data.cluster);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  data.namespaces = result;
 
-    for (let item of result.items) {
-      data.namespaces.push(item.metadata.name);
-    }
-    data.createSecretUrl = `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/secrets`;
-  } catch (error) {}
+  data.createSecretUrl = `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/secrets`;
 };
 
 const formatterTime = (row, column, cellValue) => {

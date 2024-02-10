@@ -160,7 +160,7 @@ import { formatTimestamp } from '@/utils/utils';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
-import { getNamespaceList } from '@/services/kubernetes/namespaceService';
+import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -280,15 +280,12 @@ const changeNamespace = async (val) => {
 };
 
 const getNamespaces = async () => {
-  const [err, result] = await getNamespaceList(data.cluster);
+  const [result, err] = await getNamespaceNames(data.cluster);
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
-
-  for (let item of result.items) {
-    data.namespaces.push(item.metadata.name);
-  }
+  data.namespaces = result;
 };
 
 const formatterTime = (row, column, cellValue) => {

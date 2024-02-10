@@ -134,6 +134,7 @@ import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { formatTimestamp } from '@/utils/utils';
 import Pagination from '@/components/pagination/index.vue';
+import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 
 const { toClipboard } = useClipboard();
 const { proxy } = getCurrentInstance();
@@ -181,7 +182,7 @@ onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
 
   getPods();
-  getNamespaceList();
+  getNamespaces();
 });
 
 const jumpRoute = (row) => {
@@ -215,17 +216,13 @@ const changeNamespace = async (val) => {
   getPods();
 };
 
-const getNamespaceList = async () => {
-  try {
-    const result = await proxy.$http({
-      method: 'get',
-      url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces`,
-    });
-
-    for (let item of result.items) {
-      data.namespaces.push(item.metadata.name);
-    }
-  } catch (error) {}
+const getNamespaces = async () => {
+  const [result, err] = await getNamespaceNames(data.cluster);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  data.namespaces = result;
 };
 
 const deletePod = (row) => {

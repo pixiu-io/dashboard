@@ -143,7 +143,7 @@ import { formatTimestamp } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import jsYaml from 'js-yaml';
-import { getNamespaces } from '@/services/cloudService';
+import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import { getIngressList, updateIngress, getIngress } from '@/services/kubernetes/ingressService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
@@ -218,14 +218,12 @@ const changeNamespace = async (val) => {
 };
 
 const getNamespaceList = async () => {
-  const [err, result] = await getNamespaces(data.cluster);
+  const [result, err] = await getNamespaceNames(data.cluster);
   if (err) {
+    proxy.$message.error(err.response.data.message);
     return;
   }
-
-  for (let item of result.items) {
-    data.namespaces.push(item.metadata.name);
-  }
+  data.namespaces = result;
 };
 
 const deleteIngress = (row) => {
