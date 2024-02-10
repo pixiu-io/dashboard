@@ -213,7 +213,9 @@ const confirm = async () => {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  proxy.$message.success(`Pod(${data.deleteDialog.deleteName}) 删除成功`);
+  proxy.$message.success(
+    `${data.deleteDialog.objectName}(${data.deleteDialog.deleteName}) 删除成功`,
+  );
 
   clean();
   await getPods();

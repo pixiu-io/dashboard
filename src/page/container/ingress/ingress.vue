@@ -89,7 +89,7 @@
               type="text"
               size="small"
               style="margin-right: -25px; margin-left: 8px; color: #006eff"
-              @click="deleteIngress(scope.row)"
+              @click="handleDeleteDialog(scope.row)"
             >
               删除
             </el-button>
@@ -135,6 +135,14 @@
       </span>
     </template>
   </el-dialog>
+
+  <pixiuDialog
+    :closeEvent="data.deleteDialog.close"
+    :objectName="data.deleteDialog.objectName"
+    :deleteName="data.deleteDialog.deleteName"
+    @confirm="confirm"
+    @cancel="cancel"
+  ></pixiuDialog>
 </template>
 
 <script setup lang="jsx">
@@ -144,10 +152,16 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import jsYaml from 'js-yaml';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
-import { getIngressList, updateIngress, getIngress } from '@/services/kubernetes/ingressService';
+import {
+  getIngressList,
+  updateIngress,
+  getIngress,
+  deleteIngress,
+} from '@/services/kubernetes/ingressService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
+import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -171,6 +185,13 @@ const data = reactive({
   yaml: '',
   yamlName: '',
   editYamlDialog: false,
+
+  // 删除对象属性
+  deleteDialog: {
+    close: false,
+    objectName: 'Ingress',
+    deleteName: '',
+  },
 });
 
 onMounted(() => {
@@ -179,6 +200,38 @@ onMounted(() => {
   getIngresses();
   getNamespaceList();
 });
+
+const handleDeleteDialog = (row) => {
+  data.deleteDialog.close = true;
+  data.deleteDialog.deleteName = row.metadata.name;
+};
+
+const confirm = async () => {
+  const [result, err] = await deleteIngress(
+    data.cluster,
+    data.namespace,
+    data.deleteDialog.deleteName,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(
+    `${data.deleteDialog.objectName}(${data.deleteDialog.deleteName}) 删除成功`,
+  );
+
+  clean();
+  await getIngresses();
+};
+
+const cancel = () => {
+  clean();
+};
+
+const clean = () => {
+  data.deleteDialog.close = false;
+  data.deleteDialog.deleteName = '';
+};
 
 const onChange = (v) => {
   data.pageInfo.limit = 10;
@@ -224,28 +277,6 @@ const getNamespaceList = async () => {
     return;
   }
   data.namespaces = result;
-};
-
-const deleteIngress = (row) => {
-  ElMessageBox.confirm('此操作将永久删除 Ingress(' + row.metadata.name + ') 是否继续?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-    draggable: true,
-  })
-    .then(async () => {
-      await proxy.$http({
-        method: 'delete',
-        url: `/proxy/pixiu/${data.cluster}/apis/networking.k8s.io/v1/namespaces/${data.namespace}/ingresses/${row.metadata.name}`,
-      });
-      ElMessage({
-        type: 'success',
-        message: '删除 ' + row.metadata.name + ' 成功',
-      });
-
-      await getIngresses();
-    })
-    .catch(() => {}); // 取消
 };
 
 const handleEditYamlDialog = async (row) => {
