@@ -6,7 +6,20 @@ export const getNamespaceList = async (cluster) => {
     http({
       method: 'get',
       url: `/proxy/pixiu/${cluster}/api/v1/namespaces`,
+      data: {
+        limit: 500,
+      },
     }),
   );
-  return [err, result];
+  return [result, err];
+};
+
+export const deleteNamespace = async (cluster, name) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'delete',
+      url: `/proxy/pixiu/${cluster}/api/v1/namespaces/${name}`,
+    }),
+  );
+  return [result, err];
 };
