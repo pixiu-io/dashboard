@@ -1,6 +1,6 @@
 <template>
   <el-card class="title-card-container">
-    <div class="font-container">
+    <div class="font-container" style="display: flex">
       <pixiu-icon
         name="icon-back"
         style="cursor: pointer"
@@ -41,17 +41,18 @@
         </div>
       </el-form-item>
 
-      <el-form-item label="命名空间" style="width: 300px">
-        <div class="namespace-select-container" style="display: flex">
+      <el-form-item label="命名空间" style="width: 300px; margin-top: -4px">
+        <div class="namespace-select-container">
           <el-select v-model="data.form.metadata.namespace" @change="changeNamespace">
             <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
           </el-select>
         </div>
       </el-form-item>
 
-      <el-form-item label="Labels" style="margin-top: 20px">
+      <el-form-item label="Labels" style="margin-top: 10px">
         <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button>
       </el-form-item>
+      <div style="margin-top: -15px"></div>
       <el-form-item
         v-for="(item, index) in data.form.labels"
         :key="index"
@@ -101,6 +102,7 @@ import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 
 const ruleFormRef = ref();
+
 const { proxy } = getCurrentInstance();
 
 const data = reactive({
