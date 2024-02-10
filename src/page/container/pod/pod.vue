@@ -123,6 +123,14 @@
       <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
+
+  <pixiuDialog
+    :closeEvent="data.deleteDialog.close"
+    :objectName="data.deleteDialog.objectName"
+    :deleteName="data.deleteDialog.deleteName"
+    @confirm="confirm"
+    @cancel="cancel"
+  ></pixiuDialog>
 </template>
 
 <script setup lang="jsx">
@@ -135,6 +143,7 @@ import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { formatTimestamp } from '@/utils/utils';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
+import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { toClipboard } = useClipboard();
 const { proxy } = getCurrentInstance();
@@ -164,6 +173,13 @@ const data = reactive({
     origin: '',
     target: 0,
   },
+
+  // 删除对象属性
+  deleteDialog: {
+    close: false,
+    objectName: 'Pod',
+    deleteName: '',
+  },
 });
 
 const onChange = (v) => {
@@ -184,6 +200,32 @@ onMounted(() => {
   getPods();
   getNamespaces();
 });
+
+const handleDeleteDialog = (row) => {
+  data.deleteDialog.close = true;
+  data.deleteDialog.deleteName = row.metadata.name;
+};
+
+const confirm = async () => {
+  const [result, err] = await deleteNamespace(data.cluster, data.deleteDialog.deleteName);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(`Namespace(${data.deleteDialog.deleteName}) 删除成功`);
+
+  clean();
+  await getPods();
+};
+
+const cancel = () => {
+  clean();
+};
+
+const clean = () => {
+  data.deleteDialog.close = false;
+  data.deleteDialog.deleteName = '';
+};
 
 const jumpRoute = (row) => {
   router.push({
