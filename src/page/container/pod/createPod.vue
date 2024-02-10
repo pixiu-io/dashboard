@@ -88,6 +88,49 @@
         标签键值以字母、数字开头和结尾, 且只能包含字母、数字及分隔符。
       </div>
 
+      <el-form-item label="容器配置" style="margin-top: 10px">
+        <el-button type="text" class="app-action-btn" @click="addContainer">增加容器</el-button>
+      </el-form-item>
+      <div style="margin-top: -15px"></div>
+      <el-form-item
+        v-for="(item, index) in data.form.containers"
+        :key="index"
+        style="margin-top: -25px"
+      >
+        <el-card
+          style="
+            width: 90%;
+            height: 185px;
+            background-color: #f2f2f2;
+            margin-top: 20px;
+            border-radius: 0px;
+          "
+        >
+          <div style="float: right; cursor: pointer" @click="deleteContainer(index)">
+            <el-icon><Delete /></el-icon>
+          </div>
+          <el-col class="deploy-pixiu-column"
+            >容器名称
+            <el-input v-model="item.name" class="deploy-pixiu-incard" style="margin-left: 30px" />
+          </el-col>
+
+          <el-col style="margin-top: 10px" class="deploy-pixiu-column"
+            >镜像
+            <el-input v-model="item.image" style="margin-left: 56px" class="deploy-pixiu-incard" />
+          </el-col>
+
+          <el-col style="margin-top: 10px" class="deploy-pixiu-column"
+            >拉取策略
+            <el-radio-group v-model="item.imagePullPolicy" style="margin-left: 30px">
+              <el-radio label="IfNotPresent" border>IfNotPresent</el-radio>
+              <el-radio label="Always" border>Always</el-radio>
+              <el-radio label="Never" border>Never</el-radio>
+            </el-radio-group>
+            <div class="container-line-describe">设置镜像拉取策略，默认使用 IfNotPresent 策略</div>
+          </el-col>
+        </el-card>
+      </el-form-item>
+
       <div style="margin-top: 30px" />
       <el-form-item style="margin-left: 30%">
         <el-button class="pixiu-cancel-button" @click="cancel()">取消</el-button>
@@ -122,6 +165,7 @@ const data = reactive({
     },
     spec: {},
     labels: [],
+    containers: [],
   },
   // 创建或者更新 form
   objectForm: {
@@ -185,6 +229,18 @@ const addLabel = () => {
 
 const deleteLabel = (index) => {
   data.form.labels.splice(index, 1);
+};
+
+const addContainer = () => {
+  data.form.containers.push({
+    name: '',
+    image: '',
+    imagePullPolicy: 'IfNotPresent',
+  });
+};
+
+const deleteContainer = (index) => {
+  data.form.containers.splice(index, 1);
 };
 
 const backToPod = () => {
