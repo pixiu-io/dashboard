@@ -191,7 +191,14 @@ const routes = [
             },
             component: PodDetail,
           },
-
+          {
+            path: 'pods/createPod',
+            name: 'CreatePod',
+            meta: {
+              title: 'CreatePod',
+            },
+            component: CreatePod,
+          },
           {
             path: 'deployments/createDeployment',
             name: 'CreateDeployment',
@@ -370,14 +377,6 @@ const routes = [
             component: EditStorageClass,
           },
         ],
-      },
-      {
-        path: 'pods/createPod',
-        name: 'CreatePod',
-        meta: {
-          title: 'CreatePod',
-        },
-        component: CreatePod,
       },
       {
         path: 'cicd',
