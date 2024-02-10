@@ -120,7 +120,8 @@
 import { useRouter } from 'vue-router';
 import { formatTimestamp } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
-import { getNamespaces } from '@/services/cloudService';
+import { getNamespaceList, deleteNamespace } from '@/services/kubernetes/namespaceService';
+
 import useClipboard from 'vue-clipboard3';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
@@ -140,13 +141,14 @@ const data = reactive({
   },
 
   loading: false,
+  namespaceList: [],
 
+  // 删除对象属性
   deleteDialog: {
     close: false,
     objectName: '命名空间',
+    deleteName: '',
   },
-
-  namespaceList: [],
 });
 
 onMounted(() => {
@@ -160,12 +162,23 @@ const handleDeleteDialog = (row) => {
   data.deleteDialog.deleteName = row.metadata.name;
 };
 
-const confirm = () => {
-  console.log('confirm');
+const confirm = async () => {
+  const [result, err] = await deleteNamespace(data.cluster, data.deleteDialog.deleteName);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(`Namespace(${data.deleteDialog.deleteName}) 删除成功`);
+
+  clean();
+  getNamespace();
 };
 
 const cancel = () => {
-  console.log('cancel');
+  clean();
+};
+
+const clean = () => {
   data.deleteDialog.close = false;
   data.deleteDialog.deleteName = '';
 };
@@ -200,7 +213,7 @@ const createNamespace = () => {
 
 const getNamespace = async () => {
   data.loading = true;
-  const [err, result] = await getNamespaces(data.cluster);
+  const [result, err] = await getNamespaceList(data.cluster);
   if (err) {
     return;
   }
@@ -218,28 +231,6 @@ const jumpNamespaceRoute = (row) => {
       name: row.metadata.name,
     },
   });
-};
-
-const deleteNamespace = (row) => {
-  ElMessageBox.confirm('此操作将永久删除 ' + row.metadata.name + ' 命名空间. 是否继续?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-    draggable: true,
-  })
-    .then(async () => {
-      const res = await proxy.$http({
-        method: 'delete',
-        url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${row.metadata.name}`,
-      });
-      ElMessage({
-        type: 'success',
-        message: '删除 ' + row.metadata.name + ' 成功',
-      });
-
-      getNamespace();
-    })
-    .catch(() => {}); // 取消
 };
 
 const formatterTime = (row, column, cellValue) => {
