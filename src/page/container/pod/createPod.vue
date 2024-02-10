@@ -21,6 +21,39 @@
       </el-breadcrumb>
     </div>
   </el-card>
+
+  <el-card class="create-card-style">
+    <el-form
+      ref="ruleFormRef"
+      label-position="left"
+      require-asterisk-position="right"
+      label-width="100px"
+      :rules="rules"
+      status-icon
+      :model="data.form"
+      style="margin-left: 3%; width: 70%"
+    >
+      <div style="margin-top: 20px" />
+      <el-form-item label="名称" prop="metadata.name" style="width: 500px">
+        <el-input v-model="data.form.metadata.name" />
+        <div class="app-pixiu-line-describe2">
+          最长63个字符，只能包含小写字母、数字及分隔符("-")
+        </div>
+      </el-form-item>
+
+      <el-form-item label="命名空间" style="width: 300px">
+        <div class="namespace-select-container">
+          <el-select v-model="data.form.metadata.namespace" @change="changeNamespace">
+            <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
+          </el-select>
+        </div>
+      </el-form-item>
+
+      <el-form-item label="Labels" style="margin-top: 20px">
+        <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button>
+      </el-form-item>
+    </el-form>
+  </el-card>
 </template>
 
 <script setup>
@@ -66,10 +99,6 @@ watch(
   (newActive, oldActive) => {},
 );
 
-const cancel = () => {
-  backToService();
-};
-
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
   data.form.metadata.namespace = val;
@@ -82,6 +111,17 @@ const getNamespaces = async () => {
     return;
   }
   data.namespaces = result;
+};
+
+const confirm = async () => {
+  ruleFormRef.value.validate(async (valid) => {
+    if (valid) {
+    }
+  });
+};
+
+const cancel = () => {
+  backToPod();
 };
 
 const backToPod = () => {
