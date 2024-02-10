@@ -112,6 +112,8 @@
     :dialogTitle="data.deleteDialog.title"
     :objectName="data.deleteDialog.objectName"
     :deleteName="data.deleteDialog.deleteName"
+    :confirm="confirm"
+    :cancel="cancel"
   ></pixiuDialog>
 </template>
 
@@ -155,6 +157,14 @@ onMounted(() => {
 
   getNamespace();
 });
+
+const confirm = () => {
+  console.log('confirm');
+};
+
+const cancel = () => {
+  console.log('cancel');
+};
 
 const onChange = (v) => {
   data.pageInfo.limit = 10;

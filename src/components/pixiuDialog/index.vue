@@ -27,8 +27,8 @@
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button class="pixiu-delete-cancel-button" @click="onChange">取消</el-button>
-        <el-button type="primary" class="pixiu-delete-confirm-button" @click="onChange"
+        <el-button class="pixiu-delete-cancel-button" @click="cancel">取消</el-button>
+        <el-button type="primary" class="pixiu-delete-confirm-button" @click="confirm"
           >确认</el-button
         >
       </span>
@@ -46,10 +46,16 @@ defineProps({
   deleteName: { type: String, default: '' },
 });
 
-const emit = defineEmits(['onChange']);
+const emit = defineEmits(['confirm']);
 
-const onChange = () => {
-  emit('onChange', page);
+const confirm = () => {
+  console.log('里面 confirm');
+  emit();
+};
+
+const cancel = () => {
+  console.log('里面 cancel');
+  emit();
 };
 </script>
 
