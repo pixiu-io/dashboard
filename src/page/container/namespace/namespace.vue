@@ -112,8 +112,8 @@
     :dialogTitle="data.deleteDialog.title"
     :objectName="data.deleteDialog.objectName"
     :deleteName="data.deleteDialog.deleteName"
-    :confirm="confirm"
-    :cancel="cancel"
+    @confirm="confirm"
+    @cancel="cancel"
   ></pixiuDialog>
 </template>
 
