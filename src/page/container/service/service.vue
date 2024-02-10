@@ -243,11 +243,11 @@ const changeNamespace = async (val) => {
 };
 
 const getNamespaces = async () => {
-  const [err, result] = await getNamespaceList(data.cluster);
+  const [result, err] = await getNamespaceList(data.cluster);
   if (err) {
+    proxy.$message.error(err.response.data.message);
     return;
   }
-
   for (let item of result.items) {
     data.namespaces.push(item.metadata.name);
   }

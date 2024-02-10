@@ -121,7 +121,6 @@ import { useRouter } from 'vue-router';
 import { formatTimestamp } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { getNamespaceList, deleteNamespace } from '@/services/kubernetes/namespaceService';
-
 import useClipboard from 'vue-clipboard3';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
@@ -215,6 +214,7 @@ const getNamespace = async () => {
   data.loading = true;
   const [result, err] = await getNamespaceList(data.cluster);
   if (err) {
+    proxy.$message.error(err.response.data.message);
     return;
   }
   data.loading = false;
