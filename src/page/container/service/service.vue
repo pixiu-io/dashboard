@@ -137,7 +137,7 @@ import { formatTimestamp } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import jsYaml from 'js-yaml';
-import { getNamespaces } from '@/services/cloudService';
+import { getNamespaceList } from '@/services/kubernetes/namespaceService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import { updateService, getService } from '@/services/kubernetes/serviceService';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
@@ -171,7 +171,7 @@ onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
 
   getServices();
-  getNamespaceList();
+  getNamespaces();
 });
 
 const onChange = (v) => {
@@ -242,8 +242,8 @@ const changeNamespace = async (val) => {
   getServices();
 };
 
-const getNamespaceList = async () => {
-  const [err, result] = await getNamespaces(data.cluster);
+const getNamespaces = async () => {
+  const [err, result] = await getNamespaceList(data.cluster);
   if (err) {
     return;
   }
