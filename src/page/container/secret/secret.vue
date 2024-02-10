@@ -160,7 +160,6 @@ import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
-import { getNamespaces } from '@/services/cloudService';
 import { updateSecret, getSecret } from '@/services/kubernetes/secretService';
 
 const { proxy } = getCurrentInstance();
