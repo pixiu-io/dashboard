@@ -109,7 +109,7 @@
               type="text"
               size="small"
               style="margin-right: 1px; margin-left: -2px; color: #006eff"
-              @click="deleteSecret(scope.row)"
+              @click="handleDeleteDialog(scope.row)"
             >
               删除
             </el-button>
@@ -147,6 +147,14 @@
       </span>
     </template>
   </el-dialog>
+
+  <pixiuDialog
+    :closeEvent="data.deleteDialog.close"
+    :objectName="data.deleteDialog.objectName"
+    :deleteName="data.deleteDialog.deleteName"
+    @confirm="confirm"
+    @cancel="cancel"
+  ></pixiuDialog>
 </template>
 
 <script setup lang="jsx">
@@ -160,7 +168,8 @@ import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
-import { updateSecret, getSecret } from '@/services/kubernetes/secretService';
+import { updateSecret, getSecret, deleteSecret } from '@/services/kubernetes/secretService';
+import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -183,6 +192,13 @@ const data = reactive({
   isShow: false,
   showTooltip: false, // 控制提示信息的显示状态，默认为隐藏
   showIcon: false, // 控制图标的显示状态，默认为隐藏
+
+  // 删除对象属性
+  deleteDialog: {
+    close: false,
+    objectName: 'Secret',
+    deleteName: '',
+  },
 });
 
 onMounted(() => {
@@ -193,6 +209,38 @@ onMounted(() => {
   getNamespaces();
   getSecrets();
 });
+
+const handleDeleteDialog = (row) => {
+  data.deleteDialog.close = true;
+  data.deleteDialog.deleteName = row.metadata.name;
+};
+
+const confirm = async () => {
+  const [result, err] = await deleteSecret(
+    data.cluster,
+    data.namespace,
+    data.deleteDialog.deleteName,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(
+    `${data.deleteDialog.objectName}(${data.deleteDialog.deleteName}) 删除成功`,
+  );
+
+  clean();
+  await getSecrets();
+};
+
+const cancel = () => {
+  clean();
+};
+
+const clean = () => {
+  data.deleteDialog.close = false;
+  data.deleteDialog.deleteName = '';
+};
 
 const onChange = (v) => {
   data.pageInfo.limit = 10;
@@ -209,27 +257,6 @@ const createSecret = () => {
 const editSecret = (row) => {
   const url = `/kubernetes/secrets/editSecret?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
   router.push(url);
-};
-
-const deleteSecret = (row) => {
-  ElMessageBox.confirm('此操作将永久删除 Secret ' + row.metadata.name + ' . 是否继续?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-    draggable: true,
-  })
-    .then(() => {
-      const res = proxy.$http({
-        method: 'delete',
-        url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/secrets/${row.metadata.name}`,
-      });
-      ElMessage({
-        type: 'success',
-        message: '删除 ' + row.metadata.name + ' 成功',
-      });
-      getSecrets();
-    })
-    .catch(() => {}); // 取消
 };
 
 const jumpRoute = (row) => {
