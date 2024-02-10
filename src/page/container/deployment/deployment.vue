@@ -126,7 +126,7 @@
                 <el-dropdown-menu class="dropdown-buttons">
                   <el-dropdown-item
                     class="dropdown-item-buttons"
-                    @click="deleteDeployment(scope.row)"
+                    @click="handleDeleteDialog(scope.row)"
                   >
                     删除
                   </el-dropdown-item>
@@ -207,6 +207,14 @@
       </span>
     </template>
   </el-dialog>
+
+  <pixiuDialog
+    :closeEvent="data.deleteDialog.close"
+    :objectName="data.deleteDialog.objectName"
+    :deleteName="data.deleteDialog.deleteName"
+    @confirm="confirm"
+    @cancel="cancel"
+  ></pixiuDialog>
 </template>
 
 <script setup lang="jsx">
@@ -217,9 +225,14 @@ import jsYaml from 'js-yaml';
 import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
-import { getDeployment, updateDeployment } from '@/services/kubernetes/deploymentService';
+import {
+  getDeployment,
+  updateDeployment,
+  deleteDeployment,
+} from '@/services/kubernetes/deploymentService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
+import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -250,6 +263,13 @@ const data = reactive({
   yaml: '',
   yamlName: '',
   editYamlDialog: false,
+
+  // 删除对象属性
+  deleteDialog: {
+    close: false,
+    objectName: 'Deployment',
+    deleteName: '',
+  },
 });
 
 onMounted(() => {
@@ -258,6 +278,36 @@ onMounted(() => {
   getDeployments();
   getNamespaces();
 });
+
+const handleDeleteDialog = (row) => {
+  data.deleteDialog.close = true;
+  data.deleteDialog.deleteName = row.metadata.name;
+};
+
+const confirm = async () => {
+  const [result, err] = await deleteDeployment(
+    data.cluster,
+    data.namespace,
+    data.deleteDialog.deleteName,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(`Deployment(${data.deleteDialog.deleteName}) 删除成功`);
+
+  clean();
+  await getDeployments();
+};
+
+const cancel = () => {
+  clean();
+};
+
+const clean = () => {
+  data.deleteDialog.close = false;
+  data.deleteDialog.deleteName = '';
+};
 
 const onChange = (v) => {
   data.pageInfo.limit = 10;
@@ -348,28 +398,6 @@ const getNamespaces = async () => {
     return;
   }
   data.namespaces = result;
-};
-
-const deleteDeployment = (row) => {
-  ElMessageBox.confirm('此操作将永久删除 ' + row.metadata.name + ' Deployment. 是否继续?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-    draggable: true,
-  })
-    .then(async () => {
-      await proxy.$http({
-        method: 'delete',
-        url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${row.metadata.name}`,
-      });
-      ElMessage({
-        type: 'success',
-        message: '删除 ' + row.metadata.name + ' 成功',
-      });
-
-      await getDeployments();
-    })
-    .catch(() => {}); // 取消
 };
 
 const handleDeploymentScaleDialog = (row) => {
