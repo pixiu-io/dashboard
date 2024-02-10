@@ -151,6 +151,7 @@
 <script setup>
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
+import { createPod } from '@/services/kubernetes/podService';
 
 const ruleFormRef = ref();
 
@@ -171,7 +172,6 @@ const data = reactive({
       name: '',
       namespace: 'default',
     },
-    spec: {},
     labels: [],
     containers: [],
   },
@@ -181,7 +181,9 @@ const data = reactive({
       name: '',
       namespace: 'default',
     },
-    spec: {},
+    spec: {
+      containers: [],
+    },
   },
 });
 
@@ -196,6 +198,7 @@ onMounted(() => {
   data.clusterName = localStorage.getItem(data.cluster);
 
   getNamespaces();
+  addContainer();
 });
 
 watch(
@@ -220,6 +223,23 @@ const getNamespaces = async () => {
 const confirm = async () => {
   ruleFormRef.value.validate(async (valid) => {
     if (valid) {
+      if (data.form.labels.length > 0) {
+        data.objectForm.metadata['labels'] = {};
+        for (let item of data.form.labels) {
+          data.objectForm.metadata['labels'][item.key] = item.value;
+        }
+      }
+      data.objectForm.metadata = data.form.metadata;
+      data.objectForm.spec.containers = data.form.containers;
+
+      const [result, err] = await createPod(data.cluster, data.namespace, data.objectForm);
+      if (err) {
+        proxy.$message.error(err.response.data.message);
+        return;
+      }
+      proxy.$message.success(`Pod ${data.form.metadata.name} 创建成功`);
+
+      backToPod();
     }
   });
 };
@@ -248,6 +268,10 @@ const addContainer = () => {
 };
 
 const deleteContainer = (index) => {
+  if (data.form.containers.length === 1) {
+    proxy.$message.error('至少需要 1 个容器组');
+    return;
+  }
   data.form.containers.splice(index, 1);
 };
 
