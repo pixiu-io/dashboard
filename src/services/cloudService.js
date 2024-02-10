@@ -36,16 +36,3 @@ export const changeCluserAliasName = async (id, resource_version, alias_name) =>
 
   return [err, result];
 };
-
-export const getNamespaces = async (cluster) => {
-  const [err, result] = await awaitWrap(
-    http({
-      method: 'get',
-      url: `/proxy/pixiu/${cluster}/api/v1/namespaces`,
-      data: {
-        limit: 500,
-      },
-    }),
-  );
-  return [err, result];
-};
