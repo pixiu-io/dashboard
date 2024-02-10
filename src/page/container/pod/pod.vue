@@ -99,7 +99,7 @@
               size="small"
               type="text"
               style="margin-right: -25px; margin-left: -10px; color: #006eff"
-              @click="deletePod(scope.row)"
+              @click="handleDeleteDialog(scope.row)"
             >
               销毁重建
             </el-button>
@@ -123,6 +123,14 @@
       <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
+
+  <pixiuDialog
+    :closeEvent="data.deleteDialog.close"
+    :objectName="data.deleteDialog.objectName"
+    :deleteName="data.deleteDialog.deleteName"
+    @confirm="confirm"
+    @cancel="cancel"
+  ></pixiuDialog>
 </template>
 
 <script setup lang="jsx">
@@ -135,6 +143,8 @@ import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { formatTimestamp } from '@/utils/utils';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
+import { deletePod } from '@/services/kubernetes/podService';
+import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { toClipboard } = useClipboard();
 const { proxy } = getCurrentInstance();
@@ -164,6 +174,13 @@ const data = reactive({
     origin: '',
     target: 0,
   },
+
+  // 删除对象属性
+  deleteDialog: {
+    close: false,
+    objectName: 'Pod',
+    deleteName: '',
+  },
 });
 
 const onChange = (v) => {
@@ -184,6 +201,34 @@ onMounted(() => {
   getPods();
   getNamespaces();
 });
+
+const handleDeleteDialog = (row) => {
+  data.deleteDialog.close = true;
+  data.deleteDialog.deleteName = row.metadata.name;
+};
+
+const confirm = async () => {
+  const [result, err] = await deletePod(data.cluster, data.namespace, data.deleteDialog.deleteName);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(
+    `${data.deleteDialog.objectName}(${data.deleteDialog.deleteName}) 删除成功`,
+  );
+
+  clean();
+  await getPods();
+};
+
+const cancel = () => {
+  clean();
+};
+
+const clean = () => {
+  data.deleteDialog.close = false;
+  data.deleteDialog.deleteName = '';
+};
 
 const jumpRoute = (row) => {
   router.push({
@@ -223,28 +268,6 @@ const getNamespaces = async () => {
     return;
   }
   data.namespaces = result;
-};
-
-const deletePod = (row) => {
-  ElMessageBox.confirm('此操作将永久删除 ' + row.metadata.name + ' Pod. 是否继续?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-    draggable: true,
-  })
-    .then(async () => {
-      await proxy.$http({
-        method: 'delete',
-        url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${row.metadata.name}`,
-      });
-      ElMessage({
-        type: 'success',
-        message: '删除 ' + row.metadata.name + ' 成功',
-      });
-
-      await getPods();
-    })
-    .catch(() => {}); // 取消
 };
 
 const copy = async (val) => {

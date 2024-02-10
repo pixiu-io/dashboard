@@ -31,3 +31,13 @@ export const getSecret = async (cluster, namespace, name) => {
   );
   return [result, err];
 };
+
+export const deleteSecret = async (cluster, namespace, name) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'delete',
+      url: `/proxy/pixiu/${cluster}/api/v1/namespaces/${namespace}/secrets/${name}`,
+    }),
+  );
+  return [result, err];
+};

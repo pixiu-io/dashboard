@@ -32,3 +32,13 @@ export const updateStorageClass = async (cluster, name, data) => {
   );
   return [result, err];
 };
+
+export const deleteStorageClass = async (cluster, name) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'delete',
+      url: `/proxy/pixiu/${cluster}/apis/storage.k8s.io/v1/storageclasses/${name}`,
+    }),
+  );
+  return [result, err];
+};

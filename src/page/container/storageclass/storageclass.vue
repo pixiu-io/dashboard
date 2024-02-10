@@ -75,7 +75,7 @@
               type="text"
               size="small"
               style="margin-right: -25px; margin-left: 8px; color: #006eff"
-              @click="deleteStorageClasss(scope.row)"
+              @click="handleDeleteDialog(scope.row)"
             >
               删除
             </el-button>
@@ -122,6 +122,14 @@
       </span>
     </template>
   </el-dialog>
+
+  <pixiuDialog
+    :closeEvent="data.deleteDialog.close"
+    :objectName="data.deleteDialog.objectName"
+    :deleteName="data.deleteDialog.deleteName"
+    @confirm="confirm"
+    @cancel="cancel"
+  ></pixiuDialog>
 </template>
 
 <script setup lang="jsx">
@@ -137,8 +145,10 @@ import {
   getStorageClassList,
   getStorageClass,
   updateStorageClass,
+  deleteStorageClass,
 } from '@/services/kubernetes/storageClassService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
+import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -161,6 +171,13 @@ const data = reactive({
   yaml: '',
   yamlName: '',
   editYamlDialog: false,
+
+  // 删除对象属性
+  deleteDialog: {
+    close: false,
+    objectName: 'StorageClass',
+    deleteName: '',
+  },
 });
 
 const onChange = (v) => {
@@ -175,6 +192,34 @@ onMounted(() => {
 
   syncStorageClasses();
 });
+
+const handleDeleteDialog = (row) => {
+  data.deleteDialog.close = true;
+  data.deleteDialog.deleteName = row.metadata.name;
+};
+
+const confirm = async () => {
+  const [result, err] = await deleteStorageClass(data.cluster, data.deleteDialog.deleteName);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(
+    `${data.deleteDialog.objectName}(${data.deleteDialog.deleteName}) 删除成功`,
+  );
+
+  clean();
+  await syncStorageClasses();
+};
+
+const cancel = () => {
+  clean();
+};
+
+const clean = () => {
+  data.deleteDialog.close = false;
+  data.deleteDialog.deleteName = '';
+};
 
 const syncStorageClasses = async () => {
   data.loading = true;
@@ -197,32 +242,6 @@ const createStorageClass = () => {
 const editStorageClass = (row) => {
   const url = `/kubernetes/storageClasses/editStorageClass?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
   router.push(url);
-};
-
-const deleteStorageClasss = (row) => {
-  ElMessageBox.confirm(
-    '此操作将永久删除 StorageClasss(' + row.metadata.name + ')。 是否继续?',
-    '提示',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-      draggable: true,
-    },
-  )
-    .then(async () => {
-      await proxy.$http({
-        method: 'delete',
-        url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/services/${row.metadata.name}`,
-      });
-      ElMessage({
-        type: 'success',
-        message: '删除 ' + row.metadata.name + ' 成功',
-      });
-
-      await syncStorageClasses();
-    })
-    .catch(() => {}); // 取消
 };
 
 const handleEditYamlDialog = async (row) => {
