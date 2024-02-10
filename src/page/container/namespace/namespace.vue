@@ -146,7 +146,6 @@ const data = reactive({
     close: false,
     title: '删除命名空间',
     objectName: '命名空间',
-    deleteName: 'default',
   },
 
   namespaceList: [],
@@ -218,6 +217,7 @@ const jumpNamespaceRoute = (row) => {
 
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
+  data.deleteDialog.deleteName = row.metadata.name;
 };
 
 const deleteNamespace = (row) => {
