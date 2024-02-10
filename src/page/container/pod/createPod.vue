@@ -3,12 +3,13 @@
     <div class="font-container">
       <el-breadcrumb separator="/">
         <el-breadcrumb-item @click="backToPod"
-          ><span style="color: black; cursor: pointer"> Pod </span>
+          ><span style="color: black; cursor: pointer"> Cluster: {{ data.clusterName }} </span>
         </el-breadcrumb-item>
-        <el-breadcrumb-item style="color: black">{{ data.cluster }}</el-breadcrumb-item>
-        <el-breadcrumb-item>
-          <span style="color: black"> 创建 Pod </span>
+        <el-breadcrumb-item
+          ><span style="color: black"> Namespace: {{ data.namespace }} </span>
         </el-breadcrumb-item>
+        <el-breadcrumb-item><span style="color: black"> Pods </span> </el-breadcrumb-item>
+        <el-breadcrumb-item><span style="color: black"> 创建Pod </span> </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
   </el-card>
@@ -23,7 +24,10 @@ const { proxy } = getCurrentInstance();
 const data = reactive({
   loading: false,
 
-  clutser: '',
+  cluster: '',
+  clusterName: '',
+  namespace: 'default',
+
   namespaces: [],
 
   form: {
@@ -42,9 +46,9 @@ const rules = {
 
 onMounted(() => {
   data.query = proxy.$route.query;
-  data.cluster = data.query.cluster;
 
-  data.path = proxy.$route.fullPath;
+  data.cluster = data.query.cluster;
+  data.clusterName = localStorage.getItem(data.cluster);
 
   getNamespaces();
 });
