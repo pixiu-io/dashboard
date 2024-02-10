@@ -1,9 +1,17 @@
 <template>
   <el-card class="title-card-container">
-    <div class="font-container">
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item @click="backToPod"
-          ><span style="color: black; cursor: pointer"> Cluster: {{ data.clusterName }} </span>
+    <div class="font-container" style="display: flex">
+      <pixiu-icon
+        name="icon-back"
+        style="cursor: pointer"
+        size="16px"
+        type="iconfont"
+        color="#006eff"
+        @click="backToPod"
+      />
+      <el-breadcrumb separator="/" style="margin-left: 10px; margin-top: 1px">
+        <el-breadcrumb-item
+          ><span style="color: black"> Cluster: {{ data.clusterName }} </span>
         </el-breadcrumb-item>
         <el-breadcrumb-item
           ><span style="color: black"> Namespace: {{ data.namespace }} </span>
