@@ -88,7 +88,7 @@
         标签键值以字母、数字开头和结尾, 且只能包含字母、数字及分隔符。
       </div>
 
-      <el-form-item label="容器配置" style="margin-top: 10px">
+      <el-form-item label="容器配置" style="margin-top: 10px; margin-bottom: 10px">
         <el-button type="text" class="app-action-btn" @click="addContainer">增加容器</el-button>
       </el-form-item>
       <div style="margin-top: -15px"></div>
