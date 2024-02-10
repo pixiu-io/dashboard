@@ -110,22 +110,29 @@
             <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
           </div>
 
-          <el-col class="deploy-pixiu-column"
+          <el-form-item
+            class="deploy-pixiu-column"
+            :prop="'containers[' + index + '].name'"
+            :rules="[{ required: true, message: '容器名不能为空', trigger: 'blur' }]"
             >容器名称
             <el-input v-model="item.name" class="deploy-pixiu-incard" style="margin-left: 30px" />
-          </el-col>
+          </el-form-item>
 
-          <el-col style="margin-top: 10px" class="deploy-pixiu-column"
+          <el-form-item
+            style="margin-top: 10px"
+            class="deploy-pixiu-column"
+            :prop="'containers[' + index + '].image'"
+            :rules="[{ required: true, message: '镜像不能为空', trigger: 'blur' }]"
             >镜像
             <el-input v-model="item.image" style="margin-left: 56px" class="deploy-pixiu-incard" />
-          </el-col>
+          </el-form-item>
 
           <el-col style="margin-top: 10px" class="deploy-pixiu-column"
             >拉取策略
             <el-radio-group v-model="item.imagePullPolicy" style="margin-left: 30px">
-              <el-radio label="IfNotPresent" border>IfNotPresent</el-radio>
-              <el-radio label="Always" border>Always</el-radio>
-              <el-radio label="Never" border>Never</el-radio>
+              <el-radio-button label="IfNotPresent">IfNotPresent</el-radio-button>
+              <el-radio-button label="Always">Always</el-radio-button>
+              <el-radio-button label="Never">Never</el-radio-button>
             </el-radio-group>
             <div class="container-line-describe">设置镜像拉取策略，默认使用 IfNotPresent 策略</div>
           </el-col>
