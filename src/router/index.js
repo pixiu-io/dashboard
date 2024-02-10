@@ -43,6 +43,7 @@ import {
   Info,
   Pod,
   PodDetail,
+  CreatePod,
   Namespace,
   CreateNamespace,
   NamespaceDetail,
@@ -189,6 +190,14 @@ const routes = [
               title: 'PodDetail',
             },
             component: PodDetail,
+          },
+          {
+            path: 'pods/createPod',
+            name: 'CreatePod',
+            meta: {
+              title: 'CreatePod',
+            },
+            component: CreatePod,
           },
           {
             path: 'deployments/createDeployment',

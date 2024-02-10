@@ -190,17 +190,17 @@ const onChange = (v) => {
   getPods();
 };
 
-const createPod = () => {
-  const url = `/kubernetes/pod_create?cluster=${data.cluster}&namespace=${data.namespace}`;
-  router.push(url);
-};
-
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
 
   getPods();
   getNamespaces();
 });
+
+const createPod = () => {
+  const url = `/kubernetes/pods/createPod?cluster=${data.cluster}&namespace=${data.namespace}`;
+  router.push(url);
+};
 
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
@@ -339,28 +339,6 @@ const closePodScaleDialog = (row) => {
   data.podRepcliasFrom.name = '';
   data.podRepcliasFrom.origin = '';
   data.podRepcliasFrom.target = 0;
-};
-
-const confirmPodScale = () => {
-  try {
-    const res = proxy.$http({
-      method: 'patch',
-      url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/pods/${data.podRepcliasFrom.name}/scale`,
-      data: {
-        spec: {
-          replicas: Number(data.podRepcliasFrom.target),
-        },
-      },
-      config: {
-        header: {
-          'Content-Type': 'application/merge-patch+json',
-        },
-      },
-    });
-    getPods();
-    getPods();
-    closePodScaleDialog();
-  } catch (error) {}
 };
 
 const formatterLabels = (row, column, cellValue) => {
