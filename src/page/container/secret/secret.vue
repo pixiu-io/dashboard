@@ -100,7 +100,7 @@
               type="text"
               size="small"
               style="margin-right: 1px; color: #006eff"
-              @click="handleEditSecretYamlDialog(scope.row)"
+              @click="handleEditYamlDialog(scope.row)"
             >
               编辑yaml
             </el-button>
@@ -126,11 +126,11 @@
   </div>
 
   <el-dialog
-    :model-value="data.secretYamlDialog"
+    :model-value="data.editYamlDialog"
     style="color: #000000; font: 14px; margin-top: 50px"
     width="800px"
     center
-    @close="closeSecretYamlDialog"
+    @close="closeYamlDialog"
   >
     <template #header>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">编辑yaml</div>
@@ -140,11 +140,8 @@
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button class="pixiu-small-cancel-button" @click="closeSecretYamlDialog">取消</el-button>
-        <el-button
-          type="primary"
-          class="pixiu-small-confirm-button"
-          @click="confirmEditConfigmapYaml"
+        <el-button class="pixiu-small-cancel-button" @click="closeYamlDialog">取消</el-button>
+        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmEditYaml"
           >确认</el-button
         >
       </span>
@@ -162,6 +159,8 @@ import { formatTimestamp } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
+import { getNamespaces } from '@/services/cloudService';
+import { updateSecret, getSecret } from '@/services/kubernetes/secretService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -177,11 +176,10 @@ const data = reactive({
   loading: false,
   yaml: '',
   yamlName: '',
-  createSecretUrl: '',
   namespace: 'default',
   namespaces: [],
   secretList: [],
-  secretYamlDialog: false,
+  editYamlDialog: false,
   isShow: false,
   showTooltip: false, // 控制提示信息的显示状态，默认为隐藏
   showIcon: false, // 控制图标的显示状态，默认为隐藏
@@ -281,17 +279,14 @@ const changeNamespace = async (val) => {
 };
 
 const getNamespaceList = async () => {
-  try {
-    const result = await proxy.$http({
-      method: 'get',
-      url: '/proxy/pixiu/' + data.cloud.cluster + '/api/v1/namespaces',
-    });
+  const [err, result] = await getNamespaces(data.cluster);
+  if (err) {
+    return;
+  }
 
-    for (let item of result.items) {
-      data.namespaces.push(item.metadata.name);
-    }
-    data.createSecretUrl = `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/secrets`;
-  } catch (error) {}
+  for (let item of result.items) {
+    data.namespaces.push(item.metadata.name);
+  }
 };
 
 const formatterTime = (row, column, cellValue) => {
@@ -303,33 +298,32 @@ const formatterTime = (row, column, cellValue) => {
   );
 };
 
-const handleEditSecretYamlDialog = (row) => {
-  data.yaml = jsYaml.dump(row);
+const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
-  data.secretYamlDialog = true;
+  const [result, err] = await getSecret(data.cluster, data.namespace, data.yamlName);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  data.yaml = jsYaml.dump(result);
+  data.editYamlDialog = true;
 };
 
-const closeSecretYamlDialog = () => {
-  data.secretYamlDialog = false;
+const closeYamlDialog = () => {
   data.yaml = '';
+  data.yamlName = '';
+  data.editYamlDialog = false;
 };
 
-const confirmEditConfigmapYaml = async () => {
-  let yaml = jsYaml.load(editYaml.value.code);
-  try {
-    const resp = await proxy.$http({
-      method: 'put',
-      url:
-        `/proxy/pixiu/${data.cloud.cluster}/api/v1/namespaces/` +
-        data.configmapForm.metadata.namespace +
-        `/secrets/` +
-        data.yamlName,
-      data: yaml,
-    });
-  } catch (error) {}
-  data.secretYamlDialog = false;
-  data.yaml = '';
-  proxy.$message.success(`secret ${data.yamlName} 更新成功`);
+const confirmEditYaml = async () => {
+  let yamlData = jsYaml.load(editYaml.value.code);
+  const [result, err] = await updateSecret(data.cluster, data.namespace, data.yamlName, yamlData);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  closeYamlDialog();
+  proxy.$message.success(`Secret(${data.yamlName}) YAML 更新成功`);
 };
 </script>
 
