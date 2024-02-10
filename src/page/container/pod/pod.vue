@@ -198,7 +198,7 @@ onMounted(() => {
 });
 
 const createPod = () => {
-  const url = `/kubernetes/pods/createPod?cluster=${data.cluster}&namespace=${data.namespace}`;
+  const url = `/pods/createPod?cluster=${data.cluster}&namespace=${data.namespace}`;
   router.push(url);
 };
 
