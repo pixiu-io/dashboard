@@ -155,6 +155,7 @@ import { formatTimestamp } from '@/utils/utils';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
+import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import { updateConfigMap, getConfigMap } from '@/services/kubernetes/configmapService';
 
 const { proxy } = getCurrentInstance();
@@ -186,7 +187,7 @@ onMounted(() => {
   data.cloud = proxy.$route.query;
   data.path = proxy.$route.fullPath;
 
-  getNamespaceList();
+  getNamespaces();
   getConfigMaps();
 });
 
@@ -274,17 +275,13 @@ const changeNamespace = async (val) => {
   getConfigMaps();
 };
 
-const getNamespaceList = async () => {
-  try {
-    const result = await proxy.$http({
-      method: 'get',
-      url: '/proxy/pixiu/' + data.cloud.cluster + '/api/v1/namespaces',
-    });
-
-    for (let item of result.items) {
-      data.namespaces.push(item.metadata.name);
-    }
-  } catch (error) {}
+const getNamespaces = async () => {
+  const [result, err] = await getNamespaceNames(data.cluster);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  data.namespaces = result;
 };
 
 const formatterTime = (row, column, cellValue) => {

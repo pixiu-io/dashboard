@@ -157,9 +157,9 @@ import useClipboard from 'vue-clipboard3';
 import jsYaml from 'js-yaml';
 import { formatTimestamp } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
+import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
-import { getNamespaces } from '@/services/cloudService';
 import { updateSecret, getSecret } from '@/services/kubernetes/secretService';
 
 const { proxy } = getCurrentInstance();
@@ -190,7 +190,7 @@ onMounted(() => {
   data.cloud = proxy.$route.query;
   data.path = proxy.$route.fullPath;
 
-  getNamespaceList();
+  getNamespaces();
   getSecrets();
 });
 
@@ -278,15 +278,13 @@ const changeNamespace = async (val) => {
   getSecrets();
 };
 
-const getNamespaceList = async () => {
-  const [err, result] = await getNamespaces(data.cluster);
+const getNamespaces = async () => {
+  const [result, err] = await getNamespaceNames(data.cluster);
   if (err) {
+    proxy.$message.error(err.response.data.message);
     return;
   }
-
-  for (let item of result.items) {
-    data.namespaces.push(item.metadata.name);
-  }
+  data.namespaces = result;
 };
 
 const formatterTime = (row, column, cellValue) => {

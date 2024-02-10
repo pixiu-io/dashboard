@@ -216,6 +216,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import jsYaml from 'js-yaml';
 import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
+import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import { getDeployment, updateDeployment } from '@/services/kubernetes/deploymentService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
@@ -255,7 +256,7 @@ onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
 
   getDeployments();
-  getNamespaceList();
+  getNamespaces();
 });
 
 const onChange = (v) => {
@@ -340,17 +341,13 @@ const changeNamespace = async (val) => {
   getDeployments();
 };
 
-const getNamespaceList = async () => {
-  try {
-    const result = await proxy.$http({
-      method: 'get',
-      url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces`,
-    });
-
-    for (let item of result.items) {
-      data.namespaces.push(item.metadata.name);
-    }
-  } catch (error) {}
+const getNamespaces = async () => {
+  const [result, err] = await getNamespaceNames(data.cluster);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  data.namespaces = result;
 };
 
 const deleteDeployment = (row) => {
