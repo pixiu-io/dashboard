@@ -98,7 +98,7 @@
               type="text"
               size="small"
               style="margin-right: 1px; color: #006eff"
-              @click="handleEditConfigmapYamlDialog(scope.row)"
+              @click="handleEditYamlDialog(scope.row)"
             >
               编辑yaml
             </el-button>
@@ -124,11 +124,11 @@
   </div>
 
   <el-dialog
-    :model-value="data.editConfigmapYamlDialog"
+    :model-value="data.editYamlDialog"
     style="color: #000000; font: 14px; margin-top: 50px"
     width="800px"
     center
-    @close="closeEditConfigmapYamlDialog"
+    @close="closeEditYamlDialog"
   >
     <template #header>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">编辑yaml</div>
@@ -137,13 +137,8 @@
     <MyCodeMirror ref="editYaml" :yaml="data.yaml" :height="620"></MyCodeMirror>
     <template #footer>
       <span class="dialog-footer">
-        <el-button class="pixiu-small-cancel-button" @click="closeEditConfigmapYamlDialog"
-          >取消</el-button
-        >
-        <el-button
-          type="primary"
-          class="pixiu-small-confirm-button"
-          @click="confirmEditConfigmapYaml"
+        <el-button class="pixiu-small-cancel-button" @click="closeEditYamlDialog">取消</el-button>
+        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmEditYaml"
           >确认</el-button
         >
       </span>
@@ -161,6 +156,7 @@ import MyCodeMirror from '@/components/codemirror/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
+import { updateConfigMap, getConfigMap } from '@/services/kubernetes/configmapService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -180,7 +176,7 @@ const data = reactive({
   namespace: 'default',
   namespaces: [],
   configMapsList: [],
-  editConfigmapYamlDialog: false,
+  editYamlDialog: false,
   isShow: false,
   showTooltip: false, // 控制提示信息的显示状态，默认为隐藏
   showIcon: false, // 控制图标的显示状态，默认为隐藏
@@ -297,34 +293,39 @@ const formatterTime = (row, column, cellValue) => {
   );
 };
 
-const handleEditConfigmapYamlDialog = (row) => {
-  data.yaml = jsYaml.dump(row);
+const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
-  data.editConfigmapYamlDialog = true;
-};
-
-const closeEditConfigmapYamlDialog = () => {
-  data.editConfigmapYamlDialog = false;
-  data.yaml = '';
-};
-
-const confirmEditConfigmapYaml = async () => {
-  let yamlValue = jsYaml.load(editYaml.value.code);
-  try {
-    const res = await proxy.$http({
-      method: 'put',
-      url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/configmaps/${data.yamlName}`,
-      data: yamlValue,
-    });
-  } catch (error) {
-    proxy.$message.success(`configmap ${data.yamlName} 更新失败`);
+  const [result, err] = await getConfigMap(data.cluster, data.namespace, data.yamlName);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
   }
-  data.editConfigmapYamlDialog = false;
+
+  data.yaml = jsYaml.dump(result);
+  data.editYamlDialog = true;
+};
+
+const closeEditYamlDialog = () => {
+  data.editYamlDialog = false;
   data.yaml = '';
   data.yamlName = '';
-  proxy.$message.success(`configmap ${data.yamlName} 更新成功`);
+};
 
-  getConfigMaps();
+const confirmEditYaml = async () => {
+  const yamlData = jsYaml.load(editYaml.value.code);
+  const [result, err] = await updateConfigMap(
+    data.cluster,
+    data.namespace,
+    data.yamlName,
+    yamlData,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(`Configmap(${data.yamlName}) YAML 更新成功`);
+  closeEditYamlDialog();
+  await getConfigMaps();
 };
 </script>
 
