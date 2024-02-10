@@ -157,12 +157,19 @@ onMounted(() => {
   getNamespace();
 });
 
+const handleDeleteDialog = (row) => {
+  data.deleteDialog.close = true;
+  data.deleteDialog.deleteName = row.metadata.name;
+};
+
 const confirm = () => {
   console.log('confirm');
 };
 
 const cancel = () => {
   console.log('cancel');
+  data.deleteDialog.close = false;
+  data.deleteDialog.deleteName = '';
 };
 
 const onChange = (v) => {
@@ -213,11 +220,6 @@ const jumpNamespaceRoute = (row) => {
       name: row.metadata.name,
     },
   });
-};
-
-const handleDeleteDialog = (row) => {
-  data.deleteDialog.close = true;
-  data.deleteDialog.deleteName = row.metadata.name;
 };
 
 const deleteNamespace = (row) => {

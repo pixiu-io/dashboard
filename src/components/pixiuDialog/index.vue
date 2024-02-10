@@ -5,6 +5,7 @@
     width="500px"
     align-center
     center
+    @close="cancel"
   >
     <template #header>
       <div
@@ -49,12 +50,10 @@ defineProps({
 const emit = defineEmits(['confirm', 'cancel']);
 
 const confirm = () => {
-  console.log('里面 confirm');
   emit('confirm');
 };
 
 const cancel = () => {
-  console.log('里面 cancel');
   emit('cancel');
 };
 </script>
