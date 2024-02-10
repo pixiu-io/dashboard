@@ -32,3 +32,13 @@ export const updateDeployment = async (cluster, namespace, name, data) => {
   );
   return [result, err];
 };
+
+export const deleteDeployment = async (cluster, namespace, name) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'delete',
+      url: `/proxy/pixiu/${cluster}/apis/apps/v1/namespaces/${namespace}/deployments/${name}`,
+    }),
+  );
+  return [result, err];
+};
