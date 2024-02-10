@@ -102,11 +102,12 @@ const useCloudStore = defineStore('cloud', () => {
     getCloudList();
   };
   const jumpRoute = (row) => {
+    localStorage.setItem(row.name, row.alias_name);
+
     router.push({
       name: 'Info',
       query: {
         cluster: row.name,
-        name: row.alias_name,
       },
     });
   };
