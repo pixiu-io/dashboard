@@ -99,7 +99,7 @@
       >
         <el-card
           style="
-            width: 90%;
+            width: 99%;
             height: 185px;
             background-color: #f2f2f2;
             margin-top: 20px;
@@ -107,8 +107,9 @@
           "
         >
           <div style="float: right; cursor: pointer" @click="deleteContainer(index)">
-            <el-icon><Delete /></el-icon>
+            <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
           </div>
+
           <el-col class="deploy-pixiu-column"
             >容器名称
             <el-input v-model="item.name" class="deploy-pixiu-incard" style="margin-left: 30px" />
