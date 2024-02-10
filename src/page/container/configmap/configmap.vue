@@ -107,7 +107,7 @@
               type="text"
               size="small"
               style="margin-right: 1px; margin-left: -2px; color: #006eff"
-              @click="deleteConfigMap(scope.row)"
+              @click="handleDeleteDialog(scope.row)"
             >
               删除
             </el-button>
@@ -121,6 +121,14 @@
 
       <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
     </el-card>
+
+    <pixiuDialog
+      :closeEvent="data.deleteDialog.close"
+      :objectName="data.deleteDialog.objectName"
+      :deleteName="data.deleteDialog.deleteName"
+      @confirm="confirm"
+      @cancel="cancel"
+    ></pixiuDialog>
   </div>
 
   <el-dialog
@@ -156,7 +164,12 @@ import MyCodeMirror from '@/components/codemirror/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
-import { updateConfigMap, getConfigMap } from '@/services/kubernetes/configmapService';
+import {
+  updateConfigMap,
+  getConfigMap,
+  deleteConfigMap,
+} from '@/services/kubernetes/configmapService';
+import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -180,6 +193,13 @@ const data = reactive({
   isShow: false,
   showTooltip: false, // 控制提示信息的显示状态，默认为隐藏
   showIcon: false, // 控制图标的显示状态，默认为隐藏
+
+  // 删除对象属性
+  deleteDialog: {
+    close: false,
+    objectName: 'ConfigMap',
+    deleteName: '',
+  },
 });
 
 onMounted(() => {
@@ -190,6 +210,36 @@ onMounted(() => {
   getNamespaces();
   getConfigMaps();
 });
+
+const handleDeleteDialog = (row) => {
+  data.deleteDialog.close = true;
+  data.deleteDialog.deleteName = row.metadata.name;
+};
+
+const confirm = async () => {
+  const [result, err] = await deleteConfigMap(
+    data.cluster,
+    data.namespace,
+    data.deleteDialog.deleteName,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(`ConfigMap(${data.deleteDialog.deleteName}) 删除成功`);
+
+  clean();
+  await getConfigMaps();
+};
+
+const cancel = () => {
+  clean();
+};
+
+const clean = () => {
+  data.deleteDialog.close = false;
+  data.deleteDialog.deleteName = '';
+};
 
 const onChange = (v) => {
   data.pageInfo.limit = 10;
@@ -206,27 +256,6 @@ const createConfigMap = () => {
 const editConfigMap = (row) => {
   const url = `/kubernetes/configmaps/editConfigMap?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
   router.push(url);
-};
-
-const deleteConfigMap = (row) => {
-  ElMessageBox.confirm('此操作将永久删除 ConfigMap ' + row.metadata.name + ' . 是否继续?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-    draggable: true,
-  })
-    .then(async () => {
-      await proxy.$http({
-        method: 'delete',
-        url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/configmaps/${row.metadata.name}`,
-      });
-      ElMessage({
-        type: 'success',
-        message: '删除 ' + row.metadata.name + ' 成功',
-      });
-      await getConfigMaps();
-    })
-    .catch(() => {}); // 取消
 };
 
 const jumpRoute = (row) => {

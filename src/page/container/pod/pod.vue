@@ -144,7 +144,6 @@ import { formatTimestamp } from '@/utils/utils';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import { deletePod } from '@/services/kubernetes/podService';
-
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { toClipboard } = useClipboard();
