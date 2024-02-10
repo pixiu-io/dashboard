@@ -46,16 +46,16 @@ defineProps({
   deleteName: { type: String, default: '' },
 });
 
-const emit = defineEmits(['confirm']);
+const emit = defineEmits(['confirm', 'cancel']);
 
 const confirm = () => {
   console.log('里面 confirm');
-  emit();
+  emit('confirm');
 };
 
 const cancel = () => {
   console.log('里面 cancel');
-  emit();
+  emit('cancel');
 };
 </script>
 
