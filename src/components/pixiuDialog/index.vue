@@ -17,7 +17,7 @@
           font-size: 14.5px;
         "
       >
-        {{ dialogTitle }}
+        删除{{ objectName }}
       </div>
     </template>
 
@@ -42,7 +42,6 @@ import { reactive } from 'vue';
 
 defineProps({
   closeEvent: { type: Boolean, default: false },
-  dialogTitle: { type: String, default: '' },
   objectName: { type: String, default: '' },
   deleteName: { type: String, default: '' },
 });

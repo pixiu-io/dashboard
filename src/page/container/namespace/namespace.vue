@@ -109,7 +109,6 @@
 
   <pixiuDialog
     :closeEvent="data.deleteDialog.close"
-    :dialogTitle="data.deleteDialog.title"
     :objectName="data.deleteDialog.objectName"
     :deleteName="data.deleteDialog.deleteName"
     @confirm="confirm"
@@ -144,7 +143,6 @@ const data = reactive({
 
   deleteDialog: {
     close: false,
-    title: '删除命名空间',
     objectName: '命名空间',
   },
 
