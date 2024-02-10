@@ -99,7 +99,7 @@
               size="small"
               type="text"
               style="margin-right: -25px; margin-left: -10px; color: #006eff"
-              @click="deletePod(scope.row)"
+              @click="handleDeleteDialog(scope.row)"
             >
               销毁重建
             </el-button>
@@ -143,6 +143,8 @@ import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { formatTimestamp } from '@/utils/utils';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
+import { deletePod } from '@/services/kubernetes/podService';
+
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { toClipboard } = useClipboard();
@@ -207,12 +209,12 @@ const handleDeleteDialog = (row) => {
 };
 
 const confirm = async () => {
-  const [result, err] = await deleteNamespace(data.cluster, data.deleteDialog.deleteName);
+  const [result, err] = await deletePod(data.cluster, data.namespace, data.deleteDialog.deleteName);
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  proxy.$message.success(`Namespace(${data.deleteDialog.deleteName}) 删除成功`);
+  proxy.$message.success(`Pod(${data.deleteDialog.deleteName}) 删除成功`);
 
   clean();
   await getPods();
@@ -265,28 +267,6 @@ const getNamespaces = async () => {
     return;
   }
   data.namespaces = result;
-};
-
-const deletePod = (row) => {
-  ElMessageBox.confirm('此操作将永久删除 ' + row.metadata.name + ' Pod. 是否继续?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-    draggable: true,
-  })
-    .then(async () => {
-      await proxy.$http({
-        method: 'delete',
-        url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${row.metadata.name}`,
-      });
-      ElMessage({
-        type: 'success',
-        message: '删除 ' + row.metadata.name + ' 成功',
-      });
-
-      await getPods();
-    })
-    .catch(() => {}); // 取消
 };
 
 const copy = async (val) => {
