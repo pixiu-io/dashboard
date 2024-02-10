@@ -98,7 +98,7 @@
               type="text"
               size="small"
               style="margin-right: 1px; color: #006eff"
-              @click="handleEditConfigmapYamlDialog(scope.row)"
+              @click="handleEditYamlDialog(scope.row)"
             >
               编辑yaml
             </el-button>
@@ -124,11 +124,11 @@
   </div>
 
   <el-dialog
-    :model-value="data.editConfigmapYamlDialog"
+    :model-value="data.editYamlDialog"
     style="color: #000000; font: 14px; margin-top: 50px"
     width="800px"
     center
-    @close="closeEditConfigmapYamlDialog"
+    @close="closeEditYamlDialog"
   >
     <template #header>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">编辑yaml</div>
@@ -137,13 +137,8 @@
     <MyCodeMirror ref="editYaml" :yaml="data.yaml" :height="620"></MyCodeMirror>
     <template #footer>
       <span class="dialog-footer">
-        <el-button class="pixiu-small-cancel-button" @click="closeEditConfigmapYamlDialog"
-          >取消</el-button
-        >
-        <el-button
-          type="primary"
-          class="pixiu-small-confirm-button"
-          @click="confirmEditConfigmapYaml"
+        <el-button class="pixiu-small-cancel-button" @click="closeEditYamlDialog">取消</el-button>
+        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmEditYaml"
           >确认</el-button
         >
       </span>
@@ -180,7 +175,7 @@ const data = reactive({
   namespace: 'default',
   namespaces: [],
   configMapsList: [],
-  editConfigmapYamlDialog: false,
+  editYamlDialog: false,
   isShow: false,
   showTooltip: false, // 控制提示信息的显示状态，默认为隐藏
   showIcon: false, // 控制图标的显示状态，默认为隐藏
@@ -301,7 +296,7 @@ const formatterTime = (row, column, cellValue) => {
   );
 };
 
-const handleEditConfigmapYamlDialog = async (row) => {
+const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
   const [result, err] = await getConfigMap(data.cluster, data.namespace, data.yamlName);
   if (err) {
@@ -310,16 +305,16 @@ const handleEditConfigmapYamlDialog = async (row) => {
   }
 
   data.yaml = jsYaml.dump(result);
-  data.editConfigmapYamlDialog = true;
+  data.editYamlDialog = true;
 };
 
-const closeEditConfigmapYamlDialog = () => {
-  data.editConfigmapYamlDialog = false;
+const closeEditYamlDialog = () => {
+  data.editYamlDialog = false;
   data.yaml = '';
   data.yamlName = '';
 };
 
-const confirmEditConfigmapYaml = async () => {
+const confirmEditYaml = async () => {
   const yamlData = jsYaml.load(editYaml.value.code);
   const [result, err] = await updateConfigMap(
     data.cluster,
@@ -332,7 +327,7 @@ const confirmEditConfigmapYaml = async () => {
     return;
   }
   proxy.$message.success(`Configmap(${data.yamlName}) YAML 更新成功`);
-  closeEditConfigmapYamlDialog();
+  closeEditYamlDialog();
   await getConfigMaps();
 };
 </script>
