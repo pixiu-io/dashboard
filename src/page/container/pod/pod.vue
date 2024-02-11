@@ -334,13 +334,25 @@ const formatterLabels = (row, column, cellValue) => {
     return `${key}: ${value}`;
   });
 
-  return (
+  let labels1 = labels;
+  if (labels1.length > 2) {
+    labels1 = labels1.slice(0, 2);
+  }
+
+  const displayContent = `
     <div>
-      {' '}
-      {labels.map((label) => (
-        <div class="pixiu-table-formatter">{label}</div>
-      ))}{' '}
+      ${labels.map((label) => `<div class="pixiu-table-formatter">${label}</div>`).join('')}
     </div>
+  `;
+
+  return (
+    <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
+      <div>
+        {labels1.map((label) => (
+          <div class="pixiu-ellipsis-style">{label}</div>
+        ))}
+      </div>
+    </el-tooltip>
   );
 };
 
