@@ -349,7 +349,7 @@ const formatterLabels = (row, column, cellValue) => {
     <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
       <div>
         {labels1.map((label) => (
-          <div>{label}</div>
+          <div class="pixiu-ellipsis-style">{label}</div>
         ))}
       </div>
     </el-tooltip>
