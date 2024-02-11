@@ -334,13 +334,19 @@ const formatterLabels = (row, column, cellValue) => {
     return `${key}: ${value}`;
   });
 
+  let labels1 = labels;
+  if (labels1.length > 2) {
+    labels1 = labels1.slice(0, 2);
+  }
+
   return (
-    <div>
-      {' '}
-      {labels.map((label) => (
-        <div class="pixiu-table-formatter">{label}</div>
-      ))}{' '}
-    </div>
+    <el-tooltip effect="light" placement="top" content={labels}>
+      <div>
+        {labels1.map((label) => (
+          <div>{label}</div>
+        ))}
+      </div>
+    </el-tooltip>
   );
 };
 
