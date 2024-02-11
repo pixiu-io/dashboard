@@ -210,7 +210,6 @@
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
 import jsYaml from 'js-yaml';
 import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
