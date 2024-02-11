@@ -225,7 +225,7 @@ const comfirmCreate = async () => {
   ruleFormRef.value.validate(async (valid) => {
     if (valid) {
       data.deploymentForm.metadata = data.form.metadata;
-      data.deploymentForm.spec.containers = data.form.containers;
+      data.deploymentForm.spec.template.spec.containers = data.form.containers;
 
       data.deploymentForm.spec.selector.matchLabels['pixiu.io/app'] = data.form.metadata.name;
       data.deploymentForm.spec.selector.matchLabels['pixiu.io/kind'] = 'deployment';
