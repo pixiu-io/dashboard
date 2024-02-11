@@ -457,9 +457,13 @@ const formatterLabels = (row, column, cellValue) => {
 };
 
 const formatterStatus = (row, column, cellValue) => {
+  let availableReplicas = cellValue.availableReplicas;
+  if (availableReplicas === undefined) {
+    availableReplicas = 0;
+  }
   return (
     <div>
-      {cellValue.availableReplicas}/{row.spec.replicas}
+      {availableReplicas}/{row.spec.replicas}
     </div>
   );
 };
