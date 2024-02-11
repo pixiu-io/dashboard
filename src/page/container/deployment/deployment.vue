@@ -459,7 +459,7 @@ const formatterLabels = (row, column, cellValue) => {
 const formatterStatus = (row, column, cellValue) => {
   return (
     <div>
-      {cellValue.availableReplicas}/{cellValue.replicas}
+      {cellValue.availableReplicas}/{row.spec.replicas}
     </div>
   );
 };
