@@ -169,11 +169,6 @@ const data = reactive({
   podList: [],
 
   podReplicasDialog: false,
-  podRepcliasFrom: {
-    name: '',
-    origin: '',
-    target: 0,
-  },
 
   // 删除对象属性
   deleteDialog: {
@@ -333,16 +328,8 @@ const openWindowShell = () => {
   );
 };
 
-const closePodScaleDialog = (row) => {
-  data.podReplicasDialog = false;
-
-  data.podRepcliasFrom.name = '';
-  data.podRepcliasFrom.origin = '';
-  data.podRepcliasFrom.target = 0;
-};
-
 const formatterLabels = (row, column, cellValue) => {
-  if (!cellValue) return <div>None</div>;
+  if (!cellValue) return <div>-</div>;
   const labels = Object.entries(cellValue).map(([key, value]) => {
     return `${key}: ${value}`;
   });
