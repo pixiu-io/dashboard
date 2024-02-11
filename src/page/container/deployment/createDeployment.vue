@@ -165,6 +165,7 @@
 <script setup>
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
+import { createDeployment } from '@/services/kubernetes/deploymentService';
 
 const { proxy } = getCurrentInstance();
 const ruleFormRef = ref();
@@ -223,30 +224,35 @@ const handleChange = (value) => {
 const comfirmCreate = async () => {
   ruleFormRef.value.validate(async (valid) => {
     if (valid) {
-      data.deploymentForm.spec.selector.matchLabels['pixiu.io/app'] =
-        data.deploymentForm.metadata.name;
+      data.deploymentForm.metadata = data.form.metadata;
+      data.deploymentForm.spec.containers = data.form.containers;
+
+      data.deploymentForm.spec.selector.matchLabels['pixiu.io/app'] = data.form.metadata.name;
       data.deploymentForm.spec.selector.matchLabels['pixiu.io/kind'] = 'deployment';
       data.deploymentForm.spec.template.metadata.labels =
         data.deploymentForm.spec.selector.matchLabels;
 
-      for (let i = 0; i < data.deploymentLabels.length; i++) {
-        data.deploymentForm.spec.template.metadata.labels[data.deploymentLabels[i].key] =
-          data.deploymentLabels[i].value;
+      // 追加 labels
+      if (data.form.labels.length > 0) {
+        data.deploymentForm.metadata['labels'] = {};
+        for (let item of data.form.labels) {
+          data.deploymentForm.metadata['labels'][item.key] = item.value;
+        }
       }
 
-      try {
-        const resp = await proxy.$http({
-          method: 'post',
-          url:
-            `/proxy/pixiu/${data.cloud.cluster}/apis/apps/v1/namespaces/` +
-            data.deploymentForm.metadata.namespace +
-            `/deployments`,
-          data: data.deploymentForm,
-        });
+      const [result, err] = await createDeployment(
+        data.cluster,
+        data.form.metadata.namespace,
+        data.deploymentForm,
+      );
+      if (err) {
+        proxy.$message.error(err.response.data.message);
+        return;
+      }
 
-        proxy.$message.success(`deployment ${data.deploymentForm.metadata.name} 创建成功`);
-        backToDeployment();
-      } catch (error) {}
+      proxy.$message.success(`Deployment ${data.form.metadata.name} 创建成功`);
+
+      backToDeployment();
     }
   });
 };

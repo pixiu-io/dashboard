@@ -1,12 +1,12 @@
 import http from '@/utils/http';
 import { awaitWrap } from '@/utils/utils';
 
-export const createDeployment = async (cluster, namespace, name, data) => {
+export const createDeployment = async (cluster, namespace, data) => {
   const [err, result] = await awaitWrap(
     http({
       method: 'post',
-      url: `/proxy/pixiu/${cluster}/apis/apps/v1/namespaces/${namespace}/deployments/${name}`,
-      data,
+      url: `/proxy/pixiu/${cluster}/apis/apps/v1/namespaces/${namespace}/deployments`,
+      data: data,
     }),
   );
   return [result, err];
