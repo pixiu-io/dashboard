@@ -339,8 +339,14 @@ const formatterLabels = (row, column, cellValue) => {
     labels1 = labels1.slice(0, 2);
   }
 
+  const displayContent = `
+    <div>
+      ${labels.map((label) => `<div class="pixiu-table-formatter">${label}</div>`).join('')}
+    </div>
+  `;
+
   return (
-    <el-tooltip effect="light" placement="top" content={labels}>
+    <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
       <div>
         {labels1.map((label) => (
           <div>{label}</div>
