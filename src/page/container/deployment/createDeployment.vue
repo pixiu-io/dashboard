@@ -1,14 +1,24 @@
 <template>
   <el-card class="title-card-container">
-    <div class="font-container">
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item @click="backToDeployment"
-          ><span style="color: black; cursor: pointer"> Deployment </span>
+    <div class="font-container" style="display: flex">
+      <pixiu-icon
+        name="icon-back"
+        style="cursor: pointer"
+        size="16px"
+        type="iconfont"
+        color="#006eff"
+        @click="backToDeployment"
+      />
+
+      <el-breadcrumb separator="/" style="margin-left: 10px; margin-top: 1px">
+        <el-breadcrumb-item
+          ><span style="color: black"> Cluster: {{ data.clusterName }} </span>
         </el-breadcrumb-item>
-        <el-breadcrumb-item style="color: black">{{ data.cluster }}</el-breadcrumb-item>
-        <el-breadcrumb-item>
-          <span style="color: black"> 新建 Deployment </span>
+        <el-breadcrumb-item
+          ><span style="color: black"> Namespace: {{ data.namespace }} </span>
         </el-breadcrumb-item>
+        <el-breadcrumb-item><span style="color: black"> Deployments </span> </el-breadcrumb-item>
+        <el-breadcrumb-item><span style="color: black"> 创建Deployment </span> </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
   </el-card>
@@ -21,12 +31,12 @@
       label-width="100px"
       :rules="rules"
       status-icon
-      :model="data.deploymentForm"
+      :model="data.form"
       style="margin-left: 3%; width: 70%"
     >
       <div style="margin-top: 20px" />
       <el-form-item label="名称" prop="metadata.name" style="width: 500px">
-        <el-input v-model="data.deploymentForm.metadata.name" />
+        <el-input v-model="data.form.metadata.name" />
         <div class="app-pixiu-line-describe2">
           最长63个字符，只能包含小写字母、数字及分隔符("-")
         </div>
@@ -34,48 +44,64 @@
 
       <el-form-item label="命名空间" style="width: 300px">
         <div class="namespace-select-container">
-          <el-select v-model="data.deploymentForm.metadata.namespace" @change="changeNamespace">
+          <el-select v-model="data.form.metadata.namespace" @change="changeNamespace">
             <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
           </el-select>
         </div>
       </el-form-item>
 
-      <el-form-item label="Labels" style="margin-top: 20px">
+      <el-form-item label="Labels" style="margin-top: 10px">
         <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button>
       </el-form-item>
-
+      <div style="margin-top: -15px"></div>
       <el-form-item
-        v-for="(item, index) in data.deploymentLabels"
+        v-for="(item, index) in data.form.labels"
         :key="index"
-        style="margin-top: -15px"
+        class="labels-item-style"
       >
-        <div>
-          <el-input v-model="item.key" placeholder="标签键" style="width: 200px" />
-        </div>
-        <div style="margin-right: 10px; margin-left: 10px"></div>
-        <div>
-          <el-input v-model="item.value" placeholder="标签值" style="width: 200px" />
-        </div>
+        <el-form-item
+          :prop="'labels[' + index + '].key'"
+          :rules="[{ required: true, message: '标签键不能为空', trigger: 'blur' }]"
+        >
+          <el-input v-model="item.key" placeholder="标签键" style="width: 280px" />
+        </el-form-item>
+
+        <div style="margin-right: 10px; margin-left: 10px">=</div>
+
+        <el-form-item
+          :prop="'labels[' + index + '].value'"
+          :rules="[{ required: true, message: '标签值不能为空', trigger: 'blur' }]"
+        >
+          <el-input v-model="item.value" placeholder="标签值" style="width: 280px" />
+        </el-form-item>
+
         <div style="float: right; cursor: pointer; margin-left: 10px" @click="deleteLabel(index)">
-          <el-icon><Delete /></el-icon>
+          <pixiu-icon
+            name="icon-shanchu"
+            size="14px"
+            type="iconfont"
+            style="margin-top: 10px; margin-left: 4px"
+            color="#909399"
+          />
         </div>
       </el-form-item>
-      <div class="app-pixiu-line-describe">
+
+      <div class="app-pixiu-line-describe" style="margin-top: -5px">
         标签键值以字母、数字开头和结尾, 且只能包含字母、数字及分隔符.
       </div>
 
       <el-form-item label="容器配置" style="margin-top: 20px">
         <el-button type="text" class="app-action-btn" @click="addContainer">增加容器</el-button>
       </el-form-item>
-
+      <div style="margin-top: -15px"></div>
       <el-form-item
-        v-for="(item, index) in data.deploymentForm.spec.template.spec.containers"
+        v-for="(item, index) in data.form.containers"
         :key="index"
         style="margin-top: -25px"
       >
         <el-card
           style="
-            width: 90%;
+            width: 99%;
             height: 185px;
             background-color: #f2f2f2;
             margin-top: 20px;
@@ -83,24 +109,32 @@
           "
         >
           <div style="float: right; cursor: pointer" @click="deleteContainer(index)">
-            <el-icon><Delete /></el-icon>
+            <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
           </div>
-          <el-col class="deploy-pixiu-column"
+
+          <el-form-item
+            class="deploy-pixiu-column"
+            :prop="'containers[' + index + '].name'"
+            :rules="[{ required: true, message: '容器名不能为空', trigger: 'blur' }]"
             >容器名称
             <el-input v-model="item.name" class="deploy-pixiu-incard" style="margin-left: 30px" />
-          </el-col>
+          </el-form-item>
 
-          <el-col style="margin-top: 10px" class="deploy-pixiu-column"
+          <el-form-item
+            style="margin-top: 10px"
+            class="deploy-pixiu-column"
+            :prop="'containers[' + index + '].image'"
+            :rules="[{ required: true, message: '镜像不能为空', trigger: 'blur' }]"
             >镜像
-            <el-input v-model="item.image" style="margin-left: 56px" class="deploy-pixiu-incard" />
-          </el-col>
+            <el-input v-model="item.image" style="margin-left: 58px" class="deploy-pixiu-incard" />
+          </el-form-item>
 
           <el-col style="margin-top: 10px" class="deploy-pixiu-column"
             >拉取策略
             <el-radio-group v-model="item.imagePullPolicy" style="margin-left: 30px">
-              <el-radio label="IfNotPresent" border>IfNotPresent</el-radio>
-              <el-radio label="Always" border>Always</el-radio>
-              <el-radio label="Never" border>Never</el-radio>
+              <el-radio-button label="IfNotPresent">IfNotPresent</el-radio-button>
+              <el-radio-button label="Always">Always</el-radio-button>
+              <el-radio-button label="Never">Never</el-radio-button>
             </el-radio-group>
             <div class="container-line-describe">设置镜像拉取策略，默认使用 IfNotPresent 策略</div>
           </el-col>
@@ -130,8 +164,7 @@
 
 <script setup>
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
-
-import PixiuCard from '@/components/card/index.vue';
+import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 
 const { proxy } = getCurrentInstance();
 const ruleFormRef = ref();
@@ -144,11 +177,21 @@ const data = reactive({
   loading: false,
   cluster: '',
   namespaces: [],
+
   autosize: {
     minRows: 5,
   },
 
-  deploymentLabels: [],
+  // 检验 form
+  form: {
+    metadata: {
+      name: '',
+      namespace: 'default',
+    },
+    labels: [],
+    selector: [],
+    containers: [],
+  },
 
   // deployment 创建初始对象
   deploymentForm: {
@@ -166,13 +209,7 @@ const data = reactive({
           labels: {},
         },
         spec: {
-          containers: [
-            {
-              name: '',
-              image: '',
-              imagePullPolicy: 'IfNotPresent',
-            },
-          ],
+          containers: [],
         },
       },
     },
@@ -223,6 +260,7 @@ onMounted(() => {
   data.cluster = data.cloud.cluster;
   data.path = proxy.$route.fullPath;
 
+  addContainer();
   getNamespaceList();
 });
 
@@ -231,39 +269,28 @@ const changeNamespace = async (val) => {
   data.deploymentForm.metadata.namespace = val;
 };
 
-const getNamespace = async () => {
-  const namespace = localStorage.getItem('namespace');
-  if (namespace) {
-    data.namespace = namespace;
-  }
-};
-
 const getNamespaceList = async () => {
-  try {
-    const result = await proxy.$http({
-      method: 'get',
-      url: '/proxy/pixiu/' + data.cloud.cluster + '/api/v1/namespaces',
-    });
-
-    for (let item of result.items) {
-      data.namespaces.push(item.metadata.name);
-    }
-  } catch (error) {}
+  const [result, err] = await getNamespaceNames(data.cluster);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  data.namespaces = result;
 };
 
 const addLabel = () => {
-  data.deploymentLabels.push({
+  data.form.labels.push({
     key: '',
     value: '',
   });
 };
 
 const deleteLabel = (index) => {
-  data.deploymentLabels.splice(index, 1);
+  data.form.labels.splice(index, 1);
 };
 
 const addContainer = () => {
-  data.deploymentForm.spec.template.spec.containers.push({
+  data.form.containers.push({
     name: '',
     image: '',
     imagePullPolicy: 'IfNotPresent',
@@ -271,7 +298,11 @@ const addContainer = () => {
 };
 
 const deleteContainer = (index) => {
-  data.deploymentForm.spec.template.spec.containers.splice(index, 1);
+  if (data.form.containers.length === 1) {
+    proxy.$message.error('至少需要 1 个容器组');
+    return;
+  }
+  data.form.containers.splice(index, 1);
 };
 
 // 回到 deployment 页面
