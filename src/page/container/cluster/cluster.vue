@@ -125,7 +125,7 @@
         >
           <!-- <el-table-column type="selection" width="38" /> -->
 
-          <el-table-column prop="name" label="名称/ID" width="200px">
+          <el-table-column prop="name" label="名称/ID">
             <template #default="scope">
               <el-link
                 style="color: #006eff; font-size: 12px; margin-right: 2px"
@@ -160,30 +160,15 @@
             </template>
           </el-table-column>
 
-          <el-table-column
-            :formatter="cloudStatusFormatter"
-            prop="status"
-            label="状态"
-            width="120px"
-          />
+          <el-table-column :formatter="cloudStatusFormatter" prop="status" label="状态" />
 
-          <el-table-column
-            :formatter="cloudTypeFormatter"
-            prop="cluster_type"
-            label="集群类型"
-            width="150px"
-          />
-          <el-table-column prop="kubernetes_version" width="180" :formatter="cloudVersionFormatter">
+          <el-table-column :formatter="cloudTypeFormatter" prop="cluster_type" label="集群类型" />
+          <el-table-column prop="kubernetes_version" :formatter="cloudVersionFormatter">
             <template #header>
               <Icon icon="QuestionFilled" desc="原生 kubernetes 的版本"> kubernetes版本 </Icon>
             </template>
           </el-table-column>
-          <el-table-column
-            prop="nodes"
-            label="节点数"
-            width="150px"
-            :formatter="cloudNodeFormatter"
-          />
+          <el-table-column prop="nodes" label="节点数" :formatter="cloudNodeFormatter" />
 
           <el-table-column prop="protected" label="集群保护" :formatter="formatProtected" />
 
@@ -192,7 +177,7 @@
 
           <!-- <el-table-column prop="resources" label="资源量" :formatter="formatterResource" /> -->
 
-          <el-table-column fixed="right" label="操作" width="170">
+          <el-table-column fixed="right" label="操作" width="170px">
             <template #default="scope">
               <el-button
                 v-permissions="'user:cloud:setting'"
