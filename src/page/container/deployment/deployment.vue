@@ -446,6 +446,7 @@ const formatterLabels = (row, column, cellValue) => {
   let labels1 = labels;
   if (labels1.length > 2) {
     labels1 = labels1.slice(0, 2);
+    labels1.push('...');
   }
 
   const displayContent = `
