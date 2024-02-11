@@ -438,17 +438,30 @@ const confirmDeploymentScale = async () => {
 };
 
 const formatterLabels = (row, column, cellValue) => {
+  if (!cellValue) return <div>-</div>;
   const labels = Object.entries(cellValue).map(([key, value]) => {
     return `${key}: ${value}`;
   });
 
-  return (
+  let labels1 = labels;
+  if (labels1.length > 2) {
+    labels1 = labels1.slice(0, 2);
+  }
+
+  const displayContent = `
     <div>
-      {' '}
-      {labels.map((label) => (
-        <div class="pixiu-table-formatter">{label}</div>
-      ))}{' '}
+      ${labels.map((label) => `<div class="pixiu-table-formatter">${label}</div>`).join('')}
     </div>
+  `;
+
+  return (
+    <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
+      <div>
+        {labels1.map((label) => (
+          <div class="pixiu-ellipsis-style">{label}</div>
+        ))}
+      </div>
+    </el-tooltip>
   );
 };
 
@@ -464,7 +477,7 @@ const formatterImage = (row, column, cellValue) => {
   return (
     <div>
       {cellValue.map((item) => (
-        <div>{item.image}</div>
+        <div class="pixiu-ellipsis-style">{item.image}</div>
       ))}
     </div>
   );
