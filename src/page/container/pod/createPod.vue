@@ -223,14 +223,16 @@ const getNamespaces = async () => {
 const confirm = async () => {
   ruleFormRef.value.validate(async (valid) => {
     if (valid) {
+      data.objectForm.metadata = data.form.metadata;
+      data.objectForm.spec.containers = data.form.containers;
+
+      // 追加 labels
       if (data.form.labels.length > 0) {
         data.objectForm.metadata['labels'] = {};
         for (let item of data.form.labels) {
           data.objectForm.metadata['labels'][item.key] = item.value;
         }
       }
-      data.objectForm.metadata = data.form.metadata;
-      data.objectForm.spec.containers = data.form.containers;
 
       const [result, err] = await createPod(data.cluster, data.namespace, data.objectForm);
       if (err) {
