@@ -56,7 +56,7 @@
       >
         <el-table-column type="selection" width="30" />
 
-        <el-table-column prop="metadata.name" sortable label="名称" width="180">
+        <el-table-column prop="metadata.name" sortable label="名称">
           <template #default="scope">
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
@@ -64,35 +64,25 @@
           </template>
         </el-table-column>
 
-        <!-- <el-table-column prop="metadata.creationTimestamp" label="创建时间" width="180" /> -->
-
         <el-table-column
           prop="spec.template.metadata.labels"
           label="Labels"
-          width="210"
           :formatter="formatterLabels"
         />
 
         <el-table-column
           prop="spec.selector.matchLabels"
           label="Selector"
-          width="210"
           :formatter="formatterLabels"
         >
         </el-table-column>
 
-        <el-table-column
-          prop="status"
-          label="Pod状态运行/期望"
-          width="180"
-          :formatter="formatterStatus"
-        >
+        <el-table-column prop="status" label="Pod状态" :formatter="formatterStatus" width="90px">
         </el-table-column>
 
         <el-table-column
           label="镜像"
           prop="spec.template.spec.containers"
-          width="auto"
           :formatter="formatterImage"
         >
         </el-table-column>
@@ -475,12 +465,20 @@ const formatterStatus = (row, column, cellValue) => {
 };
 
 const formatterImage = (row, column, cellValue) => {
-  return (
+  const images = [];
+  for (let c of cellValue) {
+    images.push(c.image);
+  }
+
+  const displayContent = `
     <div>
-      {cellValue.map((item) => (
-        <div class="pixiu-ellipsis-style">{item.image}</div>
-      ))}
+      ${images.map((image) => `<div class="pixiu-table-formatter">${image}</div>`).join('')}
     </div>
+  `;
+  return (
+    <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
+      <div class="pixiu-ellipsis-style">{images.join(',')}</div>;
+    </el-tooltip>
   );
 };
 </script>
