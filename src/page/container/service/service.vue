@@ -229,7 +229,7 @@ const onChange = (v) => {
 };
 
 const createService = () => {
-  const url = `/services/createService?cluster=${data.cluster}&namespace=${data.namespace}`;
+  const url = `/services/createService?cluster=${data.cluster}`;
   router.push(url);
 };
 
