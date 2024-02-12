@@ -28,17 +28,20 @@
         <el-card style="margin-top: 10px; width: 75%; border-radius: 0px">
           <el-form
             ref="ruleFormRef"
-            :label-position="left"
-            label-width="120px"
-            :model="data.clusterForm"
+            label-position="left"
+            require-asterisk-position="right"
+            label-width="100px"
             :rules="rules"
             status-icon
-            require-asterisk-position="right"
-            style="margin-left: 2%"
+            :model="data.form"
+            style="margin-left: 3%; width: 70%"
           >
             <div style="margin-top: 20px" />
-            <el-form-item label="名称" prop="" style="width: 50%">
-              <el-input v-model="data.form.metadata.name" placeholder="请输入集群名称" />
+            <el-form-item label="名称" prop="metadata.name" style="width: 500px">
+              <el-input v-model="data.form.metadata.name" placeholder="请输入 StorageClass 名称" />
+              <div class="app-pixiu-line-describe2">
+                最长63个字符，只能包含小写字母、数字及分隔符("-")
+              </div>
             </el-form-item>
 
             <div style="margin-top: 35px" />
@@ -83,7 +86,7 @@ const data = reactive({
 });
 
 const rules = {
-  alias_name: [{ required: true, message: '请输入集群名称', trigger: 'blur' }],
+  'metadata.name': [{ required: true, message: '请输入 StorageClass 名称', trigger: 'blur' }],
 };
 
 onMounted(() => {
