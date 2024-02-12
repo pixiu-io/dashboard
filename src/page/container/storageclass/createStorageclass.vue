@@ -102,7 +102,35 @@
             </el-form-item>
 
             <div style="margin-top: 10px" />
-            <el-form-item label="挂载选项"> </el-form-item>
+            <el-form-item label="挂载选项">
+              <el-button type="text" class="app-action-btn" @click="addMountOption">新增</el-button>
+            </el-form-item>
+            <div style="margin-top: -15px"></div>
+            <el-form-item
+              v-for="(item, index) in data.form.mountOptions"
+              :key="index"
+              class="labels-item-style"
+            >
+              <el-form-item
+                :prop="'mountOptions[' + index + '].key'"
+                :rules="[{ required: true, message: '挂载项不能为空', trigger: 'blur' }]"
+              >
+                <el-input v-model="item.key" placeholder="挂载项" style="width: 200px" />
+              </el-form-item>
+
+              <div
+                style="float: right; cursor: pointer; margin-left: 10px"
+                @click="deleteMountOption(index)"
+              >
+                <pixiu-icon
+                  name="icon-shanchu"
+                  size="14px"
+                  type="iconfont"
+                  style="margin-top: 10px; margin-left: 4px"
+                  color="#909399"
+                />
+              </div>
+            </el-form-item>
 
             <div style="margin-top: 30px" />
             <el-form-item style="margin-left: 30%">
@@ -177,6 +205,18 @@ const addParameter = () => {
 
 const deleteParameter = (index) => {
   data.form.parameters.splice(index, 1);
+};
+
+const addMountOption = () => {
+  console.log('ddd');
+  data.form.mountOptions.push({
+    key: '',
+  });
+};
+
+const deleteMountOption = (index) => {
+  console.log('index', index);
+  data.form.mountOptions.splice(index, 1);
 };
 
 const backToStorageClass = () => {
