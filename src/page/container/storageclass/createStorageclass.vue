@@ -1,6 +1,25 @@
 <template>
   <div style="display: flex; flex-direction: column; width: 100%; height: 100%">
-    <pixiu-card back="true" title="新建标准集群" height="50px" />
+    <div style="width: 100%; height: 50px; background: #ffffff; display: flex; align-items: center">
+      <pixiu-icon
+        name="icon-back"
+        style="cursor: pointer; margin-left: 20px"
+        size="16px"
+        type="iconfont"
+        color="#006eff"
+        @click="backToStorageClass"
+      />
+
+      <el-breadcrumb separator="/" style="margin-left: 10px; margin-top: 1px">
+        <el-breadcrumb-item
+          ><span style="color: black"> 集群: {{ data.clusterName }} </span>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item><span style="color: black"> StorageClasses </span> </el-breadcrumb-item>
+        <el-breadcrumb-item
+          ><span style="color: black"> 创建StorageClass </span>
+        </el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
 
     <el-main>
       <div class="app-pixiu-content-card">
@@ -41,7 +60,6 @@
 
 <script setup>
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
-import PixiuCard from '@/components/card/index.vue';
 
 const { proxy } = getCurrentInstance();
 const ruleFormRef = ref();
