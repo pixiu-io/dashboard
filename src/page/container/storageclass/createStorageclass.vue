@@ -55,7 +55,6 @@
               </el-radio-group>
             </el-form-item>
 
-            <div style="margin-top: 10px" />
             <el-form-item label="存储参数">
               <el-button type="text" class="app-action-btn" @click="addParameter">新增</el-button>
             </el-form-item>
@@ -94,11 +93,7 @@
                 />
               </div>
             </el-form-item>
-            <div class="app-pixiu-line-describe" style="margin-top: -5px">
-              参数键值以字母、数字开头和结尾, 且只能包含字母、数字及分隔符。
-            </div>
 
-            <div style="margin-top: 10px" />
             <el-form-item label="绑定模式">
               <el-radio-group v-model="data.form.volumeBindingMode">
                 <el-radio-button label="Immediate">Immediate</el-radio-button>
@@ -157,6 +152,8 @@ onMounted(() => {
 
   data.cluster = data.query.cluster;
   data.clusterName = localStorage.getItem(data.cluster);
+
+  addParameter();
 });
 
 const confirm = async () => {
