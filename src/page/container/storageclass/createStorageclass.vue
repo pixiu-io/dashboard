@@ -139,6 +139,7 @@ const data = reactive({
     parameters: [],
     reclaimPolicy: 'Delete',
     volumeBindingMode: 'Immediate',
+    mountOptions: [],
   },
 });
 
