@@ -249,14 +249,12 @@ const deleteParameter = (index) => {
 };
 
 const addMountOption = () => {
-  console.log('ddd');
   data.form.mountOptions.push({
     key: '',
   });
 };
 
 const deleteMountOption = (index) => {
-  console.log('index', index);
   data.form.mountOptions.splice(index, 1);
 };
 
