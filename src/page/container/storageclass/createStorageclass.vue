@@ -2,15 +2,6 @@
   <div style="display: flex; flex-direction: column; width: 100%; height: 100%">
     <pixiu-card back="true" title="新建标准集群" height="50px" />
 
-    <pixiu-icon
-      name="icon-back"
-      style="cursor: pointer"
-      size="16px"
-      type="iconfont"
-      color="#006eff"
-      @click="backToPod"
-    />
-
     <el-main>
       <div class="app-pixiu-content-card">
         <el-card style="margin-top: 10px; width: 75%; border-radius: 0px">
