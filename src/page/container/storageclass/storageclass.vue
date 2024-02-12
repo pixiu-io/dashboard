@@ -235,12 +235,12 @@ const syncStorageClasses = async () => {
 };
 
 const createStorageClass = () => {
-  const url = `/storageClasses/createStorageClass?cluster=${data.cluster}&namespace=${data.namespace}`;
+  const url = `/storageClasses/createStorageClass?cluster=${data.cluster}`;
   router.push(url);
 };
 
 const editStorageClass = (row) => {
-  const url = `/storageClasses/editStorageClass?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
+  const url = `/storageClasses/editStorageClass?cluster=${data.cluster}&name=${row.metadata.name}`;
   router.push(url);
 };
 
