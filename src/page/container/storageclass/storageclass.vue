@@ -49,7 +49,8 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="provisioner" label="PROVISIONER"> </el-table-column>
+        <el-table-column prop="provisioner" label="PROVISIONER" :formatter="formatterProvisioner">
+        </el-table-column>
         <el-table-column label="回收策略" prop="reclaimPolicy"> </el-table-column>
         <el-table-column label="绑定模式" prop="volumeBindingMode"> </el-table-column>
 
@@ -136,7 +137,6 @@
 import { useRouter } from 'vue-router';
 import { formatTimestamp } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
 import jsYaml from 'js-yaml';
 
 import Pagination from '@/components/pagination/index.vue';
@@ -273,6 +273,14 @@ const confirmEditYaml = async () => {
 
   closeEditYamlDialog();
   await syncStorageClasses();
+};
+
+const formatterProvisioner = (row, column, cellValue) => {
+  return (
+    <el-tooltip effect="light" placement="top" content={cellValue}>
+      <div class="pixiu-ellipsis-style">{cellValue}</div>
+    </el-tooltip>
+  );
 };
 
 const formatterTime = (row, column, cellValue) => {

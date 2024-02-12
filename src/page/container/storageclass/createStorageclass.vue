@@ -37,7 +37,7 @@
             style="margin-left: 3%; width: 70%"
           >
             <div style="margin-top: 20px" />
-            <el-form-item label="名称" prop="metadata.name" style="width: 500px">
+            <el-form-item label="名称" prop="metadata.name" style="width: 450px">
               <el-input v-model="data.form.metadata.name" placeholder="请输入 StorageClass 名称" />
               <div class="app-pixiu-line-describe2" style="margin-top: -2px">
                 最长63个字符，只能包含小写字母、数字及分隔符("-")
@@ -148,6 +148,7 @@
 
 <script setup>
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import { createStorageClass } from '@/services/kubernetes/storageClassService';
 
 const { proxy } = getCurrentInstance();
 const ruleFormRef = ref();
@@ -169,6 +170,17 @@ const data = reactive({
     volumeBindingMode: 'Immediate',
     mountOptions: [],
   },
+
+  // 检验 form
+  objectForm: {
+    metadata: {
+      name: '',
+    },
+    provisioner: '',
+    parameters: {},
+    reclaimPolicy: 'Delete',
+    volumeBindingMode: 'Immediate',
+  },
 });
 
 const rules = {
@@ -188,6 +200,32 @@ onMounted(() => {
 const confirm = async () => {
   ruleFormRef.value.validate(async (valid) => {
     if (valid) {
+      data.objectForm.metadata.name = data.form.metadata.name;
+      data.objectForm.provisioner = data.form.provisioner;
+      data.objectForm.reclaimPolicy = data.form.reclaimPolicy;
+      data.objectForm.volumeBindingMode = data.form.volumeBindingMode;
+      if (data.form.parameters.length > 0) {
+        for (let p of data.form.parameters) {
+          data.objectForm.parameters[p.key] = p.value;
+        }
+      }
+      if (data.form.mountOptions.length > 0) {
+        data.objectForm['mountOptions'] = [];
+        for (let opt of data.form.mountOptions) {
+          data.objectForm['mountOptions'].push(opt.key);
+        }
+      } else {
+        delete data.objectForm['mountOptions'];
+      }
+
+      const [result, err] = await createStorageClass(data.cluster, data.objectForm);
+      if (err) {
+        proxy.$message.error(err.response.data.message);
+        return;
+      }
+
+      proxy.$message.success(`StorageClass ${data.form.metadata.name} 创建成功`);
+      backToStorageClass();
     }
   });
 };
