@@ -41,7 +41,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="30" />
-        <el-table-column prop="metadata.name" sortable label="名称" min-width="118px">
+        <el-table-column prop="metadata.name" sortable label="名称">
           <template #default="scope">
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
@@ -49,7 +49,8 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="provisioner" label="PROVISIONER"> </el-table-column>
+        <el-table-column prop="provisioner" label="PROVISIONER" :formatter="formatterProvisioner">
+        </el-table-column>
         <el-table-column label="回收策略" prop="reclaimPolicy"> </el-table-column>
         <el-table-column label="绑定模式" prop="volumeBindingMode"> </el-table-column>
 
@@ -136,7 +137,6 @@
 import { useRouter } from 'vue-router';
 import { formatTimestamp } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
 import jsYaml from 'js-yaml';
 
 import Pagination from '@/components/pagination/index.vue';
@@ -235,12 +235,12 @@ const syncStorageClasses = async () => {
 };
 
 const createStorageClass = () => {
-  const url = `/kubernetes/storageClasses/createStorageClass?cluster=${data.cluster}&namespace=${data.namespace}`;
+  const url = `/storageClasses/createStorageClass?cluster=${data.cluster}`;
   router.push(url);
 };
 
 const editStorageClass = (row) => {
-  const url = `/kubernetes/storageClasses/editStorageClass?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
+  const url = `/storageClasses/editStorageClass?cluster=${data.cluster}&name=${row.metadata.name}`;
   router.push(url);
 };
 
@@ -273,6 +273,14 @@ const confirmEditYaml = async () => {
 
   closeEditYamlDialog();
   await syncStorageClasses();
+};
+
+const formatterProvisioner = (row, column, cellValue) => {
+  return (
+    <el-tooltip effect="light" placement="top" content={cellValue}>
+      <div class="pixiu-ellipsis-style">{cellValue}</div>
+    </el-tooltip>
+  );
 };
 
 const formatterTime = (row, column, cellValue) => {

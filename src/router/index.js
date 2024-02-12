@@ -360,23 +360,24 @@ const routes = [
             },
             component: StorageClass,
           },
-          {
-            path: 'storageclasses/createStorageClass',
-            name: 'CreateStorageClass',
-            meta: {
-              title: 'CreateStorageclass',
-            },
-            component: CreateStorageClass,
-          },
-          {
-            path: 'storageclasses/editStorageClass',
-            name: 'EditStorageClass',
-            meta: {
-              title: 'EditStorageClass',
-            },
-            component: EditStorageClass,
-          },
         ],
+      },
+      // storageclasses 路由
+      {
+        path: 'storageclasses/createStorageClass',
+        name: 'CreateStorageClass',
+        meta: {
+          title: 'CreateStorageclass',
+        },
+        component: CreateStorageClass,
+      },
+      {
+        path: 'storageclasses/editStorageClass',
+        name: 'EditStorageClass',
+        meta: {
+          title: 'EditStorageClass',
+        },
+        component: EditStorageClass,
       },
       {
         path: 'cicd',
