@@ -49,7 +49,7 @@
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance, ref } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import PixiuCard from '@/components/card/index.vue';
 
 const { proxy } = getCurrentInstance();
@@ -76,6 +76,13 @@ const rules = {
   alias_name: [{ required: true, message: '请输入集群名称', trigger: 'blur' }],
 };
 
+onMounted(() => {
+  data.query = proxy.$route.query;
+
+  data.cluster = data.query.cluster;
+  data.clusterName = localStorage.getItem(data.cluster);
+});
+
 const confirm = async () => {
   ruleFormRef.value.validate(async (valid) => {
     if (valid) {
@@ -83,12 +90,13 @@ const confirm = async () => {
   });
 };
 const cancel = () => {
-  backToContainer();
+  backToStorageClass();
 };
 
 const backToStorageClass = () => {
   proxy.$router.push({
-    name: 'Container',
+    name: 'StorageClass',
+    query: data.query,
   });
 };
 </script>
