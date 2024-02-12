@@ -12,11 +12,13 @@
 
       <el-breadcrumb separator="/" style="margin-left: 10px; margin-top: 1px">
         <el-breadcrumb-item
-          ><span style="color: black"> 集群: {{ data.clusterName }} </span>
+          ><span class="breadcrumb-create-style"> 集群: {{ data.clusterName }} </span>
         </el-breadcrumb-item>
-        <el-breadcrumb-item><span style="color: black"> StorageClasses </span> </el-breadcrumb-item>
         <el-breadcrumb-item
-          ><span style="color: black"> 创建StorageClass </span>
+          ><span class="breadcrumb-create-style"> StorageClasses </span>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item
+          ><span class="breadcrumb-create-style"> 创建StorageClass </span>
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
@@ -45,11 +47,10 @@
                 style="margin-left: 15%"
                 class="pixiu-confirm-button"
                 type="primary"
-                :disabled="data.allowCreated"
-                @click="comfirmCreate()"
+                @click="confirm()"
                 >确定</el-button
               >
-              <el-button class="pixiu-cancel-button" @click="cancelCreate()">取消</el-button>
+              <el-button class="pixiu-cancel-button" @click="cancel()">取消</el-button>
             </el-form-item>
           </el-form>
         </el-card>

@@ -311,6 +311,11 @@
   color: black;
 }
 
+.breadcrumb-create-style {
+  color: black;
+  font-weight: bold;
+}
+
 /* 字体加粗 */
 .big-world-style {
   color: black;
