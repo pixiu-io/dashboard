@@ -25,7 +25,7 @@
 
     <el-main>
       <div class="app-pixiu-content-card">
-        <el-card style="margin-top: 10px; width: 75%; border-radius: 0px">
+        <el-card class="create-card-style">
           <el-form
             ref="ruleFormRef"
             label-position="left"
@@ -268,5 +268,12 @@ const backToStorageClass = () => {
 <style scoped="scoped">
 .el-main {
   background-color: #f3f4f7;
+}
+
+.create-card-style {
+  margin-top: 28px;
+  margin-left: 20px;
+  width: 75%;
+  border-radius: 0px;
 }
 </style>
