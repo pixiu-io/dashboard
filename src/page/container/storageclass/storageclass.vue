@@ -235,12 +235,12 @@ const syncStorageClasses = async () => {
 };
 
 const createStorageClass = () => {
-  const url = `/kubernetes/storageClasses/createStorageClass?cluster=${data.cluster}&namespace=${data.namespace}`;
+  const url = `/storageClasses/createStorageClass?cluster=${data.cluster}&namespace=${data.namespace}`;
   router.push(url);
 };
 
 const editStorageClass = (row) => {
-  const url = `/kubernetes/storageClasses/editStorageClass?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
+  const url = `/storageClasses/editStorageClass?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
   router.push(url);
 };
 

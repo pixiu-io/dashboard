@@ -1,1 +1,107 @@
-<template>create sc</template>
+<template>
+  <div style="display: flex; flex-direction: column; width: 100%; height: 100%">
+    <pixiu-card back="true" title="新建标准集群" height="50px" />
+
+    <pixiu-icon
+      name="icon-back"
+      style="cursor: pointer"
+      size="16px"
+      type="iconfont"
+      color="#006eff"
+      @click="backToPod"
+    />
+
+    <el-main>
+      <div class="app-pixiu-content-card">
+        <el-card style="margin-top: 10px; width: 75%; border-radius: 0px">
+          <el-form
+            ref="ruleFormRef"
+            :label-position="left"
+            label-width="120px"
+            :model="data.clusterForm"
+            :rules="rules"
+            status-icon
+            require-asterisk-position="right"
+            style="margin-left: 2%"
+          >
+            <div style="margin-top: 20px" />
+            <el-form-item label="名称" prop="" style="width: 50%">
+              <el-input v-model="data.form.metadata.name" placeholder="请输入集群名称" />
+            </el-form-item>
+
+            <div style="margin-top: 35px" />
+            <el-form-item>
+              <el-button
+                style="margin-left: 15%"
+                class="pixiu-confirm-button"
+                type="primary"
+                :disabled="data.allowCreated"
+                @click="comfirmCreate()"
+                >确定</el-button
+              >
+              <el-button class="pixiu-cancel-button" @click="cancelCreate()">取消</el-button>
+            </el-form-item>
+          </el-form>
+        </el-card>
+      </div>
+    </el-main>
+  </div>
+</template>
+
+<script setup>
+import { reactive, getCurrentInstance, ref } from 'vue';
+import PixiuCard from '@/components/card/index.vue';
+
+const { proxy } = getCurrentInstance();
+const ruleFormRef = ref();
+
+const data = reactive({
+  loading: false,
+
+  cluster: '',
+  clusterName: '',
+
+  // 检验 form
+  form: {
+    metadata: {
+      name: '',
+      namespace: 'default',
+    },
+    labels: [],
+    containers: [],
+  },
+});
+
+const rules = {
+  alias_name: [{ required: true, message: '请输入集群名称', trigger: 'blur' }],
+};
+
+const confirm = async () => {
+  ruleFormRef.value.validate(async (valid) => {
+    if (valid) {
+    }
+  });
+};
+const cancel = () => {
+  backToContainer();
+};
+
+const backToStorageClass = () => {
+  proxy.$router.push({
+    name: 'Container',
+  });
+};
+</script>
+
+<style scoped="scoped">
+.box-card {
+  margin-top: 20px;
+}
+.app-pixiu-content-card {
+  display: flex;
+  justify-content: space-around;
+}
+.el-main {
+  background-color: #f3f4f7;
+}
+</style>
