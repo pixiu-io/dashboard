@@ -12,7 +12,10 @@
 
       <el-breadcrumb separator="/" style="margin-left: 10px; margin-top: 1px">
         <el-breadcrumb-item
-          ><span class="breadcrumb-create-style"> 集群: {{ data.clusterName }} </span>
+          ><span class="breadcrumb-create-style"> 集群 </span>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item
+          ><span class="breadcrumb-create-style"> {{ data.clusterName }} </span>
         </el-breadcrumb-item>
         <el-breadcrumb-item
           ><span class="breadcrumb-create-style"> StorageClasses </span>
