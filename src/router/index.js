@@ -362,6 +362,7 @@ const routes = [
           },
         ],
       },
+      // storageclasses 路由
       {
         path: 'storageclasses/createStorageClass',
         name: 'CreateStorageClass',
