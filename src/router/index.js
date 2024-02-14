@@ -267,22 +267,6 @@ const routes = [
             component: ConfigMap,
           },
           {
-            path: 'configmaps/createConfigMap',
-            name: 'createConfigMap',
-            meta: {
-              title: 'createConfigMap',
-            },
-            component: CreateConfigMap,
-          },
-          {
-            path: 'configmaps/editConfigMap',
-            name: 'editConfigMap',
-            meta: {
-              title: 'editConfigMap',
-            },
-            component: EditConfigMap,
-          },
-          {
             path: 'secrets',
             name: 'Secret',
             meta: {
@@ -383,6 +367,23 @@ const routes = [
           title: 'EditIngress',
         },
         component: EditIngress,
+      },
+      // configMap 创建和编辑路由
+      {
+        path: 'configmaps/createConfigMap',
+        name: 'createConfigMap',
+        meta: {
+          title: 'createConfigMap',
+        },
+        component: CreateConfigMap,
+      },
+      {
+        path: 'configmaps/editConfigMap',
+        name: 'editConfigMap',
+        meta: {
+          title: 'editConfigMap',
+        },
+        component: EditConfigMap,
       },
       {
         path: 'cicd',

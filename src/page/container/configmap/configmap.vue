@@ -249,12 +249,12 @@ const onChange = (v) => {
 };
 
 const createConfigMap = () => {
-  const url = `/kubernetes/configmaps/createConfigMap?cluster=${data.cluster}&namespace=${data.namespace}`;
+  const url = `/configmaps/createConfigMap?cluster=${data.cluster}`;
   router.push(url);
 };
 
 const editConfigMap = (row) => {
-  const url = `/kubernetes/configmaps/editConfigMap?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
+  const url = `/configmaps/editConfigMap?cluster=${data.cluster}&name=${row.metadata.name}`;
   router.push(url);
 };
 

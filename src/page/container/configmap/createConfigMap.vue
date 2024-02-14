@@ -1,116 +1,145 @@
 <template>
-  <el-card class="title-card-container">
-    <div class="font-container">
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item @click="backToConfigmap"
-          ><span style="color: black; cursor: pointer"> ConfigMap </span>
+  <div style="display: flex; flex-direction: column; width: 100%; height: 100%">
+    <div style="width: 100%; height: 50px; background: #ffffff; display: flex; align-items: center">
+      <pixiu-icon
+        name="icon-back"
+        style="cursor: pointer; margin-left: 25px"
+        size="16px"
+        type="iconfont"
+        color="#006eff"
+        @click="backToConfigmap"
+      />
+
+      <el-breadcrumb separator="/" style="margin-left: 10px; margin-top: 1px">
+        <el-breadcrumb-item
+          ><span class="breadcrumb-create-style"> 集群 </span>
         </el-breadcrumb-item>
-        <el-breadcrumb-item style="color: black">{{ data.cluster }}</el-breadcrumb-item>
-        <el-breadcrumb-item>
-          <span style="color: black"> 新建ConfigMap </span>
+        <el-breadcrumb-item
+          ><span class="breadcrumb-create-style"> {{ data.clusterName }} </span>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item
+          ><span class="breadcrumb-create-style"> ConfigMap </span>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item
+          ><span class="breadcrumb-create-style"> 创建ConfigMap </span>
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
-  </el-card>
 
-  <el-card class="create-card-style">
-    <el-form
-      ref="ruleFormRef"
-      label-position="left"
-      require-asterisk-position="right"
-      label-width="100px"
-      :rules="rules"
-      status-icon
-      :model="data.configmapForm"
-      style="margin-left: 3%; width: 80%"
-    >
-      <div style="margin-top: 20px" />
+    <el-main>
+      <div class="app-pixiu-content-card">
+        <el-card class="create-card-style" style="width: 75%">
+          <el-form
+            ref="ruleFormRef"
+            label-position="left"
+            require-asterisk-position="right"
+            label-width="100px"
+            :rules="rules"
+            status-icon
+            :model="data.namespaceForm"
+            class="create-card-form"
+          >
+            <div style="margin-top: 20px" />
+            <el-form-item label="名称" prop="metadata.name">
+              <el-input
+                v-model="data.configmapForm.metadata.name"
+                style="width: 40%"
+                placeholder="请输入 configMap 名称"
+              />
+              <div class="app-pixiu-line-describe2">
+                最长63个字符，只能包含小写字母、数字及分隔符("-"),且必须以小写字母开头，数字或小写字母结尾
+              </div>
+            </el-form-item>
 
-      <el-form-item label="名称" prop="metadata.name" style="width: 80%">
-        <el-input v-model="data.configmapForm.metadata.name" style="width: 40%" />
-        <div class="app-pixiu-line-describe2">
-          最长63个字符，只能包含小写字母、数字及分隔符("-"),且必须以小写字母开头，数字或小写字母结尾
-        </div>
-      </el-form-item>
+            <el-form-item label="命名空间" style="width: 500px; margin-right: 20px">
+              <div class="one-line-style">
+                <el-select
+                  v-model="data.configmapForm.metadata.namespace"
+                  @change="changeNamespace"
+                >
+                  <el-option
+                    v-for="item in data.namespaces"
+                    :key="item"
+                    :value="item"
+                    :label="item"
+                  />
+                </el-select>
 
-      <el-form-item label="命名空间" style="width: 500px; margin-right: 20px">
-        <div class="one-line-style">
-          <el-select v-model="data.configmapForm.metadata.namespace" @change="changeNamespace">
-            <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
-          </el-select>
+                <div style="margin-left: 12px; margin-top: 3px">
+                  <pixiu-icon
+                    name="icon-icon-refresh"
+                    style="cursor: pointer"
+                    size="16px"
+                    type="iconfont"
+                    color="#909399"
+                    @click="getNamespaceList"
+                  />
+                </div>
+              </div>
+            </el-form-item>
 
-          <div style="margin-left: 12px; margin-top: 3px">
-            <pixiu-icon
-              name="icon-icon-refresh"
-              style="cursor: pointer"
-              size="16px"
-              type="iconfont"
-              color="#909399"
-              @click="getNamespaceList"
-            />
-          </div>
-        </div>
-      </el-form-item>
+            <el-divider />
+            <el-form-item label="内容" style="margin-top: 10px">
+              <!-- <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button> -->
+              <div class="configmap-label-title" style="margin-left: 5px">变量名</div>
+              <div class="configmap-label-title" style="margin-left: 305px">变量值</div>
+              <el-divider />
+            </el-form-item>
 
-      <el-divider />
-      <el-form-item label="内容" style="margin-top: 10px">
-        <!-- <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button> -->
-        <div class="configmap-label-title" style="margin-left: 5px">变量名</div>
-        <div class="configmap-label-title" style="margin-left: 305px">变量值</div>
-        <el-divider />
-      </el-form-item>
-
-      <el-form-item
-        v-for="(item, index) in data.configMapLabels"
-        :key="index"
-        style="margin-top: -20px"
-      >
-        <el-form-item prop="item.key">
-          <el-input v-model="item.key" placeholder="变量名" style="width: 300px" />
-        </el-form-item>
-        <div style="margin-right: 8px; margin-left: 8px"></div>
-        =
-        <div>
-          <el-input
-            v-model="item.value"
-            placeholder="请输入变量值"
-            autosize
-            type="textarea"
-            style="width: 350px; margin-left: 20px"
-          />
-        </div>
-        <div
-          style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
-          @click="deleteLabel(index)"
-        >
-          <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
-        </div>
-        <el-divider />
-      </el-form-item>
-      <div class="app-pixiu-line-describe4">
-        只能包含字母、数字及分隔符"."; 变量名为空时，在变量名称中粘贴一行或多行 key=value key: value
-        的键值对可以实现快速批量输入
+            <el-form-item
+              v-for="(item, index) in data.configMapLabels"
+              :key="index"
+              style="margin-top: -20px"
+            >
+              <el-form-item prop="item.key">
+                <el-input v-model="item.key" placeholder="变量名" style="width: 300px" />
+              </el-form-item>
+              <div style="margin-right: 8px; margin-left: 8px"></div>
+              =
+              <div>
+                <el-input
+                  v-model="item.value"
+                  placeholder="请输入变量值"
+                  autosize
+                  type="textarea"
+                  style="width: 350px; margin-left: 20px"
+                />
+              </div>
+              <div
+                style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
+                @click="deleteLabel(index)"
+              >
+                <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
+              </div>
+              <el-divider />
+            </el-form-item>
+            <div class="app-pixiu-line-describe4">
+              只能包含字母、数字及分隔符"."; 变量名为空时，在变量名称中粘贴一行或多行 key=value key:
+              value 的键值对可以实现快速批量输入
+            </div>
+            <el-form-item>
+              <el-button
+                class="table-inline-btn"
+                style="margin-left: -14px; margin-right: -20px; margin-top: 15px"
+                @click="addLabel"
+                >手动增加</el-button
+              >
+              <el-button class="table-inline-btn" style="margin-top: 15px" @click="addLabel"
+                >文件导入</el-button
+              >
+            </el-form-item>
+            <div style="margin-top: 30px" />
+            <el-form-item style="margin-left: 30%">
+              <el-button class="pixiu-cancel-button" @click="cancelCreate()">取消</el-button>
+              <el-button class="pixiu-confirm-button" type="primary" @click="comfirmCreate()"
+                >确定</el-button
+              >
+            </el-form-item>
+          </el-form>
+        </el-card>
       </div>
-      <el-form-item>
-        <el-button
-          class="table-inline-btn"
-          style="margin-left: -14px; margin-right: -20px; margin-top: 15px"
-          @click="addLabel"
-          >手动增加</el-button
-        >
-        <el-button class="table-inline-btn" style="margin-top: 15px" @click="addLabel"
-          >文件导入</el-button
-        >
-      </el-form-item>
-      <div style="margin-top: 30px" />
-      <el-form-item style="margin-left: 30%">
-        <el-button class="pixiu-cancel-button" @click="cancelCreate()">取消</el-button>
-        <el-button class="pixiu-confirm-button" type="primary" @click="comfirmCreate()"
-          >确定</el-button
-        >
-      </el-form-item>
-    </el-form>
-  </el-card>
+    </el-main>
+  </div>
 </template>
 
 <script setup>
@@ -121,10 +150,9 @@ const ruleFormRef = ref();
 const data = reactive({
   loading: false,
   cluster: '',
+  clusterName: '',
+
   namespaces: [],
-  autosize: {
-    minRows: 2,
-  },
 
   configMapLabels: [{ key: null, value: null }],
 
@@ -152,7 +180,6 @@ const data = reactive({
 
 const rules = {
   'metadata.name': [{ required: true, message: '请输入 ConfigMap 名称', trigger: 'blur' }],
-  // 'item.key': [{ required: true, message: 'key 不能为空', trigger: 'blur' }],
 };
 
 const comfirmCreate = () => {
@@ -184,8 +211,7 @@ const cancelCreate = () => {
 onMounted(() => {
   data.query = proxy.$route.query;
   data.cluster = data.query.cluster;
-
-  data.path = proxy.$route.fullPath;
+  data.clusterName = localStorage.getItem(data.cluster);
 
   data.configmapForm.metadata.namespace = proxy.$route.query.namespace;
   getNamespaceList();
