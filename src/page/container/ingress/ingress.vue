@@ -169,6 +169,8 @@ const editYaml = ref();
 
 const data = reactive({
   cluster: '',
+  clusterName: '',
+
   pageInfo: {
     page: 1,
     query: '',
@@ -254,12 +256,12 @@ const getIngresses = async () => {
 };
 
 const createIngress = () => {
-  const url = `/kubernetes/ingresses/createIngress?cluster=${data.cluster}&namespace=${data.namespace}`;
+  const url = `/ingresses/createIngress?cluster=${data.cluster}`;
   router.push(url);
 };
 
 const editIngress = (row) => {
-  const url = `/kubernetes/ingresses/editIngress?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
+  const url = `/ingresses/editIngress?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
   router.push(url);
 };
 
