@@ -136,14 +136,21 @@
                   :key="ruleIndex"
                   style="margin-top: -10px; margin-left: 60px"
                 >
-                  <div>
+                  <el-form-item
+                    :prop="'rules[' + index + '].path'"
+                    :rules="[{ required: true, message: '服务路径不能为空', trigger: 'blur' }]"
+                  >
                     <el-input
                       v-model="ruleItem.path"
                       placeholder="请输入路径或正则"
                       style="width: 160px"
                     />
-                  </div>
-                  <div style="margin-left: 20px; width: 160px">
+                  </el-form-item>
+                  <el-form-item
+                    style="margin-left: 20px; width: 150px"
+                    :prop="'rules[' + index + '].service'"
+                    :rules="[{ required: true, message: '服务不能为空', trigger: 'blur' }]"
+                  >
                     <el-select v-model="ruleItem.service">
                       <el-option
                         v-for="svc in data.services"
@@ -152,15 +159,19 @@
                         :label="svc"
                       />
                     </el-select>
-                  </div>
+                  </el-form-item>
 
-                  <div style="margin-left: 20px">
+                  <el-form-item
+                    style="margin-left: 20px"
+                    :prop="'rules[' + index + '].port'"
+                    :rules="[{ required: true, message: '服务端口不能为空', trigger: 'blur' }]"
+                  >
                     <el-input
                       v-model="ruleItem.port"
                       placeholder="1-65535内的整数"
-                      style="width: 130px"
+                      style="width: 150px"
                     />
-                  </div>
+                  </el-form-item>
                 </el-form-item>
               </el-card>
             </el-form-item>
