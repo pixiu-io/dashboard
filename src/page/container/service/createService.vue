@@ -100,8 +100,8 @@
             <div style="margin-top: -6px" />
             <el-form-item label="使用方式" style="width: 600px">
               <el-radio-group v-model="data.serviceType" style="margin-top: 4px">
-                <el-radio-button label="常规服务" border>常规服务</el-radio-button>
-                <el-radio-button label="Headless" border>Headless</el-radio-button>
+                <el-radio-button label="常规服务">常规服务</el-radio-button>
+                <el-radio-button label="Headless">Headless</el-radio-button>
               </el-radio-group>
               <div class="app-pixiu-line-describe2">
                 <div v-if="data.serviceType === 'Headless'">
