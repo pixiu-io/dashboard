@@ -334,6 +334,7 @@
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 import { getDeployments } from '@/services/kubernetes/deploymentService';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
+import { createService } from '@/services/kubernetes/serviceService';
 
 const ruleFormRef = ref();
 const { proxy } = getCurrentInstance();
@@ -360,11 +361,8 @@ const data = reactive({
     ports: [],
 
     spec: {
-      ports: [],
-      selector: [],
       type: 'ClusterIP',
     },
-    labels: [],
   },
 
   objectForm: {
@@ -421,18 +419,22 @@ watch(
 const comfirm = async () => {
   ruleFormRef.value.validate(async (valid) => {
     if (valid) {
-      if (data.form.spec.ports.length == 0) {
-        proxy.$message.error('ports 为必选项');
-        return;
-      }
-      // 转换 port，从字符串转换成 int32
-      for (var i = 0; i < data.form.spec.ports.length; i++) {
-        let p = data.form.spec.ports[i];
-        const portInt = parseInt(p.port);
-        const targetPortInt = parseInt(p.targetPort);
+      data.objectForm.metadata = data.form.metadata;
 
-        p.port = portInt;
-        p.targetPort = targetPortInt;
+      // 转换 port，从字符串转换成 int32
+      for (var i = 0; i < data.form.ports.length; i++) {
+        let p = data.form.ports[i];
+        let name = p.name;
+        if (name === '') {
+          name = p.protocol.toLowerCase() + '-' + p.port;
+        }
+
+        data.objectForm.spec.ports.push({
+          name: name,
+          port: parseInt(p.port),
+          protocol: p.protocol,
+          targetPort: parseInt(p.port),
+        });
       }
 
       if (data.selectorType === '普通') {
@@ -441,38 +443,32 @@ const comfirm = async () => {
           proxy.$message.error('未获取到必选的 workload');
           return;
         }
-        data.form.spec.selector = d.spec.template.metadata.labels;
+        data.objectForm.spec.selector = d.spec.template.metadata.labels;
       } else {
-        if (data.selectors.length == 0) {
-          proxy.$message.error('selector 为必选项');
-          return;
-        }
-
         for (let selector of data.selectors) {
-          data.form.spec.selector[selector.key] = selector.value;
+          data.objectForm.spec.selector[selector.key] = selector.value;
         }
       }
 
-      if (data.labels.length > 0) {
-        data.form.metadata['labels'] = {};
-        for (let label of data.labels) {
-          data.form.metadata['labels'][label.key] = label.value;
+      if (data.form.labels.length > 0) {
+        data.objectForm.metadata['labels'] = {};
+        for (let label of data.form.labels) {
+          data.objectForm.metadata['labels'][label.key] = label.value;
         }
       }
 
-      try {
-        await proxy.$http({
-          method: 'post',
-          url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.form.metadata.namespace}/services`,
-          data: data.form,
-        });
-
-        proxy.$message.success(`service ${data.form.metadata.name} 创建成功`);
-        backToService();
-      } catch (error) {
-        proxy.$message.error(error.response.data.message);
+      const [result, err] = await createService(
+        data.cluster,
+        data.objectForm.metadata.namespace,
+        data.objectForm,
+      );
+      if (err) {
+        proxy.$message.error(err.response.data.message);
         return;
       }
+      proxy.$message.success(`Service ${data.form.metadata.name} 创建成功`);
+
+      backToService();
     }
   });
 };
