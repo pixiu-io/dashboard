@@ -200,9 +200,10 @@ const ruleFormRef = ref();
 const { proxy } = getCurrentInstance();
 const data = reactive({
   loading: false,
-  Session: false,
-
   cluster: '',
+  clusterName: '',
+
+  Session: false,
   ingressPort: 'http',
 
   form: {

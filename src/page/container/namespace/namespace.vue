@@ -206,7 +206,7 @@ const copy = async (val) => {
 };
 
 const createNamespace = () => {
-  const url = `/kubernetes/createNamespace?cluster=${data.cluster}`;
+  const url = `/namespaces/createNamespace?cluster=${data.cluster}`;
   router.push(url);
 };
 
