@@ -32,7 +32,6 @@
     因为el-card下面引用了create-card-style的样式里面width=100%
     导致了下面出现了滚动条
   -->
-
     <el-main>
       <div class="app-pixiu-content-card">
         <el-card class="create-card-style">
@@ -82,9 +81,9 @@
             <div style="margin-top: 20px" />
             <el-form-item label="类型" style="width: 600px">
               <el-radio-group v-model="data.form.spec.type" style="margin-top: 4px">
-                <el-radio-button label="ClusterIP" border>ClusterIP</el-radio-button>
-                <el-radio-button label="NodePort" border>NodePort</el-radio-button>
-                <el-radio-button label="LoadBalancer" border>LoadBalancer</el-radio-button>
+                <el-radio-button label="ClusterIP">ClusterIP</el-radio-button>
+                <el-radio-button label="NodePort">NodePort</el-radio-button>
+                <el-radio-button label="LoadBalancer">LoadBalancer</el-radio-button>
               </el-radio-group>
               <div class="app-pixiu-line-describe2">
                 <div v-if="data.form.spec.type === 'ClusterIP'">
@@ -110,8 +109,7 @@
               </div>
             </el-form-item>
 
-            <div style="margin-top: -10px" />
-            <el-form-item label="标签" style="margin-top: 10px">
+            <el-form-item label="标签">
               <el-button type="text" class="app-action-btn" style="color: #3377ff" @click="addLabel"
                 >新增</el-button
               >
@@ -126,6 +124,7 @@
               v-for="(item, index) in data.form.labels"
               :key="index"
               class="labels-item-style"
+              style="margin-top: -15px"
             >
               <el-form-item
                 :prop="'labels[' + index + '].key'"
@@ -163,8 +162,8 @@
             <div style="margin-top: 10px" />
             <el-form-item label="Selector" style="width: 600px">
               <el-radio-group v-model="data.selectorType" style="margin-top: 4px">
-                <el-radio-button label="普通" border>普通</el-radio-button>
-                <el-radio-button label="高级" border>高级</el-radio-button>
+                <el-radio-button label="普通">普通</el-radio-button>
+                <el-radio-button label="高级">高级</el-radio-button>
               </el-radio-group>
             </el-form-item>
 
@@ -195,18 +194,25 @@
                   >新增</el-button
                 >
               </el-form-item>
+
               <el-form-item
-                v-for="(item, index) in data.selectors"
+                v-for="(item, index) in data.form.selectors"
                 :key="index"
                 style="margin-top: -15px"
               >
-                <div>
-                  <el-input v-model="item.key" placeholder="标签键" style="width: 280px" />
-                </div>
+                <el-form-item
+                  :prop="'selectors[' + index + '].key'"
+                  :rules="[{ required: true, message: 'selector 键不能为空', trigger: 'blur' }]"
+                >
+                  <el-input v-model="item.key" placeholder="selector 键" style="width: 280px" />
+                </el-form-item>
                 <div style="margin-right: 10px; margin-left: 10px">=</div>
-                <div>
-                  <el-input v-model="item.value" placeholder="标签值" style="width: 280px" />
-                </div>
+                <el-form-item
+                  :prop="'selectors[' + index + '].value'"
+                  :rules="[{ required: true, message: 'selector 键不能为空', trigger: 'blur' }]"
+                >
+                  <el-input v-model="item.value" placeholder="selector 值" style="width: 280px" />
+                </el-form-item>
                 <div
                   style="float: right; cursor: pointer; margin-left: 10px"
                   @click="deleteSelector(index)"
@@ -318,20 +324,20 @@
 
 <script setup>
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
-import PixiuCard from '@/components/card/index.vue';
+import { getDeployments } from '@/services/kubernetes/deploymentService';
+import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 
 const ruleFormRef = ref();
 const { proxy } = getCurrentInstance();
 
 const data = reactive({
+  cluster: '',
+  clusterName: '',
+
   loading: false,
   Session: false,
 
-  clutser: '',
   namespaces: [],
-
-  labels: [],
-  selectors: [],
 
   serviceType: '常规服务',
   selectorType: '普通',
@@ -341,19 +347,28 @@ const data = reactive({
       namespace: 'default',
     },
 
+    labels: [],
+    selectors: [],
+    ports: [],
+
     spec: {
-      ports: [
-        {
-          name: '',
-          port: '',
-          protocol: 'TCP',
-          targetPort: '',
-        },
-      ],
-      selector: {},
+      ports: [],
+      selector: [],
       type: 'ClusterIP',
     },
     labels: [],
+  },
+
+  objectForm: {
+    metadata: {
+      name: '',
+      namespace: 'default',
+    },
+    spec: {
+      ports: [],
+      selector: {},
+      type: 'ClusterIP',
+    },
   },
 
   deployment: '',
@@ -372,11 +387,9 @@ onMounted(() => {
   data.cluster = data.query.cluster;
   data.clusterName = localStorage.getItem(data.cluster);
 
-  data.path = proxy.$route.fullPath;
-
   getNamespaceList();
   // 获取 deployment 列表
-  getDeploymentList(data.cluster, data.form.metadata.namespace);
+  getDeploymentList();
 
   // addLabel();
   if (data.selectorType === '高级') {
@@ -388,7 +401,9 @@ watch(
   () => data.selectorType,
   (newActive, oldActive) => {
     if (newActive === '高级') {
-      addSelector();
+      if (data.form.selectors.length === 0) {
+        addSelector();
+      }
     } else {
       data.selectors = [];
     }
@@ -462,45 +477,36 @@ const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
   data.form.metadata.namespace = val;
 
-  getDeploymentList(data.cluster, data.form.metadata.namespace);
+  getDeploymentList();
 };
 
 const changeDeployment = async (val) => {};
 
-const getDeploymentList = async (cluster, namespace) => {
-  try {
-    const result = await proxy.$http({
-      method: 'get',
-      url: `/proxy/pixiu/${cluster}/apis/apps/v1/namespaces/${namespace}/deployments`,
-      data: {
-        limit: 500,
-      },
-    });
+const getDeploymentList = async () => {
+  const [result, err] = await getDeployments(data.cluster, data.form.metadata.namespace);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
 
-    data.deployments = [];
-    data.deploymentMap = {};
-    for (let d of result.items) {
-      data.deployments.push(d.metadata.name);
-      data.deploymentMap[d.metadata.name] = d;
-    }
-    if (data.deployments.length > 0) {
-      data.deployment = data.deployments[0];
-    }
-  } catch (error) {}
+  data.deployments = [];
+  data.deploymentMap = {};
+  for (let d of result.items) {
+    data.deployments.push(d.metadata.name);
+    data.deploymentMap[d.metadata.name] = d;
+  }
+  if (data.deployments.length > 0) {
+    data.deployment = data.deployments[0];
+  }
 };
 
 const getNamespaceList = async () => {
-  try {
-    const result = await proxy.$http({
-      method: 'get',
-      url: '/proxy/pixiu/' + data.cluster + '/api/v1/namespaces',
-    });
-
-    data.namespaces = [];
-    for (let item of result.items) {
-      data.namespaces.push(item.metadata.name);
-    }
-  } catch (error) {}
+  const [result, err] = await getNamespaceNames(data.cluster);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  data.namespaces = result;
 };
 
 const addLabel = () => {
@@ -515,18 +521,18 @@ const deleteLabel = (index) => {
 };
 
 const addSelector = () => {
-  data.selectors.push({
+  data.form.selectors.push({
     key: '',
     value: '',
   });
 };
 
 const deleteSelector = (index) => {
-  data.selectors.splice(index, 1);
+  data.form.selectors.splice(index, 1);
 };
 
 const addPort = () => {
-  data.form.spec.ports.push({
+  data.form.ports.push({
     name: '',
     port: '',
     protocol: '',
@@ -535,7 +541,7 @@ const addPort = () => {
 };
 
 const deletePort = (index) => {
-  data.form.spec.ports.splice(index, 1);
+  data.form.ports.splice(index, 1);
 };
 
 const backToService = () => {
