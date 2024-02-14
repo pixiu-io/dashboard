@@ -31,13 +31,13 @@
         <el-card class="create-card-style">
           <el-form
             ref="ruleFormRef"
-            :rules="rules"
             label-position="left"
-            label-width="100px"
             require-asterisk-position="right"
+            label-width="100px"
+            :rules="rules"
             status-icon
             :model="data.form"
-            style="margin-left: 3%; width: 80%"
+            class="create-card-form"
           >
             <div style="margin-top: 20px" />
             <el-form-item label="名称" prop="metadata.name" style="width: 500px">
@@ -85,16 +85,16 @@
               <el-button type="text" class="app-action-btn" @click="addRule">增加</el-button>
             </el-form-item>
             <el-form-item
-              v-for="(item, index) in data.ingressRules"
+              v-for="(item, index) in data.form.rules"
               :key="index"
               style="margin-top: -30px"
             >
               <el-card
                 style="
-                  width: 90%;
+                  width: 80%;
                   height: 180px;
                   background-color: #f2f2f2;
-                  margin-top: 20px;
+                  margin-top: 15px;
                   border-radius: 0px;
                 "
               >
@@ -102,75 +102,79 @@
                   <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
                 </div>
 
-                <el-form
-                  label-position="left"
-                  label-width="100px"
-                  status-icon
-                  :model="data.ingressRules"
-                  require-asterisk-position="right"
-                  style="margin-left: 2%; width: 90%"
+                <el-form-item
+                  label="域名"
+                  :prop="'rules[' + index + '].domain'"
+                  :rules="[{ required: true, message: '域名不能为空', trigger: 'blur' }]"
                 >
-                  <div style="margin-top: 4px" />
+                  <el-input
+                    v-model="item.domain"
+                    placeholder="请输入 ingress 的全称域名"
+                    style="width: 60%; margin-left: -40px"
+                  />
+                </el-form-item>
 
-                  <el-form-item label="域名">
+                <el-form-item
+                  label="路径"
+                  style="margin-top: 15px"
+                  :rules="[{ required: true, trigger: 'blur' }]"
+                >
+                  <div class="label-title-style" style="font-size: 13px; margin-left: -40px">
+                    Path
+                  </div>
+                  <div class="label-title-style" style="margin-left: 150px; font-size: 13px">
+                    服务
+                  </div>
+                  <div class="label-title-style" style="margin-left: 145px; font-size: 13px">
+                    端口
+                  </div>
+                  <el-divider style="width: 100%; margin-top: 2px; margin-left: -40px" />
+                </el-form-item>
+
+                <el-form-item style="margin-top: -10px; margin-left: 60px">
+                  <el-form-item
+                    :prop="'rules[' + index + '].path'"
+                    :rules="[{ required: true, message: 'Path 不能为空', trigger: 'blur' }]"
+                  >
                     <el-input
-                      v-model="item.domain"
-                      placeholder=""
-                      style="width: 70%; margin-left: -40px"
+                      v-model="item.path"
+                      placeholder="请输入路径或正则"
+                      style="width: 160px"
                     />
                   </el-form-item>
-
-                  <el-form-item label="路径" style="margin-top: 15px">
-                    <div class="label-title-style" style="font-size: 13px; margin-left: -40px">
-                      Path
-                    </div>
-                    <div class="label-title-style" style="margin-left: 150px; font-size: 13px">
-                      服务
-                    </div>
-                    <div class="label-title-style" style="margin-left: 155px; font-size: 13px">
-                      端口
-                    </div>
-                    <el-divider style="width: 100%; margin-top: 2px; margin-left: -40px" />
+                  <el-form-item
+                    style="margin-left: 20px; width: 150px"
+                    :prop="'rules[' + index + '].service'"
+                    :rules="[{ required: true, message: '服务不能为空', trigger: 'blur' }]"
+                  >
+                    <el-select v-model="item.service">
+                      <el-option
+                        v-for="svc in data.services"
+                        :key="svc"
+                        :value="svc"
+                        :label="svc"
+                      />
+                    </el-select>
                   </el-form-item>
 
                   <el-form-item
-                    v-for="(ruleItem, ruleIndex) in data.ingressRules"
-                    :key="ruleIndex"
-                    style="margin-top: -10px; margin-left: 60px"
+                    style="margin-left: 20px"
+                    :prop="'rules[' + index + '].port'"
+                    :rules="[{ required: true, message: '服务端口不能为空', trigger: 'blur' }]"
                   >
-                    <div>
-                      <el-input
-                        v-model="ruleItem.path"
-                        placeholder="请输入路径或正则"
-                        style="width: 160px"
-                      />
-                    </div>
-                    <div style="margin-left: 20px; width: 160px">
-                      <el-select v-model="ruleItem.service">
-                        <el-option
-                          v-for="svc in data.services"
-                          :key="svc"
-                          :value="svc"
-                          :label="svc"
-                        />
-                      </el-select>
-                    </div>
-
-                    <div style="margin-left: 20px">
-                      <el-input
-                        v-model="ruleItem.port"
-                        placeholder="1-65535内的整数"
-                        style="width: 130px"
-                      />
-                    </div>
+                    <el-input
+                      v-model="item.port"
+                      placeholder="1-65535内的整数"
+                      style="width: 150px"
+                    />
                   </el-form-item>
-                </el-form>
+                </el-form-item>
               </el-card>
             </el-form-item>
 
-            <el-form-item label="会话保持" style="margin-top: 20px">
+            <!-- <el-form-item label="会话保持" style="margin-top: 20px">
               <el-switch v-model="data.Session" inline-prompt width="40px" />
-            </el-form-item>
+            </el-form-item> -->
 
             <div style="margin-top: 30px" />
             <el-form-item style="margin-left: 30%">
@@ -189,7 +193,7 @@
 <script setup>
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 import { getServiceList } from '@/services/kubernetes/serviceService';
-import { getNamespaceList } from '@/services/kubernetes/namespaceService';
+import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import { createIngress } from '@/services/kubernetes/ingressService';
 
 const ruleFormRef = ref();
@@ -206,12 +210,17 @@ const data = reactive({
       name: '',
       namespace: 'default',
     },
+    rules: [],
+  },
+  objectForm: {
+    metadata: {
+      name: '',
+      namespace: 'default',
+    },
     spec: {
       rules: [],
     },
   },
-
-  ingressRules: [],
 
   namespaces: [],
   services: [],
@@ -240,12 +249,9 @@ watch(
 const comfirm = async () => {
   ruleFormRef.value.validate(async (valid) => {
     if (valid) {
-      if (data.ingressRules.length === 0) {
-        proxy.$message.error('转发规则为必填项');
-        return;
-      }
+      data.objectForm.metadata = data.form.metadata;
 
-      for (let rule of data.ingressRules) {
+      for (let rule of data.form.rules) {
         let paths = [];
         paths.push({
           pathType: 'ImplementationSpecific',
@@ -259,7 +265,7 @@ const comfirm = async () => {
           },
         });
 
-        data.form.spec.rules.push({
+        data.objectForm.spec.rules.push({
           host: rule.domain,
           http: {
             paths: paths,
@@ -269,8 +275,8 @@ const comfirm = async () => {
 
       const [result, err] = await createIngress(
         data.cluster,
-        data.form.metadata.namespace,
-        data.form,
+        data.objectForm.metadata.namespace,
+        data.objectForm,
       );
       if (err) {
         proxy.$message.error(err.response.data.message);
@@ -295,15 +301,12 @@ const changeNamespace = async (val) => {
 };
 
 const syncNamespaces = async () => {
-  const [err, ns] = await getNamespaceList(data.cluster, data.form.metadata.namespace);
+  const [result, err] = await getNamespaceNames(data.cluster);
   if (err) {
+    proxy.$message.error(err.response.data.message);
     return;
   }
-
-  data.namespaces = [];
-  for (let item of ns.items) {
-    data.namespaces.push(item.metadata.name);
-  }
+  data.namespaces = result;
 };
 
 const syncServices = async () => {
@@ -325,7 +328,7 @@ const syncServices = async () => {
 };
 
 const addRule = () => {
-  data.ingressRules.push({
+  data.form.rules.push({
     domain: '',
     path: '',
     service: '',
@@ -334,7 +337,11 @@ const addRule = () => {
 };
 
 const deleteRule = (index) => {
-  data.ingressRules.splice(index, 1);
+  if (data.form.rules.length === 1) {
+    proxy.$message.error('至少需要 1 域名规则');
+    return;
+  }
+  data.form.rules.splice(index, 1);
 };
 
 const backToIngress = () => {
