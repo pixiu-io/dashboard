@@ -36,20 +36,24 @@
             label-width="100px"
             :rules="rules"
             status-icon
-            :model="data.form"
+            :model="data.namespaceForm"
             class="create-card-form"
           >
             <div style="margin-top: 20px" />
 
-            <el-form-item label="名称" prop="metadata.name" style="width: 80%">
-              <el-input v-model="data.namespaceForm.metadata.name" style="width: 40%" />
+            <el-form-item label="名称" prop="metadata.name">
+              <el-input
+                v-model="data.namespaceForm.metadata.name"
+                style="width: 40%"
+                placeholder="请输入命名空间名称"
+              />
               <div class="app-pixiu-line-describe2">
                 最长63个字符，只能包含小写字母、数字及分隔符("-"),且必须以小写字母开头，数字或小写字母结尾
               </div>
             </el-form-item>
 
             <div style="margin-top: 20px" />
-            <el-form-item prop="description" label="描述" style="width: 60%">
+            <el-form-item prop="description" label="描述" style="width: 65%">
               <el-input
                 v-model="data.namespaceForm.description"
                 placeholder="请输入命名空间的描述信息"
@@ -74,6 +78,7 @@
 
 <script setup>
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
+import { createNamespace } from '@/services/kubernetes/namespaceService';
 import PixiuCard from '@/components/card/index.vue';
 
 const { proxy } = getCurrentInstance();
@@ -85,7 +90,7 @@ const data = reactive({
   clusterName: '',
 
   autosize: {
-    minRows: 5,
+    minRows: 6,
   },
 
   namespaceForm: {
@@ -98,15 +103,14 @@ const data = reactive({
 const confirm = () => {
   ruleFormRef.value.validate(async (valid) => {
     if (valid) {
-      try {
-        const resp = await proxy.$http({
-          method: 'post',
-          url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces`,
-          data: data.namespaceForm,
-        });
-        proxy.$message.success(`命名空间 ${data.namespaceForm.metadata.name} 创建成功`);
-        backToNamespace();
-      } catch (error) {}
+      const [result, err] = await createNamespace(data.cluster, data.namespaceForm);
+      if (err) {
+        proxy.$message.error(err.response.data.message);
+        return;
+      }
+
+      proxy.$message.success(`Namespace ${data.namespaceForm.metadata.name} 创建成功`);
+      backToNamespace();
     }
   });
 };
