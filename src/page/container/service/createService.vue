@@ -244,16 +244,6 @@
               <!-- 分割线 -->
               <el-divider style="width: 75%; margin-top: 2px" />
 
-              <el-form-item style="margin-top: -15px">
-                <el-button
-                  type="text"
-                  class="app-action-btn"
-                  style="color: #3377ff"
-                  @click="addPort"
-                  >新增</el-button
-                >
-              </el-form-item>
-
               <el-form-item
                 v-for="(item, index) in data.form.ports"
                 :key="index"
@@ -314,6 +304,12 @@
                   />
                 </div>
               </el-form-item>
+            </el-form-item>
+
+            <el-form-item style="margin-top: -15px">
+              <el-button type="text" class="app-action-btn" style="color: #3377ff" @click="addPort"
+                >新增</el-button
+              >
             </el-form-item>
 
             <el-form-item label="会话保持" style="margin-top: 20px">
