@@ -242,12 +242,12 @@
               </div>
 
               <!-- 分割线 -->
-              <el-divider style="width: 75%; margin-top: 2px" />
+              <el-divider style="width: 75%; margin-top: 2px; margin-bottom: 10px" />
 
               <el-form-item
                 v-for="(item, index) in data.form.ports"
                 :key="index"
-                style="margin-top: -10px"
+                style="margin-top: 4px"
               >
                 <el-form-item
                   :prop="'ports[' + index + '].port'"
