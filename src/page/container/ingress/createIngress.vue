@@ -125,7 +125,7 @@
                   <div class="label-title-style" style="margin-left: 150px; font-size: 13px">
                     服务
                   </div>
-                  <div class="label-title-style" style="margin-left: 155px; font-size: 13px">
+                  <div class="label-title-style" style="margin-left: 145px; font-size: 13px">
                     端口
                   </div>
                   <el-divider style="width: 100%; margin-top: 2px; margin-left: -40px" />
