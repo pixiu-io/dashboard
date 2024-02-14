@@ -109,7 +109,7 @@
                 >
                   <el-input
                     v-model="item.domain"
-                    placeholder=""
+                    placeholder="请输入 ingress 的全称域名"
                     style="width: 60%; margin-left: -40px"
                   />
                 </el-form-item>
