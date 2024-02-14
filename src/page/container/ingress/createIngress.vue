@@ -249,7 +249,9 @@ watch(
 const comfirm = async () => {
   ruleFormRef.value.validate(async (valid) => {
     if (valid) {
-      for (let rule of data.ingressRules) {
+      data.objectForm.metadata = data.form.metadata;
+
+      for (let rule of data.form.rules) {
         let paths = [];
         paths.push({
           pathType: 'ImplementationSpecific',
@@ -263,7 +265,7 @@ const comfirm = async () => {
           },
         });
 
-        data.form.spec.rules.push({
+        data.objectForm.spec.rules.push({
           host: rule.domain,
           http: {
             paths: paths,
@@ -273,8 +275,8 @@ const comfirm = async () => {
 
       const [result, err] = await createIngress(
         data.cluster,
-        data.form.metadata.namespace,
-        data.form,
+        data.objectForm.metadata.namespace,
+        data.objectForm,
       );
       if (err) {
         proxy.$message.error(err.response.data.message);
