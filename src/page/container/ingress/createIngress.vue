@@ -102,7 +102,11 @@
                   <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
                 </div>
 
-                <el-form-item label="域名">
+                <el-form-item
+                  label="域名"
+                  :prop="'rules[' + index + '].domain'"
+                  :rules="[{ required: true, message: '域名不能为空', trigger: 'blur' }]"
+                >
                   <el-input
                     v-model="item.domain"
                     placeholder=""
@@ -110,7 +114,11 @@
                   />
                 </el-form-item>
 
-                <el-form-item label="路径" style="margin-top: 15px">
+                <el-form-item
+                  label="路径"
+                  style="margin-top: 15px"
+                  :rules="[{ required: true, trigger: 'blur' }]"
+                >
                   <div class="label-title-style" style="font-size: 13px; margin-left: -40px">
                     Path
                   </div>
@@ -320,6 +328,10 @@ const addRule = () => {
 };
 
 const deleteRule = (index) => {
+  if (data.form.rules.length === 1) {
+    proxy.$message.error('至少需要 1 域名规则');
+    return;
+  }
   data.form.rules.splice(index, 1);
 };
 
