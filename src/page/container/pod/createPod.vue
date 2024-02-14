@@ -7,7 +7,7 @@
         size="16px"
         type="iconfont"
         color="#006eff"
-        @click="backToNamespace"
+        @click="backToPod"
       />
 
       <el-breadcrumb separator="/" style="margin-left: 10px; margin-top: 1px">
