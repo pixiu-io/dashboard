@@ -233,11 +233,11 @@
 
             <el-form-item label="Ports" style="margin-top: 20px">
               <div class="label-title-style" style="font-size: 13px">服务端口</div>
-              <div class="label-title-style" style="margin-left: 148px; font-size: 13px">协议</div>
-              <div class="label-title-style" style="margin-left: 175px; font-size: 13px">
+              <div class="label-title-style" style="margin-left: 120px; font-size: 13px">协议</div>
+              <div class="label-title-style" style="margin-left: 180px; font-size: 13px">
                 目标端口
               </div>
-              <div class="label-title-style" style="margin-left: 146px; font-size: 13px">
+              <div class="label-title-style" style="margin-left: 120px; font-size: 13px">
                 端口名
               </div>
 
@@ -254,18 +254,18 @@
               </el-form-item>
 
               <el-form-item
-                v-for="(item, index) in data.form.spec.ports"
+                v-for="(item, index) in data.form.ports"
                 :key="index"
                 style="margin-top: -10px"
               >
-                <div>
+                <el-form-item>
                   <el-input
                     v-model="item.port"
                     placeholder="1-65535内的整数"
-                    style="width: 180px"
+                    style="width: 150px"
                   />
-                </div>
-                <div style="margin-left: 20px">
+                </el-form-item>
+                <el-form-item style="margin-left: 20px">
                   <el-select v-model="item.protocol">
                     <el-option
                       v-for="item in data.protocols"
@@ -274,12 +274,12 @@
                       :label="item"
                     />
                   </el-select>
-                </div>
+                </el-form-item>
                 <div style="margin-left: 20px">
                   <el-input
                     v-model="item.targetPort"
                     placeholder="1-65535内的整数"
-                    style="width: 180px"
+                    style="width: 150px"
                   />
                 </div>
                 <div style="margin-left: 20px">
