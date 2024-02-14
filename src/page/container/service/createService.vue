@@ -536,6 +536,10 @@ const addSelector = () => {
 };
 
 const deleteSelector = (index) => {
+  if (data.form.selectors.length === 1) {
+    proxy.$message.error('至少需要 1 个选择器');
+    return;
+  }
   data.form.selectors.splice(index, 1);
 };
 
@@ -549,6 +553,10 @@ const addPort = () => {
 };
 
 const deletePort = (index) => {
+  if (data.form.ports.length === 1) {
+    proxy.$message.error('至少需要 1 个服务端口组');
+    return;
+  }
   data.form.ports.splice(index, 1);
 };
 
