@@ -422,6 +422,7 @@ const comfirm = async () => {
       data.objectForm.metadata = data.form.metadata;
 
       // 转换 port，从字符串转换成 int32
+      data.objectForm.spec.ports = [];
       for (var i = 0; i < data.form.ports.length; i++) {
         let p = data.form.ports[i];
         let name = p.name;
@@ -437,6 +438,7 @@ const comfirm = async () => {
         });
       }
 
+      data.objectForm.spec.selector = {};
       if (data.selectorType === '普通') {
         const d = data.deploymentMap[data.deployment];
         if (d === undefined) {
