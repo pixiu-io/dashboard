@@ -110,7 +110,7 @@
                   <el-input
                     v-model="item.domain"
                     placeholder=""
-                    style="width: 70%; margin-left: -40px"
+                    style="width: 60%; margin-left: -40px"
                   />
                 </el-form-item>
 
@@ -134,7 +134,7 @@
                 <el-form-item style="margin-top: -10px; margin-left: 60px">
                   <el-form-item
                     :prop="'rules[' + index + '].path'"
-                    :rules="[{ required: true, message: '服务路径不能为空', trigger: 'blur' }]"
+                    :rules="[{ required: true, message: 'Path 不能为空', trigger: 'blur' }]"
                   >
                     <el-input
                       v-model="item.path"
