@@ -241,7 +241,8 @@
                 端口名
               </div>
 
-              <el-divider style="width: 85%; margin-top: 2px" />
+              <!-- 分割线 -->
+              <el-divider style="width: 75%; margin-top: 2px" />
 
               <el-form-item style="margin-top: -15px">
                 <el-button
@@ -258,14 +259,21 @@
                 :key="index"
                 style="margin-top: -10px"
               >
-                <el-form-item>
+                <el-form-item
+                  :prop="'ports[' + index + '].port'"
+                  :rules="[{ required: true, message: '服务端口不能为空', trigger: 'blur' }]"
+                >
                   <el-input
                     v-model="item.port"
                     placeholder="1-65535内的整数"
                     style="width: 150px"
                   />
                 </el-form-item>
-                <el-form-item style="margin-left: 20px">
+                <el-form-item
+                  style="margin-left: 20px"
+                  :prop="'ports[' + index + '].protocol'"
+                  :rules="[{ required: true, message: '服务协议未选择', trigger: 'blur' }]"
+                >
                   <el-select v-model="item.protocol">
                     <el-option
                       v-for="item in data.protocols"
@@ -275,13 +283,17 @@
                     />
                   </el-select>
                 </el-form-item>
-                <div style="margin-left: 20px">
+                <el-form-item
+                  style="margin-left: 20px"
+                  :prop="'ports[' + index + '].targetPort'"
+                  :rules="[{ required: true, message: '目标端口不能为空', trigger: 'blur' }]"
+                >
                   <el-input
                     v-model="item.targetPort"
                     placeholder="1-65535内的整数"
                     style="width: 150px"
                   />
-                </div>
+                </el-form-item>
                 <div style="margin-left: 20px">
                   <el-input
                     v-model="item.name"
