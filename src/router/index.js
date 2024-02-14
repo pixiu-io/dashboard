@@ -176,30 +176,6 @@ const routes = [
             component: PodDetail,
           },
           {
-            path: 'pods/createPod',
-            name: 'CreatePod',
-            meta: {
-              title: 'CreatePod',
-            },
-            component: CreatePod,
-          },
-          {
-            path: 'deployments/createDeployment',
-            name: 'CreateDeployment',
-            meta: {
-              title: 'CreateDeployment',
-            },
-            component: CreateDeployment,
-          },
-          {
-            path: 'deployments/editDeployment',
-            name: 'EditDeployment',
-            meta: {
-              title: 'EditDeployment',
-            },
-            component: EditDeployment,
-          },
-          {
             path: 'deployments/detail',
             name: 'DeploymentDetail',
             meta: {
@@ -386,6 +362,30 @@ const routes = [
           title: 'createSecret',
         },
         component: CreateSecret,
+      },
+      {
+        path: 'pods/createPod',
+        name: 'CreatePod',
+        meta: {
+          title: 'CreatePod',
+        },
+        component: CreatePod,
+      },
+      {
+        path: 'deployments/createDeployment',
+        name: 'CreateDeployment',
+        meta: {
+          title: 'CreateDeployment',
+        },
+        component: CreateDeployment,
+      },
+      {
+        path: 'deployments/editDeployment',
+        name: 'EditDeployment',
+        meta: {
+          title: 'EditDeployment',
+        },
+        component: EditDeployment,
       },
       {
         path: 'cicd',

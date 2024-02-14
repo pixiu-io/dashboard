@@ -18,7 +18,7 @@
           ><span class="breadcrumb-create-style"> {{ data.clusterName }} </span>
         </el-breadcrumb-item>
         <el-breadcrumb-item
-          ><span class="breadcrumb-create-style"> Secret </span>
+          ><span class="breadcrumb-create-style"> Secrets </span>
         </el-breadcrumb-item>
         <el-breadcrumb-item
           ><span class="breadcrumb-create-style"> 新建Secret </span>

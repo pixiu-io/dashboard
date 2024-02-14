@@ -18,7 +18,7 @@
           ><span class="breadcrumb-create-style"> {{ data.clusterName }} </span>
         </el-breadcrumb-item>
         <el-breadcrumb-item
-          ><span class="breadcrumb-create-style"> ConfigMap </span>
+          ><span class="breadcrumb-create-style"> ConfigMaps </span>
         </el-breadcrumb-item>
         <el-breadcrumb-item
           ><span class="breadcrumb-create-style"> 创建ConfigMap </span>

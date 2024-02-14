@@ -340,12 +340,12 @@ const confirmEditYaml = async () => {
 };
 
 const createDeployment = () => {
-  const url = `/kubernetes/deployments/createDeployment?cluster=${data.cluster}&namespace=${data.namespace}`;
+  const url = `/deployments/createDeployment?cluster=${data.cluster}`;
   router.push(url);
 };
 
 const editDeployment = (row) => {
-  const url = `/kubernetes/deployments/editDeployment?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
+  const url = `/deployments/editDeployment?cluster=${data.cluster}&name=${row.metadata.name}`;
   router.push(url);
 };
 
