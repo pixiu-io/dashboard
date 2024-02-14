@@ -1,9 +1,26 @@
 <template>
   <div style="display: flex; flex-direction: column; width: 100%; height: 100%">
-    <pixiu-card back="true" title="新建标准集群" height="50px" />
+    <!-- <pixiu-card back="true" title="新建标准集群" height="50px" /> -->
+    <div style="width: 100%; height: 60px; background: #ffffff; display: flex; align-items: center">
+      <pixiu-icon
+        name="icon-back"
+        style="cursor: pointer; margin-left: 25px"
+        size="16px"
+        type="iconfont"
+        color="#006eff"
+        @click="backToCluster"
+      />
+
+      <el-breadcrumb separator="/" style="margin-left: 10px; margin-top: 1px">
+        <el-breadcrumb-item
+          ><span class="breadcrumb-create-style"> 创建标准集群 </span>
+        </el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
+
     <el-main>
       <div class="app-pixiu-content-card">
-        <el-card style="margin-top: 10px; width: 75%; border-radius: 0px">
+        <el-card class="create-card-style" style="width: 75%">
           <el-form
             ref="ruleFormRef"
             :label-position="labelPosition"
@@ -15,8 +32,12 @@
             style="margin-left: 2%"
           >
             <div style="margin-top: 20px" />
-            <el-form-item label="集群名称" prop="alias_name" style="width: 50%">
-              <el-input v-model="data.clusterForm.alias_name" placeholder="请输入集群名称" />
+            <el-form-item label="集群名称" prop="alias_name">
+              <el-input
+                v-model="data.clusterForm.alias_name"
+                placeholder="请输入集群名称"
+                style="width: 50%"
+              />
             </el-form-item>
 
             <div style="margin-top: 30px" />
@@ -192,14 +213,14 @@ const comfirmCreate = async () => {
           data: data.clusterForm,
         });
         proxy.$message.success(`Kubernetes 集群 ${data.clusterForm.alias_name} 创建成功`);
-        backToContainer();
+        backToCluster();
       } catch (error) {}
     }
   });
 };
 
 const cancelCreate = () => {
-  backToContainer();
+  backToCluster();
 };
 
 const connectKubernetes = async () => {
@@ -221,10 +242,10 @@ const connectKubernetes = async () => {
   } catch (error) {}
 };
 
-// 回到 container 页面
-const backToContainer = () => {
+// 回到 Cluster 页面
+const backToCluster = () => {
   proxy.$router.push({
-    name: 'Container',
+    name: 'Cluster',
   });
 };
 
