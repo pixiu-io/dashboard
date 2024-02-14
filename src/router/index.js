@@ -176,30 +176,6 @@ const routes = [
             component: PodDetail,
           },
           {
-            path: 'pods/createPod',
-            name: 'CreatePod',
-            meta: {
-              title: 'CreatePod',
-            },
-            component: CreatePod,
-          },
-          {
-            path: 'deployments/createDeployment',
-            name: 'CreateDeployment',
-            meta: {
-              title: 'CreateDeployment',
-            },
-            component: CreateDeployment,
-          },
-          {
-            path: 'deployments/editDeployment',
-            name: 'EditDeployment',
-            meta: {
-              title: 'EditDeployment',
-            },
-            component: EditDeployment,
-          },
-          {
             path: 'deployments/detail',
             name: 'DeploymentDetail',
             meta: {
@@ -267,44 +243,12 @@ const routes = [
             component: ConfigMap,
           },
           {
-            path: 'configmaps/createConfigMap',
-            name: 'createConfigMap',
-            meta: {
-              title: 'createConfigMap',
-            },
-            component: CreateConfigMap,
-          },
-          {
-            path: 'configmaps/editConfigMap',
-            name: 'editConfigMap',
-            meta: {
-              title: 'editConfigMap',
-            },
-            component: EditConfigMap,
-          },
-          {
             path: 'secrets',
             name: 'Secret',
             meta: {
               title: 'secret',
             },
             component: Secret,
-          },
-          {
-            path: 'secrets/editSecret',
-            name: 'editSecret',
-            meta: {
-              title: 'editSecret',
-            },
-            component: EditSecret,
-          },
-          {
-            path: 'secrets/createSecret',
-            name: 'createSecret',
-            meta: {
-              title: 'createSecret',
-            },
-            component: CreateSecret,
           },
           {
             path: 'storageclass',
@@ -383,6 +327,65 @@ const routes = [
           title: 'EditIngress',
         },
         component: EditIngress,
+      },
+      // configMap 创建和编辑路由
+      {
+        path: 'configmaps/createConfigMap',
+        name: 'createConfigMap',
+        meta: {
+          title: 'createConfigMap',
+        },
+        component: CreateConfigMap,
+      },
+      {
+        path: 'configmaps/editConfigMap',
+        name: 'editConfigMap',
+        meta: {
+          title: 'editConfigMap',
+        },
+        component: EditConfigMap,
+      },
+
+      // secret 路由
+      {
+        path: 'secrets/editSecret',
+        name: 'editSecret',
+        meta: {
+          title: 'editSecret',
+        },
+        component: EditSecret,
+      },
+      {
+        path: 'secrets/createSecret',
+        name: 'createSecret',
+        meta: {
+          title: 'createSecret',
+        },
+        component: CreateSecret,
+      },
+      {
+        path: 'pods/createPod',
+        name: 'CreatePod',
+        meta: {
+          title: 'CreatePod',
+        },
+        component: CreatePod,
+      },
+      {
+        path: 'deployments/createDeployment',
+        name: 'CreateDeployment',
+        meta: {
+          title: 'CreateDeployment',
+        },
+        component: CreateDeployment,
+      },
+      {
+        path: 'deployments/editDeployment',
+        name: 'EditDeployment',
+        meta: {
+          title: 'EditDeployment',
+        },
+        component: EditDeployment,
       },
       {
         path: 'cicd',

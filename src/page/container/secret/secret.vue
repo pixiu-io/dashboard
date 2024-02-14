@@ -250,12 +250,12 @@ const onChange = (v) => {
 };
 
 const createSecret = () => {
-  const url = `/kubernetes/secrets/createSecret?cluster=${data.cluster}&namespace=${data.namespace}`;
+  const url = `/secrets/createSecret?cluster=${data.cluster}`;
   router.push(url);
 };
 
 const editSecret = (row) => {
-  const url = `/kubernetes/secrets/editSecret?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
+  const url = `/secrets/editSecret?cluster=${data.cluster}&name=${row.metadata.name}`;
   router.push(url);
 };
 
