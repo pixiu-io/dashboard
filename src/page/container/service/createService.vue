@@ -44,7 +44,7 @@
             :rules="rules"
             status-icon
             :model="data.form"
-            style="margin-left: 3%; width: 70%"
+            class="create-card-form"
           >
             <div style="margin-top: 20px" />
             <el-form-item label="名称" prop="metadata.name" style="width: 500px">
