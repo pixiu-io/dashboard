@@ -31,13 +31,13 @@
         <el-card class="create-card-style">
           <el-form
             ref="ruleFormRef"
-            :rules="rules"
             label-position="left"
-            label-width="100px"
             require-asterisk-position="right"
+            label-width="100px"
+            :rules="rules"
             status-icon
             :model="data.form"
-            style="margin-left: 3%; width: 80%"
+            class="create-card-form"
           >
             <div style="margin-top: 20px" />
             <el-form-item label="名称" prop="metadata.name" style="width: 500px">
@@ -85,16 +85,16 @@
               <el-button type="text" class="app-action-btn" @click="addRule">增加</el-button>
             </el-form-item>
             <el-form-item
-              v-for="(item, index) in data.ingressRules"
+              v-for="(item, index) in data.form.rules"
               :key="index"
               style="margin-top: -30px"
             >
               <el-card
                 style="
-                  width: 90%;
+                  width: 80%;
                   height: 180px;
                   background-color: #f2f2f2;
-                  margin-top: 20px;
+                  margin-top: 15px;
                   border-radius: 0px;
                 "
               >
@@ -102,75 +102,64 @@
                   <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
                 </div>
 
-                <el-form
-                  label-position="left"
-                  label-width="100px"
-                  status-icon
-                  :model="data.ingressRules"
-                  require-asterisk-position="right"
-                  style="margin-left: 2%; width: 90%"
+                <el-form-item label="域名">
+                  <el-input
+                    v-model="item.domain"
+                    placeholder=""
+                    style="width: 70%; margin-left: -40px"
+                  />
+                </el-form-item>
+
+                <el-form-item label="路径" style="margin-top: 15px">
+                  <div class="label-title-style" style="font-size: 13px; margin-left: -40px">
+                    Path
+                  </div>
+                  <div class="label-title-style" style="margin-left: 150px; font-size: 13px">
+                    服务
+                  </div>
+                  <div class="label-title-style" style="margin-left: 155px; font-size: 13px">
+                    端口
+                  </div>
+                  <el-divider style="width: 100%; margin-top: 2px; margin-left: -40px" />
+                </el-form-item>
+
+                <el-form-item
+                  v-for="(ruleItem, ruleIndex) in data.form.rules"
+                  :key="ruleIndex"
+                  style="margin-top: -10px; margin-left: 60px"
                 >
-                  <div style="margin-top: 4px" />
-
-                  <el-form-item label="域名">
+                  <div>
                     <el-input
-                      v-model="item.domain"
-                      placeholder=""
-                      style="width: 70%; margin-left: -40px"
+                      v-model="ruleItem.path"
+                      placeholder="请输入路径或正则"
+                      style="width: 160px"
                     />
-                  </el-form-item>
-
-                  <el-form-item label="路径" style="margin-top: 15px">
-                    <div class="label-title-style" style="font-size: 13px; margin-left: -40px">
-                      Path
-                    </div>
-                    <div class="label-title-style" style="margin-left: 150px; font-size: 13px">
-                      服务
-                    </div>
-                    <div class="label-title-style" style="margin-left: 155px; font-size: 13px">
-                      端口
-                    </div>
-                    <el-divider style="width: 100%; margin-top: 2px; margin-left: -40px" />
-                  </el-form-item>
-
-                  <el-form-item
-                    v-for="(ruleItem, ruleIndex) in data.ingressRules"
-                    :key="ruleIndex"
-                    style="margin-top: -10px; margin-left: 60px"
-                  >
-                    <div>
-                      <el-input
-                        v-model="ruleItem.path"
-                        placeholder="请输入路径或正则"
-                        style="width: 160px"
+                  </div>
+                  <div style="margin-left: 20px; width: 160px">
+                    <el-select v-model="ruleItem.service">
+                      <el-option
+                        v-for="svc in data.services"
+                        :key="svc"
+                        :value="svc"
+                        :label="svc"
                       />
-                    </div>
-                    <div style="margin-left: 20px; width: 160px">
-                      <el-select v-model="ruleItem.service">
-                        <el-option
-                          v-for="svc in data.services"
-                          :key="svc"
-                          :value="svc"
-                          :label="svc"
-                        />
-                      </el-select>
-                    </div>
+                    </el-select>
+                  </div>
 
-                    <div style="margin-left: 20px">
-                      <el-input
-                        v-model="ruleItem.port"
-                        placeholder="1-65535内的整数"
-                        style="width: 130px"
-                      />
-                    </div>
-                  </el-form-item>
-                </el-form>
+                  <div style="margin-left: 20px">
+                    <el-input
+                      v-model="ruleItem.port"
+                      placeholder="1-65535内的整数"
+                      style="width: 130px"
+                    />
+                  </div>
+                </el-form-item>
               </el-card>
             </el-form-item>
 
-            <el-form-item label="会话保持" style="margin-top: 20px">
+            <!-- <el-form-item label="会话保持" style="margin-top: 20px">
               <el-switch v-model="data.Session" inline-prompt width="40px" />
-            </el-form-item>
+            </el-form-item> -->
 
             <div style="margin-top: 30px" />
             <el-form-item style="margin-left: 30%">
@@ -189,7 +178,7 @@
 <script setup>
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 import { getServiceList } from '@/services/kubernetes/serviceService';
-import { getNamespaceList } from '@/services/kubernetes/namespaceService';
+import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import { createIngress } from '@/services/kubernetes/ingressService';
 
 const ruleFormRef = ref();
@@ -206,12 +195,17 @@ const data = reactive({
       name: '',
       namespace: 'default',
     },
+    rules: [],
+  },
+  objectForm: {
+    metadata: {
+      name: '',
+      namespace: 'default',
+    },
     spec: {
       rules: [],
     },
   },
-
-  ingressRules: [],
 
   namespaces: [],
   services: [],
@@ -240,11 +234,6 @@ watch(
 const comfirm = async () => {
   ruleFormRef.value.validate(async (valid) => {
     if (valid) {
-      if (data.ingressRules.length === 0) {
-        proxy.$message.error('转发规则为必填项');
-        return;
-      }
-
       for (let rule of data.ingressRules) {
         let paths = [];
         paths.push({
@@ -295,15 +284,12 @@ const changeNamespace = async (val) => {
 };
 
 const syncNamespaces = async () => {
-  const [err, ns] = await getNamespaceList(data.cluster, data.form.metadata.namespace);
+  const [result, err] = await getNamespaceNames(data.cluster);
   if (err) {
+    proxy.$message.error(err.response.data.message);
     return;
   }
-
-  data.namespaces = [];
-  for (let item of ns.items) {
-    data.namespaces.push(item.metadata.name);
-  }
+  data.namespaces = result;
 };
 
 const syncServices = async () => {
@@ -325,7 +311,7 @@ const syncServices = async () => {
 };
 
 const addRule = () => {
-  data.ingressRules.push({
+  data.form.rules.push({
     domain: '',
     path: '',
     service: '',
@@ -334,7 +320,7 @@ const addRule = () => {
 };
 
 const deleteRule = (index) => {
-  data.ingressRules.splice(index, 1);
+  data.form.rules.splice(index, 1);
 };
 
 const backToIngress = () => {
