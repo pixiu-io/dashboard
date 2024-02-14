@@ -275,22 +275,6 @@ const routes = [
             component: Secret,
           },
           {
-            path: 'secrets/editSecret',
-            name: 'editSecret',
-            meta: {
-              title: 'editSecret',
-            },
-            component: EditSecret,
-          },
-          {
-            path: 'secrets/createSecret',
-            name: 'createSecret',
-            meta: {
-              title: 'createSecret',
-            },
-            component: CreateSecret,
-          },
-          {
             path: 'storageclass',
             name: 'StorageClass',
             meta: {
@@ -384,6 +368,24 @@ const routes = [
           title: 'editConfigMap',
         },
         component: EditConfigMap,
+      },
+
+      // secret 路由
+      {
+        path: 'secrets/editSecret',
+        name: 'editSecret',
+        meta: {
+          title: 'editSecret',
+        },
+        component: EditSecret,
+      },
+      {
+        path: 'secrets/createSecret',
+        name: 'createSecret',
+        meta: {
+          title: 'createSecret',
+        },
+        component: CreateSecret,
       },
       {
         path: 'cicd',

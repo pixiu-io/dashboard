@@ -144,6 +144,8 @@
 
 <script setup>
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
+
 const { proxy } = getCurrentInstance();
 const ruleFormRef = ref();
 
@@ -222,17 +224,12 @@ const changeNamespace = async (val) => {
 };
 
 const getNamespaceList = async () => {
-  try {
-    const result = await proxy.$http({
-      method: 'get',
-      url: '/proxy/pixiu/' + data.cluster + '/api/v1/namespaces',
-    });
-
-    data.namespaces = [];
-    for (let item of result.items) {
-      data.namespaces.push(item.metadata.name);
-    }
-  } catch (error) {}
+  const [result, err] = await getNamespaceNames(data.cluster);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  data.namespaces = result;
 };
 
 // 回到 configmap 页面
