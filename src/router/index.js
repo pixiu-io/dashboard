@@ -273,22 +273,7 @@ const routes = [
             },
             component: Ingress,
           },
-          {
-            path: 'ingresses/createIngress',
-            name: 'CreateIngress',
-            meta: {
-              title: 'CreateIngress',
-            },
-            component: CreateIngress,
-          },
-          {
-            path: 'ingresses/editIngress',
-            name: 'EditIngress',
-            meta: {
-              title: 'EditIngress',
-            },
-            component: EditIngress,
-          },
+
           {
             path: 'configmaps',
             name: 'ConfigMap',
@@ -380,6 +365,23 @@ const routes = [
           title: 'EditService',
         },
         component: EditService,
+      },
+      // ingress 创建和编辑路由
+      {
+        path: 'ingresses/createIngress',
+        name: 'CreateIngress',
+        meta: {
+          title: 'CreateIngress',
+        },
+        component: CreateIngress,
+      },
+      {
+        path: 'ingresses/editIngress',
+        name: 'EditIngress',
+        meta: {
+          title: 'EditIngress',
+        },
+        component: EditIngress,
       },
       {
         path: 'cicd',
