@@ -399,7 +399,7 @@ onMounted(() => {
   // 获取 deployment 列表
   getDeploymentList();
 
-  // addLabel();
+  addPort();
   if (data.selectorType === '高级') {
     addSelector();
   }
