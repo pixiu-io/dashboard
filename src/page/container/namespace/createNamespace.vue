@@ -1,34 +1,43 @@
 <template>
-  <el-card class="title-card-container">
-    <div class="font-container">
-      <el-breadcrumb separator="/">
-        <el-breadcrumb-item @click="backToNamespace"
-          ><span style="color: black; cursor: pointer"> 命名空间 </span>
+  <div style="display: flex; flex-direction: column; width: 100%; height: 100%">
+    <div style="width: 100%; height: 50px; background: #ffffff; display: flex; align-items: center">
+      <pixiu-icon
+        name="icon-back"
+        style="cursor: pointer; margin-left: 25px"
+        size="16px"
+        type="iconfont"
+        color="#006eff"
+        @click="backToNamespace"
+      />
+
+      <el-breadcrumb separator="/" style="margin-left: 10px; margin-top: 1px">
+        <el-breadcrumb-item
+          ><span class="breadcrumb-create-style"> 集群 </span>
         </el-breadcrumb-item>
-        <el-breadcrumb-item style="color: black">{{ data.cluster }}</el-breadcrumb-item>
-        <el-breadcrumb-item>
-          <span style="color: black"> 新建命名空间 </span>
+        <el-breadcrumb-item
+          ><span class="breadcrumb-create-style"> {{ data.clusterName }} </span>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item
+          ><span class="breadcrumb-create-style"> 命名空间 </span>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item
+          ><span class="breadcrumb-create-style"> 创建命名空间 </span>
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
-  </el-card>
 
-  <div
-    class="deployee-class"
-    style="display: flex; flex-direction: column; width: 100%; height: 100%"
-  >
     <el-main>
       <div class="app-pixiu-content-card">
-        <el-card style="margin-top: 8px; width: 100%; border-radius: 0px">
+        <el-card class="create-card-style" style="width: 75%">
           <el-form
             ref="ruleFormRef"
             label-position="left"
-            label-width="100px"
-            status-icon
-            :rules="rules"
-            :model="data.namespaceForm"
             require-asterisk-position="right"
-            style="margin-left: 3%; width: 80%"
+            label-width="100px"
+            :rules="rules"
+            status-icon
+            :model="data.form"
+            class="create-card-form"
           >
             <div style="margin-top: 20px" />
 
@@ -73,6 +82,8 @@ const ruleFormRef = ref();
 const data = reactive({
   loading: false,
   cluster: '',
+  clusterName: '',
+
   autosize: {
     minRows: 5,
   },
@@ -107,8 +118,7 @@ const cancel = () => {
 onMounted(() => {
   data.query = proxy.$route.query;
   data.cluster = data.query.cluster;
-
-  data.path = proxy.$route.fullPath;
+  data.clusterName = localStorage.getItem(data.cluster);
 });
 
 const rules = {

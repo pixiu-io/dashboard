@@ -136,22 +136,6 @@ const routes = [
             component: Namespace,
           },
           {
-            path: 'createNamespace',
-            name: 'CreateNamespace',
-            meta: {
-              title: 'createNamespace',
-            },
-            component: CreateNamespace,
-          },
-          {
-            path: 'namespaceDetail',
-            name: 'NamespaceDetail',
-            meta: {
-              title: 'namespaceDetail',
-            },
-            component: NamespaceDetail,
-          },
-          {
             path: 'deployments',
             name: 'Deployment',
             meta: {
@@ -331,6 +315,23 @@ const routes = [
             component: StorageClass,
           },
         ],
+      },
+      // 命名空间路由
+      {
+        path: 'namespaces/createNamespace',
+        name: 'CreateNamespace',
+        meta: {
+          title: 'createNamespace',
+        },
+        component: CreateNamespace,
+      },
+      {
+        path: 'namespaces/namespaceDetail',
+        name: 'NamespaceDetail',
+        meta: {
+          title: 'namespaceDetail',
+        },
+        component: NamespaceDetail,
       },
       // storageclasses 路由
       {
