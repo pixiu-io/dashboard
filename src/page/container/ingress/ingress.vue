@@ -149,7 +149,6 @@
 import { useRouter } from 'vue-router';
 import { formatTimestamp } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
 import jsYaml from 'js-yaml';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import {
@@ -357,7 +356,7 @@ const formatterIngressRules = (row, column, cellValue) => {
       const ingressPath = path.path;
       const name = path.backend.service.name;
       const port = path.backend.service.port.number;
-      if (ingressPath === '/') {
+      if (ingressPath === undefined || ingressPath === '/') {
         ingress.push(`${host} -> ${name}:${port}`);
       } else {
         ingress.push(`${host}${ingressPath} -> ${name}:${port}`);
