@@ -361,8 +361,14 @@
 .create-card-style {
   margin-top: 28px;
   margin-left: 20px;
-  width: 96.5%;
+  width: 90%;
   border-radius: 0px;
+}
+
+/* 新建页面卡片通用样式 */
+.create-card-form {
+  margin-left: 3%;
+  width: 100%;
 }
 
 .app-pixiu-content-card {

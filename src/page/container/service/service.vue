@@ -143,7 +143,6 @@
 import { useRouter } from 'vue-router';
 import { formatTimestamp } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
 import jsYaml from 'js-yaml';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
@@ -230,12 +229,12 @@ const onChange = (v) => {
 };
 
 const createService = () => {
-  const url = `/kubernetes/services/createService?cluster=${data.cluster}&namespace=${data.namespace}`;
+  const url = `/services/createService?cluster=${data.cluster}`;
   router.push(url);
 };
 
 const editService = (row) => {
-  const url = `/kubernetes/services/editService?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
+  const url = `/services/editService?cluster=${data.cluster}&namespace=${data.namespace}&name=${row.metadata.name}`;
   router.push(url);
 };
 
