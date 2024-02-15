@@ -31,3 +31,14 @@ export const deleteConfigMap = async (cluster, namespace, name) => {
   );
   return [result, err];
 };
+
+export const createConfigMap = async (cluster, namespace, data) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'post',
+      url: `/proxy/pixiu/${cluster}/api/v1/namespaces/${namespace}/configmaps`,
+      data: data,
+    }),
+  );
+  return [result, err];
+};

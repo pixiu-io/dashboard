@@ -8,7 +8,7 @@
       color: rgba(0, 0, 0, 0.9);
     "
   >
-    操作指南
+    操作指导
     <el-icon style="vertical-align: middle; margin-right: 10px">
       <component :is="'Edit'" />
     </el-icon>
@@ -112,41 +112,73 @@ const confirmYaml = async () => {
   }
 
   const kind = yamlData.kind;
+  const apiVersion = yamlData.apiVersion;
   if (
     checkEmpty('kind', kind) ||
+    checkEmpty('apiVersion', apiVersion) ||
     checkEmpty('metadata', yamlData.metadata) ||
-    checkEmpty('metadata.name', yamlData.metadata.name) ||
-    checkEmpty('metadata.namespace', yamlData.metadata.namespace)
+    checkEmpty('metadata.name', yamlData.metadata.name)
   ) {
     return;
   }
   const metadata = yamlData.metadata;
   const name = metadata.name;
-  const namespace = metadata.namespace;
-  let baseUrl = `/proxy/pixiu/${data.cluster}`;
-  if (kind === 'Secret') {
-    baseUrl = baseUrl + `/api/v1/namespaces/${namespace}/secrets`;
-  } else if (kind === 'Service') {
-    baseUrl = baseUrl + `/api/v1/namespaces/${namespace}/services`;
-  } else if (kind === 'ConfigMap') {
-    baseUrl = baseUrl + `/api/v1/namespaces/${namespace}/configmaps`;
-  } else if (kind === 'Deployment') {
-    baseUrl = baseUrl + `/apis/apps/v1/namespaces/${namespace}/deployments`;
-  } else {
+  const baseUrl = `/proxy/pixiu/${data.cluster}`;
+  const APIPaths = ['/apis', '/api'];
+
+  let found = false;
+  let wantedAPIPath = '';
+  let wantedResource = {};
+  // 查找 k8s API，获取任意资源
+  for (let APIPath of APIPaths) {
+    try {
+      const resp = await proxy.$http({
+        method: 'get',
+        url: `${baseUrl}${APIPath}/${apiVersion}?timeout=30s`,
+      });
+      for (let resource of resp.resources) {
+        if (resource.kind === kind) {
+          found = true;
+          wantedAPIPath = APIPath;
+          wantedResource = resource;
+          break;
+        }
+      }
+    } catch (error) {
+      continue;
+    }
+    if (found) {
+      break;
+    }
+  }
+  if (!found) {
     ElMessage({
-      message: '资源类型 ' + kind + ' 暂不支持',
+      message: 'kind: ' + kind + 'apiVersion: ' + apiVersion + ' 暂不支持',
       type: 'warning',
     });
     return;
   }
 
+  // 构造 k8s url
+  let url = `${baseUrl}${wantedAPIPath}/${apiVersion}`;
+  // 如果是命名空间级别的资源，则追加 namespaces
+  if (wantedResource.namespaced) {
+    const namespace = metadata.namespace;
+    if (checkEmpty('metadata.namespace', namespace)) {
+      return;
+    }
+    url = url + `/namespaces/${namespace}`;
+  }
+  // 追加k8s资源
+  url = url + `/${wantedResource.name}`;
+
   try {
     const resp = await proxy.$http({
       method: 'get',
-      url: `${baseUrl}/${name}`,
+      url: `${url}/${name}`,
     });
     ElMessage({
-      message: `${kind}: ${name}(${namespace}) 已存在`,
+      message: `${kind}: ${name}(${apiVersion}) 已存在`,
       type: 'warning',
     });
     return;
@@ -163,11 +195,11 @@ const confirmYaml = async () => {
     try {
       const resp = await proxy.$http({
         method: 'post',
-        url: baseUrl,
+        url: url,
         data: yamlData,
       });
 
-      proxy.$message.success(`${kind}: ${name}(${namespace}) 创建成功`);
+      proxy.$message.success(`${kind}: ${name}(${apiVersion}) 创建成功`);
       data.yamlDialog = false;
       data.yaml = '';
     } catch (error) {
