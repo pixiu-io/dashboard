@@ -178,7 +178,7 @@ const confirmYaml = async () => {
       url: `${url}/${name}`,
     });
     ElMessage({
-      message: `${kind}: ${name} 已存在`,
+      message: `apiVersion: ${apiVersion} kind: ${kind} name: ${name} 已存在`,
       type: 'warning',
     });
     return;
@@ -199,7 +199,7 @@ const confirmYaml = async () => {
         data: yamlData,
       });
 
-      proxy.$message.success(`${kind}: ${name}(${namespace}) 创建成功`);
+      proxy.$message.success(`apiVersion: ${apiVersion} kind: ${kind} name: ${name} 创建成功`);
       data.yamlDialog = false;
       data.yaml = '';
     } catch (error) {
