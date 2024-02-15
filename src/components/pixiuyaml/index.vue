@@ -178,7 +178,7 @@ const confirmYaml = async () => {
       url: `${url}/${name}`,
     });
     ElMessage({
-      message: `${kind}: ${name}(${namespace}) 已存在`,
+      message: `${kind}: ${name} 已存在`,
       type: 'warning',
     });
     return;
