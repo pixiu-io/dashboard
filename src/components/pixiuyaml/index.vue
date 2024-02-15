@@ -129,7 +129,7 @@ const confirmYaml = async () => {
   let found = false;
   let wantedAPIPath = '';
   let wantedResource = {};
-  // 遍历k8s API，获取任意资源
+  // 查找 k8s API，获取任意资源
   for (let APIPath of APIPaths) {
     try {
       const resp = await proxy.$http({
