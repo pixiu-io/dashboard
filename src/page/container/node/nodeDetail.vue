@@ -1,5 +1,5 @@
 <template>
-  <el-card style="display: flex; flex-direction: column; width: 100%; height: 50px">
+  <el-card style="display: flex; flex-direction: column; width: 100%; height: 55px">
     <div style="width: 100%; background: #ffffff; display: flex; align-items: center">
       <pixiu-icon
         name="icon-back"
