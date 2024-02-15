@@ -59,7 +59,7 @@
         @selection-change="handleSelectionChange"
       >
         <!-- <el-table-column type="selection" width="30" /> -->
-        <el-table-column prop="metadata.name" sortable label="名称" width="180px">
+        <el-table-column prop="metadata.name" sortable label="名称">
           <template #default="scope">
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
@@ -71,17 +71,12 @@
         <el-table-column label="角色" prop="metadata" :formatter="formatRole"> </el-table-column>
         <el-table-column label="地址" prop="status" :formatter="formatIp"> </el-table-column>
         <el-table-column label="节点版本" prop="status.nodeInfo.kubeletVersion"> </el-table-column>
-        <el-table-column
-          label="运行时"
-          prop="status.nodeInfo.containerRuntimeVersion"
-          width="130px"
-        >
+        <el-table-column label="运行时" prop="status.nodeInfo.containerRuntimeVersion">
         </el-table-column>
 
         <el-table-column
           label="创建时间"
           prop="metadata.creationTimestamp"
-          width="150px"
           :formatter="formatterTime"
         >
         </el-table-column>
