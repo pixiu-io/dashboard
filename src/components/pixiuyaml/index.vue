@@ -71,6 +71,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  refresh: {
+    type: Function,
+    default: () => {},
+  },
 });
 
 onMounted(() => {
@@ -202,6 +206,7 @@ const confirmYaml = async () => {
       proxy.$message.success(`${kind}: ${name}(${apiVersion}) 创建成功`);
       data.yamlDialog = false;
       data.yaml = '';
+      props.refresh();
     } catch (error) {
       proxy.$message.error(error.response.data.message);
     }
