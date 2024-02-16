@@ -1,11 +1,8 @@
-FROM golang:1.17-alpine as pixiu-builder
+FROM golang:1.17 as pixiu-builder
 WORKDIR /app
 ARG VERSION
 ENV GOPROXY=https://goproxy.cn
-COPY ./go.mod ./
-COPY ./go.sum ./
-#RUN go mod download
-COPY . .
+RUN git clone https://github.com/caoyingjunz/pixiu.git && cp -r pixiu/* .
 RUN CGO_ENABLED=0 go build -ldflags "-s -w -X 'main.version=${VERSION}'" -o pixiu ./cmd
 
 FROM node:16.18.0-alpine as builder
@@ -19,4 +16,3 @@ LABEL MAINTAINER="PIXIU"
 COPY --from=builder /build/dist /usr/share/nginx/html/pixiu
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=pixiu-builder /app/pixiu /app
-
