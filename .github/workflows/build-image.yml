@@ -8,7 +8,19 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Get short commit hash
+        run: |
+          echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "TIMESTAMP=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
       - name: Build the dashboard image
         run: make image
@@ -20,7 +32,7 @@ jobs:
           file: ./docker/Dockerfile-aio
           platforms: linux/amd64,linux/arm64
           build-args: |
-            VERSION=ci-image
+            VERSION=${{ env.COMMIT_HASH }}-${{ env.TIMESTAMP }}
           push: false
           tags: |
-            jacky06/pixiu-aio:latest
+            jacky06/pixiu-aio:${{ env.COMMIT_HASH }}
