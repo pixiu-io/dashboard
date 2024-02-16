@@ -37,7 +37,7 @@
     <el-card class="box-card">
       <el-table
         v-loading="data.loading"
-        :data="data.secretList"
+        :data="data.tableData"
         stripe
         style="margin-top: 2px; width: 100%"
         header-row-class-name="pixiu-table-header"
@@ -149,9 +149,9 @@
   </el-dialog>
 
   <pixiuDialog
-    :closeEvent="data.deleteDialog.close"
-    :objectName="data.deleteDialog.objectName"
-    :deleteName="data.deleteDialog.deleteName"
+    :close-event="data.deleteDialog.close"
+    :object-name="data.deleteDialog.objectName"
+    :delete-name="data.deleteDialog.deleteName"
     @confirm="confirm"
     @cancel="cancel"
   ></pixiuDialog>
@@ -182,6 +182,7 @@ const data = reactive({
     query: '',
     total: 0,
   },
+  tableData: [],
   loading: false,
   yaml: '',
   yamlName: '',
@@ -243,10 +244,30 @@ const clean = () => {
 };
 
 const onChange = (v) => {
-  data.pageInfo.limit = 10;
+  data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
+  getTableData(data.secretList);
+};
 
-  getSecrets();
+const getTableData = (sourceData) => {
+  if (data.pageInfo.page > 0) {
+    var i = (data.pageInfo.page - 1) * data.pageInfo.limit; //计算当前页第一条数据的下标，
+
+    var arry = []; //建立一个临时数组
+
+    while (i < data.pageInfo.page * data.pageInfo.limit) {
+      //解决最后一页出现null值
+      if (sourceData[i] != null) {
+        arry.push(sourceData[i]);
+        i++;
+        continue;
+      }
+      break;
+    }
+    data.tableData = arry;
+  } else {
+    data.tableData = sourceData;
+  }
 };
 
 const createSecret = () => {
@@ -291,12 +312,13 @@ const getSecrets = async () => {
   const res = await proxy.$http({
     method: 'get',
     url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/secrets`,
-    data: data.pageInfo,
+    data: { limit: 500 },
   });
 
   data.loading = false;
   data.secretList = res.items;
   data.pageInfo.total = data.secretList.length;
+  getTableData(data.secretList);
 };
 
 const changeNamespace = async (val) => {
