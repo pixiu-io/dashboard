@@ -1,4 +1,4 @@
-name: Publish dashboard image
+name: Publish dashboard and pixiu aio images
 
 on:
   push:
@@ -9,13 +9,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-    - name: Login in dockerhub
-      uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
-      with:
-        username: jacky06
-        password: jacky06jacky06
+      - name: Get short commit hash
+        run: |
+          echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "TIMESTAMP=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
 
-    - name: Build and push the Docker image
-      run: make image && make push
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login in dockerhub
+        uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
+        with:
+          username: jacky06
+          password: jacky06jacky06
+
+      - name: Build and push the pixiu dashboard image
+        run: make image && make push
+
+      - name: Build and push the pixiu aio image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/Dockerfile-aio
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            VERSION=${{ env.COMMIT_HASH }}-${{ env.TIMESTAMP }}
+          push: true
+          tags: |
+            jacky06/pixiu-aio:latest
+            jacky06/pixiu-aio:v0.1
+            jacky06/pixiu-aio:${{ env.COMMIT_HASH }}
