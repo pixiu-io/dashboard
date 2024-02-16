@@ -1,3 +1,6 @@
+#!/bin/bash
+set -o errexit
+set -o xtrace
 
 echo "Starting pixiu dashboard service"
 nginx -g  'daemon on;'
