@@ -1,7 +1,7 @@
 <template>
   <el-card class="title-card-container">
     <div class="font-container">Pod</div>
-    <PiXiuYaml></PiXiuYaml>
+    <PiXiuYaml :refresh="getPods"></PiXiuYaml>
   </el-card>
 
   <div style="margin-top: 25px">

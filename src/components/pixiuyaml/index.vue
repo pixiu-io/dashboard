@@ -56,10 +56,8 @@ const editYaml = ref();
 
 const data = reactive({
   cluster: '',
-
   yamlDialog: false,
   yaml: '',
-  yamlCreateUrl: '',
 });
 
 const props = defineProps({
@@ -79,11 +77,6 @@ const props = defineProps({
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
-});
-
-watch(() => {
-  // data.cluster = props.cluster.valueOf();
-  data.yamlCreateUrl = props.yamlCreateUrl.valueOf();
 });
 
 const handleCreateYamlDialog = () => {
