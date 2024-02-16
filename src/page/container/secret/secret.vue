@@ -1,7 +1,7 @@
 <template>
   <el-card class="title-card-container">
     <div class="font-container">Secret</div>
-    <PiXiuYaml :cluster="data.cluster"></PiXiuYaml>
+    <PiXiuYaml :refresh="getSecrets"></PiXiuYaml>
   </el-card>
 
   <div style="margin-top: 25px">

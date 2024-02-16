@@ -1,7 +1,7 @@
 <template>
   <el-card class="title-card-container">
     <div class="font-container">ConfigMap</div>
-    <PiXiuYaml></PiXiuYaml>
+    <PiXiuYaml :refresh="getConfigMaps"></PiXiuYaml>
   </el-card>
 
   <div style="margin-top: 25px">

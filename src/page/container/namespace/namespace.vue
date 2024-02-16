@@ -1,7 +1,7 @@
 <template>
   <el-card class="title-card-container">
     <div class="font-container">命名空间</div>
-    <PiXiuYaml></PiXiuYaml>
+    <PiXiuYaml :refresh="getNamespace"></PiXiuYaml>
   </el-card>
 
   <div style="margin-top: 25px">

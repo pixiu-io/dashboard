@@ -56,10 +56,8 @@ const editYaml = ref();
 
 const data = reactive({
   cluster: '',
-
   yamlDialog: false,
   yaml: '',
-  yamlCreateUrl: '',
 });
 
 const props = defineProps({
@@ -71,15 +69,14 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  refresh: {
+    type: Function,
+    default: () => {},
+  },
 });
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
-});
-
-watch(() => {
-  // data.cluster = props.cluster.valueOf();
-  data.yamlCreateUrl = props.yamlCreateUrl.valueOf();
 });
 
 const handleCreateYamlDialog = () => {
@@ -202,6 +199,7 @@ const confirmYaml = async () => {
       proxy.$message.success(`${kind}: ${name}(${apiVersion}) 创建成功`);
       data.yamlDialog = false;
       data.yaml = '';
+      props.refresh();
     } catch (error) {
       proxy.$message.error(error.response.data.message);
     }

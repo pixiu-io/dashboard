@@ -1,7 +1,7 @@
 <template>
   <el-card class="title-card-container">
     <div class="font-container">Release</div>
-    <PiXiuYaml></PiXiuYaml>
+    <PiXiuYaml :refresh="getReleases"></PiXiuYaml>
   </el-card>
 
   <div style="margin-top: 25px">

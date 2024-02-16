@@ -13,10 +13,17 @@ RUN npm config set registry https://registry.npmmirror.com/ && npm install && np
 
 FROM nginx:alpine
 LABEL MAINTAINER="PIXIU"
+<<<<<<< HEAD
 
+=======
+>>>>>>> d303d038381cff79b5741355c4811a6a5829f830
 COPY --from=builder /build/dist /usr/share/nginx/html/pixiu
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=pixiu-builder /app/pixiu /app
 COPY docker/start.sh /usr/local/bin/pixiu_start
 
+<<<<<<< HEAD
 CMD ["pixiu_start"]
+=======
+CMD ['pixiu_start']
+>>>>>>> d303d038381cff79b5741355c4811a6a5829f830

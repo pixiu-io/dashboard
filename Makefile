@@ -22,7 +22,11 @@ push: image
 	docker push ${dockerhubUser}/${releaseName}:${tag}
 
 image-aio:
+<<<<<<< HEAD
 	docker build --no-cache -t ${dockerhubUser}/pixiu-aio:${tag} --platform=linux -f docker/Dockerfile-aio .
+=======
+	docker build -t ${dockerhubUser}/pixiu-aio:${tag} --platform=linux -f docker/Dockerfile-aio .
+>>>>>>> d303d038381cff79b5741355c4811a6a5829f830
 
 push-aio: image-aio
 	docker push ${dockerhubUser}/pixiu-aio:${tag}
