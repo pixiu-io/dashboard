@@ -29,19 +29,8 @@ jobs:
           username: jacky06
           password: jacky06jacky06
 
-      - name: Build and push pixiu dashboard image
-        run: make image && make push
+      - name: Build and push dashboard image
+        run: make push
 
       - name: Build and push pixiu aio image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./docker/Dockerfile-aio
-          platforms: linux/amd64,linux/arm64
-          build-args: |
-            VERSION=${{ env.COMMIT_HASH }}-${{ env.TIMESTAMP }}
-          push: true
-          tags: |
-            jacky06/pixiu-aio:latest
-            jacky06/pixiu-aio:v0.1
-            jacky06/pixiu-aio:${{ env.COMMIT_HASH }}
+        run: make push-aio

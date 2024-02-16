@@ -21,5 +21,11 @@ image:
 push: image
 	docker push ${dockerhubUser}/${releaseName}:${tag}
 
+image-aio:
+	docker build -t ${dockerhubUser}/pixiu-aio:${tag} --platform=linux -f docker/Dockerfile-aio .
+
+push-aio: image-aio
+	docker push ${dockerhubUser}/pixiu-aio:${tag}
+
 clean:
 	-rm -rf ./dist ./node_modules

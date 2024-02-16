@@ -13,3 +13,6 @@ jobs:
 
       - name: Build the dashboard image
         run: make image
+
+      - name: Build the pixiu aio image
+        run: make image-aio
