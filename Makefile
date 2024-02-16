@@ -16,13 +16,13 @@ build: install
 	npm run build
 
 image:
-	docker build -t ${dockerhubUser}/${releaseName}:${tag} --platform=linux -f docker/Dockerfile .
+	docker build --no-cache -t ${dockerhubUser}/${releaseName}:${tag} --platform=linux -f docker/Dockerfile .
 
 push: image
 	docker push ${dockerhubUser}/${releaseName}:${tag}
 
 image-aio:
-	docker build -t ${dockerhubUser}/pixiu-aio:${tag} --platform=linux -f docker/Dockerfile-aio .
+	docker build --no-cache -t ${dockerhubUser}/pixiu-aio:${tag} --platform=linux -f docker/Dockerfile-aio .
 
 push-aio: image-aio
 	docker push ${dockerhubUser}/pixiu-aio:${tag}
