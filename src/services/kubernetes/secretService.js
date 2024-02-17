@@ -6,9 +6,10 @@ export const getSecretList = async (cluster, namespace) => {
     http({
       method: 'get',
       url: `/proxy/pixiu/${cluster}/api/v1/namespaces/${namespace}/secrets`,
+      data: { limit: 500 },
     }),
   );
-  return [err, result];
+  return [result, err];
 };
 
 export const updateSecret = async (cluster, namespace, name, data) => {

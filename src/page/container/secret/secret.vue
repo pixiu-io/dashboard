@@ -168,7 +168,12 @@ import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
-import { updateSecret, getSecret, deleteSecret } from '@/services/kubernetes/secretService';
+import {
+  getSecretList,
+  updateSecret,
+  getSecret,
+  deleteSecret,
+} from '@/services/kubernetes/secretService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { proxy } = getCurrentInstance();
@@ -246,11 +251,14 @@ const clean = () => {
 const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
-  getTableData(data.secretList);
+  getTableData();
 };
 
-const getTableData = (sourceData) => {
-  if (data.pageInfo.page > 0) {
+const getTableData = () => {
+  const sourceData = data.secretList;
+  if (data.pageInfo.page === 0) {
+    data.tableData = sourceData;
+  } else {
     var i = (data.pageInfo.page - 1) * data.pageInfo.limit; //计算当前页第一条数据的下标，
 
     var arry = []; //建立一个临时数组
@@ -265,8 +273,6 @@ const getTableData = (sourceData) => {
       break;
     }
     data.tableData = arry;
-  } else {
-    data.tableData = sourceData;
   }
 };
 
@@ -309,16 +315,12 @@ const copy = async (val) => {
 const getSecrets = async () => {
   data.loading = true;
   data.namespace = localStorage.getItem('namespace');
-  const res = await proxy.$http({
-    method: 'get',
-    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/secrets`,
-    data: { limit: 500 },
-  });
+  const [res, err] = await getSecretList(data.cluster, data.namespace);
 
   data.loading = false;
   data.secretList = res.items;
   data.pageInfo.total = data.secretList.length;
-  getTableData(data.secretList);
+  getTableData();
 };
 
 const changeNamespace = async (val) => {
