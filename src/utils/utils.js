@@ -18,20 +18,9 @@ const formatTimestamp = (timestamp) => {
 export { formatTimestamp };
 
 const getTableData = (pageInfo, sourceData) => {
-  //计算当前页第一条数据的下标，
-  var i = (pageInfo.page - 1) * pageInfo.limit;
-  //建立一个临时数组
-  var arry = [];
-
-  while (i < pageInfo.page * pageInfo.limit) {
-    //解决最后一页出现null值
-    if (sourceData[i] != null) {
-      arry.push(sourceData[i]);
-      i++;
-      continue;
-    }
-    break;
-  }
-  return arry;
+  const startIndex = (pageInfo.page - 1) * pageInfo.limit;
+  const endIndex = Math.min(startIndex + pageInfo.limit, sourceData.length);
+  // Use Array.slice() to extract the desired portion of sourceData
+  return sourceData.slice(startIndex, endIndex);
 };
 export { getTableData };
