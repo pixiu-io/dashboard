@@ -21,8 +21,8 @@ const getTableData = (pageInfo, sourceData) => {
   if (pageInfo.page === 0) {
     return sourceData;
   }
-  var i = (pageInfo.page - 1) * pageInfo.limit; //计算当前页第一条数据的下标，
 
+  var i = (pageInfo.page - 1) * pageInfo.limit; //计算当前页第一条数据的下标，
   var arry = []; //建立一个临时数组
 
   while (i < pageInfo.page * pageInfo.limit) {
