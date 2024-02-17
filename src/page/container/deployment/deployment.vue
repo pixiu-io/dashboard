@@ -44,7 +44,7 @@
     <el-card class="box-card">
       <el-table
         v-loading="data.loading"
-        :data="data.deploymentList"
+        :data="data.tableData"
         stripe
         style="margin-top: 2px; width: 100%"
         header-row-class-name="pixiu-table-header"
@@ -211,10 +211,12 @@
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
+import { getTableData } from '@/utils/utils';
 import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import {
+  getDeploymentList,
   getDeployment,
   updateDeployment,
   deleteDeployment,
@@ -235,6 +237,7 @@ const data = reactive({
     query: '',
     total: 0,
   },
+  tableData: [],
   loading: false,
 
   namespace: 'default',
@@ -299,10 +302,10 @@ const clean = () => {
 };
 
 const onChange = (v) => {
-  data.pageInfo.limit = 10;
+  data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
 
-  getDeployments();
+  data.tableData = getTableData(data.pageInfo, data.deploymentList);
 };
 
 const handleEditYamlDialog = async (row) => {
@@ -362,15 +365,16 @@ const jumpRoute = (row) => {
 
 const getDeployments = async () => {
   data.loading = true;
-  const res = await proxy.$http({
-    method: 'get',
-    url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments`,
-    data: data.pageInfo,
-  });
-
+  const [result, err] = await getDeploymentList(data.cluster, data.namespace);
   data.loading = false;
-  data.deploymentList = res.items;
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+
+  data.deploymentList = result.items;
   data.pageInfo.total = data.deploymentList.length;
+  data.tableData = getTableData(data.pageInfo, data.deploymentList);
 };
 
 const changeNamespace = async (val) => {

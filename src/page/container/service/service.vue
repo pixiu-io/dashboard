@@ -38,7 +38,7 @@
     <el-card class="box-card">
       <el-table
         v-loading="data.loading"
-        :data="data.serviceList"
+        :data="data.tableData"
         stripe
         style="margin-top: 2px; width: 100%"
         :cell-style="{
@@ -131,9 +131,9 @@
   </el-dialog>
 
   <pixiuDialog
-    :closeEvent="data.deleteDialog.close"
-    :objectName="data.deleteDialog.objectName"
-    :deleteName="data.deleteDialog.deleteName"
+    :close-event="data.deleteDialog.close"
+    :object-name="data.deleteDialog.objectName"
+    :delete-name="data.deleteDialog.deleteName"
     @confirm="confirm"
     @cancel="cancel"
   ></pixiuDialog>
@@ -141,12 +141,17 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { formatTimestamp } from '@/utils/utils';
+import { formatTimestamp, getTableData } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
-import { updateService, getService, deleteService } from '@/services/kubernetes/serviceService';
+import {
+  getServiceList,
+  updateService,
+  getService,
+  deleteService,
+} from '@/services/kubernetes/serviceService';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
@@ -161,8 +166,9 @@ const data = reactive({
     page: 1,
     query: '',
     total: 0,
-    limit: 100,
+    limit: 10,
   },
+  tableData: [],
   loading: false,
 
   namespace: 'default',
@@ -222,10 +228,10 @@ const clean = () => {
 };
 
 const onChange = (v) => {
-  data.pageInfo.limit = 10;
+  data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
 
-  getServices();
+  data.tableData = getTableData(data.pageInfo, data.serviceList);
 };
 
 const createService = () => {
@@ -271,15 +277,16 @@ const confirmEditYaml = async () => {
 
 const getServices = async () => {
   data.loading = true;
-  const res = await proxy.$http({
-    method: 'get',
-    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/services`,
-    data: data.pageInfo,
-  });
-
+  const [result, err] = await getServiceList(data.cluster, data.namespace);
   data.loading = false;
-  data.serviceList = res.items;
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+
+  data.serviceList = result.items;
   data.pageInfo.total = data.serviceList.length;
+  data.tableData = getTableData(data.pageInfo, data.serviceList);
 };
 
 const changeNamespace = async (val) => {

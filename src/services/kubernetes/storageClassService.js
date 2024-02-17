@@ -6,7 +6,7 @@ export const getStorageClassList = async (cluster, pageData) => {
     http({
       method: 'get',
       url: `/proxy/pixiu/${cluster}/apis/storage.k8s.io/v1/storageclasses`,
-      data: pageData,
+      data: { limit: 500 },
     }),
   );
   return [result, err];

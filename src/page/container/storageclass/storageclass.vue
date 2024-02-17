@@ -30,7 +30,7 @@
     <el-card class="box-card">
       <el-table
         v-loading="data.loading"
-        :data="data.straogeClassList"
+        :data="data.tableData"
         stripe
         style="margin-top: 2px; width: 100%"
         :cell-style="{
@@ -125,9 +125,9 @@
   </el-dialog>
 
   <pixiuDialog
-    :closeEvent="data.deleteDialog.close"
-    :objectName="data.deleteDialog.objectName"
-    :deleteName="data.deleteDialog.deleteName"
+    :close-event="data.deleteDialog.close"
+    :object-name="data.deleteDialog.objectName"
+    :delete-name="data.deleteDialog.deleteName"
     @confirm="confirm"
     @cancel="cancel"
   ></pixiuDialog>
@@ -135,7 +135,7 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { formatTimestamp } from '@/utils/utils';
+import { formatTimestamp, getTableData } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
 
@@ -162,10 +162,10 @@ const data = reactive({
     page: 1,
     query: '',
     total: 0,
-    limit: 100,
+    limit: 10,
   },
-
-  straogeClassList: [],
+  tableData: [],
+  stroageClassList: [],
 
   //  yaml相关属性
   yaml: '',
@@ -181,10 +181,10 @@ const data = reactive({
 });
 
 const onChange = (v) => {
-  data.pageInfo.limit = 10;
+  data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
 
-  syncStorageClasses();
+  data.tableData = getTableData(data.pageInfo, data.storageClassList);
 };
 
 onMounted(() => {
@@ -230,8 +230,9 @@ const syncStorageClasses = async () => {
     return;
   }
 
-  data.straogeClassList = res.items;
-  data.pageInfo.total = data.straogeClassList.length;
+  data.storageClassList = res.items;
+  data.pageInfo.total = data.storageClassList.length;
+  data.tableData = getTableData(data.pageInfo, data.storageClassList);
 };
 
 const createStorageClass = () => {
