@@ -316,7 +316,10 @@ const getSecrets = async () => {
   data.loading = true;
   data.namespace = localStorage.getItem('namespace');
   const [res, err] = await getSecretList(data.cluster, data.namespace);
-
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
   data.loading = false;
   data.secretList = res.items;
   data.pageInfo.total = data.secretList.length;
