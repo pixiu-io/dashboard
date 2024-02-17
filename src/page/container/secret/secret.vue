@@ -163,7 +163,7 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import jsYaml from 'js-yaml';
-import { formatTimestamp } from '@/utils/utils';
+import { formatTimestamp, getTableData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
@@ -251,29 +251,7 @@ const clean = () => {
 const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
-  getTableData();
-};
-
-const getTableData = () => {
-  const sourceData = data.secretList;
-  if (data.pageInfo.page === 0) {
-    data.tableData = sourceData;
-    return;
-  }
-  var i = (data.pageInfo.page - 1) * data.pageInfo.limit; //计算当前页第一条数据的下标，
-
-  var arry = []; //建立一个临时数组
-
-  while (i < data.pageInfo.page * data.pageInfo.limit) {
-    //解决最后一页出现null值
-    if (sourceData[i] != null) {
-      arry.push(sourceData[i]);
-      i++;
-      continue;
-    }
-    break;
-  }
-  data.tableData = arry;
+  data.tableData = getTableData(data.pageInfo, data.secretList);
 };
 
 const createSecret = () => {
@@ -316,14 +294,14 @@ const getSecrets = async () => {
   data.loading = true;
   data.namespace = localStorage.getItem('namespace');
   const [res, err] = await getSecretList(data.cluster, data.namespace);
+  data.loading = false;
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  data.loading = false;
   data.secretList = res.items;
   data.pageInfo.total = data.secretList.length;
-  getTableData();
+  data.tableData = getTableData(data.pageInfo, data.secretList);
 };
 
 const changeNamespace = async (val) => {
