@@ -489,7 +489,7 @@ const changeNamespace = async (val) => {
 const changeDeployment = async (val) => {};
 
 const getDeployments = async () => {
-  const [result, err] = await getDeployments(data.cluster, data.form.metadata.namespace);
+  const [result, err] = await getDeploymentList(data.cluster, data.form.metadata.namespace);
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
