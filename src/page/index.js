@@ -17,6 +17,7 @@ import NodeDetail from './container/node/nodeDetail.vue';
 import Info from './container/info/info.vue';
 import Home from './home/home.vue';
 import Login from './login/login.vue';
+import Register from './login/register.vue';
 import Setting from './setting/setting.vue';
 import User from './user/user.vue';
 import Menu from './user/menu.vue';
@@ -47,6 +48,7 @@ import NotFound from './notFound/notFound.vue';
 export {
   Home,
   Login,
+  Register,
   Role,
   Menu,
   Setting,

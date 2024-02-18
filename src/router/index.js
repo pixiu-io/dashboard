@@ -4,6 +4,7 @@ import Layout from '@/layout/index.vue';
 import {
   Home,
   Login,
+  Register,
   Role,
   User,
   Menu,
@@ -426,6 +427,12 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: Login,
+  },
+  {
+    // 登陆界面
+    path: '/register',
+    name: 'Register',
+    component: Register,
   },
   {
     path: '/podshell',
