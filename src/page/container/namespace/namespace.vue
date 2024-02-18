@@ -30,7 +30,7 @@
     <el-card class="box-card">
       <el-table
         v-loading="data.loading"
-        :data="data.namespaceList"
+        :data="data.tableData"
         stripe
         style="margin-top: 2px; width: 100%"
         :cell-style="{
@@ -118,7 +118,7 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { formatTimestamp } from '@/utils/utils';
+import { formatTimestamp, getTableData } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { getNamespaceList, deleteNamespace } from '@/services/kubernetes/namespaceService';
 import useClipboard from 'vue-clipboard3';
@@ -136,9 +136,9 @@ const data = reactive({
     page: 1,
     query: '',
     total: 0,
-    limit: 100,
+    limit: 10,
   },
-
+  tableData: [],
   loading: false,
   namespaceList: [],
 
@@ -183,10 +183,10 @@ const clean = () => {
 };
 
 const onChange = (v) => {
-  data.pageInfo.limit = 10;
+  data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
 
-  getNamespace();
+  data.tableData = getTableData(data.pageInfo, data.namespaceList);
 };
 
 const { toClipboard } = useClipboard();
@@ -213,14 +213,15 @@ const createNamespace = () => {
 const getNamespace = async () => {
   data.loading = true;
   const [result, err] = await getNamespaceList(data.cluster);
+  data.loading = false;
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  data.loading = false;
 
   data.namespaceList = result.items;
   data.pageInfo.total = data.namespaceList.length;
+  data.tableData = getTableData(data.pageInfo, data.namespaceList);
 };
 
 const jumpNamespaceRoute = (row) => {

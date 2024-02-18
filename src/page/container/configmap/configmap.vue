@@ -37,7 +37,7 @@
     <el-card class="box-card">
       <el-table
         v-loading="data.loading"
-        :data="data.configMapsList"
+        :data="data.tableData"
         stripe
         style="margin-top: 2px; width: 100%"
         header-row-class-name="pixiu-table-header"
@@ -159,12 +159,13 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import jsYaml from 'js-yaml';
-import { formatTimestamp } from '@/utils/utils';
+import { formatTimestamp, getTableData } from '@/utils/utils';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import {
+  getConfigmapList,
   updateConfigMap,
   getConfigMap,
   deleteConfigMap,
@@ -183,6 +184,7 @@ const data = reactive({
     query: '',
     total: 0,
   },
+  tableData: [],
   loading: false,
   yaml: '',
   yamlName: '',
@@ -242,10 +244,10 @@ const clean = () => {
 };
 
 const onChange = (v) => {
-  data.pageInfo.limit = 10;
+  data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
 
-  getConfigMaps();
+  data.tableData = getTableData(data.pageInfo, data.configMapsList);
 };
 
 const createConfigMap = () => {
@@ -287,15 +289,17 @@ const copy = async (val) => {
 const getConfigMaps = async () => {
   data.loading = true;
   data.namespace = localStorage.getItem('namespace');
-  const res = await proxy.$http({
-    method: 'get',
-    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/configmaps`,
-    data: data.pageInfo,
-  });
+  const [result, err] = await getConfigmapList(data.cluster, data.namespace);
+  data.loading = false;
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
 
   data.loading = false;
-  data.configMapsList = res.items;
+  data.configMapsList = result.items;
   data.pageInfo.total = data.configMapsList.length;
+  data.tableData = getTableData(data.pageInfo, data.configMapsList);
 };
 
 const changeNamespace = async (val) => {

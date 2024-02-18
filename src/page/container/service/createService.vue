@@ -332,7 +332,7 @@
 
 <script setup>
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
-import { getDeployments } from '@/services/kubernetes/deploymentService';
+import { getDeploymentList } from '@/services/kubernetes/deploymentService';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import { createService } from '@/services/kubernetes/serviceService';
 
@@ -395,7 +395,7 @@ onMounted(() => {
 
   getNamespaceList();
   // 获取 deployment 列表
-  getDeploymentList();
+  getDeployments();
 
   addPort();
   if (data.selectorType === '高级') {
@@ -483,13 +483,13 @@ const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
   data.form.metadata.namespace = val;
 
-  getDeploymentList();
+  getDeployments();
 };
 
 const changeDeployment = async (val) => {};
 
-const getDeploymentList = async () => {
-  const [result, err] = await getDeployments(data.cluster, data.form.metadata.namespace);
+const getDeployments = async () => {
+  const [result, err] = await getDeploymentList(data.cluster, data.form.metadata.namespace);
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;

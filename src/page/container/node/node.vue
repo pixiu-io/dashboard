@@ -48,7 +48,7 @@
     <el-card class="box-card">
       <el-table
         v-loading="data.loading"
-        :data="data.nodeList"
+        :data="data.tableData"
         stripe
         style="margin-top: 2px; width: 100%"
         :cell-style="{
@@ -140,9 +140,10 @@
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { formatTimestamp } from '@/utils/utils';
+import { formatTimestamp, getTableData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
+import { getNodeList } from '@/services/kubernetes/nodeService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -153,9 +154,9 @@ const data = reactive({
     page: 1,
     query: '',
     total: 0,
-    limit: 100,
+    limit: 10,
   },
-
+  tableData: [],
   loading: false,
 
   nodeList: [],
@@ -168,23 +169,24 @@ onMounted(() => {
 });
 
 const onChange = (v) => {
-  data.pageInfo.limit = 10;
+  data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
 
-  getNodes();
+  data.tableData = getTableData(data.pageInfo, data.nodeList);
 };
 
 const getNodes = async () => {
   data.loading = true;
-  const res = await proxy.$http({
-    method: 'get',
-    url: `/proxy/pixiu/${data.cluster}/api/v1/nodes`,
-    data: data.pageInfo,
-  });
+  const [res, err] = await getNodeList(data.cluster);
   data.loading = false;
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
 
   data.nodeList = res.items;
   data.pageInfo.total = data.nodeList.length;
+  data.tableData = getTableData(data.pageInfo, data.nodeList);
 };
 
 const drain = (row) => {

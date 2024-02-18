@@ -43,7 +43,7 @@ export const deleteDeployment = async (cluster, namespace, name) => {
   return [result, err];
 };
 
-export const getDeployments = async (cluster, namespace) => {
+export const getDeploymentList = async (cluster, namespace) => {
   const [err, result] = await awaitWrap(
     http({
       method: 'get',

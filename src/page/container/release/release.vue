@@ -39,7 +39,7 @@
     <el-card class="box-card">
       <el-table
         v-loading="data.loading"
-        :data="data.releasesList"
+        :data="data.tableData"
         stripe
         style="margin-top: 2px; width: 100%"
         header-row-class-name="pixiu-table-header"
@@ -135,11 +135,11 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
-import { formatTimestamp } from '@/utils/utils';
+import { formatTimestamp, getTableData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
-
+import { getReleaseList } from '@/services/kubernetes/releaseService';
 const { proxy } = getCurrentInstance();
 const router = useRouter();
 
@@ -151,6 +151,7 @@ const data = reactive({
     query: '',
     total: 0,
   },
+  tableData: [],
   loading: false,
 
   namespace: 'default',
@@ -173,7 +174,7 @@ onMounted(() => {
 });
 
 const onChange = (v) => {
-  data.pageInfo.limit = 10;
+  data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
 
   getReleases();
@@ -191,17 +192,17 @@ const jumpRoute = (row) => {
 
 const getReleases = async () => {
   data.loading = true;
-  const res = await proxy.$http({
-    method: 'get',
-    url: `/pixiu/helms/clusters/${data.cluster}/v1/namespaces/${data.namespace}/releases`,
-    data: data.pageInfo,
-  });
+  const [result, err] = await getReleaseList(data.cluster, data.namespace);
+  data.loading = false;
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
 
   data.loading = false;
-  data.releasesList = res;
-  if (res) {
-    data.pageInfo.total = data.releasesList.length;
-  }
+  data.releasesList = result.result;
+  data.pageInfo.total = data.releasesList.length;
+  data.tableData = getTableData(data.pageInfo, data.releasesList);
 };
 
 const deleteRelease = async (val) => {};

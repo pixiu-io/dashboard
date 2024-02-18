@@ -8,7 +8,7 @@ export const getServiceList = async (cluster, namespace) => {
       url: `/proxy/pixiu/${cluster}/api/v1/namespaces/${namespace}/services`,
     }),
   );
-  return [err, result];
+  return [result, err];
 };
 
 export const updateService = async (cluster, namespace, name, data) => {
