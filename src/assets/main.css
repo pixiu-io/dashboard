@@ -392,3 +392,8 @@
   display: flex;
   margin-top: 15px;
 }
+
+/* 输入框 placeholder 样式 */
+.el-input__inner::placeholder {
+  font-size: 12px;
+}
