@@ -429,7 +429,7 @@ const routes = [
     component: Login,
   },
   {
-    // 登陆界面
+    // 用户注册路由
     path: '/register',
     name: 'Register',
     component: Register,

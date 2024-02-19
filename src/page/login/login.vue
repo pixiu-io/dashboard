@@ -104,9 +104,26 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
+import { getCurrentInstance, computed, onMounted } from 'vue';
 import useLoginStore from '@/stores/useLogin';
-import { computed } from 'vue';
+import { GetUserCount } from '@/services/user/userService';
+
 const loginStore = useLoginStore();
+const { proxy } = getCurrentInstance();
+const router = useRouter();
+
+onMounted(async () => {
+  // 优先判断是否需要跳转用户注册页面
+  const [result, err] = await GetUserCount();
+  if (!err && result === 1) {
+    proxy.$notify.success({
+      title: '欢迎使用 Pixiu',
+      message: '首次登录请先完成初始用户注册',
+    });
+    router.push('/register');
+  }
+});
 
 const rules = {
   name: [{ required: true, message: '用户名为必填项', trigger: 'blur' }],
