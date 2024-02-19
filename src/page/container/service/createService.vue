@@ -266,10 +266,10 @@
                 >
                   <el-select v-model="item.protocol">
                     <el-option
-                      v-for="item in data.protocols"
-                      :key="item"
-                      :value="item"
-                      :label="item"
+                      v-for="itemP in data.protocols"
+                      :key="itemP"
+                      :value="itemP"
+                      :label="itemP"
                     />
                   </el-select>
                 </el-form-item>
