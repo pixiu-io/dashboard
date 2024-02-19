@@ -79,7 +79,6 @@ const rules = {
 const confirmRegister = () => {
   ruleFormRef.value.validate(async (valid) => {
     if (valid) {
-      console.log('data', data.userForm);
       const [result, err] = await createUser(data.userForm, true);
       if (err) {
         proxy.$notify.error({
