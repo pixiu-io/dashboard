@@ -121,7 +121,7 @@ onMounted(async () => {
       title: '欢迎来到 Pixiu',
       message: '首次使用请先完成用户初始化',
     });
-    router.push('/register');
+    router.push('/users/registerUser');
   }
 });
 

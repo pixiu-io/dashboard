@@ -17,9 +17,9 @@ import NodeDetail from './container/node/nodeDetail.vue';
 import Info from './container/info/info.vue';
 import Home from './home/home.vue';
 import Login from './login/login.vue';
-import Register from './login/register.vue';
 import Setting from './setting/setting.vue';
 import User from './user/user.vue';
+import RegisterUser from './user/registerUser.vue';
 import Menu from './user/menu.vue';
 import Role from './user/role.vue';
 import Service from './container/service/service.vue';
@@ -48,11 +48,11 @@ import NotFound from './notFound/notFound.vue';
 export {
   Home,
   Login,
-  Register,
   Role,
   Menu,
   Setting,
   User,
+  RegisterUser,
   Cicd,
   Kubernetes,
   Deployment,

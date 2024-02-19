@@ -4,9 +4,9 @@ import Layout from '@/layout/index.vue';
 import {
   Home,
   Login,
-  Register,
   Role,
   User,
+  RegisterUser,
   Menu,
   Cicd,
   Cluster,
@@ -405,6 +405,12 @@ const routes = [
         component: User,
       },
       {
+        // 用户注册路由
+        path: 'users/registerUser',
+        name: 'RegisterUser',
+        component: RegisterUser,
+      },
+      {
         path: 'role',
         name: 'Role',
         meta: {
@@ -427,12 +433,6 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: Login,
-  },
-  {
-    // 用户注册路由
-    path: '/register',
-    name: 'Register',
-    component: Register,
   },
   {
     path: '/podshell',
