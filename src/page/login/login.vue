@@ -118,8 +118,8 @@ onMounted(async () => {
   const [result, err] = await GetUserCount();
   if (!err && result === 1) {
     proxy.$notify.success({
-      title: '欢迎使用 Pixiu',
-      message: '首次登录请先完成初始用户注册',
+      title: '欢迎来到 Pixiu',
+      message: '首次使用请先完成用户初始化',
     });
     router.push('/register');
   }
