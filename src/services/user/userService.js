@@ -1,7 +1,7 @@
 import http from '@/utils/http';
 import { awaitWrap } from '@/utils/utils';
 
-export const CreateUser = async (data, init) => {
+export const createUser = async (data, init) => {
   let url = '/pixiu/users';
   if (init) {
     url = url + '?initAdmin=true';
@@ -16,7 +16,7 @@ export const CreateUser = async (data, init) => {
   return [result, err];
 };
 
-export const GetUserCount = async () => {
+export const getUserCount = async () => {
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
