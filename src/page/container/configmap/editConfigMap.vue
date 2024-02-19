@@ -1,20 +1,39 @@
 <template>
-  <el-card class="title-card-container">
-    <div class="font-container">
-      <span> ConfigMap :</span>
-      <span> {{ data.configmapForm.metadata.name }} </span>
-      <span>({{ data.configmapForm.metadata.namespace }})</span>
-      <span> / 更新配置</span>
-    </div>
-  </el-card>
-
   <div
     class="configmap-class"
     style="display: flex; flex-direction: column; width: 100%; height: 100%"
   >
+    <div style="width: 100%; height: 85px; background: #ffffff; display: flex; align-items: center">
+      <pixiu-icon
+        name="icon-back"
+        style="cursor: pointer; margin-left: 25px"
+        size="16px"
+        type="iconfont"
+        color="#006eff"
+        @click="backToConfigmap"
+      />
+
+      <el-breadcrumb separator="/" style="margin-left: 10px; margin-top: 1px">
+        <el-breadcrumb-item
+          ><span class="breadcrumb-create-style"> 集群 </span>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item
+          ><span class="breadcrumb-create-style"> {{ data.cluster }} </span>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item
+          ><span class="breadcrumb-create-style"> ConfigMap </span>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item
+          ><span class="breadcrumb-create-style"> {{ data.configmapForm.metadata.name }} </span>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item
+          ><span class="breadcrumb-create-style"> 更新配置 </span>
+        </el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
     <el-main>
       <div class="app-pixiu-content-card">
-        <el-card style="margin-top: 8px; width: 100%; border-radius: 0px">
+        <el-card class="create-card-style">
           <el-form
             ref="ruleFormRef"
             label-position="left"
@@ -151,8 +170,8 @@ onMounted(() => {
   data.configmapForm.metadata.name = data.cloud.name;
   data.path = proxy.$route.fullPath;
 
-  getConfigMap();
   getNamespace();
+  getConfigMap();
   getNamespaceList();
 });
 
@@ -167,7 +186,7 @@ const getConfigMap = async () => {
   data.loading = true;
   const res = await proxy.$http({
     method: 'get',
-    url: `/proxy/pixiu/${data.cloud.cluster}/api/v1/namespaces/${data.cloud.namespace}/configmaps/${data.cloud.name}`,
+    url: `/proxy/pixiu/${data.cloud.cluster}/api/v1/namespaces/${data.namespace}/configmaps/${data.cloud.name}`,
     data: '',
   });
   data.configmapForm.metadata = res.metadata;
