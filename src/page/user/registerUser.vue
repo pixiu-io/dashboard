@@ -76,6 +76,26 @@ const rules = {
   password: [{ required: true, message: '密码为必填项', trigger: 'blur' }],
 };
 
+onMounted(async () => {
+  const [result, err] = await getUserCount();
+  if (err) {
+    proxy.$notify.error({
+      title: '欢迎来到 Pixiu',
+      message: '系统异常，请联系管理员',
+    });
+    router.push({ path: '/login' });
+    return;
+  }
+
+  if (result !== 0) {
+    proxy.$notify.success({
+      title: '欢迎来到 Pixiu',
+      message: '用户已存在，请登录',
+    });
+    router.push({ path: '/login' });
+  }
+});
+
 const confirmRegister = () => {
   ruleFormRef.value.validate(async (valid) => {
     if (valid) {

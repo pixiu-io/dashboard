@@ -116,7 +116,7 @@ const router = useRouter();
 onMounted(async () => {
   // 优先判断是否需要跳转用户注册页面
   const [result, err] = await getUserCount();
-  if (!err && result === 1) {
+  if (!err && result === 0) {
     proxy.$notify.success({
       title: '欢迎来到 Pixiu',
       message: '首次使用请先完成用户初始化',
