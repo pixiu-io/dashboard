@@ -19,6 +19,7 @@ import Home from './home/home.vue';
 import Login from './login/login.vue';
 import Setting from './setting/setting.vue';
 import User from './user/user.vue';
+import RegisterUser from './user/registerUser.vue';
 import Menu from './user/menu.vue';
 import Role from './user/role.vue';
 import Service from './container/service/service.vue';
@@ -51,6 +52,7 @@ export {
   Menu,
   Setting,
   User,
+  RegisterUser,
   Cicd,
   Kubernetes,
   Deployment,

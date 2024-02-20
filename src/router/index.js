@@ -6,6 +6,7 @@ import {
   Login,
   Role,
   User,
+  RegisterUser,
   Menu,
   Cicd,
   Cluster,
@@ -428,6 +429,12 @@ const routes = [
     component: Login,
   },
   {
+    // 用户注册路由
+    path: '/registerUser',
+    name: 'RegisterUser',
+    component: RegisterUser,
+  },
+  {
     path: '/podshell',
     name: 'PodShell',
     component: Terminal,
@@ -442,11 +449,14 @@ const router = createRouter({
 
 router.beforeEach((to, from) => {
   const token = localStorage.getItem('token');
-  if (!token && to.fullPath !== '/login') {
-    return { name: 'Login' };
-  }
-  if (token && to.fullPath === '/login') {
-    return { name: 'Index' };
+
+  if (to.fullPath !== '/registerUser') {
+    if (!token && to.fullPath !== '/login') {
+      return { name: 'Login' };
+    }
+    if (token && to.fullPath === '/login') {
+      return { name: 'Index' };
+    }
   }
 });
 
