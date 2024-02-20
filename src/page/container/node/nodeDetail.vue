@@ -39,6 +39,137 @@
     </el-card>
 
     <div>
+      <div v-if="data.activeName === 'second'">
+        <div style="margin-top: 20px">
+          <el-row>
+            <el-col>
+              <button class="pixiu-two-button" style="margin-left: 50px">刷新</button>
+              <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">
+                销毁重建
+              </button>
+
+              <div style="margin-left: 8px; float: right; margin-top: 6px">
+                <pixiu-icon
+                  name="icon-icon-refresh"
+                  style="cursor: pointer"
+                  size="14px"
+                  type="iconfont"
+                  color="#909399"
+                  @click="getNodePods"
+                />
+              </div>
+
+              <el-input
+                v-model="data.pageInfo.query"
+                placeholder="名称搜索关键字"
+                style="width: 480px; float: right"
+                clearable
+                @clear="getNodePods"
+              >
+                <template #suffix>
+                  <pixiu-icon
+                    name="icon-search"
+                    style="cursor: pointer"
+                    size="15px"
+                    type="iconfont"
+                    color="#909399"
+                    @click="getNodePods"
+                  />
+                </template>
+              </el-input>
+              <div style="float: right">
+                <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
+                  style="font-size: 13px; margin-left: 5px; margin-right: 10px"
+                  >自动刷新</span
+                >
+              </div>
+            </el-col>
+          </el-row>
+        </div>
+        <el-card style="margin-top: 15px" class="contend-card-container4">
+          <el-table
+            v-loading="data.loading"
+            :data="data.nodePods"
+            stripe
+            style="margin-top: 10px; margin-bottom: 25px"
+            header-row-class-name="pixiu-table-header"
+            :cell-style="{
+              'font-size': '12px',
+              color: '#29292b',
+            }"
+            @selection-change="handleSelectionChange"
+          >
+            <el-table-column type="selection" width="30" />
+            <el-table-column prop="metadata.name" label="实例名称" min-width="70px">
+              <template #default="scope">
+                {{ scope.row.metadata.name }}
+                <el-tooltip content="复制">
+                  <pixiu-icon
+                    name="icon-copy"
+                    size="11px"
+                    type="iconfont"
+                    class-name="icon-box"
+                    color="#909399"
+                    @click="copy(scope.row)"
+                  />
+                </el-tooltip>
+              </template>
+            </el-table-column>
+
+            <el-table-column prop="status" label="状态" :formatter="formatterStatus" />
+
+            <el-table-column prop="status.podIP" label="实例IP">
+              <template #default="scope">
+                {{ scope.row.status.podIP }}
+                <el-tooltip content="复制">
+                  <pixiu-icon
+                    name="icon-copy"
+                    size="11px"
+                    type="iconfont"
+                    class-name="icon-box"
+                    color="#909399"
+                    @click="copyIP(scope.row)"
+                  />
+                </el-tooltip>
+              </template>
+            </el-table-column>
+
+            <el-table-column
+              prop="status.containerStatuses"
+              label="重启次数"
+              :formatter="getPodRestartCount"
+            />
+
+            <el-table-column
+              prop="metadata.creationTimestamp"
+              label="创建时间"
+              :formatter="formatterTime"
+            />
+            <el-table-column fixed="right" label="操作" width="160px">
+              <template #default="scope">
+                <el-button
+                  size="small"
+                  type="text"
+                  style="margin-right: -25px; margin-left: -10px; color: #006eff"
+                  @click="deletePod(scope.row)"
+                >
+                  销毁重建
+                </el-button>
+
+                <el-button
+                  type="text"
+                  size="small"
+                  style="margin-right: 1px; color: #006eff"
+                  @click="openShell(scope.row)"
+                >
+                  远程连接
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+      </div>
+
       <div v-if="data.activeName === 'first'">
         <el-card class="contend-card-container2" style="margin-left: 50px; margin-right: 50px">
           <div class="big-world-style" style="margin-bottom: 20px">基本信息</div>
@@ -90,138 +221,6 @@
             </el-form-item>
           </div></el-card
         >
-
-        <div v-if="data.activeName === 'second'">
-          <div style="margin-top: 20px">
-            <el-row>
-              <el-col>
-                <button class="pixiu-two-button">刷新</button>
-                <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">
-                  销毁重建
-                </button>
-
-                <div style="margin-left: 8px; float: right; margin-top: 6px">
-                  <pixiu-icon
-                    name="icon-icon-refresh"
-                    style="cursor: pointer"
-                    size="14px"
-                    type="iconfont"
-                    color="#909399"
-                    @click="getNodePods"
-                  />
-                </div>
-
-                <el-input
-                  v-model="data.pageInfo.query"
-                  placeholder="名称搜索关键字"
-                  style="width: 480px; float: right"
-                  clearable
-                  @clear="getNodePods"
-                >
-                  <template #suffix>
-                    <pixiu-icon
-                      name="icon-search"
-                      style="cursor: pointer"
-                      size="15px"
-                      type="iconfont"
-                      color="#909399"
-                      @click="getNodePods"
-                    />
-                  </template>
-                </el-input>
-                <div style="float: right">
-                  <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
-                    style="font-size: 13px; margin-left: 5px; margin-right: 10px"
-                    >自动刷新</span
-                  >
-                </div>
-              </el-col>
-            </el-row>
-          </div>
-          <el-card style="margin-top: 15px" class="contend-card-container2">
-            <el-table
-              v-loading="data.loading"
-              :data="data.nodePods"
-              stripe
-              style="margin-top: 10px; width: 100%; margin-bottom: 25px"
-              header-row-class-name="pixiu-table-header"
-              :cell-style="{
-                'font-size': '12px',
-                color: '#29292b',
-              }"
-              @selection-change="handleSelectionChange"
-            >
-              <el-table-column type="selection" width="30" />
-              <el-table-column prop="metadata.name" label="实例名称" min-width="70px">
-                <template #default="scope">
-                  {{ scope.row.metadata.name }}
-                  <el-tooltip content="复制">
-                    <pixiu-icon
-                      name="icon-copy"
-                      size="11px"
-                      type="iconfont"
-                      class-name="icon-box"
-                      color="#909399"
-                      @click="copy(scope.row)"
-                    />
-                  </el-tooltip>
-                </template>
-              </el-table-column>
-
-              <el-table-column prop="status" label="状态" :formatter="formatterStatus" />
-              <el-table-column prop="status.hostIP" label="所在节点" />
-
-              <el-table-column prop="status.podIP" label="实例IP">
-                <template #default="scope">
-                  {{ scope.row.status.podIP }}
-                  <el-tooltip content="复制">
-                    <pixiu-icon
-                      name="icon-copy"
-                      size="11px"
-                      type="iconfont"
-                      class-name="icon-box"
-                      color="#909399"
-                      @click="copyIP(scope.row)"
-                    />
-                  </el-tooltip>
-                </template>
-              </el-table-column>
-
-              <el-table-column
-                prop="status.containerStatuses"
-                label="重启次数"
-                :formatter="getPodRestartCount"
-              />
-
-              <el-table-column
-                prop="metadata.creationTimestamp"
-                label="创建时间"
-                :formatter="formatterTime"
-              />
-              <el-table-column fixed="right" label="操作" width="160px">
-                <template #default="scope">
-                  <el-button
-                    size="small"
-                    type="text"
-                    style="margin-right: -25px; margin-left: -10px; color: #006eff"
-                    @click="deletePod(scope.row)"
-                  >
-                    销毁重建
-                  </el-button>
-
-                  <el-button
-                    type="text"
-                    size="small"
-                    style="margin-right: 1px; color: #006eff"
-                    @click="openShell(scope.row)"
-                  >
-                    远程连接
-                  </el-button>
-                </template>
-              </el-table-column>
-            </el-table>
-          </el-card>
-        </div>
       </div>
     </div>
   </div>
@@ -231,6 +230,7 @@
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { getNode } from '@/services/kubernetes/nodeService';
 import { getPodsByNode } from '@/services/kubernetes/podService';
+import { formatTimestamp, getTableData } from '@/utils/utils';
 
 const { proxy } = getCurrentInstance();
 
@@ -240,6 +240,10 @@ const data = reactive({
   name: '',
   clusterName: '',
   cluster: '',
+
+  pageInfo: {
+    query: '',
+  },
 
   nodeObject: '',
 
@@ -275,6 +279,37 @@ const getNodePods = async () => {
     return;
   }
   data.nodePods = result.items;
+};
+
+const formatterStatus = (row, column, cellValue) => {
+  let phase = cellValue.phase;
+  if (phase == 'Failed') {
+    phase = cellValue.reason;
+  } else if (phase == 'Pending') {
+    return <div class="color-yellow-word">{phase}</div>;
+  }
+
+  if (phase == 'Running') {
+    return <div class="color-green-word">{phase}</div>;
+  }
+  return <div>{phase}</div>;
+};
+
+const getPodRestartCount = (row, column, status) => {
+  let count = 0;
+  // status.containerStatuses.forEach((item) => {
+  //   count += item.restartCount;
+  // });
+  return <div>{count} 次</div>;
+};
+
+const formatterTime = (row, column, cellValue) => {
+  const time = formatTimestamp(cellValue);
+  return (
+    <el-tooltip effect="light" placement="top" content={time}>
+      <div class="pixiu-ellipsis-style">{time}</div>
+    </el-tooltip>
+  );
 };
 
 const handleClick = (tab, event) => {};
