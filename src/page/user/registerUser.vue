@@ -56,7 +56,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { getCurrentInstance, reactive, ref, onMounted } from 'vue';
-import { createUser } from '@/services/user/userService';
+import { createUser, getUserCount } from '@/services/user/userService';
 
 const { proxy } = getCurrentInstance();
 const ruleFormRef = ref();
