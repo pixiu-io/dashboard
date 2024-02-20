@@ -79,13 +79,19 @@ const rules = {
 onMounted(async () => {
   const [result, err] = await getUserCount();
   if (err) {
-    proxy.$notify.error({ title: '欢迎来到 Pixiu', message: '系统异常，请联系管理员' });
+    proxy.$notify.error({
+      title: '欢迎来到 Pixiu',
+      message: '系统异常，请联系管理员',
+    });
     router.push({ path: '/login' });
     return;
   }
 
   if (result !== 0) {
-    proxy.$notify.success({ title: '欢迎来到 Pixiu', message: '用户已存在，请登录' });
+    proxy.$notify.success({
+      title: '欢迎来到 Pixiu',
+      message: '用户已存在，请登录',
+    });
     router.push({ path: '/login' });
   }
 });
@@ -95,10 +101,14 @@ const confirmRegister = () => {
     if (valid) {
       const [result, err] = await createUser(data.userForm, true);
       if (err) {
-        proxy.$notify.error({ message: err });
+        proxy.$notify.error({
+          message: err,
+        });
         return;
       }
-      proxy.$notify.success({ message: '用户初始化成功' });
+      proxy.$notify.success({
+        message: '用户初始化成功',
+      });
       router.push({ path: '/login' });
     }
   });
