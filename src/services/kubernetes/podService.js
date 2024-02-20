@@ -34,3 +34,17 @@ export const createPod = async (cluster, namespace, data) => {
   );
   return [result, err];
 };
+
+export const getPodsByNode = async (cluster, nodeName) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: `/proxy/pixiu/${cluster}/api/v1/pods`,
+      data: {
+        fieldSelector: 'spec.nodeName=' + nodeName,
+        limit: 500,
+      },
+    }),
+  );
+  return [result, err];
+};
