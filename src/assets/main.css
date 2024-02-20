@@ -401,12 +401,28 @@
 /* 成对出现 */
 .detail-card-style-header {
   flex-direction: column;
-  height: 55px;
+  height: 96.5px;
 }
 
 /* 100vh 减去标题和最上面的高度 115px */
 .detail-card-style-body {
   background-color: #f3f4f7;
   /* background: #fff; */
-  height: calc(100vh - 110px);
+  height: calc(100vh - 170px);
+}
+
+.detail-card-style {
+  margin-top: 20px;
+  margin-left: 30px;
+}
+
+.detail-card-style-form {
+  color: #909399;
+  font-size: 13px;
+  margin-left: 8px;
+}
+
+.detail-card-style-form2 {
+  font-size: 13px;
+  color: #29232b;
 }

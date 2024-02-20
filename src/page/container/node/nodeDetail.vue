@@ -23,9 +23,38 @@
           </el-breadcrumb-item>
         </el-breadcrumb>
       </div>
+
+      <el-tabs
+        v-model="data.activeName"
+        class="detail-card-style"
+        @tab-click="handleClick"
+        @tab-change="handleChange"
+      >
+        <el-tab-pane label="基本信息" name="first"> </el-tab-pane>
+        <el-tab-pane label="实例管理" name="second"></el-tab-pane>
+        <el-tab-pane label="监控" name="third"></el-tab-pane>
+        <el-tab-pane label="事件" name="four"></el-tab-pane>
+        <el-tab-pane label="YAML" name="five"></el-tab-pane>
+      </el-tabs>
     </el-card>
 
-    <div class="detail-card-style-body">ddd</div>
+    <div>
+      <div v-if="data.activeName === 'first'">
+        <el-card class="contend-card-container2" style="margin-left: 50px; margin-right: 50px">
+          <div class="big-world-style" style="margin-bottom: 20px">基本信息</div>
+          <div
+            v-if="data.nodeObject.metadata"
+            style="margin-top: 8px; width: 100%; border-radius: 0px"
+          >
+            <el-form-item label="名称" class="detail-card-style-form">
+              <span class="deploy-detail-info" style="margin-left: 90px">
+                {{ data.nodeObject.metadata.name }}
+              </span>
+            </el-form-item>
+          </div></el-card
+        >
+      </div>
+    </div>
   </div>
 </template>
 
@@ -41,6 +70,8 @@ const data = reactive({
   cluster: '',
 
   nodeObject: '',
+
+  activeName: 'first',
 });
 
 onMounted(async () => {
@@ -60,6 +91,9 @@ const getNodeObject = async () => {
 
   data.nodeObject = res;
 };
+
+const handleClick = (tab, event) => {};
+const handleChange = (name) => {};
 
 const goToNode = () => {
   proxy.$router.push({
