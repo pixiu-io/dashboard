@@ -138,6 +138,7 @@ const data = reactive({
 onMounted(async () => {
   data.cluster = proxy.$route.query.cluster;
   data.clusterName = localStorage.getItem(data.cluster);
+
   data.name = proxy.$route.query.name;
 
   await getNamespace();
