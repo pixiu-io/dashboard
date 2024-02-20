@@ -397,3 +397,15 @@
 .el-input__inner::placeholder {
   font-size: 12px;
 }
+
+/* 成对出现 */
+.detail-card-style-header {
+  flex-direction: column;
+  height: 55px;
+}
+
+.detail-card-style-body {
+  background: #fff;
+  background-color: #fff;
+  height: calc(100vh - 55px);
+}
