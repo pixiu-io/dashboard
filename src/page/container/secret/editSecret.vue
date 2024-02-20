@@ -1,20 +1,39 @@
 <template>
-  <el-card class="title-card-container">
-    <div class="font-container">
-      <span> Secret :</span>
-      <span> {{ data.secretForm.metadata.name }} </span>
-      <span>({{ data.secretForm.metadata.namespace }})</span>
-      <span> / 更新配置</span>
-    </div>
-  </el-card>
-
   <div
     class="configmap-class"
     style="display: flex; flex-direction: column; width: 100%; height: 100%"
   >
+    <div style="width: 100%; height: 85px; background: #ffffff; display: flex; align-items: center">
+      <pixiu-icon
+        name="icon-back"
+        style="cursor: pointer; margin-left: 25px"
+        size="16px"
+        type="iconfont"
+        color="#006eff"
+        @click="backToSecret"
+      />
+
+      <el-breadcrumb separator="/" style="margin-left: 10px; margin-top: 1px">
+        <el-breadcrumb-item
+          ><span class="breadcrumb-create-style"> 集群 </span>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item
+          ><span class="breadcrumb-create-style"> {{ data.cluster }} </span>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item
+          ><span class="breadcrumb-create-style"> Secrets </span>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item
+          ><span class="breadcrumb-create-style"> {{ data.secretForm.metadata.name }} </span>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item
+          ><span class="breadcrumb-create-style"> 更新配置 </span>
+        </el-breadcrumb-item>
+      </el-breadcrumb>
+    </div>
     <el-main>
       <div class="app-pixiu-content-card">
-        <el-card style="margin-top: 8px; width: 100%; border-radius: 0px">
+        <el-card class="create-card-style">
           <el-form
             ref="ruleFormRef"
             label-position="left"
@@ -226,7 +245,10 @@
 </template>
 
 <script setup type="text/jsx">
-import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import {
+  getSecret,
+} from '@/services/kubernetes/secretService';
 const { proxy } = getCurrentInstance();
 
 const ruleFormRef = ref();
@@ -294,8 +316,8 @@ onMounted(() => {
   data.cloud = proxy.$route.query;
   data.cluster = proxy.$route.query.cluster;
   data.secretForm.metadata.name = data.cloud.name;
-  getSecret();
   getNamespace();
+  getSecretByName();
 });
 
 const getNamespace = async () => {
@@ -305,22 +327,23 @@ const getNamespace = async () => {
   }
 };
 
-const getSecret = async () => {
+const getSecretByName = async () => {
   data.loading = true;
-  const res = await proxy.$http({
-    method: 'get',
-    url: `/proxy/pixiu/${data.cloud.cluster}/api/v1/namespaces/${data.cloud.namespace}/secrets/${data.cloud.name}`,
-    data: '',
-  });
-  data.secretForm.metadata = res.metadata;
-  data.secretType = res.type;
-  if (res.type === 'kubernetes.io/dockercfg') {
-    data.secretForm.dockerRegister = JSON.parse(atob(res.data['.dockercfg']));
-  }else if (res.type === 'Opaque'){
-    let labels = Object.entries(res.data).map(([key, value]) => ({ key, value }));
+  const [result, err] = await getSecret(data.cluster, data.namespace, data.cloud.name);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+
+  data.secretForm.metadata = result.metadata;
+  data.secretType = result.type;
+  if (result.type === 'kubernetes.io/dockercfg') {
+    data.secretForm.dockerRegister = JSON.parse(atob(result.data['.dockercfg']));
+  }else if (result.type === 'Opaque'){
+    let labels = Object.entries(result.data).map(([key, value]) => ({ key, value }));
     data.secretForm.labels = labels.map(label => ({ key: label.key, value: atob(label.value) }))
-  }else if (res.type === 'kubernetes.io/tls'){
-    data.tlsCertificate = Object.entries(res.data).map(([key, value]) => ({ key, value }));
+  }else if (result.type === 'kubernetes.io/tls'){
+    data.tlsCertificate = Object.entries(result.data).map(([key, value]) => ({ key, value }));
   }
 };
 
