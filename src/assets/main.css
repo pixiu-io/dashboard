@@ -404,8 +404,9 @@
   height: 55px;
 }
 
+/* 100vh 减去标题和最上面的高度 115px */
 .detail-card-style-body {
-  background: #fff;
-  background-color: #fff;
-  height: calc(100vh - 55px);
+  background-color: #f3f4f7;
+  /* background: #fff; */
+  height: calc(100vh - 110px);
 }
