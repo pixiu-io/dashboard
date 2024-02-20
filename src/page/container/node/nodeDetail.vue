@@ -47,8 +47,45 @@
             style="margin-top: 8px; width: 100%; border-radius: 0px"
           >
             <el-form-item label="名称" class="detail-card-style-form">
-              <span class="deploy-detail-info" style="margin-left: 90px">
+              <span class="detail-card-style-form2" style="margin-left: 90px">
                 {{ data.nodeObject.metadata.name }}
+              </span>
+            </el-form-item>
+
+            <el-form-item label="创建时间" class="detail-card-style-form">
+              <span class="detail-card-style-form2" style="margin-left: 63px">
+                {{ data.nodeObject.metadata.creationTimestamp }}
+              </span>
+            </el-form-item>
+
+            <el-form-item label="Labels" class="detail-card-style-form">
+              <span class="detail-card-style-form2" style="margin-left: 75px">
+                <div v-if="data.nodeObject.metadata.labels === undefined">-</div>
+                <div v-else>
+                  <div
+                    v-for="(item, index) in data.nodeObject.metadata.labels"
+                    :key="item"
+                    style="margin-top: -1px"
+                  >
+                    <el-tag type="info" style="margin-top: 5px">{{ index }}: {{ item }}</el-tag>
+                    <!-- {{ index }}: {{ item }} -->
+                  </div>
+                </div>
+              </span>
+            </el-form-item>
+
+            <el-form-item label="Annotations" class="detail-card-style-form">
+              <span class="detail-card-style-form2" style="margin-left: 42px">
+                <div v-if="data.nodeObject.metadata.annotations === undefined">-</div>
+                <div v-else>
+                  <div
+                    v-for="(item, index) in data.nodeObject.metadata.annotations"
+                    :key="item"
+                    style="margin-top: -1px"
+                  >
+                    <el-tag type="info" style="margin-top: 5px">{{ index }}: {{ item }}</el-tag>
+                  </div>
+                </div>
               </span>
             </el-form-item>
           </div></el-card
