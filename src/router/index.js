@@ -38,6 +38,9 @@ import {
   CreateSecret,
   EditSecret,
   StatefulSet,
+  CreateStatefulSet,
+  EditStatefulSet,
+  StatefulSetDetail,
   StorageClass,
   CreateStorageClass,
   EditStorageClass,
@@ -176,6 +179,14 @@ const routes = [
               // noPadding: true,
             },
             component: DeploymentDetail,
+          },
+          {
+            path: 'statefulsets/detail',
+            name: 'StatefulSetDetail',
+            meta: {
+              title: 'StatefulSetDetail',
+            },
+            component: StatefulSetDetail,
           },
           {
             path: 'operator',
@@ -379,6 +390,22 @@ const routes = [
           title: 'EditDeployment',
         },
         component: EditDeployment,
+      },
+      {
+        path: 'statefulsets/createStatefulSet',
+        name: 'CreateStatefulSet',
+        meta: {
+          title: 'CreateStatefulSet',
+        },
+        component: CreateStatefulSet,
+      },
+      {
+        path: 'statefulsets/editStatefulSet',
+        name: 'EditStatefulSet',
+        meta: {
+          title: 'EditStatefulSet',
+        },
+        component: EditStatefulSet,
       },
       {
         path: 'nodes/detail',
