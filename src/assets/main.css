@@ -253,6 +253,13 @@
   width: 50%;
 }
 
+.contend-card-container4 {
+  margin-top: 20px;
+  border-radius: 0px;
+  margin-left: 50px;
+  margin-right: 50px;
+}
+
 /* 全局详情 */
 .glabal-detail-card {
   height: 120%;
@@ -396,4 +403,33 @@
 /* 输入框 placeholder 样式 */
 .el-input__inner::placeholder {
   font-size: 12px;
+}
+
+/* 成对出现 */
+.detail-card-style-header {
+  flex-direction: column;
+  height: 96.5px;
+}
+
+/* 100vh 减去标题和最上面的高度 115px */
+.detail-card-style-body {
+  background-color: #f3f4f7;
+  /* background: #fff; */
+  height: calc(100vh - 170px);
+}
+
+.detail-card-style {
+  margin-top: 20px;
+  margin-left: 30px;
+}
+
+.detail-card-style-form {
+  color: #909399;
+  font-size: 13px;
+  margin-left: 8px;
+}
+
+.detail-card-style-form2 {
+  font-size: 13px;
+  color: #29232b;
 }

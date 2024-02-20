@@ -138,6 +138,7 @@ const data = reactive({
 onMounted(async () => {
   data.cluster = proxy.$route.query.cluster;
   data.clusterName = localStorage.getItem(data.cluster);
+
   data.name = proxy.$route.query.name;
 
   await getNamespace();
@@ -202,13 +203,6 @@ const editYaml = () => {
 </script>
 
 <style scoped="scoped">
-.detail-card-style {
-  margin-top: -10px;
-  margin-bottom: -18px;
-  margin-left: 30px;
-  width: 70%;
-}
-
 .namespace-info {
   color: #909399;
   font-size: 13px;

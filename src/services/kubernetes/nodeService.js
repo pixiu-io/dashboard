@@ -13,3 +13,13 @@ export const getNodeList = async (cluster) => {
   );
   return [result, err];
 };
+
+export const getNode = async (cluster, name) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: `/proxy/pixiu/${cluster}/api/v1/nodes/${name}`,
+    }),
+  );
+  return [result, err];
+};
