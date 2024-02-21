@@ -16,7 +16,7 @@
             ><span class="breadcrumb-create-style"> {{ data.clusterName }} </span>
           </el-breadcrumb-item>
           <el-breadcrumb-item
-            ><span class="breadcrumb-create-style"> Node </span>
+            ><span class="breadcrumb-create-style"> Node: {{ data.name }} </span>
           </el-breadcrumb-item>
           <el-breadcrumb-item
             ><span class="breadcrumb-create-style"> Node详情 </span>
@@ -43,25 +43,13 @@
         <div style="margin-top: 20px">
           <el-row>
             <el-col>
-              <button class="pixiu-two-button" style="margin-left: 50px">刷新</button>
-              <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">
-                销毁重建
-              </button>
-
-              <div style="margin-left: 8px; float: right; margin-top: 6px">
-                <pixiu-icon
-                  name="icon-icon-refresh"
-                  style="cursor: pointer"
-                  size="14px"
-                  type="iconfont"
-                  color="#909399"
-                  @click="getNodePods"
-                />
+              <div style="margin-left: 8px; float: right; margin-right: 50px; margin-left: 12px">
+                <button class="pixiu-two-button" @click="getNodePods">搜索</button>
               </div>
 
               <el-input
                 v-model="data.pageInfo.query"
-                placeholder="名称搜索关键字"
+                placeholder="请输入搜索关键字"
                 style="width: 480px; float: right"
                 clearable
                 @clear="getNodePods"
@@ -77,6 +65,7 @@
                   />
                 </template>
               </el-input>
+
               <div style="float: right">
                 <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
                   style="font-size: 13px; margin-left: 5px; margin-right: 10px"
@@ -89,7 +78,7 @@
         <el-card style="margin-top: 15px" class="contend-card-container4">
           <el-table
             v-loading="data.loading"
-            :data="data.nodePods"
+            :data="data.tableData"
             stripe
             style="margin-top: 10px; margin-bottom: 25px"
             header-row-class-name="pixiu-table-header"
@@ -118,27 +107,15 @@
 
             <el-table-column prop="status" label="状态" :formatter="formatterStatus" />
 
-            <el-table-column prop="status.podIP" label="实例IP">
-              <template #default="scope">
-                {{ scope.row.status.podIP }}
-                <el-tooltip content="复制">
-                  <pixiu-icon
-                    name="icon-copy"
-                    size="11px"
-                    type="iconfont"
-                    class-name="icon-box"
-                    color="#909399"
-                    @click="copyIP(scope.row)"
-                  />
-                </el-tooltip>
-              </template>
-            </el-table-column>
+            <el-table-column prop="status.podIP" label="实例IP"> </el-table-column>
 
             <el-table-column
               prop="status.containerStatuses"
               label="重启次数"
               :formatter="getPodRestartCount"
             />
+
+            <el-table-column prop="metadata.namespace" label="命名空间" />
 
             <el-table-column
               prop="metadata.creationTimestamp"
@@ -153,7 +130,7 @@
                   style="margin-right: -25px; margin-left: -10px; color: #006eff"
                   @click="deletePod(scope.row)"
                 >
-                  销毁重建
+                  删除
                 </el-button>
 
                 <el-button
@@ -162,65 +139,82 @@
                   style="margin-right: 1px; color: #006eff"
                   @click="openShell(scope.row)"
                 >
-                  远程连接
+                  远程登录
                 </el-button>
               </template>
             </el-table-column>
           </el-table>
+          <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
         </el-card>
       </div>
 
       <div v-if="data.activeName === 'first'">
-        <el-card class="contend-card-container2" style="margin-left: 50px; margin-right: 50px">
-          <div class="big-world-style" style="margin-bottom: 20px">基本信息</div>
-          <div
-            v-if="data.nodeObject.metadata"
-            style="margin-top: 8px; width: 100%; border-radius: 0px"
-          >
-            <el-form-item label="名称" class="detail-card-style-form">
-              <span class="detail-card-style-form2" style="margin-left: 90px">
-                {{ data.nodeObject.metadata.name }}
-              </span>
-            </el-form-item>
+        <dev class="one-line-style">
+          <el-card class="contend-card-container2" style="margin-left: 50px; margin-right: 50px">
+            <div class="big-world-style" style="margin-bottom: 20px">基本信息</div>
+            <div
+              v-if="data.nodeObject.metadata"
+              style="margin-top: 8px; width: 100%; border-radius: 0px"
+            >
+              <el-form-item label="名称" class="detail-card-style-form">
+                <span class="detail-card-style-form2" style="margin-left: 90px">
+                  {{ data.nodeObject.metadata.name }}
+                </span>
+              </el-form-item>
 
-            <el-form-item label="创建时间" class="detail-card-style-form">
-              <span class="detail-card-style-form2" style="margin-left: 63px">
-                {{ data.nodeObject.metadata.creationTimestamp }}
-              </span>
-            </el-form-item>
+              <el-form-item label="创建时间" class="detail-card-style-form">
+                <span class="detail-card-style-form2" style="margin-left: 63px">
+                  {{ data.nodeObject.metadata.creationTimestamp }}
+                </span>
+              </el-form-item>
 
-            <el-form-item label="Labels" class="detail-card-style-form">
-              <span class="detail-card-style-form2" style="margin-left: 75px">
-                <div v-if="data.nodeObject.metadata.labels === undefined">-</div>
-                <div v-else>
-                  <div
-                    v-for="(item, index) in data.nodeObject.metadata.labels"
-                    :key="item"
-                    style="margin-top: -1px"
-                  >
-                    <el-tag type="info" style="margin-top: 5px">{{ index }}: {{ item }}</el-tag>
-                    <!-- {{ index }}: {{ item }} -->
+              <el-form-item label="Labels" class="detail-card-style-form">
+                <span class="detail-card-style-form2" style="margin-left: 75px">
+                  <div v-if="data.nodeObject.metadata.labels === undefined">-</div>
+                  <div v-else>
+                    <div
+                      v-for="(item, index) in data.nodeObject.metadata.labels"
+                      :key="item"
+                      style="margin-top: -1px"
+                    >
+                      <el-tag type="info" style="margin-top: 5px">{{ index }}: {{ item }}</el-tag>
+                      <!-- {{ index }}: {{ item }} -->
+                    </div>
                   </div>
-                </div>
-              </span>
-            </el-form-item>
+                </span>
+              </el-form-item>
 
-            <el-form-item label="Annotations" class="detail-card-style-form">
-              <span class="detail-card-style-form2" style="margin-left: 42px">
-                <div v-if="data.nodeObject.metadata.annotations === undefined">-</div>
-                <div v-else>
-                  <div
-                    v-for="(item, index) in data.nodeObject.metadata.annotations"
-                    :key="item"
-                    style="margin-top: -1px"
-                  >
-                    <el-tag type="info" style="margin-top: 5px">{{ index }}: {{ item }}</el-tag>
+              <el-form-item label="Annotations" class="detail-card-style-form">
+                <span class="detail-card-style-form2" style="margin-left: 42px">
+                  <div v-if="data.nodeObject.metadata.annotations === undefined">-</div>
+                  <div v-else>
+                    <div
+                      v-for="(item, index) in data.nodeObject.metadata.annotations"
+                      :key="item"
+                      style="margin-top: -1px"
+                    >
+                      <el-tag type="info" style="margin-top: 5px">{{ index }}: {{ item }}</el-tag>
+                    </div>
                   </div>
-                </div>
-              </span>
-            </el-form-item>
-          </div></el-card
-        >
+                </span>
+              </el-form-item>
+            </div>
+          </el-card>
+          <el-card class="contend-card-container3">
+            <div class="big-world-style" style="margin-bottom: 20px">运行环境</div>
+            <div
+              v-if="data.nodeObject.metadata"
+              style="margin-top: 8px; width: 100%; border-radius: 0px"
+            >
+              <el-form-item label="内核版本" class="detail-card-style-form"> </el-form-item>
+              <el-form-item label="操作系统" class="detail-card-style-form"> </el-form-item>
+              <el-form-item label="容器运行时" class="detail-card-style-form"> </el-form-item>
+              <el-form-item label="kubelet版本" class="detail-card-style-form"> </el-form-item>
+              <el-form-item label="kubeproxy版本" class="detail-card-style-form"> </el-form-item>
+              <el-form-item label="podCIDRs" class="detail-card-style-form"> </el-form-item>
+            </div>
+          </el-card>
+        </dev>
       </div>
     </div>
   </div>
@@ -231,6 +225,7 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { getNode } from '@/services/kubernetes/nodeService';
 import { getPodsByNode } from '@/services/kubernetes/podService';
 import { formatTimestamp, getTableData } from '@/utils/utils';
+import Pagination from '@/components/pagination/index.vue';
 
 const { proxy } = getCurrentInstance();
 
@@ -242,7 +237,10 @@ const data = reactive({
   cluster: '',
 
   pageInfo: {
+    page: 1,
     query: '',
+    total: 0,
+    limit: 10,
   },
 
   nodeObject: '',
@@ -250,7 +248,8 @@ const data = reactive({
   crontab: true,
   nodePods: [],
 
-  activeName: 'first',
+  tableData: [],
+  activeName: 'second',
 });
 
 onMounted(async () => {
@@ -264,7 +263,9 @@ onMounted(async () => {
 });
 
 const getNodeObject = async () => {
+  data.loading = true;
   const [result, err] = await getNode(data.cluster, data.name);
+  data.loading = false;
   if (err) {
     proxy.$notify.error({ title: 'Node', message: err.response.data.message });
     return;
@@ -279,6 +280,14 @@ const getNodePods = async () => {
     return;
   }
   data.nodePods = result.items;
+  data.pageInfo.total = result.items.length;
+  data.tableData = getTableData(data.pageInfo, data.nodePods);
+};
+
+const onChange = (v) => {
+  data.pageInfo.limit = v.limit;
+  data.pageInfo.page = v.page;
+  data.tableData = getTableData(data.pageInfo, data.nodePods);
 };
 
 const formatterStatus = (row, column, cellValue) => {
