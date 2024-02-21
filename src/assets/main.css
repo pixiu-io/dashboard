@@ -260,6 +260,13 @@
   margin-right: 50px;
 }
 
+.contend-card-container5 {
+  margin-top: 20px;
+  border-radius: 0px;
+  width: 25%;
+  height: 30%;
+}
+
 /* 全局详情 */
 .glabal-detail-card {
   height: 120%;
