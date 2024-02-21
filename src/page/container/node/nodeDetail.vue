@@ -34,6 +34,7 @@
         <el-tab-pane label="Pod实例" name="second"></el-tab-pane>
         <el-tab-pane label="监控" name="third"></el-tab-pane>
         <el-tab-pane label="事件" name="four"></el-tab-pane>
+        <el-tab-pane label="镜像" name="six"></el-tab-pane>
         <el-tab-pane label="YAML" name="five"></el-tab-pane>
       </el-tabs>
     </el-card>
@@ -148,6 +149,34 @@
         </el-card>
       </div>
 
+      <div v-if="data.activeName === 'five'">
+        <div style="margin-top: 20px">
+          <el-col>
+            <button class="pixiu-two-button" style="width: 85px" @click="editYaml">编辑YAML</button>
+            <button class="pixiu-two-button" style="margin-left: 10px" @click="copyYmal">
+              复制
+            </button>
+
+            <div style="margin-left: 8px; float: right; margin-top: 6px">
+              <pixiu-icon
+                name="icon-icon-refresh"
+                style="cursor: pointer"
+                size="14px"
+                type="iconfont"
+                color="#909399"
+                @click="getDeployment"
+              />
+            </div>
+          </el-col>
+        </div>
+        <div style="margin-top: 10px"></div>
+        <MyCodeMirror :yaml="data.yaml" :read-only="data.readOnly" :height="650"></MyCodeMirror>
+        <div v-if="!data.readOnly" style="margin-top: 10px">
+          <el-button class="pixiu-cancel-button" @click="cancel()">取消</el-button>
+          <el-button class="pixiu-confirm-button" type="primary" @click="confirm()">确定</el-button>
+        </div>
+      </div>
+
       <div v-if="data.activeName === 'first'">
         <dev class="one-line-style">
           <el-card class="contend-card-container2" style="margin-left: 50px; margin-right: 50px">
@@ -200,18 +229,42 @@
               </el-form-item>
             </div>
           </el-card>
-          <el-card class="contend-card-container3">
+          <el-card class="contend-card-container5">
             <div class="big-world-style" style="margin-bottom: 20px">运行环境</div>
             <div
               v-if="data.nodeObject.metadata"
               style="margin-top: 8px; width: 100%; border-radius: 0px"
             >
-              <el-form-item label="内核版本" class="detail-card-style-form"> </el-form-item>
-              <el-form-item label="操作系统" class="detail-card-style-form"> </el-form-item>
-              <el-form-item label="容器运行时" class="detail-card-style-form"> </el-form-item>
-              <el-form-item label="kubelet版本" class="detail-card-style-form"> </el-form-item>
-              <el-form-item label="kubeproxy版本" class="detail-card-style-form"> </el-form-item>
-              <el-form-item label="podCIDRs" class="detail-card-style-form"> </el-form-item>
+              <el-form-item label="内核版本" class="detail-card-style-form">
+                <span class="detail-card-style-form2" style="margin-left: 63px">
+                  {{ data.nodeObject.status.nodeInfo.kernelVersion }}
+                </span>
+              </el-form-item>
+              <el-form-item label="操作系统" class="detail-card-style-form">
+                <span class="detail-card-style-form2" style="margin-left: 63px">
+                  {{ data.nodeObject.status.nodeInfo.osImage }}
+                </span>
+              </el-form-item>
+              <el-form-item label="容器运行时" class="detail-card-style-form">
+                <span class="detail-card-style-form2" style="margin-left: 50px">
+                  {{ data.nodeObject.status.nodeInfo.containerRuntimeVersion }}
+                </span>
+              </el-form-item>
+              <el-form-item label="kubelet版本" class="detail-card-style-form">
+                <span class="detail-card-style-form2" style="margin-left: 45px">
+                  {{ data.nodeObject.status.nodeInfo.kubeletVersion }}
+                </span>
+              </el-form-item>
+              <el-form-item label="kubeProxy版本" class="detail-card-style-form">
+                <span class="detail-card-style-form2" style="margin-left: 26px">
+                  {{ data.nodeObject.status.nodeInfo.kubeProxyVersion }}
+                </span>
+              </el-form-item>
+              <el-form-item label="podCIDRs" class="detail-card-style-form">
+                <span class="detail-card-style-form2" style="margin-left: 55px">
+                  {{ data.nodeObject.spec.podCIDR }}
+                </span>
+              </el-form-item>
             </div>
           </el-card>
         </dev>
@@ -226,6 +279,8 @@ import { getNode } from '@/services/kubernetes/nodeService';
 import { getPodsByNode } from '@/services/kubernetes/podService';
 import { formatTimestamp, getTableData } from '@/utils/utils';
 import Pagination from '@/components/pagination/index.vue';
+import jsYaml from 'js-yaml';
+import MyCodeMirror from '@/components/codemirror/index.vue';
 
 const { proxy } = getCurrentInstance();
 
@@ -250,6 +305,10 @@ const data = reactive({
 
   tableData: [],
   activeName: 'second',
+
+  yaml: '',
+  yamlName: '',
+  readOnly: true,
 });
 
 onMounted(async () => {
@@ -271,6 +330,7 @@ const getNodeObject = async () => {
     return;
   }
   data.nodeObject = result;
+  data.yaml = jsYaml.dump(data.nodeObject);
 };
 
 const getNodePods = async () => {
@@ -323,6 +383,18 @@ const formatterTime = (row, column, cellValue) => {
 
 const handleClick = (tab, event) => {};
 const handleChange = (name) => {};
+
+const confirm = () => {
+  data.readOnly = true;
+};
+
+const cancel = () => {
+  data.readOnly = true;
+};
+
+const editYaml = () => {
+  data.readOnly = false;
+};
 
 const goToNode = () => {
   proxy.$router.push({
