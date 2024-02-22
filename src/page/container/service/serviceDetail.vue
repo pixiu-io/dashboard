@@ -225,7 +225,7 @@ const GetService = async () => {
   try {
     const res = await proxy.$http({
       method: 'get',
-      url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/services/${data.name}`,
+      url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.namespace}/services/${data.name}`,
     });
     data.service = res;
 

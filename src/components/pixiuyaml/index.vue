@@ -120,7 +120,7 @@ const confirmYaml = async () => {
   }
   const metadata = yamlData.metadata;
   const name = metadata.name;
-  const baseUrl = `/proxy/pixiu/${data.cluster}`;
+  const baseUrl = `/pixiu/proxy/${data.cluster}`;
   const APIPaths = ['/apis', '/api'];
 
   let found = false;
