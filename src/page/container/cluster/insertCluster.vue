@@ -203,7 +203,8 @@ const comfirmCreate = async () => {
   ruleFormRef.value.validate(async (valid) => {
     if (valid) {
       if (data.clusterForm.kube_config.trim().length === 0) {
-        return proxy.$message.error('未发现 Kubeconfig 文件，请完成上传后再进行操作');
+        proxy.$notify.error({ title: 'Pixiu', message: '未上传 KubeConfig 文件或内容为空' });
+        return;
       }
 
       try {
@@ -212,7 +213,10 @@ const comfirmCreate = async () => {
           url: '/pixiu/clusters',
           data: data.clusterForm,
         });
-        proxy.$message.success(`Kubernetes 集群 ${data.clusterForm.alias_name} 创建成功`);
+        proxy.$notify.success({
+          title: 'Pixiu',
+          message: `Kubernetes 集群 ${data.clusterForm.alias_name} 创建成功`,
+        });
         backToCluster();
       } catch (error) {}
     }
@@ -225,7 +229,8 @@ const cancelCreate = () => {
 
 const connectKubernetes = async () => {
   if (data.clusterForm.kube_config.trim().length === 0) {
-    return proxy.$message.error('未发现 Kubeconfig 文件，请完成上传后再进行操作');
+    proxy.$notify.error({ title: 'Pixiu', message: '未上传 KubeConfig 文件或内容为空' });
+    return;
   }
 
   try {
@@ -238,7 +243,7 @@ const connectKubernetes = async () => {
     });
 
     data.allowCreated = false;
-    proxy.$message.success('kubernetes 集群连接正常');
+    proxy.$notify.success({ title: 'Pixiu', message: 'Kubernetes 集群连接正常' });
   } catch (error) {}
 };
 
