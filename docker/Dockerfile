@@ -15,6 +15,5 @@ FROM nginx:alpine
 LABEL MAINTAINER="PIXIU"
 RUN mkdir /etc/nginx/conf.d/ssl/
 COPY --from=builder /build/dist /usr/share/nginx/html/pixiu
-FROM scratch
 COPY --from=builder /certs  /etc/nginx/conf.d/ssl/
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
