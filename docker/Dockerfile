@@ -4,9 +4,10 @@ WORKDIR /build
 COPY . .
 RUN npm config set registry https://registry.npmmirror.com/ && npm install && npm run build
 
-FROM openssl:latest as builder
+FROM ubuntu:latest as builder
 WORKDIR /certs
 LABEL MAINTAINER="PIXIU"
+RUN apt-get update && apt-get install -y openssl
 RUN openssl genrsa -out key.pem 2048
 RUN openssl req -new -key key.pem -out csr.pem -subj "/CN=127.0.0.1"
 RUN openssl x509 -req -in csr.pem -signkey key.pem -out cert.pem -days 36500
