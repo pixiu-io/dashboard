@@ -650,7 +650,7 @@ const copyIP = async (val) => {
 const getStatefulSet = async () => {
   const res = await proxy.$http({
     method: 'get',
-    url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/statefulsets/${data.name}`,
+    url: `/pixiu/proxy/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/statefulsets/${data.name}`,
   });
   data.statefulset = res;
 
@@ -660,7 +660,7 @@ const getStatefulSet = async () => {
 const deletePod = async (row) => {
   const pods = await proxy.$http({
     method: 'delete',
-    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${row.metadata.namespace}/pods/${row.metadata.name}`,
+    url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${row.metadata.namespace}/pods/${row.metadata.name}`,
   });
 
   await getStatefulSetPods();
@@ -674,7 +674,7 @@ const getPodLog = async () => {
 
   const log = await proxy.$http({
     method: 'get',
-    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${data.selectedPod}/log`,
+    url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${data.selectedPod}/log`,
     data: { container: data.selectedContainer },
   });
 
@@ -690,7 +690,7 @@ const getStatefulSetPods = async () => {
 
   const pods = await proxy.$http({
     method: 'get',
-    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/pods`,
+    url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.namespace}/pods`,
     data: {
       labelSelector: labels.join(','),
       limit: 500,

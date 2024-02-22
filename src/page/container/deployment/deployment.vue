@@ -412,7 +412,7 @@ const confirmDeploymentScale = async () => {
   try {
     const res = await proxy.$http({
       method: 'patch',
-      url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${data.deploymentRepcliasFrom.name}/scale`,
+      url: `/pixiu/proxy/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${data.deploymentRepcliasFrom.name}/scale`,
       data: {
         spec: {
           replicas: Number(data.deploymentRepcliasFrom.target),

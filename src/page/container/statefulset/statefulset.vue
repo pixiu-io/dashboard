@@ -415,7 +415,7 @@ const confirmStatefulSetScale = async () => {
   try {
     const res = await proxy.$http({
       method: 'patch',
-      url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/statefulsets/${data.statefulSetRepcliasFrom.name}/scale`,
+      url: `/pixiu/proxy/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/statefulsets/${data.statefulSetRepcliasFrom.name}/scale`,
       data: {
         spec: {
           replicas: Number(data.statefulSetRepcliasFrom.target),

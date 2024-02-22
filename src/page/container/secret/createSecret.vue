@@ -385,7 +385,7 @@ const comfirmCreate = () => {
       }
       for (let namespace of namespaces) {
         let url =
-          `/proxy/pixiu/${data.cluster}/api/v1/namespaces/` + namespace + `/secrets/` + name;
+          `/pixiu/proxy/${data.cluster}/api/v1/namespaces/` + namespace + `/secrets/` + name;
         const result = await checkExist(kind, name, namespace, url);
         if (!result) {
           return;
@@ -413,7 +413,7 @@ const comfirmCreate = () => {
       }
 
       for (let namespace of namespaces) {
-        let url = `/proxy/pixiu/${data.cluster}/api/v1/namespaces/` + namespace + `/secrets`;
+        let url = `/pixiu/proxy/${data.cluster}/api/v1/namespaces/` + namespace + `/secrets`;
         await createSecret(url, form);
       }
 
@@ -469,7 +469,7 @@ const getNamespaceList = async () => {
   try {
     const result = await proxy.$http({
       method: 'get',
-      url: '/proxy/pixiu/' + data.cluster + '/api/v1/namespaces',
+      url: '/pixiu/proxy/' + data.cluster + '/api/v1/namespaces',
     });
 
     data.namespaces = [];

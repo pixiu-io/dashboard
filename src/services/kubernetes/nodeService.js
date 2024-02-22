@@ -5,7 +5,7 @@ export const getNodeList = async (cluster) => {
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
-      url: `/proxy/pixiu/${cluster}/api/v1/nodes`,
+      url: `/pixiu/proxy/${cluster}/api/v1/nodes`,
       data: {
         limit: 500,
       },
@@ -18,7 +18,7 @@ export const getNode = async (cluster, name) => {
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
-      url: `/proxy/pixiu/${cluster}/api/v1/nodes/${name}`,
+      url: `/pixiu/proxy/${cluster}/api/v1/nodes/${name}`,
     }),
   );
   return [result, err];

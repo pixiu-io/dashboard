@@ -5,7 +5,7 @@ export const getPodList = async (cluster, namespace) => {
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
-      url: `/proxy/pixiu/${cluster}/api/v1/namespaces/${namespace}/pods`,
+      url: `/pixiu/proxy/${cluster}/api/v1/namespaces/${namespace}/pods`,
       data: {
         limit: 500,
       },
@@ -18,7 +18,7 @@ export const deletePod = async (cluster, namespace, name) => {
   const [err, result] = await awaitWrap(
     http({
       method: 'delete',
-      url: `/proxy/pixiu/${cluster}/api/v1/namespaces/${namespace}/pods/${name}`,
+      url: `/pixiu/proxy/${cluster}/api/v1/namespaces/${namespace}/pods/${name}`,
     }),
   );
   return [result, err];
@@ -28,7 +28,7 @@ export const createPod = async (cluster, namespace, data) => {
   const [err, result] = await awaitWrap(
     http({
       method: 'post',
-      url: `/proxy/pixiu/${cluster}/api/v1/namespaces/${namespace}/pods`,
+      url: `/pixiu/proxy/${cluster}/api/v1/namespaces/${namespace}/pods`,
       data: data,
     }),
   );
@@ -39,7 +39,7 @@ export const getPodsByNode = async (cluster, nodeName) => {
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
-      url: `/proxy/pixiu/${cluster}/api/v1/pods`,
+      url: `/pixiu/proxy/${cluster}/api/v1/pods`,
       data: {
         fieldSelector: 'spec.nodeName=' + nodeName,
         limit: 500,

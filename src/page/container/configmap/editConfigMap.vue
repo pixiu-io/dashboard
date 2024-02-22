@@ -186,7 +186,7 @@ const getConfigMap = async () => {
   data.loading = true;
   const res = await proxy.$http({
     method: 'get',
-    url: `/proxy/pixiu/${data.cloud.cluster}/api/v1/namespaces/${data.namespace}/configmaps/${data.cloud.name}`,
+    url: `/pixiu/proxy/${data.cloud.cluster}/api/v1/namespaces/${data.namespace}/configmaps/${data.cloud.name}`,
     data: '',
   });
   data.configmapForm.metadata = res.metadata;
@@ -197,7 +197,7 @@ const getNamespaceList = async () => {
   try {
     const result = await proxy.$http({
       method: 'get',
-      url: '/proxy/pixiu/' + data.cloud.cluster + '/api/v1/namespaces',
+      url: '/pixiu/proxy/' + data.cloud.cluster + '/api/v1/namespaces',
     });
 
     for (let item of result.items) {
@@ -222,7 +222,7 @@ const comfirmUpdate = async () => {
     const resp = await proxy.$http({
       method: 'put',
       url:
-        `/proxy/pixiu/${data.cloud.cluster}/api/v1/namespaces/` +
+        `/pixiu/proxy/${data.cloud.cluster}/api/v1/namespaces/` +
         data.configmapForm.metadata.namespace +
         `/configmaps/` +
         data.configmapForm.metadata.name,
