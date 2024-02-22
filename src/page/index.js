@@ -9,6 +9,9 @@ import CreateDeployment from './container/deployment/createDeployment.vue';
 import EditDeployment from './container/deployment/editDeployment.vue';
 import DeploymentDetail from './container/deployment/details.vue';
 import StatefulSet from './container/statefulset/statefulset.vue';
+import CreateStatefulSet from './container/statefulset/createStatefulSet.vue';
+import EditStatefulSet from './container/statefulset/editStatefulSet.vue';
+import StatefulSetDetail from './container/statefulset/details.vue';
 import Release from './container/release/release.vue';
 import Terminal from './container/terminal.vue';
 import Monitor from './container/monitor.vue';
@@ -19,6 +22,7 @@ import Home from './home/home.vue';
 import Login from './login/login.vue';
 import Setting from './setting/setting.vue';
 import User from './user/user.vue';
+import RegisterUser from './user/registerUser.vue';
 import Menu from './user/menu.vue';
 import Role from './user/role.vue';
 import Service from './container/service/service.vue';
@@ -51,6 +55,7 @@ export {
   Menu,
   Setting,
   User,
+  RegisterUser,
   Cicd,
   Kubernetes,
   Deployment,
@@ -71,6 +76,9 @@ export {
   CreateService,
   EditService,
   StatefulSet,
+  CreateStatefulSet,
+  EditStatefulSet,
+  StatefulSetDetail,
   ConfigMap,
   CreateConfigMap,
   EditConfigMap,

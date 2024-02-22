@@ -125,9 +125,9 @@
   </div>
 
   <pixiuDialog
-    :closeEvent="data.deleteDialog.close"
-    :objectName="data.deleteDialog.objectName"
-    :deleteName="data.deleteDialog.deleteName"
+    :close-event="data.deleteDialog.close"
+    :object-name="data.deleteDialog.objectName"
+    :delete-name="data.deleteDialog.deleteName"
     @confirm="confirm"
     @cancel="cancel"
   ></pixiuDialog>
@@ -140,10 +140,10 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
-import { formatTimestamp } from '@/utils/utils';
+import { formatTimestamp, getTableData } from '@/utils/utils';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
-import { deletePod } from '@/services/kubernetes/podService';
+import { getPodList, deletePod } from '@/services/kubernetes/podService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { toClipboard } = useClipboard();
@@ -162,6 +162,7 @@ const data = reactive({
     query: '',
     total: 0,
   },
+  tableData: [],
   loading: false,
 
   namespace: 'default',
@@ -179,10 +180,10 @@ const data = reactive({
 });
 
 const onChange = (v) => {
-  data.pageInfo.limit = 10;
+  data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
 
-  getPods();
+  data.tableData = getTableData(data.pageInfo, data.podList);
 };
 
 onMounted(() => {
@@ -238,15 +239,16 @@ const jumpRoute = (row) => {
 
 const getPods = async () => {
   data.loading = true;
-  const res = await proxy.$http({
-    method: 'get',
-    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/pods`,
-    data: data.pageInfo,
-  });
-
+  const [result, err] = await getPodList(data.cluster, data.namespace);
   data.loading = false;
-  data.podList = res.items;
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+
+  data.podList = result.items;
   data.pageInfo.total = data.podList.length;
+  data.tableData = getTableData(data.pageInfo, data.podList);
 };
 
 const changeNamespace = async (val) => {

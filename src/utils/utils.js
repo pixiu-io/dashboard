@@ -16,3 +16,11 @@ const formatTimestamp = (timestamp) => {
   return formattedDateTime;
 };
 export { formatTimestamp };
+
+const getTableData = (pageInfo, sourceData) => {
+  const startIndex = (pageInfo.page - 1) * pageInfo.limit;
+  const endIndex = Math.min(startIndex + pageInfo.limit, sourceData.length);
+  // Use Array.slice() to extract the desired portion of sourceData
+  return sourceData.slice(startIndex, endIndex);
+};
+export { getTableData };

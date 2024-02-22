@@ -38,7 +38,7 @@
     <el-card class="box-card">
       <el-table
         v-loading="data.loading"
-        :data="data.ingressList"
+        :data="data.tableData"
         stripe
         style="margin-top: 2px; width: 100%"
         :cell-style="{
@@ -137,9 +137,9 @@
   </el-dialog>
 
   <pixiuDialog
-    :closeEvent="data.deleteDialog.close"
-    :objectName="data.deleteDialog.objectName"
-    :deleteName="data.deleteDialog.deleteName"
+    :close-event="data.deleteDialog.close"
+    :object-name="data.deleteDialog.objectName"
+    :delete-name="data.deleteDialog.deleteName"
     @confirm="confirm"
     @cancel="cancel"
   ></pixiuDialog>
@@ -147,7 +147,7 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { formatTimestamp } from '@/utils/utils';
+import { formatTimestamp, getTableData } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
@@ -174,8 +174,9 @@ const data = reactive({
     page: 1,
     query: '',
     total: 0,
-    limit: 100,
+    limit: 10,
   },
+  tableData: [],
   loading: false,
 
   namespace: 'default',
@@ -235,10 +236,10 @@ const clean = () => {
 };
 
 const onChange = (v) => {
-  data.pageInfo.limit = 10;
+  data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
 
-  getIngresses();
+  data.tableData = getTableData(data.pageInfo, data.ingressList);
 };
 
 const getIngresses = async () => {
@@ -252,6 +253,7 @@ const getIngresses = async () => {
 
   data.ingressList = res.items;
   data.pageInfo.total = data.ingressList.length;
+  data.tableData = getTableData(data.pageInfo, data.ingressList);
 };
 
 const createIngress = () => {
