@@ -199,7 +199,7 @@ const drain = (row) => {
     .then(async () => {
       // const res = await proxy.$http({
       //   method: 'delete',
-      //   url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${row.metadata.name}`,
+      //   url: `/pixiu/proxy/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${row.metadata.name}`,
       // });
       ElMessage({
         type: 'success',
@@ -240,7 +240,7 @@ const cordon = (row) => {
             unschedulable: true,
           },
         },
-        url: `/proxy/pixiu/${data.cluster}/api/v1/nodes/${row.metadata.name}`,
+        url: `/pixiu/proxy/${data.cluster}/api/v1/nodes/${row.metadata.name}`,
         config: {
           header: {
             'Content-Type': 'application/strategic-merge-patch+json',
@@ -276,7 +276,7 @@ const unCordon = (row) => {
             unschedulable: null,
           },
         },
-        url: `/proxy/pixiu/${data.cluster}/api/v1/nodes/${row.metadata.name}`,
+        url: `/pixiu/proxy/${data.cluster}/api/v1/nodes/${row.metadata.name}`,
         config: {
           header: {
             'Content-Type': 'application/strategic-merge-patch+json',

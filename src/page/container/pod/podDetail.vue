@@ -390,7 +390,7 @@ const GetPod = async () => {
   try {
     const res = await proxy.$http({
       method: 'get',
-      url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${data.name}`,
+      url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${data.name}`,
     });
     data.pod = res;
     data.yaml = jsYaml.dump(data.pod);

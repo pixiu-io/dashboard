@@ -652,7 +652,7 @@ const copyIP = async (val) => {
 const getDeployment = async () => {
   const res = await proxy.$http({
     method: 'get',
-    url: `/proxy/pixiu/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${data.name}`,
+    url: `/pixiu/proxy/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${data.name}`,
   });
   data.deployment = res;
 
@@ -662,7 +662,7 @@ const getDeployment = async () => {
 const deletePod = async (row) => {
   const pods = await proxy.$http({
     method: 'delete',
-    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${row.metadata.namespace}/pods/${row.metadata.name}`,
+    url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${row.metadata.namespace}/pods/${row.metadata.name}`,
   });
 
   await getDeploymentPods();
@@ -676,7 +676,7 @@ const getPodLog = async () => {
 
   const log = await proxy.$http({
     method: 'get',
-    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${data.selectedPod}/log`,
+    url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${data.selectedPod}/log`,
     data: { container: data.selectedContainer },
   });
 
@@ -692,7 +692,7 @@ const getDeploymentPods = async () => {
 
   const pods = await proxy.$http({
     method: 'get',
-    url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/pods`,
+    url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.namespace}/pods`,
     data: {
       labelSelector: labels.join(','),
       limit: 500,

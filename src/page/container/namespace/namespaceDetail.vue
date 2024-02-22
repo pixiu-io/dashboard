@@ -164,7 +164,7 @@ const getNamespace = async () => {
   try {
     const res = await proxy.$http({
       method: 'get',
-      url: `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.name}`,
+      url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.name}`,
     });
     data.namespace = res;
 
