@@ -94,7 +94,7 @@
     <div style="margin-top: 20px">
       <el-row>
         <el-col>
-          <button class="pixiu-two-button">刷新</button>
+          <button class="pixiu-two-button" @click="getDeploymentPods">刷新</button>
           <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">销毁重建</button>
 
           <div style="margin-left: 8px; float: right; margin-top: 6px">
@@ -203,7 +203,7 @@
               style="margin-right: -25px; margin-left: -10px; color: #006eff"
               @click="deletePod(scope.row)"
             >
-              销毁重建
+              删除
             </el-button>
 
             <el-button
@@ -212,11 +212,13 @@
               style="margin-right: 1px; color: #006eff"
               @click="openShell(scope.row)"
             >
-              远程连接
+              远程登陆
             </el-button>
           </template>
         </el-table-column>
       </el-table>
+
+      <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
 
@@ -478,6 +480,7 @@ import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
 import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
+import Pagination from '@/components/pagination/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -666,6 +669,11 @@ const deletePod = async (row) => {
   });
 
   await getDeploymentPods();
+};
+
+const onChange = (v) => {
+  data.pageInfo.limit = v.limit;
+  data.pageInfo.page = v.page;
 };
 
 const getPodLog = async () => {
