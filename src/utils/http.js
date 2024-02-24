@@ -4,9 +4,6 @@ import $ from 'jquery';
 // import { router } from '@/router/index';
 
 let baseUrl = '';
-
-axios.get('./config.json').then((result) => {});
-
 $.ajax({
   type: 'get',
   async: false,
