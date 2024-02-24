@@ -7,10 +7,10 @@ if [[ ! -d "/etc/pixiu" ]]; then
 fi
 cp /configs/config.yaml /etc/pixiu/config.yaml
 
-if [[ -d "/usr/share/nginx/html/pixiu/config.json" ]]; then
+if [[ -e "/usr/share/nginx/html/pixiu/config.json" ]]; then
     rm -rf /usr/share/nginx/html/pixiu/config.json
 fi
-if [[ -d "/configs/config.json" ]]; then
+if [[ -e "/configs/config.json" ]]; then
     cp /configs/config.json /usr/share/nginx/html/pixiu/config.json
 fi
 
