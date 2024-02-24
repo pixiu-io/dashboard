@@ -5,6 +5,8 @@ import $ from 'jquery';
 
 let baseUrl = '';
 
+axios.get('./config.json').then((result) => {});
+
 $.ajax({
   type: 'get',
   async: false,
@@ -13,11 +15,11 @@ $.ajax({
   success: function (cfg) {
     baseUrl = cfg.url;
   },
-  error: function (e) {},
+  error: function (err) {},
 });
 
 const instance = axios.create({
-  baseURL: baseUrl, // 如果后端开放了cors，就可以用这个替代上面一行
+  baseURL: baseUrl ? baseUrl : import.meta.env.VITE_BASE_API, // 如果后端开放了cors，就可以用这个替代上面一行
   timeout: 6000, // 设置超时时间1分钟
   header: {
     'Content-Type': 'application/json;charset=UTF-8', // 基础的请求头
