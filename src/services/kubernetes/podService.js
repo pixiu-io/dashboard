@@ -48,3 +48,28 @@ export const getPodsByNode = async (cluster, nodeName) => {
   );
   return [result, err];
 };
+
+export const getPodsByLabels = async (cluster, namespace, labels) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: `/pixiu/proxy/${cluster}/api/v1/namespaces/${namespace}/pods`,
+      data: {
+        labelSelector: labels,
+        limit: 500,
+      },
+    }),
+  );
+  return [result, err];
+};
+
+export const getPodLog = async (cluster, namespace, name, container) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: `/pixiu/proxy/${cluster}/api/v1/namespaces/${namespace}/pods/${name}/log`,
+      data: { container: container },
+    }),
+  );
+  return [result.split('\n'), err];
+};
