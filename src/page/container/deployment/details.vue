@@ -95,7 +95,13 @@
       <el-row>
         <el-col>
           <button class="pixiu-two-button" @click="getDeploymentPods">刷新</button>
-          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">销毁重建</button>
+          <button
+            class="pixiu-two-button2"
+            style="margin-left: 10px; width: 85px"
+            @click="deletePodsInBatch"
+          >
+            批量删除
+          </button>
 
           <div style="margin-left: 8px; float: right; margin-top: 6px">
             <pixiu-icon
@@ -138,7 +144,7 @@
     <el-card style="margin-top: 15px" class="contend-card-container2">
       <el-table
         v-loading="data.loading"
-        :data="data.deploymentPods"
+        :data="data.tableData"
         stripe
         style="margin-top: 10px; width: 100%; margin-bottom: 25px"
         header-row-class-name="pixiu-table-header"
@@ -201,7 +207,7 @@
               size="small"
               type="text"
               style="margin-right: -25px; margin-left: -10px; color: #006eff"
-              @click="deletePod(scope.row)"
+              @click="deleteDeploymentPod(scope.row)"
             >
               删除
             </el-button>
@@ -435,7 +441,7 @@
             size="14px"
             type="iconfont"
             color="#909399"
-            @click="getDeployment"
+            @click="getDeploymentObject"
           />
         </div>
       </el-col>
@@ -475,13 +481,14 @@
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
-import { formatTimestamp } from '@/utils/utils';
 import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
 import jsYaml from 'js-yaml';
+import { formatTimestamp, getTableData } from '@/utils/utils';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
-import { getPodsByLabels } from '@/services/kubernetes/podService';
+import { getPodsByLabels, deletePod } from '@/services/kubernetes/podService';
+import { getDeployment } from '@/services/kubernetes/deploymentService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -525,6 +532,8 @@ const data = reactive({
   crontab: true,
   previous: false,
 
+  tableData: [],
+
   logAutoRefresh: true,
   logLine: '100行日志',
   logLines: ['50行日志', '100行日志', '200行日志', '500行日志'],
@@ -541,7 +550,7 @@ onMounted(async () => {
   data.name = proxy.$route.query.name;
   data.namespace = proxy.$route.query.namespace;
 
-  await getDeployment();
+  await getDeploymentObject();
   await getDeploymentPods();
   await getDeploymentEvents();
 });
@@ -653,28 +662,37 @@ const copyIP = async (val) => {
   }
 };
 
-const getDeployment = async () => {
-  const res = await proxy.$http({
-    method: 'get',
-    url: `/pixiu/proxy/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${data.name}`,
-  });
-  data.deployment = res;
+const getDeploymentObject = async () => {
+  const [result, err] = await getDeployment(data.cluster, data.namespace, data.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
 
+  data.deployment = result;
   data.yaml = jsYaml.dump(data.deployment);
 };
 
-const deletePod = async (row) => {
-  const pods = await proxy.$http({
-    method: 'delete',
-    url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${row.metadata.namespace}/pods/${row.metadata.name}`,
-  });
+const deleteDeploymentPod = async (row) => {
+  const [result, err] = await deletePod(data.cluster, row.metadata.namespace, row.metadata.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+  proxy.$notify.success({ title: 'Pod', message: `${row.metadata.name} 删除成功` });
 
   await getDeploymentPods();
+};
+
+const deletePodsInBatch = async (row) => {
+  console.log('deletePodInBatch');
 };
 
 const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
+
+  data.tableData = getTableData(data.pageInfo, data.deploymentPods);
 };
 
 const getPodLog = async () => {
@@ -700,13 +718,15 @@ const getDeploymentPods = async () => {
   }
 
   data.loading = true;
-  const [result, err] = await getPodsByLabels(data.cluster, data.namespace, labels);
+  const [result, err] = await getPodsByLabels(data.cluster, data.namespace, labels.join(','));
   data.loading = false;
   if (err) {
     proxy.$notify.error(err.response.data.message);
     return;
   }
   data.deploymentPods = result.items;
+  data.pageInfo.total = data.deploymentPods.length;
+  data.tableData = getTableData(data.pageInfo, data.deploymentPods);
 
   data.selectedPods = [];
   data.selectedContainers = [];

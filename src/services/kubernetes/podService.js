@@ -55,7 +55,7 @@ export const getPodsByLabels = async (cluster, namespace, labels) => {
       method: 'get',
       url: `/pixiu/proxy/${cluster}/api/v1/namespaces/${namespace}/pods`,
       data: {
-        labelSelector: labels.join(','),
+        labelSelector: labels,
         limit: 500,
       },
     }),
