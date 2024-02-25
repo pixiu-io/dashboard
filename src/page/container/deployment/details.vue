@@ -158,7 +158,7 @@
         }"
         @selection-change="handlePodSelectionChange"
       >
-        <el-table-column type="selection" width="30" />
+        <el-table-column type="selection" width="30px" />
         <el-table-column prop="metadata.name" label="实例名称" min-width="70px">
           <template #default="scope">
             {{ scope.row.metadata.name }}
@@ -362,45 +362,53 @@
         </span>
       </el-form-item>
     </el-card> -->
+    <div style="margin-top: 20px">
+      <el-row>
+        <el-col>
+          <div>
+            <button class="pixiu-two-button" @click="getDeploymentEvents">刷新</button>
+            <button
+              style="margin-left: 10px; width: 85px"
+              class="pixiu-two-button2"
+              @click="deleteEventsInBatch"
+            >
+              批量删除
+            </button>
 
-    <el-col>
-      <div style="margin-top: 20px">
-        <button class="pixiu-two-button" @click="getDeploymentEvents">刷新</button>
-        <button style="margin-left: 10px; width: 85px" class="pixiu-two-button2">批量删除</button>
+            <div style="margin-left: 8px; float: right; margin-left: 12px">
+              <button class="pixiu-two-button" @click="getDeploymentEvents">搜索</button>
+            </div>
 
-        <div style="margin-left: 8px; float: right; margin-left: 12px">
-          <button class="pixiu-two-button" @click="getDeploymentEvents">搜索</button>
-        </div>
-
-        <el-input
-          v-model="data.pageInfo.search.searchInfo"
-          placeholder="名称搜索关键字"
-          style="width: 480px; float: right"
-          clearable
-          @clear="getDeploymentEvents"
-          @input="getDeploymentEvents"
-        >
-          <template #suffix>
-            <pixiu-icon
-              name="icon-search"
-              style="cursor: pointer"
-              size="15px"
-              type="iconfont"
-              color="#909399"
-              @click="getDeploymentEvents"
-            />
-          </template>
-        </el-input>
-        <div style="float: right">
-          <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
-            style="font-size: 13px; margin-left: 5px; margin-right: 10px"
-            >自动刷新</span
-          >
-        </div>
-      </div>
-    </el-col>
-
-    <div style="margin-top: 18px">
+            <el-input
+              v-model="data.pageInfo.search.searchInfo"
+              placeholder="名称搜索关键字"
+              style="width: 480px; float: right"
+              clearable
+              @clear="getDeploymentEvents"
+              @input="getDeploymentEvents"
+            >
+              <template #suffix>
+                <pixiu-icon
+                  name="icon-search"
+                  style="cursor: pointer"
+                  size="15px"
+                  type="iconfont"
+                  color="#909399"
+                  @click="getDeploymentEvents"
+                />
+              </template>
+            </el-input>
+            <div style="float: right">
+              <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
+                style="font-size: 13px; margin-left: 5px; margin-right: 10px"
+                >自动刷新</span
+              >
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
+    <div style="margin-top: 15px">
       <el-card class="contend-card-container2">
         <el-table
           v-loading="data.loading"
@@ -414,7 +422,7 @@
           }"
           @selection-change="handleEventSelectionChange"
         >
-          <el-table-column type="selection" width="30px" />
+          <el-table-column type="selection" width="30" />
           <el-table-column
             prop="lastTimestamp"
             label="最后出现时间"
@@ -433,7 +441,7 @@
                 size="small"
                 type="text"
                 style="margin-right: -25px; margin-left: -10px; color: #006eff"
-                @click="deleteEvent(scope.row)"
+                @click="deleteEventObject(scope.row)"
               >
                 删除
               </el-button>
@@ -522,7 +530,7 @@ import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getPodsByLabels, deletePod, getPodLog } from '@/services/kubernetes/podService';
 import { getDeployment } from '@/services/kubernetes/deploymentService';
-import { getEventList } from '@/services/kubernetes/eventService';
+import { getEventList, deleteEvent } from '@/services/kubernetes/eventService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { proxy } = getCurrentInstance();
@@ -916,7 +924,25 @@ const getDeploymentEvents = async () => {
   data.eventTableData = getTableData(data.pageEventInfo, data.deploymentEvents);
 };
 
-const deleteEvent = async () => {};
+const deleteEventObject = async (row) => {
+  console.log('row', row);
+  const [result, err] = await deleteEvent(data.cluster, data.namespace, row.name);
+  if (err) {
+    proxy.$notify.error({ title: 'Event', message: err.response.data.message });
+    return;
+  }
+  proxy.$notify.success({ title: 'Event', message: `${row.name} 删除成功` });
+};
+
+const deleteEventsInBatch = async () => {
+  for (let event of data.multipleEventSelection) {
+    const [result, err] = await deletePod(data.cluster, data.namespace, event);
+    if (err) {
+      proxy.$notify.error({ title: 'Pod', message: err.response.data.message });
+    }
+  }
+  proxy.$notify.success({ title: 'Events', message: '批量删除事件成功' });
+};
 
 const handlePodSelectionChange = (pods) => {
   data.multiplePodSelection = [];
