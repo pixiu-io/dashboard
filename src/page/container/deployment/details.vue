@@ -277,7 +277,7 @@
           />
         </div>
       </el-form-item>
-
+      <!--
       <el-form-item
         label="其他选项"
         class="deployment-info"
@@ -292,7 +292,7 @@
             <el-option v-for="item in data.logLines" :key="item" :value="item" :label="item" />
           </el-select>
         </span>
-      </el-form-item>
+      </el-form-item> -->
 
       <div style="margin-left: 170px; margin-top: -10px; margin-bottom: 10px">
         <el-switch v-model="data.previous" inline-prompt width="36px" /><span
@@ -302,21 +302,14 @@
       </div>
     </el-card>
 
-    <button style="margin-top: 15px" class="pixiu-two-button" @click="getPodLog">刷新</button>
-
-    <div style="float: right; margin-top: 8px">
-      <el-switch v-model="data.logAutoRefresh" inline-prompt width="36px" /><span
-        style="font-size: 13px; margin-left: 5px; margin-right: 10px"
-        >自动刷新</span
-      >
-      <pixiu-icon
-        name="icon-icon-refresh"
-        style="cursor: pointer"
-        size="16px"
-        type="iconfont"
-        color="#909399"
-        @click="getPodLog"
-      />
+    <div style="display: flex; margin-top: 15px">
+      <button style="width: 85px" class="pixiu-two-button" @click="getPodLogs">获取日志</button>
+      <div style="margin-left: 20px">
+        <el-switch v-model="data.aggLog" inline-prompt width="36px" /><span
+          style="font-size: 13px; margin-left: 5px; margin-right: 10px"
+          >聚合查询</span
+        >
+      </div>
     </div>
 
     <div style="margin-top: 15px">
@@ -507,7 +500,7 @@ import jsYaml from 'js-yaml';
 import { formatTimestamp, getTableData } from '@/utils/utils';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
-import { getPodsByLabels, deletePod } from '@/services/kubernetes/podService';
+import { getPodsByLabels, deletePod, getPodLog } from '@/services/kubernetes/podService';
 import { getDeployment } from '@/services/kubernetes/deploymentService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
@@ -547,7 +540,7 @@ const data = reactive({
   deploymentEvents: [],
   eventAutoRefresh: true,
 
-  activeName: 'second',
+  activeName: 'third',
 
   selectedPods: [],
   selectedPod: '',
@@ -560,7 +553,7 @@ const data = reactive({
 
   tableData: [],
 
-  logAutoRefresh: true,
+  aggLog: true,
   logLine: '100行日志',
   logLines: ['50行日志', '100行日志', '200行日志', '500行日志'],
   selectedLog: 100,
@@ -775,19 +768,52 @@ const onChange = (v) => {
   }
 };
 
-const getPodLog = async () => {
+const getPodLogs = async () => {
   // 在指定 pod 和容器的情况下，才请求log
   if (data.selectedPod === '' || data.selectedContainer === '') {
     return;
   }
 
-  const log = await proxy.$http({
-    method: 'get',
-    url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${data.selectedPod}/log`,
-    data: { container: data.selectedContainer },
-  });
+  if (!data.aggLog) {
+    const [result, err] = await getPodLog(
+      data.cluster,
+      data.namespace,
+      data.selectedPod,
+      data.selectedContainer,
+    );
+    if (err) {
+      proxy.$notify.error(err.response.data.message);
+      return;
+    }
+    data.podLogs = result;
+  } else {
+    data.podLogs = [];
+    for (let pod of data.selectedPods) {
+      const [result, err] = await getPodLog(
+        data.cluster,
+        data.namespace,
+        pod,
+        data.selectedContainer,
+      );
+      if (err) {
+        proxy.$notify.error({ title: 'Pod', message: err.response.data.message });
+      } else {
+        data.podLogs.push('------------------------');
+        data.podLogs.push('Pod: ' + pod);
+        data.podLogs.push('------------------------');
+        for (let line of result) {
+          data.podLogs.push(line);
+        }
+      }
+    }
+  }
+  // const log = await proxy.$http({
+  //   method: 'get',
+  //   url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${data.selectedPod}/log`,
+  //   data: { container: data.selectedContainer },
+  // });
 
-  data.podLogs = log.split('\n');
+  // data.podLogs = log.split('\n');
 };
 
 const getDeploymentPods = async () => {

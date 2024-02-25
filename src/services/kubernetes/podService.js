@@ -63,7 +63,7 @@ export const getPodsByLabels = async (cluster, namespace, labels) => {
   return [result, err];
 };
 
-export const getPodLogs = async (cluster, namespace, name, container) => {
+export const getPodLog = async (cluster, namespace, name, container) => {
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
@@ -71,5 +71,5 @@ export const getPodLogs = async (cluster, namespace, name, container) => {
       data: { container: container },
     }),
   );
-  return [result, err];
+  return [result.split('\n'), err];
 };
