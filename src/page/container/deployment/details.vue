@@ -114,15 +114,16 @@
             />
           </div> -->
           <div style="margin-left: 8px; float: right; margin-left: 12px">
-            <button class="pixiu-two-button" @click="getDeploymentPods">搜索</button>
+            <button class="pixiu-two-button" @click="searchDeploymentPods">搜索</button>
           </div>
 
           <el-input
-            v-model="data.pageInfo.query"
+            v-model="data.pageInfo.search.searchInfo"
             placeholder="名称搜索关键字"
             style="width: 480px; float: right"
             clearable
             @clear="getDeploymentPods"
+            @input="searchDeploymentPods"
           >
             <template #suffix>
               <pixiu-icon
@@ -514,6 +515,10 @@ const data = reactive({
     limit: 10,
     query: '',
     total: 0,
+    search: {
+      field: 'name',
+      searchInfo: '',
+    },
   },
 
   restarts: 0,
@@ -712,6 +717,10 @@ const onChange = (v) => {
   data.pageInfo.page = v.page;
 
   data.tableData = getTableData(data.pageInfo, data.deploymentPods);
+
+  if (data.pageInfo.search.searchInfo !== '') {
+    searchDeploymentPods();
+  }
 };
 
 const getPodLog = async () => {
@@ -767,6 +776,20 @@ const getDeploymentPods = async () => {
       data.selectedContainer = data.selectedContainers[0];
     }
   }
+};
+
+const searchDeploymentPods = async () => {
+  let allSearchedPods = [];
+  if (data.pageInfo.search.field === 'name') {
+    for (let pod of data.deploymentPods) {
+      if (pod.metadata.name.search(data.pageInfo.search.searchInfo) !== -1) {
+        allSearchedPods.push(pod);
+      }
+    }
+  }
+
+  data.pageInfo.total = allSearchedPods.length;
+  data.tableData = getTableData(data.pageInfo, allSearchedPods);
 };
 
 const getDeploymentEvents = async () => {
