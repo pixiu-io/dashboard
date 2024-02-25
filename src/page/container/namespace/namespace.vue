@@ -12,9 +12,9 @@
           刷新
         </button>
 
-        <div style="margin-left: 8px; float: right; margin-left: 12px">
+        <!-- <div style="margin-left: 8px; float: right; margin-left: 12px">
           <button class="pixiu-two-button" @click="getNamespace">搜索</button>
-        </div>
+        </div> -->
 
         <el-input
           v-model="data.pageInfo.query"

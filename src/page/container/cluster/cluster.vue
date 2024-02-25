@@ -88,9 +88,9 @@
             />
           </div> -->
 
-          <div style="margin-left: 8px; float: right; margin-left: 12px">
+          <!-- <div style="margin-left: 8px; float: right; margin-left: 12px">
             <button class="pixiu-two-button" @click="cloudStore.getCloudList">搜索</button>
-          </div>
+          </div> -->
 
           <el-input
             v-model="cloudStore.pageInfo.query"
