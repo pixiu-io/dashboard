@@ -587,7 +587,7 @@ const data = reactive({
   selectedContainer: '',
   selectedPodMap: {},
 
-  autoSyncPods: true,
+  autoSyncPods: false,
   previous: false,
 
   tableData: [],
@@ -636,11 +636,11 @@ onMounted(async () => {
 watch(
   () => data.autoSyncPods,
   (newActive, oldActive) => {
-    if (newActive) {
-      var a = window.setInterval(getDeploymentPods, 5000);
-    } else {
-      window.clearInterval(a);
-    }
+    // if (newActive) {
+    //   var a = window.setInterval(getDeploymentPods, 5000);
+    // } else {
+    //   window.clearInterval(a);
+    // }
   },
 );
 
