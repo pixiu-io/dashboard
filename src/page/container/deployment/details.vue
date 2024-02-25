@@ -146,7 +146,7 @@
         v-loading="data.loading"
         :data="data.tableData"
         stripe
-        style="margin-top: 10px; width: 100%; margin-bottom: 25px"
+        style="margin-top: 6px"
         header-row-class-name="pixiu-table-header"
         :cell-style="{
           'font-size': '12px',
