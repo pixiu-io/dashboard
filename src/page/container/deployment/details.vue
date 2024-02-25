@@ -329,7 +329,7 @@
   </div>
 
   <div v-if="data.activeName === 'four'">
-    <el-card class="contend-card-container2">
+    <!-- <el-card class="contend-card-container2">
       <div class="big-world-style">筛选条件</div>
 
       <el-form-item
@@ -361,29 +361,27 @@
           </el-select>
         </span>
       </el-form-item>
-    </el-card>
+    </el-card> -->
 
     <el-col>
-      <button style="margin-top: 15px" class="pixiu-two-button" @click="getDeploymentEvents">
-        刷新
-      </button>
-      <button style="margin-top: 15px; margin-left: 10px; width: 85px" class="pixiu-two-button2">
-        批量删除
-      </button>
+      <div style="margin-top: 20px">
+        <button class="pixiu-two-button" @click="getDeploymentEvents">刷新</button>
+        <button style="margin-left: 10px; width: 85px" class="pixiu-two-button2">批量删除</button>
 
-      <div style="float: right; margin-top: 16px">
-        <el-switch v-model="data.eventAutoRefresh" inline-prompt width="36px" /><span
-          style="font-size: 13px; margin-left: 5px; margin-right: 10px"
-          >自动刷新</span
-        >
-        <pixiu-icon
-          name="icon-icon-refresh"
-          style="cursor: pointer"
-          size="16px"
-          type="iconfont"
-          color="#909399"
-          @click="getDeploymentEvents"
-        />
+        <div style="float: right; margin-top: 16px">
+          <el-switch v-model="data.eventAutoRefresh" inline-prompt width="36px" /><span
+            style="font-size: 13px; margin-left: 5px; margin-right: 10px"
+            >自动刷新</span
+          >
+          <pixiu-icon
+            name="icon-icon-refresh"
+            style="cursor: pointer"
+            size="16px"
+            type="iconfont"
+            color="#909399"
+            @click="getDeploymentEvents"
+          />
+        </div>
       </div>
     </el-col>
 
@@ -391,15 +389,15 @@
       <el-card class="contend-card-container2">
         <el-table
           v-loading="data.loading"
-          :data="data.deploymentEvents"
+          :data="data.eventTableData"
           stripe
-          style="margin-top: 10px; width: 100%; margin-bottom: 25px"
+          style="margin-top: 6px"
           header-row-class-name="pixiu-table-header"
           :cell-style="{
             'font-size': '12px',
             color: '#29292b',
           }"
-          @selection-change="handleSelectionChange"
+          @selection-change="handleEventSelectionChange"
         >
           <el-table-column type="selection" width="30px" />
           <el-table-column prop="lastTimestamp" label="最后出现时间" :formatter="formatterTime" />
@@ -421,6 +419,7 @@
             </template>
           </el-table-column>
         </el-table>
+        <pagination :total="data.pageEventInfo.total" @on-change="onEventChange"></pagination>
       </el-card>
     </div>
   </div>
@@ -502,6 +501,7 @@ import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getPodsByLabels, deletePod, getPodLog } from '@/services/kubernetes/podService';
 import { getDeployment } from '@/services/kubernetes/deploymentService';
+import { getEventList } from '@/services/kubernetes/eventService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { proxy } = getCurrentInstance();
@@ -531,6 +531,16 @@ const data = reactive({
     },
   },
 
+  pageEventInfo: {
+    page: 1,
+    limit: 10,
+    total: 0,
+    search: {
+      field: 'name',
+      searchInfo: '',
+    },
+  },
+
   restarts: 0,
   loading: false,
 
@@ -540,7 +550,7 @@ const data = reactive({
   deploymentEvents: [],
   eventAutoRefresh: true,
 
-  activeName: 'third',
+  activeName: 'four',
 
   selectedPods: [],
   selectedPod: '',
@@ -552,6 +562,7 @@ const data = reactive({
   previous: false,
 
   tableData: [],
+  eventTableData: [],
 
   aggLog: false,
   logLine: '100行日志',
@@ -564,6 +575,7 @@ const data = reactive({
   readOnly: true,
 
   multiplePodSelection: [],
+  multipleEventSelection: [],
 
   // 删除对象属性
   deleteDialog: {
@@ -768,6 +780,13 @@ const onChange = (v) => {
   }
 };
 
+const onEventChange = (v) => {
+  data.pageEventInfo.limit = v.limit;
+  data.pageEventInfo.page = v.page;
+
+  data.eventTableData = getTableData(data.pageEventInfo, data.deploymentEvents);
+};
+
 const getPodLogs = async () => {
   // 在指定 pod 和容器的情况下，才请求log
   if (data.selectedPod === '' || data.selectedContainer === '') {
@@ -807,13 +826,6 @@ const getPodLogs = async () => {
       }
     }
   }
-  // const log = await proxy.$http({
-  //   method: 'get',
-  //   url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${data.selectedPod}/log`,
-  //   data: { container: data.selectedContainer },
-  // });
-
-  // data.podLogs = log.split('\n');
 };
 
 const getDeploymentPods = async () => {
@@ -871,11 +883,16 @@ const searchDeploymentPods = async () => {
 };
 
 const getDeploymentEvents = async () => {
-  const events = await proxy.$http({
-    method: 'get',
-    url: `/pixiu/kubeproxy/clusters/${data.cluster}/namespaces/${data.namespace}/name/${data.name}/kind/deployment/events`,
-  });
-  data.deploymentEvents = events;
+  data.loading = true;
+  const [result, err] = await getEventList(data.cluster, data.namespace, data.name);
+  data.loading = false;
+  if (err) {
+    proxy.$notify.error({ title: 'Event', message: err.response.data.message });
+    return;
+  }
+  data.deploymentEvents = result;
+  data.pageEventInfo.total = result.length;
+  data.eventTableData = getTableData(data.pageEventInfo, data.deploymentEvents);
 };
 
 const deleteEvent = async () => {};
@@ -884,6 +901,13 @@ const handlePodSelectionChange = (pods) => {
   data.multiplePodSelection = [];
   for (let pod of pods) {
     data.multiplePodSelection.push(pod.metadata.name);
+  }
+};
+
+const handleEventSelectionChange = (events) => {
+  data.multipleEventSelection = [];
+  for (let event of events) {
+    data.multipleEventSelection.push(event.objectName);
   }
 };
 
