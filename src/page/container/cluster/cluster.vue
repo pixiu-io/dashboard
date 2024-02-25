@@ -77,8 +77,19 @@
             新建集群
           </el-button>
 
+          <!-- <div style="margin-left: 8px; float: right; margin-top: 6px">
+            <pixiu-icon
+              name="icon-icon-refresh"
+              style="cursor: pointer"
+              size="14px"
+              type="iconfont"
+              color="#909399"
+              @click="cloudStore.getCloudList"
+            />
+          </div> -->
+
           <div style="margin-left: 8px; float: right; margin-left: 12px">
-            <button class="pixiu-two-button" @click="getNamespace">搜索</button>
+            <button class="pixiu-two-button" @click="cloudStore.getCloudList">搜索</button>
           </div>
 
           <el-input
