@@ -8,7 +8,8 @@ export const getEventList = async (cluster, namespace, name) => {
       url: `/pixiu/kubeproxy/clusters/${cluster}/namespaces/${namespace}/name/${name}/kind/deployment/events`,
     }),
   );
-  return [result, err];
+
+  return [result.items, err];
 };
 
 export const deleteEvent = async (cluster, namespace, name) => {

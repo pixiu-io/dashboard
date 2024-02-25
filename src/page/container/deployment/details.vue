@@ -430,10 +430,11 @@
             :formatter="formatterTime"
           />
           <el-table-column prop="type" label="级别" />
-          <el-table-column prop="kind" label="资源类型"> </el-table-column>
-          <el-table-column prop="objectName" label="资源名称" :formatter="formatterName">
+          <el-table-column prop="involvedObject.kind" label="资源类型"> </el-table-column>
+          <el-table-column prop="involvedObject.name" label="资源名称" :formatter="formatterName">
           </el-table-column>
           <el-table-column prop="message" label="内容" min-width="300px" />
+          <el-table-column prop="count" label="出现次数"> </el-table-column>
 
           <el-table-column fixed="right" label="操作" width="100px">
             <template #default="scope">
@@ -925,22 +926,23 @@ const getDeploymentEvents = async () => {
 };
 
 const deleteEventObject = async (row) => {
-  console.log('row', row);
-  const [result, err] = await deleteEvent(data.cluster, data.namespace, row.name);
+  const [result, err] = await deleteEvent(data.cluster, data.namespace, row.metadata.name);
   if (err) {
     proxy.$notify.error({ title: 'Event', message: err.response.data.message });
     return;
   }
-  proxy.$notify.success({ title: 'Event', message: `${row.name} 删除成功` });
+  await getDeploymentEvents();
+  proxy.$notify.success({ title: 'Event', message: `${row.metadata.name} 删除成功` });
 };
 
 const deleteEventsInBatch = async () => {
   for (let event of data.multipleEventSelection) {
-    const [result, err] = await deletePod(data.cluster, data.namespace, event);
+    const [result, err] = await deleteEvent(data.cluster, data.namespace, event);
     if (err) {
       proxy.$notify.error({ title: 'Pod', message: err.response.data.message });
     }
   }
+  await getDeploymentEvents();
   proxy.$notify.success({ title: 'Events', message: '批量删除事件成功' });
 };
 
@@ -954,7 +956,7 @@ const handlePodSelectionChange = (pods) => {
 const handleEventSelectionChange = (events) => {
   data.multipleEventSelection = [];
   for (let event of events) {
-    data.multipleEventSelection.push(event.objectName);
+    data.multipleEventSelection.push(event.metadata.name);
   }
 };
 
