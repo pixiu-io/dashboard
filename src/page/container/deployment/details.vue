@@ -103,7 +103,7 @@
             批量删除
           </button>
 
-          <div style="margin-left: 8px; float: right; margin-top: 6px">
+          <!-- <div style="margin-left: 8px; float: right; margin-top: 6px">
             <pixiu-icon
               name="icon-icon-refresh"
               style="cursor: pointer"
@@ -112,6 +112,9 @@
               color="#909399"
               @click="getDeploymentPods"
             />
+          </div> -->
+          <div style="margin-left: 8px; float: right; margin-left: 12px">
+            <button class="pixiu-two-button" @click="getDeploymentPods">搜索</button>
           </div>
 
           <el-input
