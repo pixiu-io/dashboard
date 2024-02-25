@@ -152,7 +152,7 @@
           'font-size': '12px',
           color: '#29292b',
         }"
-        @selection-change="handleSelectionChange"
+        @selection-change="handlePodSelectionChange"
       >
         <el-table-column type="selection" width="30" />
         <el-table-column prop="metadata.name" label="实例名称" min-width="70px">
@@ -543,6 +543,8 @@ const data = reactive({
   yaml: '',
   yamlName: '',
   readOnly: true,
+
+  multiplePodSelection: [],
 });
 
 onMounted(async () => {
@@ -674,9 +676,9 @@ const getDeploymentObject = async () => {
 };
 
 const deleteDeploymentPod = async (row) => {
-  const [result, err] = await deletePod(data.cluster, row.metadata.namespace, row.metadata.name);
+  const [result, err] = await deletePod(data.cluster, data.namespace, row.metadata.name);
   if (err) {
-    proxy.$notify.error(err.response.data.message);
+    proxy.$notify.error({ title: 'Pod', message: err.response.data.message });
     return;
   }
   proxy.$notify.success({ title: 'Pod', message: `${row.metadata.name} 删除成功` });
@@ -684,8 +686,19 @@ const deleteDeploymentPod = async (row) => {
   await getDeploymentPods();
 };
 
-const deletePodsInBatch = async (row) => {
-  console.log('deletePodInBatch');
+const deletePodsInBatch = async () => {
+  if (data.multiplePodSelection.length === 0) {
+    proxy.$notify.warning({ title: 'Pod', message: '未选择批量删除的 Pods' });
+    return;
+  }
+  for (let pod of data.multiplePodSelection) {
+    const [result, err] = await deletePod(data.cluster, data.namespace, pod);
+    if (err) {
+      proxy.$notify.error({ title: 'Pod', message: err.response.data.message });
+    }
+  }
+
+  await getDeploymentPods();
 };
 
 const onChange = (v) => {
@@ -759,6 +772,13 @@ const getDeploymentEvents = async () => {
 };
 
 const deleteEvent = async () => {};
+
+const handlePodSelectionChange = (pods) => {
+  data.multiplePodSelection = [];
+  for (let pod of pods) {
+    data.multiplePodSelection.push(pod.metadata.name);
+  }
+};
 
 const formatterStatus = (row, column, cellValue) => {
   let phase = cellValue.phase;
