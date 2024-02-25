@@ -137,7 +137,7 @@
             </template>
           </el-input>
           <div style="float: right">
-            <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
+            <el-switch v-model="data.autoSyncPods" inline-prompt width="36px" /><span
               style="font-size: 13px; margin-left: 5px; margin-right: 10px"
               >自动刷新</span
             >
@@ -522,7 +522,7 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
 import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
 import jsYaml from 'js-yaml';
@@ -578,9 +578,8 @@ const data = reactive({
   deploymentPods: [],
 
   deploymentEvents: [],
-  eventAutoRefresh: true,
 
-  activeName: 'four',
+  activeName: 'second',
 
   selectedPods: [],
   selectedPod: '',
@@ -588,7 +587,7 @@ const data = reactive({
   selectedContainer: '',
   selectedPodMap: {},
 
-  crontab: true,
+  autoSyncPods: false,
   previous: false,
 
   tableData: [],
@@ -632,6 +631,18 @@ onMounted(async () => {
   await getDeploymentPods();
   await getDeploymentEvents();
 });
+
+// 监听子属性变化
+watch(
+  () => data.autoSyncPods,
+  (newActive, oldActive) => {
+    // if (newActive) {
+    //   var a = window.setInterval(getDeploymentPods, 5000);
+    // } else {
+    //   window.clearInterval(a);
+    // }
+  },
+);
 
 const { toClipboard } = useClipboard();
 const copy = async (val) => {
