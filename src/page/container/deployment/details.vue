@@ -481,6 +481,7 @@ import { ElMessage } from 'element-plus';
 import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
+import { getPodsByLabels } from '@/services/kubernetes/podService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -698,15 +699,14 @@ const getDeploymentPods = async () => {
     labels.push(key + '=' + matchLabels[key]);
   }
 
-  const pods = await proxy.$http({
-    method: 'get',
-    url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.namespace}/pods`,
-    data: {
-      labelSelector: labels.join(','),
-      limit: 500,
-    },
-  });
-  data.deploymentPods = pods.items;
+  data.loading = true;
+  const [result, err] = await getPodsByLabels(data.cluster, data.namespace, labels);
+  data.loading = false;
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+  data.deploymentPods = result.items;
 
   data.selectedPods = [];
   data.selectedContainers = [];
