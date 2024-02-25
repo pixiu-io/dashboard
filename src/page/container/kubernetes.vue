@@ -130,6 +130,16 @@ const data = reactive({
           name: 'Helm Release',
           url: '/kubernetes/release',
         },
+        {
+          id: 1.5,
+          name: 'Job',
+          url: '/kubernetes/job',
+        },
+        {
+          id: 1.6,
+          name: 'CronJob',
+          url: '/kubernetes/cronJob',
+        },
       ],
     },
     {
@@ -226,6 +236,16 @@ const data = reactive({
           id: 1.4,
           name: 'Helm Release',
           url: '/kubernetes/release',
+        },
+        {
+          id: 1.5,
+          name: 'Job',
+          url: '/kubernetes/job',
+        },
+        {
+          id: 1.6,
+          name: 'CronJob',
+          url: '/kubernetes/cronJob',
         },
       ],
     },

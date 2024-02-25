@@ -51,6 +51,12 @@ import {
   Namespace,
   CreateNamespace,
   NamespaceDetail,
+  Job,
+  CreateJob,
+  EditJob,
+  CronJob,
+  CreateCronJob,
+  EditCronJob,
 } from '@/page';
 
 const routes = [
@@ -146,6 +152,22 @@ const routes = [
               title: 'statefulset',
             },
             component: StatefulSet,
+          },
+          {
+            path: 'job',
+            name: 'Job',
+            meta: {
+              title: 'job',
+            },
+            component: Job,
+          },
+          {
+            path: 'cronJob',
+            name: 'CronJob',
+            meta: {
+              title: 'cronJob',
+            },
+            component: CronJob,
           },
           {
             path: 'release',
@@ -367,6 +389,7 @@ const routes = [
         },
         component: CreateSecret,
       },
+      // job 路由
       {
         path: 'pods/createPod',
         name: 'CreatePod',
