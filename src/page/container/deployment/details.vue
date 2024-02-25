@@ -98,7 +98,7 @@
           <button
             class="pixiu-two-button2"
             style="margin-left: 10px; width: 85px"
-            @click="deletePodsInBatch"
+            @click="handleBatchDeleteDialog"
           >
             批量删除
           </button>
@@ -211,7 +211,7 @@
               size="small"
               type="text"
               style="margin-right: -25px; margin-left: -10px; color: #006eff"
-              @click="deleteDeploymentPod(scope.row)"
+              @click="handleDeleteDialog(scope.row)"
             >
               删除
             </el-button>
@@ -480,6 +480,22 @@
       </el-button>
     </div>
   </el-dialog>
+
+  <pixiuDialog
+    :close-event="data.deleteDialog.close"
+    :object-name="data.deleteDialog.objectName"
+    :delete-name="data.deleteDialog.deleteName"
+    @confirm="deleteDeploymentPod"
+    @cancel="cancelDeletePod"
+  ></pixiuDialog>
+
+  <pixiuDialog
+    :close-event="data.batchDeleteDialog.close"
+    :object-name="data.batchDeleteDialog.objectName"
+    :delete-name="data.batchDeleteDialog.deleteName"
+    @confirm="deletePodsInBatch"
+    @cancel="canceldeletePodsInBatch"
+  ></pixiuDialog>
 </template>
 
 <script setup lang="jsx">
@@ -493,6 +509,7 @@ import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getPodsByLabels, deletePod } from '@/services/kubernetes/podService';
 import { getDeployment } from '@/services/kubernetes/deploymentService';
+import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -554,6 +571,19 @@ const data = reactive({
   readOnly: true,
 
   multiplePodSelection: [],
+
+  // 删除对象属性
+  deleteDialog: {
+    close: false,
+    objectName: 'Pod',
+    deleteName: '',
+  },
+
+  batchDeleteDialog: {
+    close: false,
+    objectName: 'Pods',
+    deleteNames: '',
+  },
 });
 
 onMounted(async () => {
@@ -686,22 +716,43 @@ const getDeploymentObject = async () => {
   data.yaml = jsYaml.dump(data.deployment);
 };
 
-const deleteDeploymentPod = async (row) => {
-  const [result, err] = await deletePod(data.cluster, data.namespace, row.metadata.name);
+const handleDeleteDialog = (row) => {
+  data.deleteDialog.close = true;
+  data.deleteDialog.deleteName = row.metadata.name;
+};
+
+const handleBatchDeleteDialog = (row) => {
+  if (data.multiplePodSelection.length === 0) {
+    proxy.$notify.warning({ title: 'Pods', message: '未选择批量删除的 Pods' });
+    return;
+  }
+  data.batchDeleteDialog.close = true;
+  data.batchDeleteDialog.deleteName = data.multiplePodSelection.join(', ');
+};
+
+const cancelDeletePod = () => {
+  data.deleteDialog.close = false;
+  data.deleteDialog.deleteName = '';
+};
+
+const deleteDeploymentPod = async () => {
+  const [result, err] = await deletePod(data.cluster, data.namespace, data.deleteDialog.deleteName);
   if (err) {
     proxy.$notify.error({ title: 'Pod', message: err.response.data.message });
     return;
   }
-  proxy.$notify.success({ title: 'Pod', message: `${row.metadata.name} 删除成功` });
+  proxy.$notify.success({ title: 'Pod', message: `${data.deleteDialog.deleteName} 删除成功` });
 
+  cancelDeletePod();
   await getDeploymentPods();
 };
 
+const canceldeletePodsInBatch = () => {
+  data.batchDeleteDialog.close = false;
+  data.batchDeleteDialog.deleteName = '';
+};
+
 const deletePodsInBatch = async () => {
-  if (data.multiplePodSelection.length === 0) {
-    proxy.$notify.warning({ title: 'Pod', message: '未选择批量删除的 Pods' });
-    return;
-  }
   for (let pod of data.multiplePodSelection) {
     const [result, err] = await deletePod(data.cluster, data.namespace, pod);
     if (err) {
@@ -709,6 +760,7 @@ const deletePodsInBatch = async () => {
     }
   }
 
+  canceldeletePodsInBatch();
   await getDeploymentPods();
 };
 
