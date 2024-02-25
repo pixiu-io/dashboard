@@ -10,15 +10,15 @@
         @click="goToDeployment"
       />
 
-      <el-breadcrumb separator="/" style="margin-left: 20px">
-        <el-breadcrumb-item><span class="breadcrumb-style">集群</span></el-breadcrumb-item>
-
-        <el-breadcrumb-item>
-          <span class="breadcrumb-style">{{ data.cluster }}</span>
-        </el-breadcrumb-item>
-
+      <el-breadcrumb separator="/" style="margin-left: 10px">
         <el-breadcrumb-item
-          ><span class="breadcrumb-style">Deployment:{{ data.name }}({{ data.namespace }})</span>
+          ><span class="breadcrumb-create-style"> {{ data.clusterName }} </span>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item
+          ><span class="breadcrumb-create-style"> Deployment: {{ data.name }} </span>
+        </el-breadcrumb-item>
+        <el-breadcrumb-item
+          ><span class="breadcrumb-create-style"> Deployment详情 </span>
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
@@ -503,6 +503,7 @@ const selectedPod = ref('');
 
 const data = reactive({
   cluster: '',
+  clusterName: '',
   name: '',
   namespace: '',
 
@@ -552,6 +553,7 @@ const data = reactive({
 
 onMounted(async () => {
   data.cluster = proxy.$route.query.cluster;
+  data.clusterName = localStorage.getItem(data.cluster);
   data.name = proxy.$route.query.name;
   data.namespace = proxy.$route.query.namespace;
 
