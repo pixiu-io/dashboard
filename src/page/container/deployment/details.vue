@@ -579,7 +579,7 @@ const data = reactive({
 
   deploymentEvents: [],
 
-  activeName: 'four',
+  activeName: 'second',
 
   selectedPods: [],
   selectedPod: '',
