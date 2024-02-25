@@ -368,19 +368,34 @@
         <button class="pixiu-two-button" @click="getDeploymentEvents">刷新</button>
         <button style="margin-left: 10px; width: 85px" class="pixiu-two-button2">批量删除</button>
 
-        <div style="float: right; margin-top: 16px">
-          <el-switch v-model="data.eventAutoRefresh" inline-prompt width="36px" /><span
+        <div style="margin-left: 8px; float: right; margin-left: 12px">
+          <button class="pixiu-two-button" @click="getDeploymentEvents">搜索</button>
+        </div>
+
+        <el-input
+          v-model="data.pageInfo.search.searchInfo"
+          placeholder="名称搜索关键字"
+          style="width: 480px; float: right"
+          clearable
+          @clear="getDeploymentEvents"
+          @input="getDeploymentEvents"
+        >
+          <template #suffix>
+            <pixiu-icon
+              name="icon-search"
+              style="cursor: pointer"
+              size="15px"
+              type="iconfont"
+              color="#909399"
+              @click="getDeploymentEvents"
+            />
+          </template>
+        </el-input>
+        <div style="float: right">
+          <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
             style="font-size: 13px; margin-left: 5px; margin-right: 10px"
             >自动刷新</span
           >
-          <pixiu-icon
-            name="icon-icon-refresh"
-            style="cursor: pointer"
-            size="16px"
-            type="iconfont"
-            color="#909399"
-            @click="getDeploymentEvents"
-          />
         </div>
       </div>
     </el-col>
@@ -400,11 +415,17 @@
           @selection-change="handleEventSelectionChange"
         >
           <el-table-column type="selection" width="30px" />
-          <el-table-column prop="lastTimestamp" label="最后出现时间" :formatter="formatterTime" />
+          <el-table-column
+            prop="lastTimestamp"
+            label="最后出现时间"
+            sortable
+            :formatter="formatterTime"
+          />
           <el-table-column prop="type" label="级别" />
           <el-table-column prop="kind" label="资源类型"> </el-table-column>
-          <el-table-column prop="objectName" label="资源名称"> </el-table-column>
-          <el-table-column prop="message" label="内容" width="500ox" />
+          <el-table-column prop="objectName" label="资源名称" :formatter="formatterName">
+          </el-table-column>
+          <el-table-column prop="message" label="内容" min-width="300px" />
 
           <el-table-column fixed="right" label="操作" width="100px">
             <template #default="scope">
@@ -935,6 +956,14 @@ const formatterTime = (row, column, cellValue) => {
   return (
     <el-tooltip effect="light" placement="top" content={time}>
       <div class="pixiu-ellipsis-style">{time}</div>
+    </el-tooltip>
+  );
+};
+
+const formatterName = (row, column, cellValue) => {
+  return (
+    <el-tooltip effect="light" placement="top" content={cellValue}>
+      <div class="pixiu-ellipsis-style">{cellValue}</div>
     </el-tooltip>
   );
 };

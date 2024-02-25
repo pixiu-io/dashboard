@@ -11,12 +11,11 @@ export const getEventList = async (cluster, namespace, name) => {
   return [result, err];
 };
 
-export const deleteEvent = async (cluster, namespace, data) => {
+export const deleteEvent = async (cluster, namespace, name) => {
   const [err, result] = await awaitWrap(
     http({
-      method: 'post',
-      url: `/pixiu/proxy/${cluster}/apis/apps/v1/namespaces/${namespace}/deployments`,
-      data: data,
+      method: 'delete',
+      url: `/pixiu/proxy/${cluster}/api/v1/namespaces/${namespace}/events/${name}`,
     }),
   );
   return [result, err];
