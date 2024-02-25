@@ -553,7 +553,7 @@ const data = reactive({
 
   tableData: [],
 
-  aggLog: true,
+  aggLog: false,
   logLine: '100行日志',
   logLines: ['50行日志', '100行日志', '200行日志', '500行日志'],
   selectedLog: 100,
