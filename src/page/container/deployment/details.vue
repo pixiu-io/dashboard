@@ -18,12 +18,12 @@
           ><span class="breadcrumb-create-style"> Deployment: {{ data.name }} </span>
         </el-breadcrumb-item>
         <el-breadcrumb-item
-          ><span class="breadcrumb-create-style"> Deployment详情 </span>
+          ><span class="breadcrumb-create-style"> 详情 </span>
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
 
-    <div style="margin-top: 20px"></div>
+    <div style="margin-top: 28px"></div>
 
     <el-tabs
       v-model="data.activeName"
@@ -554,6 +554,7 @@ const data = reactive({
 onMounted(async () => {
   data.cluster = proxy.$route.query.cluster;
   data.clusterName = localStorage.getItem(data.cluster);
+
   data.name = proxy.$route.query.name;
   data.namespace = proxy.$route.query.namespace;
 
