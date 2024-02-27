@@ -21,3 +21,18 @@ export const deleteEvent = async (cluster, namespace, name) => {
   );
   return [result, err];
 };
+
+export const getRawEventList = async (cluster, uid, name, namespace, kind) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: `/pixiu/proxy/${cluster}/api/v1/events`,
+      data: {
+        fieldSelector: `involvedObject.uid=${uid},involvedObject.name=${name},involvedObject.namespace=${namespace},involvedObject.kind=${kind}`,
+        limit: 500,
+      },
+    }),
+  );
+
+  return [result.items, err];
+};

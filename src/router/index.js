@@ -130,6 +130,14 @@ const routes = [
             component: Node,
           },
           {
+            path: 'nodes/detail',
+            name: 'NodeDetail',
+            meta: {
+              title: 'NodeDetail',
+            },
+            component: NodeDetail,
+          },
+          {
             path: 'namespaces',
             name: 'Namespace',
             meta: {
@@ -429,14 +437,6 @@ const routes = [
           title: 'EditStatefulSet',
         },
         component: EditStatefulSet,
-      },
-      {
-        path: 'nodes/detail',
-        name: 'NodeDetail',
-        meta: {
-          title: 'NodeDetail',
-        },
-        component: NodeDetail,
       },
       {
         path: 'cicd',
