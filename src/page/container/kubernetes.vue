@@ -1,6 +1,6 @@
 <template>
-  <el-aside style="overflow-x: hidden">
-    <div class="namespace-title-container" style="display: flex">
+  <el-aside :style="`overflow-x: hidden;`" :class="{ collapse: isCollapse }">
+    <div class="namespace-title-container" :style="`display: flex;`">
       <pixiu-icon
         name="icon-back"
         style="cursor: pointer"
@@ -19,12 +19,15 @@
         "
       >
         <el-tooltip effect="light" placement="bottom" :content="data.clusterContent">
-          <div class="pixiu-ellipsis-style" style="font-size: 14px">{{ data.aliasName }}</div>
+          <div class="pixiu-ellipsis-style" style="font-size: 14px">
+            {{ !isCollapse ? data.aliasName : '' }}
+          </div>
         </el-tooltip>
       </div>
     </div>
-    <div style="font-size: 13px; margin-left: 45px; margin-top: 5px; color: #909399">
-      集群({{ data.cluster }})
+
+    <div style="font-size: 13px; margin-left: 45px; margin-top: 5px; color: #909399; height: 18px">
+      {{ !isCollapse ? `集群(${data.cluster})` : '' }}
     </div>
 
     <!-- <div class="cloud-select-container">
@@ -34,18 +37,34 @@
     </div> -->
 
     <div style="margin-top: 15px"></div>
-    <el-menu
-      :default-active="data.path"
-      :default-openeds="data.openedMenu"
-      :unique-opened="true"
-      background-color="#f6f7fb"
-      text-color="#000"
-      router
-      class="deployment-container"
-      @open="handleOpen"
+    <el-col style="height: calc(100% - 140px)">
+      <el-menu
+        :default-active="data.path"
+        :default-openeds="data.openedMenu"
+        :unique-opened="true"
+        :collapse="isCollapse"
+        background-color="#f6f7fb"
+        text-color="#000"
+        router
+        class="deployment-container"
+        @open="handleOpen"
+      >
+        <pixiu-menu :items="data.clusterItems" />
+      </el-menu>
+    </el-col>
+    <div
+      style="
+        height: 60px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+      "
     >
-      <pixiu-menu :items="data.clusterItems" />
-    </el-menu>
+      <el-icon @click="toggleCollapse">
+        <component :is="`${isCollapse ? 'Expand' : 'Fold'}`"></component>
+      </el-icon>
+    </div>
   </el-aside>
 
   <!-- 主体 -->
@@ -55,7 +74,7 @@
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
+import { reactive, getCurrentInstance, onMounted, watch, ref, computed } from 'vue';
 import PixiuMenu from '@/components/menu/index.vue';
 import { useRouter } from 'vue-router';
 
@@ -65,6 +84,7 @@ const { proxy } = getCurrentInstance();
 const handleOpen = (key, keyPath) => {
   localStorage.setItem('openMenu', JSON.stringify(keyPath));
 };
+const isCollapse = ref(true);
 
 const data = reactive({
   cluster: '',
@@ -319,6 +339,14 @@ const data = reactive({
   ],
 });
 
+const computedWidth = computed(() => {
+  return isCollapse.value ? 'auto !important' : '200px';
+});
+
+const toggleCollapse = () => {
+  isCollapse.value = !isCollapse.value;
+};
+
 const changeClouds = (value) => {
   const { query } = proxy.$route;
   const { path } = proxy.$route;
@@ -468,8 +496,14 @@ const goToCluster = () => {
 .el-aside {
   height: 100%;
   background-color: #f6f7fb;
-  width: 200px;
+  width: 200px; /**宽度自适应 */
   border-right: 1px rgba(0, 0, 0, 0.1) solid;
+  transition: max-width 0.5s ease-in-out;
+  max-width: 200px; /* 初始max-width与width相同 */
+}
+
+.el-aside.collapse {
+  max-width: 60px;
 }
 
 .el-menu {
