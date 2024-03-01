@@ -7,7 +7,7 @@
         size="16px"
         type="iconfont"
         color="#006eff"
-        @click="backToDeployment"
+        @click="backToJob"
       />
 
       <el-breadcrumb separator="/" style="margin-left: 10px; margin-top: 1px">
@@ -18,10 +18,10 @@
           ><span class="breadcrumb-create-style"> {{ data.clusterName }} </span>
         </el-breadcrumb-item>
         <el-breadcrumb-item
-          ><span class="breadcrumb-create-style"> Deployments </span>
+          ><span class="breadcrumb-create-style"> Jobs </span>
         </el-breadcrumb-item>
         <el-breadcrumb-item
-          ><span class="breadcrumb-create-style"> 创建Deployment </span>
+          ><span class="breadcrumb-create-style"> 新建Job </span>
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
@@ -45,6 +45,15 @@
               <div class="app-pixiu-line-describe2">
                 最长63个字符，只能包含小写字母、数字及分隔符("-")
               </div>
+            </el-form-item>
+
+            <el-form-item prop="description" label="描述" style="width: 65%">
+              <el-input
+                v-model="data.form.description"
+                placeholder="请输入描述信息, 不超过1000个字符"
+                type="textarea"
+                :autosize="data.autosize"
+              />
             </el-form-item>
 
             <el-form-item label="命名空间" style="width: 300px">
@@ -102,6 +111,84 @@
             <div class="app-pixiu-line-describe" style="margin-top: -5px">
               标签键值以字母、数字开头和结尾, 且只能包含字母、数字及分隔符.
             </div>
+
+            <el-form-item label="Job设置" style="margin-top: 20px"> </el-form-item>
+            <el-form-item style="margin-top: -45px">
+              <el-card
+                style="width: 80%; height: 185px; background-color: #f2f2f2; border-radius: 0px"
+              >
+                <el-form-item
+                  :rules="[{ required: true, message: '重复次数不能为空', trigger: 'blur' }]"
+                  style="margin-top: 10px"
+                >
+                  <span>重复次数</span>
+                  <div class="configmap-label-title" style="margin-left: -3px">
+                    <el-tooltip content="tls.crt" placement="top-start" popper-class="tooltip">
+                      <pixiu-icon
+                        name="icon-tishi"
+                        size="25px"
+                        type="iconfont"
+                        style="vertical-align: middle; padding-left: -5px"
+                        color="#909399"
+                      />
+                    </el-tooltip>
+                  </div>
+                  <el-input
+                    v-model="data.job.spec.backoffLimit"
+                    class="deploy-pixiu-incard"
+                    style="margin-left: 58px"
+                  />
+                </el-form-item>
+                <el-form-item
+                  :rules="[{ required: true, message: '容器名不能为空', trigger: 'blur' }]"
+                  style="margin-top: 10px"
+                >
+                  <span>并行度</span>
+                  <div class="configmap-label-title" style="margin-left: -3px">
+                    <el-tooltip content="tls.crt" placement="top-start" popper-class="tooltip">
+                      <pixiu-icon
+                        name="icon-tishi"
+                        size="25px"
+                        type="iconfont"
+                        style="vertical-align: middle; padding-left: -5px"
+                        color="#909399"
+                      />
+                    </el-tooltip>
+                  </div>
+                  <el-input
+                    v-model="data.job.spec.backoffLimit"
+                    class="deploy-pixiu-incard"
+                    style="margin-left: 72px"
+                  />
+                </el-form-item>
+                <el-form-item
+                  :rules="[{ required: true, message: '容器名不能为空', trigger: 'blur' }]"
+                  style="margin-top: 10px"
+                >
+                  <span>失败重启策略</span>
+                  <div class="configmap-label-title" style="margin-left: -3px">
+                    <el-tooltip content="tls.crt" placement="top-start" popper-class="tooltip">
+                      <pixiu-icon
+                        name="icon-tishi"
+                        size="25px"
+                        type="iconfont"
+                        style="vertical-align: middle; padding-left: -5px"
+                        color="#909399"
+                      />
+                    </el-tooltip>
+                  </div>
+                  <el-input
+                    v-model="data.job.spec.template.spec.restartPolicy"
+                    class="deploy-pixiu-incard"
+                    style="margin-left: 30px"
+                  />
+                </el-form-item>
+              </el-card>
+            </el-form-item>
+
+            <el-form-item label="可抢占" style="margin-top: 20px">
+              <el-switch v-model="data.Session" inline-prompt width="40px" />
+            </el-form-item>
 
             <el-form-item label="容器配置" style="margin-top: 20px">
               <el-button type="text" class="app-action-btn" @click="addContainer"
@@ -166,7 +253,7 @@
 
             <el-form-item label="实例数量" style="margin-top: 20px">
               <el-input-number
-                v-model="data.deploymentForm.spec.replicas"
+                v-model="data.job.spec.replicas"
                 style="margin-top: 8px"
                 :min="0"
                 size="small"
@@ -223,13 +310,15 @@ const data = reactive({
   },
 
   // deployment 创建初始对象
-  deploymentForm: {
+  job: {
     metadata: {
       name: '',
       namespace: 'default',
     },
     spec: {
-      replicas: 1,
+      parallelism: '',
+      completions: '',
+      backoffLimit: '',
       selector: {
         matchLabels: {},
       },
@@ -239,6 +328,7 @@ const data = reactive({
         },
         spec: {
           containers: [],
+          restartPolicy: '',
         },
       },
     },
@@ -246,32 +336,31 @@ const data = reactive({
 });
 
 const handleChange = (value) => {
-  data.deploymentForm.spec.replicas = value;
+  data.job.spec.replicas = value;
 };
 
 const comfirmCreate = async () => {
   ruleFormRef.value.validate(async (valid) => {
     if (valid) {
-      data.deploymentForm.metadata = data.form.metadata;
-      data.deploymentForm.spec.template.spec.containers = data.form.containers;
+      data.job.metadata = data.form.metadata;
+      data.job.spec.template.spec.containers = data.form.containers;
 
-      data.deploymentForm.spec.selector.matchLabels['pixiu.io/app'] = data.form.metadata.name;
-      data.deploymentForm.spec.selector.matchLabels['pixiu.io/kind'] = 'deployment';
-      data.deploymentForm.spec.template.metadata.labels =
-        data.deploymentForm.spec.selector.matchLabels;
+      data.job.spec.selector.matchLabels['pixiu.io/app'] = data.form.metadata.name;
+      data.job.spec.selector.matchLabels['pixiu.io/kind'] = 'deployment';
+      data.job.spec.template.metadata.labels = data.job.spec.selector.matchLabels;
 
       // 追加 labels
       if (data.form.labels.length > 0) {
-        data.deploymentForm.metadata['labels'] = {};
+        data.job.metadata['labels'] = {};
         for (let item of data.form.labels) {
-          data.deploymentForm.metadata['labels'][item.key] = item.value;
+          data.job.metadata['labels'][item.key] = item.value;
         }
       }
 
       const [result, err] = await createDeployment(
         data.cluster,
         data.form.metadata.namespace,
-        data.deploymentForm,
+        data.job,
       );
       if (err) {
         proxy.$message.error(err.response.data.message);
@@ -280,13 +369,13 @@ const comfirmCreate = async () => {
 
       proxy.$message.success(`Deployment ${data.form.metadata.name} 创建成功`);
 
-      backToDeployment();
+      backToJob();
     }
   });
 };
 
 const cancelCreate = () => {
-  backToDeployment();
+  backToJob();
 };
 
 onMounted(() => {
@@ -300,7 +389,7 @@ onMounted(() => {
 
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
-  data.deploymentForm.metadata.namespace = val;
+  data.job.metadata.namespace = val;
 };
 
 const getNamespaceList = async () => {
@@ -340,9 +429,9 @@ const deleteContainer = (index) => {
 };
 
 // 回到 deployment 页面
-const backToDeployment = () => {
+const backToJob = () => {
   proxy.$router.push({
-    name: 'Deployment',
+    name: 'Job',
     query: data.cloud,
   });
 };

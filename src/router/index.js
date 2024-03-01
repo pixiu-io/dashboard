@@ -399,6 +399,22 @@ const routes = [
       },
       // job 路由
       {
+        path: 'job/createJob',
+        name: 'createJob',
+        meta: {
+          title: 'createJob',
+        },
+        component: CreateJob,
+      },
+      {
+        path: 'job/createJob',
+        name: 'createJob',
+        meta: {
+          title: 'createJob',
+        },
+        component: CreateJob,
+      },
+      {
         path: 'pods/createPod',
         name: 'CreatePod',
         meta: {
