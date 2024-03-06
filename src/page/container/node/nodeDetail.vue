@@ -551,10 +551,11 @@ const getNodeEvents = async () => {
   data.loading = true;
   const [result, err] = await getRawEventList(
     data.cluster,
-    data.nodeObject.metadata.uid,
-    data.name,
+    data.nodeObject.metadata.name,
     '',
+    data.nodeObject.metadata.name,
     'Node',
+    false,
   );
   data.loading = false;
   if (err) {
