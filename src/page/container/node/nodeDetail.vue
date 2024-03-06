@@ -35,7 +35,7 @@
       <el-tab-pane label="Pod管理" name="second"></el-tab-pane>
       <!-- <el-tab-pane label="监控" name="third"></el-tab-pane> -->
       <el-tab-pane label="事件" name="four"></el-tab-pane>
-      <el-tab-pane label="镜像" name="six"></el-tab-pane>
+      <!-- <el-tab-pane label="镜像" name="six"></el-tab-pane> -->
       <el-tab-pane label="YAML" name="five"></el-tab-pane>
     </el-tabs>
   </el-card>
@@ -241,7 +241,7 @@
         <el-card class="contend-card-container2">
           <el-table
             v-loading="data.loading"
-            :data="data.deploymentEvents"
+            :data="data.eventTableData"
             stripe
             style="margin-top: 10px; width: 100%; margin-bottom: 25px"
             header-row-class-name="pixiu-table-header"
@@ -252,13 +252,19 @@
             @selection-change="handleSelectionChange"
           >
             <el-table-column type="selection" width="30px" />
-            <el-table-column prop="lastTimestamp" label="最后出现时间" :formatter="formatterTime" />
+            <el-table-column
+              prop="lastTimestamp"
+              label="最后出现时间"
+              sortable
+              :formatter="formatterTime"
+            />
             <el-table-column prop="type" label="级别" />
 
             <el-table-column prop="involvedObject.kind" label="资源类型"> </el-table-column>
             <el-table-column prop="involvedObject.name" label="资源名称" :formatter="formatterName">
             </el-table-column>
-            <el-table-column prop="message" label="内容" width="250ox" />
+            <el-table-column prop="message" label="内容" min-width="250ox" />
+            <el-table-column prop="count" label="出现次数"> </el-table-column>
 
             <el-table-column fixed="right" label="操作" width="100px">
               <template #default="scope">
@@ -495,6 +501,7 @@ onMounted(async () => {
   await getNodeObject();
 
   getNodePods();
+  getNodeEvents();
 });
 
 const getNodeObject = async () => {
