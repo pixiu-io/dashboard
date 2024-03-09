@@ -48,11 +48,12 @@ const useCloudStore = defineStore('cloud', () => {
     const [err, result] = await getClouds(pageInfo.value);
     loading.value = false;
     if (err) {
+      proxy.$message.error(err.response.data.message);
       return;
     }
 
     cloudList.value = result;
-    total.value = 10;
+    total.value = result.length;
   };
 
   const changeActive = (value) => {
