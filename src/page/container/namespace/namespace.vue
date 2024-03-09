@@ -12,10 +12,6 @@
           刷新
         </button>
 
-        <!-- <div style="margin-left: 8px; float: right; margin-left: 12px">
-          <button class="pixiu-two-button" @click="getNamespace">搜索</button>
-        </div> -->
-
         <el-input
           v-model="data.pageInfo.query"
           placeholder="名称搜索关键字"

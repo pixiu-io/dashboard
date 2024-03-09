@@ -146,6 +146,14 @@ const routes = [
             component: Namespace,
           },
           {
+            path: 'namespaces/namespaceDetail',
+            name: 'NamespaceDetail',
+            meta: {
+              title: 'namespaceDetail',
+            },
+            component: NamespaceDetail,
+          },
+          {
             path: 'deployments',
             name: 'Deployment',
             meta: {
@@ -302,14 +310,6 @@ const routes = [
           title: 'createNamespace',
         },
         component: CreateNamespace,
-      },
-      {
-        path: 'namespaces/namespaceDetail',
-        name: 'NamespaceDetail',
-        meta: {
-          title: 'namespaceDetail',
-        },
-        component: NamespaceDetail,
       },
       // storageclasses 路由
       {
