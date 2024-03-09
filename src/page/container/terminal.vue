@@ -15,7 +15,7 @@ const webShellOptions = reactive({
   cluster: '',
   pod: '',
   container: '',
-  command: '/bin/bash',
+  command: '/bin/sh',
 });
 
 onMounted(() => {
