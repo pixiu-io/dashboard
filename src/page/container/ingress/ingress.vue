@@ -13,11 +13,12 @@
         </button>
 
         <el-input
-          v-model="data.pageInfo.query"
+          v-model="data.pageInfo.search.searchInfo"
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
           @clear="getIngresses"
+          @input="searchIngress"
         >
           <template #suffix>
             <el-icon class="el-input__icon" @click="getIngresses">
@@ -147,7 +148,7 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { formatTimestamp, getTableData } from '@/utils/utils';
+import { formatTimestamp, getTableData, searchData } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
@@ -175,6 +176,10 @@ const data = reactive({
     query: '',
     total: 0,
     limit: 10,
+    search: {
+      field: 'name',
+      searchInfo: '',
+    },
   },
   tableData: [],
   loading: false,
@@ -240,6 +245,10 @@ const onChange = (v) => {
   data.pageInfo.page = v.page;
 
   data.tableData = getTableData(data.pageInfo, data.ingressList);
+
+  if (data.pageInfo.search.searchInfo !== '') {
+    searchIngress();
+  }
 };
 
 const getIngresses = async () => {
@@ -254,6 +263,10 @@ const getIngresses = async () => {
   data.ingressList = res.items;
   data.pageInfo.total = data.ingressList.length;
   data.tableData = getTableData(data.pageInfo, data.ingressList);
+};
+
+const searchIngress = async () => {
+  data.tableData = searchData(data.pageInfo, data.ingressList);
 };
 
 const createIngress = () => {

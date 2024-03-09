@@ -12,11 +12,12 @@
           刷新
         </button>
         <el-input
-          v-model="data.pageInfo.query"
+          v-model="data.pageInfo.search.searchInfo"
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
           @clear="getConfigMaps"
+          @input="searchConfigMaps"
         >
           <template #suffix>
             <el-icon class="el-input__icon" @click="getConfigMaps">
@@ -159,7 +160,7 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import jsYaml from 'js-yaml';
-import { formatTimestamp, getTableData } from '@/utils/utils';
+import { formatTimestamp, getTableData, searchData } from '@/utils/utils';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
@@ -183,6 +184,10 @@ const data = reactive({
     limit: 10,
     query: '',
     total: 0,
+    search: {
+      field: 'name',
+      searchInfo: '',
+    },
   },
   tableData: [],
   loading: false,
@@ -248,6 +253,10 @@ const onChange = (v) => {
   data.pageInfo.page = v.page;
 
   data.tableData = getTableData(data.pageInfo, data.configMapsList);
+
+  if (data.pageInfo.search.searchInfo !== '') {
+    searchConfigMaps();
+  }
 };
 
 const createConfigMap = () => {
@@ -300,6 +309,10 @@ const getConfigMaps = async () => {
   data.configMapsList = result.items;
   data.pageInfo.total = data.configMapsList.length;
   data.tableData = getTableData(data.pageInfo, data.configMapsList);
+};
+
+const searchConfigMaps = async () => {
+  data.tableData = searchData(data.pageInfo, data.configMapsList);
 };
 
 const changeNamespace = async (val) => {

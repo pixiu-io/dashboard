@@ -13,11 +13,11 @@
         </button>
 
         <el-input
-          v-model="data.pageInfo.query"
+          v-model="data.pageInfo.search.searchInfo"
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
-          @input="getReleases"
+          @input="searchReleases"
           @clear="getReleases"
         >
           <template #suffix>
@@ -135,7 +135,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
-import { formatTimestamp, getTableData } from '@/utils/utils';
+import { formatTimestamp, getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
@@ -150,6 +150,10 @@ const data = reactive({
     limit: 10,
     query: '',
     total: 0,
+    search: {
+      field: 'name',
+      searchInfo: '',
+    },
   },
   tableData: [],
   loading: false,
@@ -177,7 +181,11 @@ const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
 
-  getReleases();
+  data.tableData = getTableData(data.pageInfo, data.releasesList);
+
+  if (data.pageInfo.search.searchInfo !== '') {
+    searchReleases();
+  }
 };
 
 const jumpRoute = (row) => {
@@ -203,6 +211,10 @@ const getReleases = async () => {
   data.releasesList = result.result;
   data.pageInfo.total = data.releasesList.length;
   data.tableData = getTableData(data.pageInfo, data.releasesList);
+};
+
+const searchReleases = async () => {
+  data.tableData = searchData(data.pageInfo, data.releasesList);
 };
 
 const deleteRelease = async (val) => {};
