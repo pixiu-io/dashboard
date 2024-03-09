@@ -85,7 +85,10 @@ const initSocket = () => {
   if (data.socket !== null) {
     return;
   }
+  // 支持配置
   const websocketAddr = import.meta.env.VITE_BASE_API.replace('http', 'ws');
+  console.log('websocketAddr', websocketAddr);
+
   //定义websocket连接地址
   let terminalWsUrl =
     websocketAddr +
@@ -126,6 +129,10 @@ const closeSocket = () => {
     return;
   }
   data.socket.close();
+};
+
+const resizeSocket = () => {
+  console.log('ddddd resizeSocket');
 };
 </script>
 
