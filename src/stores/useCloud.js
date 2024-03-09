@@ -48,7 +48,6 @@ const useCloudStore = defineStore('cloud', () => {
     const [err, result] = await getClouds(pageInfo.value);
     loading.value = false;
     if (err) {
-      proxy.$message.error(err.response.data.message);
       return;
     }
 
