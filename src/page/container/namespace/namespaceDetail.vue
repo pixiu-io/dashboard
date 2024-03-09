@@ -7,7 +7,7 @@
         size="16px"
         type="iconfont"
         color="#006eff"
-        @click="goToNode"
+        @click="goToNamespace"
       />
 
       <el-breadcrumb separator="/" style="margin-left: 10px">
