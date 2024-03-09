@@ -48,8 +48,8 @@ const initTerm = () => {
   //初始化xterm实例
   data.term = new Terminal({
     rendererType: 'canvas', //渲染类型
-    rows: 30, //行数
-    cols: 110,
+    rows: parseInt(document.body.clientHeight / 18), //行数
+    cols: parseInt(document.body.clientWidth / 9),
     convertEol: false, //启用时，光标将设置为下一行的开头
     scrollback: 10, //终端中的回滚量
     disableStdin: false, //是否应禁用输入

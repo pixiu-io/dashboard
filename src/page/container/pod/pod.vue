@@ -101,7 +101,7 @@
               style="margin-right: -25px; margin-left: -10px; color: #006eff"
               @click="handleDeleteDialog(scope.row)"
             >
-              销毁重建
+              删除Pod
             </el-button>
 
             <el-button
