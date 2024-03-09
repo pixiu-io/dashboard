@@ -11,24 +11,16 @@ import { useRoute } from 'vue-router';
 const route = useRoute();
 
 const webShellOptions = reactive({
-  namespace: 'default',
+  namespace: '',
   cluster: '',
-  pod: 'nginx-7df5d5dcb7-5pb95',
+  pod: '',
   container: '',
-  command: '/bin/sh',
+  command: '/bin/bash',
 });
 
 onMounted(() => {
   Object.assign(webShellOptions, route.query);
 });
-
-// const webshelloptions = {
-//   namespace: 'pixiu-system',
-//   cluster: 'pixiu-fwswbctm',
-//   pod: 'helm-toolbox-0',
-//   container: '',
-//   command: '/bin/sh',
-// };
 </script>
 
 <style scoped="scoped"></style>
