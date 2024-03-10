@@ -10,20 +10,20 @@
         @click="goToDeployment"
       />
 
-      <el-breadcrumb separator="/" style="margin-left: 10px">
-        <el-breadcrumb-item
-          ><span class="breadcrumb-create-style"> {{ data.clusterName }} </span>
+      <el-breadcrumb separator="/" style="margin-left: 20px">
+        <el-breadcrumb-item><span class="breadcrumb-style">集群</span></el-breadcrumb-item>
+
+        <el-breadcrumb-item>
+          <span class="breadcrumb-style">{{ data.cluster }}</span>
         </el-breadcrumb-item>
+
         <el-breadcrumb-item
-          ><span class="breadcrumb-create-style"> Deployment: {{ data.name }} </span>
-        </el-breadcrumb-item>
-        <el-breadcrumb-item
-          ><span class="breadcrumb-create-style"> 详情 </span>
+          ><span class="breadcrumb-style">Deployment:{{ data.name }}({{ data.namespace }})</span>
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
 
-    <div style="margin-top: 28px"></div>
+    <div style="margin-top: 20px"></div>
 
     <el-tabs
       v-model="data.activeName"
@@ -94,16 +94,10 @@
     <div style="margin-top: 20px">
       <el-row>
         <el-col>
-          <button class="pixiu-two-button" @click="getDeploymentPods">刷新</button>
-          <button
-            class="pixiu-two-button2"
-            style="margin-left: 10px; width: 85px"
-            @click="handleBatchDeleteDialog"
-          >
-            批量删除
-          </button>
+          <button class="pixiu-two-button">刷新</button>
+          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">销毁重建</button>
 
-          <!-- <div style="margin-left: 8px; float: right; margin-top: 6px">
+          <div style="margin-left: 8px; float: right; margin-top: 6px">
             <pixiu-icon
               name="icon-icon-refresh"
               style="cursor: pointer"
@@ -112,18 +106,14 @@
               color="#909399"
               @click="getDeploymentPods"
             />
-          </div> -->
-          <div style="margin-left: 8px; float: right; margin-left: 12px">
-            <button class="pixiu-two-button" @click="searchDeploymentPods">搜索</button>
           </div>
 
           <el-input
-            v-model="data.pageInfo.search.searchInfo"
+            v-model="data.pageInfo.query"
             placeholder="名称搜索关键字"
             style="width: 480px; float: right"
             clearable
             @clear="getDeploymentPods"
-            @input="searchDeploymentPods"
           >
             <template #suffix>
               <pixiu-icon
@@ -137,7 +127,7 @@
             </template>
           </el-input>
           <div style="float: right">
-            <el-switch v-model="data.autoSyncPods" inline-prompt width="36px" /><span
+            <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
               style="font-size: 13px; margin-left: 5px; margin-right: 10px"
               >自动刷新</span
             >
@@ -148,17 +138,17 @@
     <el-card style="margin-top: 15px" class="contend-card-container2">
       <el-table
         v-loading="data.loading"
-        :data="data.tableData"
+        :data="data.deploymentPods"
         stripe
-        style="margin-top: 6px"
+        style="margin-top: 10px; width: 100%; margin-bottom: 25px"
         header-row-class-name="pixiu-table-header"
         :cell-style="{
           'font-size': '12px',
           color: '#29292b',
         }"
-        @selection-change="handlePodSelectionChange"
+        @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="30px" />
+        <el-table-column type="selection" width="30" />
         <el-table-column prop="metadata.name" label="实例名称" min-width="70px">
           <template #default="scope">
             {{ scope.row.metadata.name }}
@@ -211,9 +201,9 @@
               size="small"
               type="text"
               style="margin-right: -25px; margin-left: -10px; color: #006eff"
-              @click="handleDeleteDialog(scope.row)"
+              @click="deletePod(scope.row)"
             >
-              删除
+              销毁重建
             </el-button>
 
             <el-button
@@ -222,13 +212,11 @@
               style="margin-right: 1px; color: #006eff"
               @click="openShell(scope.row)"
             >
-              远程登陆
+              远程连接
             </el-button>
           </template>
         </el-table-column>
       </el-table>
-
-      <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
 
@@ -277,7 +265,7 @@
           />
         </div>
       </el-form-item>
-      <!--
+
       <el-form-item
         label="其他选项"
         class="deployment-info"
@@ -292,7 +280,7 @@
             <el-option v-for="item in data.logLines" :key="item" :value="item" :label="item" />
           </el-select>
         </span>
-      </el-form-item> -->
+      </el-form-item>
 
       <div style="margin-left: 170px; margin-top: -10px; margin-bottom: 10px">
         <el-switch v-model="data.previous" inline-prompt width="36px" /><span
@@ -302,14 +290,21 @@
       </div>
     </el-card>
 
-    <div style="display: flex; margin-top: 15px">
-      <button style="width: 85px" class="pixiu-two-button" @click="getPodLogs">获取日志</button>
-      <div style="margin-left: 20px">
-        <el-switch v-model="data.aggLog" inline-prompt width="36px" /><span
-          style="font-size: 13px; margin-left: 5px; margin-right: 10px"
-          >聚合查询</span
-        >
-      </div>
+    <button style="margin-top: 15px" class="pixiu-two-button" @click="getPodLog">刷新</button>
+
+    <div style="float: right; margin-top: 8px">
+      <el-switch v-model="data.logAutoRefresh" inline-prompt width="36px" /><span
+        style="font-size: 13px; margin-left: 5px; margin-right: 10px"
+        >自动刷新</span
+      >
+      <pixiu-icon
+        name="icon-icon-refresh"
+        style="cursor: pointer"
+        size="16px"
+        type="iconfont"
+        color="#909399"
+        @click="getPodLog"
+      />
     </div>
 
     <div style="margin-top: 15px">
@@ -329,7 +324,7 @@
   </div>
 
   <div v-if="data.activeName === 'four'">
-    <!-- <el-card class="contend-card-container2">
+    <el-card class="contend-card-container2">
       <div class="big-world-style">筛选条件</div>
 
       <el-form-item
@@ -361,80 +356,52 @@
           </el-select>
         </span>
       </el-form-item>
-    </el-card> -->
-    <div style="margin-top: 20px">
-      <el-row>
-        <el-col>
-          <div>
-            <button class="pixiu-two-button" @click="getDeploymentEvents">刷新</button>
-            <button
-              style="margin-left: 10px; width: 85px"
-              class="pixiu-two-button2"
-              @click="deleteEventsInBatch"
-            >
-              批量删除
-            </button>
+    </el-card>
 
-            <div style="margin-left: 8px; float: right; margin-left: 12px">
-              <button class="pixiu-two-button" @click="getDeploymentEvents">搜索</button>
-            </div>
+    <el-col>
+      <button style="margin-top: 15px" class="pixiu-two-button" @click="getDeploymentEvents">
+        刷新
+      </button>
+      <button style="margin-top: 15px; margin-left: 10px; width: 85px" class="pixiu-two-button2">
+        批量删除
+      </button>
 
-            <el-input
-              v-model="data.pageInfo.search.searchInfo"
-              placeholder="名称搜索关键字"
-              style="width: 480px; float: right"
-              clearable
-              @clear="getDeploymentEvents"
-              @input="getDeploymentEvents"
-            >
-              <template #suffix>
-                <pixiu-icon
-                  name="icon-search"
-                  style="cursor: pointer"
-                  size="15px"
-                  type="iconfont"
-                  color="#909399"
-                  @click="getDeploymentEvents"
-                />
-              </template>
-            </el-input>
-            <div style="float: right">
-              <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
-                style="font-size: 13px; margin-left: 5px; margin-right: 10px"
-                >自动刷新</span
-              >
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-    </div>
-    <div style="margin-top: 15px">
+      <div style="float: right; margin-top: 16px">
+        <el-switch v-model="data.eventAutoRefresh" inline-prompt width="36px" /><span
+          style="font-size: 13px; margin-left: 5px; margin-right: 10px"
+          >自动刷新</span
+        >
+        <pixiu-icon
+          name="icon-icon-refresh"
+          style="cursor: pointer"
+          size="16px"
+          type="iconfont"
+          color="#909399"
+          @click="getDeploymentEvents"
+        />
+      </div>
+    </el-col>
+
+    <div style="margin-top: 18px">
       <el-card class="contend-card-container2">
         <el-table
           v-loading="data.loading"
-          :data="data.eventTableData"
+          :data="data.deploymentEvents"
           stripe
-          style="margin-top: 6px"
+          style="margin-top: 10px; width: 100%; margin-bottom: 25px"
           header-row-class-name="pixiu-table-header"
           :cell-style="{
             'font-size': '12px',
             color: '#29292b',
           }"
-          @selection-change="handleEventSelectionChange"
+          @selection-change="handleSelectionChange"
         >
-          <el-table-column type="selection" width="30" />
-          <el-table-column
-            prop="lastTimestamp"
-            label="最后出现时间"
-            sortable
-            :formatter="formatterTime"
-          />
+          <el-table-column type="selection" width="30px" />
+          <el-table-column prop="lastTimestamp" label="最后出现时间" :formatter="formatterTime" />
           <el-table-column prop="type" label="级别" />
-          <el-table-column prop="involvedObject.kind" label="资源类型"> </el-table-column>
-          <el-table-column prop="involvedObject.name" label="资源名称" :formatter="formatterName">
-          </el-table-column>
-          <el-table-column prop="message" label="内容" min-width="250px" />
-          <el-table-column prop="count" label="出现次数"> </el-table-column>
+          <el-table-column prop="kind" label="资源类型"> </el-table-column>
+          <el-table-column prop="objectName" label="资源名称"> </el-table-column>
+          <el-table-column prop="message" label="内容" width="500ox" />
 
           <el-table-column fixed="right" label="操作" width="100px">
             <template #default="scope">
@@ -442,14 +409,13 @@
                 size="small"
                 type="text"
                 style="margin-right: -25px; margin-left: -10px; color: #006eff"
-                @click="deleteEventObject(scope.row)"
+                @click="deleteEvent(scope.row)"
               >
                 删除
               </el-button>
             </template>
           </el-table-column>
         </el-table>
-        <pagination :total="data.pageEventInfo.total" @on-change="onEventChange"></pagination>
       </el-card>
     </div>
   </div>
@@ -467,7 +433,7 @@
             size="14px"
             type="iconfont"
             color="#909399"
-            @click="getDeploymentObject"
+            @click="getDeployment"
           />
         </div>
       </el-col>
@@ -502,37 +468,16 @@
       </el-button>
     </div>
   </el-dialog>
-
-  <pixiuDialog
-    :close-event="data.deleteDialog.close"
-    :object-name="data.deleteDialog.objectName"
-    :delete-name="data.deleteDialog.deleteName"
-    @confirm="deleteDeploymentPod"
-    @cancel="cancelDeletePod"
-  ></pixiuDialog>
-
-  <pixiuDialog
-    :close-event="data.batchDeleteDialog.close"
-    :object-name="data.batchDeleteDialog.objectName"
-    :delete-name="data.batchDeleteDialog.deleteName"
-    @confirm="deletePodsInBatch"
-    @cancel="canceldeletePodsInBatch"
-  ></pixiuDialog>
 </template>
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import { formatTimestamp } from '@/utils/utils';
 import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
 import jsYaml from 'js-yaml';
-import { formatTimestamp, getTableData } from '@/utils/utils';
 import MyCodeMirror from '@/components/codemirror/index.vue';
-import Pagination from '@/components/pagination/index.vue';
-import { getPodsByLabels, deletePod, getPodLog } from '@/services/kubernetes/podService';
-import { getDeployment } from '@/services/kubernetes/deploymentService';
-import { getEventList, deleteEvent } from '@/services/kubernetes/eventService';
-import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -544,7 +489,6 @@ const selectedPod = ref('');
 
 const data = reactive({
   cluster: '',
-  clusterName: '',
   name: '',
   namespace: '',
 
@@ -555,20 +499,6 @@ const data = reactive({
     limit: 10,
     query: '',
     total: 0,
-    search: {
-      field: 'name',
-      searchInfo: '',
-    },
-  },
-
-  pageEventInfo: {
-    page: 1,
-    limit: 10,
-    total: 0,
-    search: {
-      field: 'name',
-      searchInfo: '',
-    },
   },
 
   restarts: 0,
@@ -578,6 +508,7 @@ const data = reactive({
   deploymentPods: [],
 
   deploymentEvents: [],
+  eventAutoRefresh: true,
 
   activeName: 'second',
 
@@ -587,13 +518,10 @@ const data = reactive({
   selectedContainer: '',
   selectedPodMap: {},
 
-  autoSyncPods: false,
+  crontab: true,
   previous: false,
 
-  tableData: [],
-  eventTableData: [],
-
-  aggLog: false,
+  logAutoRefresh: true,
   logLine: '100行日志',
   logLines: ['50行日志', '100行日志', '200行日志', '500行日志'],
   selectedLog: 100,
@@ -602,47 +530,17 @@ const data = reactive({
   yaml: '',
   yamlName: '',
   readOnly: true,
-
-  multiplePodSelection: [],
-  multipleEventSelection: [],
-
-  // 删除对象属性
-  deleteDialog: {
-    close: false,
-    objectName: 'Pod',
-    deleteName: '',
-  },
-
-  batchDeleteDialog: {
-    close: false,
-    objectName: 'Pods',
-    deleteNames: '',
-  },
 });
 
 onMounted(async () => {
   data.cluster = proxy.$route.query.cluster;
-  data.clusterName = localStorage.getItem(data.cluster);
-
   data.name = proxy.$route.query.name;
   data.namespace = proxy.$route.query.namespace;
 
-  await getDeploymentObject();
+  await getDeployment();
   await getDeploymentPods();
   await getDeploymentEvents();
 });
-
-// 监听子属性变化
-watch(
-  () => data.autoSyncPods,
-  (newActive, oldActive) => {
-    // if (newActive) {
-    //   var a = window.setInterval(getDeploymentPods, 5000);
-    // } else {
-    //   window.clearInterval(a);
-    // }
-  },
-);
 
 const { toClipboard } = useClipboard();
 const copy = async (val) => {
@@ -751,122 +649,38 @@ const copyIP = async (val) => {
   }
 };
 
-const getDeploymentObject = async () => {
-  const [result, err] = await getDeployment(data.cluster, data.namespace, data.name);
-  if (err) {
-    proxy.$notify.error(err.response.data.message);
-    return;
-  }
+const getDeployment = async () => {
+  const res = await proxy.$http({
+    method: 'get',
+    url: `/pixiu/proxy/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${data.name}`,
+  });
+  data.deployment = res;
 
-  data.deployment = result;
   data.yaml = jsYaml.dump(data.deployment);
 };
 
-const handleDeleteDialog = (row) => {
-  data.deleteDialog.close = true;
-  data.deleteDialog.deleteName = row.metadata.name;
-};
+const deletePod = async (row) => {
+  const pods = await proxy.$http({
+    method: 'delete',
+    url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${row.metadata.namespace}/pods/${row.metadata.name}`,
+  });
 
-const handleBatchDeleteDialog = (row) => {
-  if (data.multiplePodSelection.length === 0) {
-    proxy.$notify.warning({ title: 'Pods', message: '未选择批量删除的 Pods' });
-    return;
-  }
-  data.batchDeleteDialog.close = true;
-  data.batchDeleteDialog.deleteName = data.multiplePodSelection.join(', ');
-};
-
-const cancelDeletePod = () => {
-  data.deleteDialog.close = false;
-  data.deleteDialog.deleteName = '';
-};
-
-const deleteDeploymentPod = async () => {
-  const [result, err] = await deletePod(data.cluster, data.namespace, data.deleteDialog.deleteName);
-  if (err) {
-    proxy.$notify.error({ title: 'Pod', message: err.response.data.message });
-    return;
-  }
-  proxy.$notify.success({ title: 'Pod', message: `${data.deleteDialog.deleteName} 删除成功` });
-
-  cancelDeletePod();
   await getDeploymentPods();
 };
 
-const canceldeletePodsInBatch = () => {
-  data.batchDeleteDialog.close = false;
-  data.batchDeleteDialog.deleteName = '';
-};
-
-const deletePodsInBatch = async () => {
-  for (let pod of data.multiplePodSelection) {
-    const [result, err] = await deletePod(data.cluster, data.namespace, pod);
-    if (err) {
-      proxy.$notify.error({ title: 'Pod', message: err.response.data.message });
-    }
-  }
-
-  canceldeletePodsInBatch();
-  await getDeploymentPods();
-};
-
-const onChange = (v) => {
-  data.pageInfo.limit = v.limit;
-  data.pageInfo.page = v.page;
-
-  data.tableData = getTableData(data.pageInfo, data.deploymentPods);
-
-  if (data.pageInfo.search.searchInfo !== '') {
-    searchDeploymentPods();
-  }
-};
-
-const onEventChange = (v) => {
-  data.pageEventInfo.limit = v.limit;
-  data.pageEventInfo.page = v.page;
-
-  data.eventTableData = getTableData(data.pageEventInfo, data.deploymentEvents);
-};
-
-const getPodLogs = async () => {
+const getPodLog = async () => {
   // 在指定 pod 和容器的情况下，才请求log
   if (data.selectedPod === '' || data.selectedContainer === '') {
     return;
   }
 
-  if (!data.aggLog) {
-    const [result, err] = await getPodLog(
-      data.cluster,
-      data.namespace,
-      data.selectedPod,
-      data.selectedContainer,
-    );
-    if (err) {
-      proxy.$notify.error(err.response.data.message);
-      return;
-    }
-    data.podLogs = result;
-  } else {
-    data.podLogs = [];
-    for (let pod of data.selectedPods) {
-      const [result, err] = await getPodLog(
-        data.cluster,
-        data.namespace,
-        pod,
-        data.selectedContainer,
-      );
-      if (err) {
-        proxy.$notify.error({ title: 'Pod', message: err.response.data.message });
-      } else {
-        data.podLogs.push('------------------------');
-        data.podLogs.push('Pod: ' + pod);
-        data.podLogs.push('------------------------');
-        for (let line of result) {
-          data.podLogs.push(line);
-        }
-      }
-    }
-  }
+  const log = await proxy.$http({
+    method: 'get',
+    url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${data.selectedPod}/log`,
+    data: { container: data.selectedContainer },
+  });
+
+  data.podLogs = log.split('\n');
 };
 
 const getDeploymentPods = async () => {
@@ -876,16 +690,15 @@ const getDeploymentPods = async () => {
     labels.push(key + '=' + matchLabels[key]);
   }
 
-  data.loading = true;
-  const [result, err] = await getPodsByLabels(data.cluster, data.namespace, labels.join(','));
-  data.loading = false;
-  if (err) {
-    proxy.$notify.error(err.response.data.message);
-    return;
-  }
-  data.deploymentPods = result.items;
-  data.pageInfo.total = data.deploymentPods.length;
-  data.tableData = getTableData(data.pageInfo, data.deploymentPods);
+  const pods = await proxy.$http({
+    method: 'get',
+    url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.namespace}/pods`,
+    data: {
+      labelSelector: labels.join(','),
+      limit: 500,
+    },
+  });
+  data.deploymentPods = pods.items;
 
   data.selectedPods = [];
   data.selectedContainers = [];
@@ -909,67 +722,15 @@ const getDeploymentPods = async () => {
   }
 };
 
-const searchDeploymentPods = async () => {
-  let allSearchedPods = [];
-  if (data.pageInfo.search.field === 'name') {
-    for (let pod of data.deploymentPods) {
-      if (pod.metadata.name.search(data.pageInfo.search.searchInfo) !== -1) {
-        allSearchedPods.push(pod);
-      }
-    }
-  }
-
-  data.pageInfo.total = allSearchedPods.length;
-  data.tableData = getTableData(data.pageInfo, allSearchedPods);
-};
-
 const getDeploymentEvents = async () => {
-  data.loading = true;
-  const [result, err] = await getEventList(data.cluster, data.namespace, data.name);
-  data.loading = false;
-  if (err) {
-    proxy.$notify.error({ title: 'Event', message: err.response.data.message });
-    return;
-  }
-  data.deploymentEvents = result;
-  data.pageEventInfo.total = result.length;
-  data.eventTableData = getTableData(data.pageEventInfo, data.deploymentEvents);
+  const events = await proxy.$http({
+    method: 'get',
+    url: `/pixiu/kubeproxy/clusters/${data.cluster}/namespaces/${data.namespace}/name/${data.name}/kind/deployment/events`,
+  });
+  data.deploymentEvents = events;
 };
 
-const deleteEventObject = async (row) => {
-  const [result, err] = await deleteEvent(data.cluster, data.namespace, row.metadata.name);
-  if (err) {
-    proxy.$notify.error({ title: 'Event', message: err.response.data.message });
-    return;
-  }
-  await getDeploymentEvents();
-  proxy.$notify.success({ title: 'Event', message: `${row.metadata.name} 删除成功` });
-};
-
-const deleteEventsInBatch = async () => {
-  for (let event of data.multipleEventSelection) {
-    const [result, err] = await deleteEvent(data.cluster, data.namespace, event);
-    if (err) {
-      proxy.$notify.error({ title: 'Pod', message: err.response.data.message });
-    }
-  }
-  await getDeploymentEvents();
-  proxy.$notify.success({ title: 'Events', message: '批量删除事件成功' });
-};
-
-const handlePodSelectionChange = (pods) => {
-  data.multiplePodSelection = [];
-  for (let pod of pods) {
-    data.multiplePodSelection.push(pod.metadata.name);
-  }
-};
-
-const handleEventSelectionChange = (events) => {
-  data.multipleEventSelection = [];
-  for (let event of events) {
-    data.multipleEventSelection.push(event.metadata.name);
-  }
-};
+const deleteEvent = async () => {};
 
 const formatterStatus = (row, column, cellValue) => {
   let phase = cellValue.phase;
@@ -995,14 +756,6 @@ const formatterTime = (row, column, cellValue) => {
   return (
     <el-tooltip effect="light" placement="top" content={time}>
       <div class="pixiu-ellipsis-style">{time}</div>
-    </el-tooltip>
-  );
-};
-
-const formatterName = (row, column, cellValue) => {
-  return (
-    <el-tooltip effect="light" placement="top" content={cellValue}>
-      <div class="pixiu-ellipsis-style">{cellValue}</div>
     </el-tooltip>
   );
 };

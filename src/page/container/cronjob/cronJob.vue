@@ -1,14 +1,14 @@
 <template>
   <el-card class="title-card-container">
-    <div class="font-container">StatefulSet</div>
-    <PiXiuYaml :refresh="getStatefulsets"></PiXiuYaml>
+    <div class="font-container">CronJob</div>
+    <PiXiuYaml :refresh="getDeployments"></PiXiuYaml>
   </el-card>
 
   <div style="margin-top: 25px">
     <el-row>
       <el-col>
-        <button class="pixiu-two-button" @click="createStatefulSet">新建</button>
-        <button class="pixiu-two-button2" style="margin-left: 10px" @click="getStatefulsets">
+        <button class="pixiu-two-button" @click="createDeployment">新建</button>
+        <button class="pixiu-two-button2" style="margin-left: 10px" @click="getDeployments">
           刷新
         </button>
 
@@ -17,7 +17,7 @@
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
-          @clear="getStatefulsets"
+          @clear="getDeployments"
         >
           <template #suffix>
             <pixiu-icon
@@ -26,7 +26,7 @@
               size="15px"
               type="iconfont"
               color="#909399"
-              @click="getStatefulsets"
+              @click="getDeployments"
             />
           </template>
         </el-input>
@@ -93,7 +93,7 @@
               size="small"
               type="text"
               style="margin-right: -20px; margin-left: -10px; color: #006eff"
-              @click="editStatefulSet(scope.row)"
+              @click="editDeployment(scope.row)"
             >
               编辑
             </el-button>
@@ -102,7 +102,7 @@
               type="text"
               size="small"
               style="margin-right: 1px; color: #006eff"
-              @click="handleStatefulSetScaleDialog(scope.row)"
+              @click="handleDeploymentScaleDialog(scope.row)"
             >
               调整副本数
             </el-button>
@@ -142,11 +142,11 @@
   </div>
 
   <el-dialog
-    :model-value="data.statefulSetReplicasDialog"
+    :model-value="data.deploymentReplicasDialog"
     style="color: #000000; font: 14px"
     width="500px"
     center
-    @close="closeStatefulSetScaleDialog"
+    @close="closeDeploymentScaleDialog"
   >
     <template #header>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">调整副本配置</div>
@@ -154,10 +154,10 @@
 
     <el-form label-width="100px" style="max-width: 300px">
       <el-form-item label="原副本数">
-        <el-input v-model="data.statefulSetRepcliasFrom.origin" disabled />
+        <el-input v-model="data.deploymentRepcliasFrom.origin" disabled />
       </el-form-item>
       <el-form-item label="新副本数">
-        <el-input v-model="data.statefulSetRepcliasFrom.target" placeholder="请输入新副本数" />
+        <el-input v-model="data.deploymentRepcliasFrom.target" placeholder="请输入新副本数" />
       </el-form-item>
     </el-form>
 
@@ -165,13 +165,10 @@
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button class="pixiu-small-cancel-button" @click="closeStatefulSetScaleDialog"
+        <el-button class="pixiu-small-cancel-button" @click="closeDeploymentScaleDialog"
           >取消</el-button
         >
-        <el-button
-          type="primary"
-          class="pixiu-small-confirm-button"
-          @click="confirmStatefulSetScale"
+        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmDeploymentScale"
           >确认</el-button
         >
       </span>
@@ -219,11 +216,11 @@ import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import {
-  getStatefulSet,
-  updateStatefulSet,
-  deleteStatefulSet,
-  getStatefulSetList,
-} from '@/services/kubernetes/statefulsetService';
+  getDeploymentList,
+  getDeployment,
+  updateDeployment,
+  deleteDeployment,
+} from '@/services/kubernetes/deploymentService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
@@ -245,10 +242,10 @@ const data = reactive({
 
   namespace: 'default',
   namespaces: [],
-  statefulSetList: [],
+  deploymentList: [],
 
-  statefulSetReplicasDialog: false,
-  statefulSetRepcliasFrom: {
+  deploymentReplicasDialog: false,
+  deploymentRepcliasFrom: {
     name: '',
     origin: '',
     target: 0,
@@ -262,7 +259,7 @@ const data = reactive({
   // 删除对象属性
   deleteDialog: {
     close: false,
-    objectName: 'StatefulSet',
+    objectName: 'Deployment',
     deleteName: '',
   },
 });
@@ -270,7 +267,7 @@ const data = reactive({
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
 
-  getStatefulsets();
+  getDeployments();
   getNamespaces();
 });
 
@@ -280,7 +277,7 @@ const handleDeleteDialog = (row) => {
 };
 
 const confirm = async () => {
-  const [result, err] = await deleteStatefulSet(
+  const [result, err] = await deleteDeployment(
     data.cluster,
     data.namespace,
     data.deleteDialog.deleteName,
@@ -289,10 +286,10 @@ const confirm = async () => {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  proxy.$message.success(`StatefulSet(${data.deleteDialog.deleteName}) 删除成功`);
+  proxy.$message.success(`Deployment(${data.deleteDialog.deleteName}) 删除成功`);
 
   clean();
-  await getStatefulsets();
+  await getDeployments();
 };
 
 const cancel = () => {
@@ -313,7 +310,7 @@ const onChange = (v) => {
 
 const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
-  const [result, err] = await getStatefulSet(data.cluster, data.namespace, data.yamlName);
+  const [result, err] = await getDeployment(data.cluster, data.namespace, data.yamlName);
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
@@ -330,7 +327,7 @@ const closeEditYamlDialog = (row) => {
 
 const confirmEditYaml = async () => {
   const yamlData = jsYaml.load(editYaml.value.code);
-  const [result, err] = await updateStatefulSet(
+  const [result, err] = await updateDeployment(
     data.cluster,
     data.namespace,
     data.yamlName,
@@ -340,24 +337,24 @@ const confirmEditYaml = async () => {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  proxy.$message.success(`StatefulSet(${data.yamlName}) YAML 更新成功`);
+  proxy.$message.success(`Deployment(${data.yamlName}) YAML 更新成功`);
   closeEditYamlDialog();
-  await getStatefulsets();
+  await getDeployments();
 };
 
-const createStatefulSet = () => {
-  const url = `/statefulsets/createStatefulSet?cluster=${data.cluster}`;
+const createDeployment = () => {
+  const url = `/deployments/createDeployment?cluster=${data.cluster}`;
   router.push(url);
 };
 
-const editStatefulSet = (row) => {
-  const url = `/statefulsets/editStatefulSet?cluster=${data.cluster}&name=${row.metadata.name}`;
+const editDeployment = (row) => {
+  const url = `/deployments/editDeployment?cluster=${data.cluster}&name=${row.metadata.name}`;
   router.push(url);
 };
 
 const jumpRoute = (row) => {
   router.push({
-    name: 'StatefulSetDetail',
+    name: 'DeploymentDetail',
     query: {
       cluster: data.cluster,
       namespace: data.namespace,
@@ -366,25 +363,25 @@ const jumpRoute = (row) => {
   });
 };
 
-const getStatefulsets = async () => {
+const getDeployments = async () => {
   data.loading = true;
-  const [result, err] = await getStatefulSetList(data.cluster, data.namespace);
+  const [result, err] = await getDeploymentList(data.cluster, data.namespace);
   data.loading = false;
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
 
-  data.statefulSetList = result.items;
-  data.pageInfo.total = data.statefulSetList.length;
-  data.tableData = getTableData(data.pageInfo, data.statefulSetList);
+  data.deploymentList = result.items;
+  data.pageInfo.total = data.deploymentList.length;
+  data.tableData = getTableData(data.pageInfo, data.deploymentList);
 };
 
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
   data.namespace = val;
 
-  getStatefulsets();
+  getDeployments();
 };
 
 const getNamespaces = async () => {
@@ -396,29 +393,29 @@ const getNamespaces = async () => {
   data.namespaces = result;
 };
 
-const handleStatefulSetScaleDialog = (row) => {
-  data.statefulSetRepcliasFrom.name = row.metadata.name;
-  data.statefulSetRepcliasFrom.target = '';
-  data.statefulSetRepcliasFrom.origin = row.spec.replicas;
-  data.statefulSetReplicasDialog = true;
+const handleDeploymentScaleDialog = (row) => {
+  data.deploymentRepcliasFrom.name = row.metadata.name;
+  data.deploymentRepcliasFrom.target = '';
+  data.deploymentRepcliasFrom.origin = row.spec.replicas;
+  data.deploymentReplicasDialog = true;
 };
 
-const closeStatefulSetScaleDialog = (row) => {
-  data.statefulSetReplicasDialog = false;
+const closeDeploymentScaleDialog = (row) => {
+  data.deploymentReplicasDialog = false;
 
-  data.statefulSetRepcliasFrom.name = '';
-  data.statefulSetRepcliasFrom.origin = '';
-  data.statefulSetRepcliasFrom.target = 0;
+  data.deploymentRepcliasFrom.name = '';
+  data.deploymentRepcliasFrom.origin = '';
+  data.deploymentRepcliasFrom.target = 0;
 };
 
-const confirmStatefulSetScale = async () => {
+const confirmDeploymentScale = async () => {
   try {
     const res = await proxy.$http({
       method: 'patch',
-      url: `/pixiu/proxy/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/statefulsets/${data.statefulSetRepcliasFrom.name}/scale`,
+      url: `/pixiu/proxy/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${data.deploymentRepcliasFrom.name}/scale`,
       data: {
         spec: {
-          replicas: Number(data.statefulSetRepcliasFrom.target),
+          replicas: Number(data.deploymentRepcliasFrom.target),
         },
       },
       config: {
@@ -428,8 +425,8 @@ const confirmStatefulSetScale = async () => {
       },
     });
 
-    getStatefulsets();
-    closeStatefulSetScaleDialog();
+    getDeployments();
+    closeDeploymentScaleDialog();
   } catch (error) {}
 };
 

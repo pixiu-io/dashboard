@@ -52,7 +52,7 @@ const useCloudStore = defineStore('cloud', () => {
     }
 
     cloudList.value = result;
-    total.value = 10;
+    total.value = result.length;
   };
 
   const changeActive = (value) => {

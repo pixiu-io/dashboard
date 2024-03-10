@@ -115,11 +115,11 @@ const data = reactive({
           name: 'Deployment',
           url: '/kubernetes/deployments',
         },
-        {
-          id: 1.2,
-          name: 'StatefulSet',
-          url: '/kubernetes/statefulsets',
-        },
+        // {
+        //   id: 1.2,
+        //   name: 'StatefulSet',
+        //   url: '/kubernetes/statefulsets',
+        // },
         {
           id: 1.3,
           name: 'Pod',
@@ -165,6 +165,24 @@ const data = reactive({
           id: 4.2,
           name: 'Ingress',
           url: '/kubernetes/ingress',
+        },
+      ],
+    },
+    {
+      id: 9,
+      name: '任务',
+      icon: 'icon-fuwu',
+      iconType: 'iconfont',
+      children: [
+        {
+          id: 1.5,
+          name: 'Job',
+          url: '/kubernetes/job',
+        },
+        {
+          id: 1.6,
+          name: 'CronJob',
+          url: '/kubernetes/cronJob',
         },
       ],
     },
@@ -262,6 +280,24 @@ const data = reactive({
           id: 4.2,
           name: 'Ingress',
           url: '/kubernetes/ingress',
+        },
+      ],
+    },
+    {
+      id: 9,
+      name: 'Job',
+      icon: 'icon-fuwu',
+      iconType: 'iconfont',
+      children: [
+        {
+          id: 1.5,
+          name: 'Job',
+          url: '/kubernetes/job',
+        },
+        {
+          id: 1.6,
+          name: 'CronJob',
+          url: '/kubernetes/cronJob',
         },
       ],
     },

@@ -194,7 +194,7 @@ const comfirmCreate = () => {
         const resp = await proxy.$http({
           method: 'post',
           url:
-            `/proxy/pixiu/${data.cluster}/api/v1/namespaces/` +
+            `/pixiu/proxy/${data.cluster}/api/v1/namespaces/` +
             data.configmapForm.metadata.namespace +
             `/configmaps`,
           data: data.configmapForm,

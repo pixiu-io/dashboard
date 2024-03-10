@@ -51,6 +51,12 @@ import {
   Namespace,
   CreateNamespace,
   NamespaceDetail,
+  Job,
+  CreateJob,
+  EditJob,
+  CronJob,
+  CreateCronJob,
+  EditCronJob,
 } from '@/page';
 
 const routes = [
@@ -124,12 +130,28 @@ const routes = [
             component: Node,
           },
           {
+            path: 'nodes/detail',
+            name: 'NodeDetail',
+            meta: {
+              title: 'NodeDetail',
+            },
+            component: NodeDetail,
+          },
+          {
             path: 'namespaces',
             name: 'Namespace',
             meta: {
               title: 'namespace',
             },
             component: Namespace,
+          },
+          {
+            path: 'namespaces/namespaceDetail',
+            name: 'NamespaceDetail',
+            meta: {
+              title: 'namespaceDetail',
+            },
+            component: NamespaceDetail,
           },
           {
             path: 'deployments',
@@ -146,6 +168,22 @@ const routes = [
               title: 'statefulset',
             },
             component: StatefulSet,
+          },
+          {
+            path: 'job',
+            name: 'Job',
+            meta: {
+              title: 'job',
+            },
+            component: Job,
+          },
+          {
+            path: 'cronJob',
+            name: 'CronJob',
+            meta: {
+              title: 'cronJob',
+            },
+            component: CronJob,
           },
           {
             path: 'release',
@@ -273,14 +311,6 @@ const routes = [
         },
         component: CreateNamespace,
       },
-      {
-        path: 'namespaces/namespaceDetail',
-        name: 'NamespaceDetail',
-        meta: {
-          title: 'namespaceDetail',
-        },
-        component: NamespaceDetail,
-      },
       // storageclasses 路由
       {
         path: 'storageclasses/createStorageClass',
@@ -367,6 +397,23 @@ const routes = [
         },
         component: CreateSecret,
       },
+      // job 路由
+      {
+        path: 'job/createJob',
+        name: 'createJob',
+        meta: {
+          title: 'createJob',
+        },
+        component: CreateJob,
+      },
+      {
+        path: 'job/createJob',
+        name: 'createJob',
+        meta: {
+          title: 'createJob',
+        },
+        component: CreateJob,
+      },
       {
         path: 'pods/createPod',
         name: 'CreatePod',
@@ -406,14 +453,6 @@ const routes = [
           title: 'EditStatefulSet',
         },
         component: EditStatefulSet,
-      },
-      {
-        path: 'nodes/detail',
-        name: 'NodeDetail',
-        meta: {
-          title: 'NodeDetail',
-        },
-        component: NodeDetail,
       },
       {
         path: 'cicd',

@@ -1,23 +1,21 @@
 <template>
   <el-card class="title-card-container">
-    <div class="font-container">StatefulSet</div>
-    <PiXiuYaml :refresh="getStatefulsets"></PiXiuYaml>
+    <div class="font-container">Job</div>
+    <PiXiuYaml :refresh="getJobs"></PiXiuYaml>
   </el-card>
 
   <div style="margin-top: 25px">
     <el-row>
       <el-col>
-        <button class="pixiu-two-button" @click="createStatefulSet">新建</button>
-        <button class="pixiu-two-button2" style="margin-left: 10px" @click="getStatefulsets">
-          刷新
-        </button>
+        <button class="pixiu-two-button" @click="createJob">新建</button>
+        <button class="pixiu-two-button2" style="margin-left: 10px" @click="getJobs">刷新</button>
 
         <el-input
           v-model="data.pageInfo.query"
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
-          @clear="getStatefulsets"
+          @clear="getJobs"
         >
           <template #suffix>
             <pixiu-icon
@@ -26,7 +24,7 @@
               size="15px"
               type="iconfont"
               color="#909399"
-              @click="getStatefulsets"
+              @click="getJobs"
             />
           </template>
         </el-input>
@@ -77,106 +75,42 @@
         >
         </el-table-column>
 
-        <el-table-column prop="status" label="Pod状态" :formatter="formatterStatus" width="90px">
-        </el-table-column>
+        <el-table-column prop="spec.parallelism" label="并行度"></el-table-column>
+        <el-table-column prop="spec.backoffLimit" label="重复次数"></el-table-column>
 
         <el-table-column
-          label="镜像"
           prop="spec.template.spec.containers"
-          :formatter="formatterImage"
+          label="Request/Limits"
+          :formatter="formatterStatus"
+          width="120px"
         >
         </el-table-column>
-
         <el-table-column fixed="right" label="操作" width="180">
           <template #default="scope">
-            <el-button
-              size="small"
-              type="text"
-              style="margin-right: -20px; margin-left: -10px; color: #006eff"
-              @click="editStatefulSet(scope.row)"
-            >
-              编辑
-            </el-button>
-
             <el-button
               type="text"
               size="small"
               style="margin-right: 1px; color: #006eff"
-              @click="handleStatefulSetScaleDialog(scope.row)"
+              @click="handleEditYamlDialog(scope.row)"
             >
-              调整副本数
+              编辑yaml
             </el-button>
-
-            <el-dropdown>
-              <span class="el-dropdown-link">
-                更多
-                <pixiu-icon name="icon-xiala" size="12px" type="iconfont" color="#006eff" />
-              </span>
-              <template #dropdown>
-                <el-dropdown-menu class="dropdown-buttons">
-                  <el-dropdown-item
-                    class="dropdown-item-buttons"
-                    @click="handleDeleteDialog(scope.row)"
-                  >
-                    删除
-                  </el-dropdown-item>
-                  <el-dropdown-item
-                    class="dropdown-item-buttons"
-                    @click="handleEditYamlDialog(scope.row)"
-                  >
-                    编辑yaml
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
+            <el-button
+              link
+              type="text"
+              size="small"
+              style="margin-right: 1px; margin-left: -2px; color: #006eff"
+              @click="handleDeleteDialog(scope.row)"
+            >
+              删除
+            </el-button>
           </template>
         </el-table-column>
-
-        <template #empty>
-          <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
-        </template>
       </el-table>
 
       <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
-
-  <el-dialog
-    :model-value="data.statefulSetReplicasDialog"
-    style="color: #000000; font: 14px"
-    width="500px"
-    center
-    @close="closeStatefulSetScaleDialog"
-  >
-    <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">调整副本配置</div>
-    </template>
-
-    <el-form label-width="100px" style="max-width: 300px">
-      <el-form-item label="原副本数">
-        <el-input v-model="data.statefulSetRepcliasFrom.origin" disabled />
-      </el-form-item>
-      <el-form-item label="新副本数">
-        <el-input v-model="data.statefulSetRepcliasFrom.target" placeholder="请输入新副本数" />
-      </el-form-item>
-    </el-form>
-
-    <div style="margin-top: -18px"></div>
-
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button class="pixiu-small-cancel-button" @click="closeStatefulSetScaleDialog"
-          >取消</el-button
-        >
-        <el-button
-          type="primary"
-          class="pixiu-small-confirm-button"
-          @click="confirmStatefulSetScale"
-          >确认</el-button
-        >
-      </span>
-    </template>
-  </el-dialog>
 
   <!-- 编辑 yaml 页面 -->
   <el-dialog
@@ -218,12 +152,7 @@ import { getTableData } from '@/utils/utils';
 import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
-import {
-  getStatefulSet,
-  updateStatefulSet,
-  deleteStatefulSet,
-  getStatefulSetList,
-} from '@/services/kubernetes/statefulsetService';
+import { getJobList, getJob, deleteJob, updateJob } from '@/services/kubernetes/jobService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
@@ -245,14 +174,7 @@ const data = reactive({
 
   namespace: 'default',
   namespaces: [],
-  statefulSetList: [],
-
-  statefulSetReplicasDialog: false,
-  statefulSetRepcliasFrom: {
-    name: '',
-    origin: '',
-    target: 0,
-  },
+  jobList: [],
 
   // yaml相关属性
   yaml: '',
@@ -262,7 +184,7 @@ const data = reactive({
   // 删除对象属性
   deleteDialog: {
     close: false,
-    objectName: 'StatefulSet',
+    objectName: 'job',
     deleteName: '',
   },
 });
@@ -270,7 +192,7 @@ const data = reactive({
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
 
-  getStatefulsets();
+  getJobs();
   getNamespaces();
 });
 
@@ -280,19 +202,15 @@ const handleDeleteDialog = (row) => {
 };
 
 const confirm = async () => {
-  const [result, err] = await deleteStatefulSet(
-    data.cluster,
-    data.namespace,
-    data.deleteDialog.deleteName,
-  );
+  const [result, err] = await deleteJob(data.cluster, data.namespace, data.deleteDialog.deleteName);
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  proxy.$message.success(`StatefulSet(${data.deleteDialog.deleteName}) 删除成功`);
+  proxy.$message.success(`Job(${data.deleteDialog.deleteName}) 删除成功`);
 
   clean();
-  await getStatefulsets();
+  await getJobs();
 };
 
 const cancel = () => {
@@ -308,12 +226,12 @@ const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
 
-  data.tableData = getTableData(data.pageInfo, data.deploymentList);
+  data.tableData = getTableData(data.pageInfo, data.jobList);
 };
 
 const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
-  const [result, err] = await getStatefulSet(data.cluster, data.namespace, data.yamlName);
+  const [result, err] = await getJob(data.cluster, data.namespace, data.yamlName);
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
@@ -330,34 +248,24 @@ const closeEditYamlDialog = (row) => {
 
 const confirmEditYaml = async () => {
   const yamlData = jsYaml.load(editYaml.value.code);
-  const [result, err] = await updateStatefulSet(
-    data.cluster,
-    data.namespace,
-    data.yamlName,
-    yamlData,
-  );
+  const [result, err] = await updateJob(data.cluster, data.namespace, data.yamlName, yamlData);
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  proxy.$message.success(`StatefulSet(${data.yamlName}) YAML 更新成功`);
+  proxy.$message.success(`Job(${data.yamlName}) YAML 更新成功`);
   closeEditYamlDialog();
-  await getStatefulsets();
+  await getJobs();
 };
 
-const createStatefulSet = () => {
-  const url = `/statefulsets/createStatefulSet?cluster=${data.cluster}`;
-  router.push(url);
-};
-
-const editStatefulSet = (row) => {
-  const url = `/statefulsets/editStatefulSet?cluster=${data.cluster}&name=${row.metadata.name}`;
+const createJob = () => {
+  const url = `/job/createJob?cluster=${data.cluster}`;
   router.push(url);
 };
 
 const jumpRoute = (row) => {
   router.push({
-    name: 'StatefulSetDetail',
+    name: 'DeploymentDetail',
     query: {
       cluster: data.cluster,
       namespace: data.namespace,
@@ -366,25 +274,25 @@ const jumpRoute = (row) => {
   });
 };
 
-const getStatefulsets = async () => {
+const getJobs = async () => {
   data.loading = true;
-  const [result, err] = await getStatefulSetList(data.cluster, data.namespace);
+  const [result, err] = await getJobList(data.cluster, data.namespace);
   data.loading = false;
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
 
-  data.statefulSetList = result.items;
-  data.pageInfo.total = data.statefulSetList.length;
-  data.tableData = getTableData(data.pageInfo, data.statefulSetList);
+  data.jobList = result.items;
+  data.pageInfo.total = data.jobList.length;
+  data.tableData = getTableData(data.pageInfo, data.jobList);
 };
 
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
   data.namespace = val;
 
-  getStatefulsets();
+  getJobs();
 };
 
 const getNamespaces = async () => {
@@ -394,43 +302,6 @@ const getNamespaces = async () => {
     return;
   }
   data.namespaces = result;
-};
-
-const handleStatefulSetScaleDialog = (row) => {
-  data.statefulSetRepcliasFrom.name = row.metadata.name;
-  data.statefulSetRepcliasFrom.target = '';
-  data.statefulSetRepcliasFrom.origin = row.spec.replicas;
-  data.statefulSetReplicasDialog = true;
-};
-
-const closeStatefulSetScaleDialog = (row) => {
-  data.statefulSetReplicasDialog = false;
-
-  data.statefulSetRepcliasFrom.name = '';
-  data.statefulSetRepcliasFrom.origin = '';
-  data.statefulSetRepcliasFrom.target = 0;
-};
-
-const confirmStatefulSetScale = async () => {
-  try {
-    const res = await proxy.$http({
-      method: 'patch',
-      url: `/pixiu/proxy/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/statefulsets/${data.statefulSetRepcliasFrom.name}/scale`,
-      data: {
-        spec: {
-          replicas: Number(data.statefulSetRepcliasFrom.target),
-        },
-      },
-      config: {
-        header: {
-          'Content-Type': 'application/merge-patch+json',
-        },
-      },
-    });
-
-    getStatefulsets();
-    closeStatefulSetScaleDialog();
-  } catch (error) {}
 };
 
 const formatterLabels = (row, column, cellValue) => {
