@@ -93,8 +93,9 @@ const initSocket = () => {
     return;
   }
   // 支持配置
-  const websocketAddr = import.meta.env.VITE_BASE_API.replace('http', 'ws');
-  console.log('websocketAddr', websocketAddr);
+
+  const baseAPI = proxy.$http({ method: 'config' });
+  const websocketAddr = baseAPI.replace('http', 'ws');
 
   //定义websocket连接地址
   let terminalWsUrl =
