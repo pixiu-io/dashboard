@@ -48,8 +48,8 @@ const initTerm = () => {
   //初始化xterm实例
   data.term = new Terminal({
     rendererType: 'canvas', //渲染类型
-    rows: 30, //行数
-    cols: 110,
+    rows: parseInt(document.body.clientHeight / 18), //行数
+    cols: parseInt(document.body.clientWidth / 9),
     convertEol: false, //启用时，光标将设置为下一行的开头
     scrollback: 10, //终端中的回滚量
     disableStdin: false, //是否应禁用输入
@@ -80,12 +80,22 @@ const initTerm = () => {
     //发送数据
     _data.socket.send(JSON.stringify(msgOrder));
   });
+
+  window.onresize = () => {
+    const cols = parseInt(document.body.clientWidth / 9);
+    const rows = parseInt(document.body.clientHeight / 18);
+    data.term.resize(cols, rows);
+    fitAddon.fit();
+  };
 };
 const initSocket = () => {
   if (data.socket !== null) {
     return;
   }
-  const websocketAddr = import.meta.env.VITE_BASE_API.replace('http', 'ws');
+
+  const baseAPI = proxy.$http({ method: 'config' });
+  const websocketAddr = baseAPI.replace('http', 'ws');
+
   //定义websocket连接地址
   let terminalWsUrl =
     websocketAddr +
@@ -117,7 +127,7 @@ const socketOnClose = () => {
 };
 const socketOnError = () => {
   data.socket.onerror = () => {
-    proxy.$message.error(' websocket 连接失败');
+    proxy.$message.error('websocket 连接失败');
   };
 };
 const closeSocket = () => {
@@ -125,7 +135,10 @@ const closeSocket = () => {
   if (data.socket === null) {
     return;
   }
+
+  data.term.dispose();
   data.socket.close();
+  window.onresize = null;
 };
 </script>
 
