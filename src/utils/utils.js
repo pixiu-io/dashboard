@@ -24,3 +24,16 @@ const getTableData = (pageInfo, sourceData) => {
   return sourceData.slice(startIndex, endIndex);
 };
 export { getTableData };
+
+const searchData = (pageInfo, sourceData) => {
+  let filteredData = [];
+  if (pageInfo.search.field === 'name') {
+    filteredData = sourceData.filter((item) =>
+      item.metadata.name.includes(pageInfo.search.searchInfo),
+    );
+  }
+  pageInfo.total = filteredData.length;
+  return getTableData(pageInfo, filteredData);
+};
+
+export { searchData };

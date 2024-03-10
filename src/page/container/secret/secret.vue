@@ -12,11 +12,12 @@
           刷新
         </button>
         <el-input
-          v-model="data.pageInfo.query"
+          v-model="data.pageInfo.search.searchInfo"
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
           @clear="getSecrets"
+          @input="searchSecrets"
         >
           <template #suffix>
             <el-icon class="el-input__icon" @click="getSecrets">
@@ -163,7 +164,7 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import jsYaml from 'js-yaml';
-import { formatTimestamp, getTableData } from '@/utils/utils';
+import { formatTimestamp, getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
@@ -186,6 +187,10 @@ const data = reactive({
     limit: 10,
     query: '',
     total: 0,
+    search: {
+      field: 'name',
+      searchInfo: '',
+    },
   },
   tableData: [],
   loading: false,
@@ -252,6 +257,10 @@ const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
   data.tableData = getTableData(data.pageInfo, data.secretList);
+
+  if (data.pageInfo.search.searchInfo !== '') {
+    searchSecrets();
+  }
 };
 
 const createSecret = () => {
@@ -302,6 +311,10 @@ const getSecrets = async () => {
   data.secretList = res.items;
   data.pageInfo.total = data.secretList.length;
   data.tableData = getTableData(data.pageInfo, data.secretList);
+};
+
+const searchSecrets = async () => {
+  data.tableData = searchData(data.pageInfo, data.secretList);
 };
 
 const changeNamespace = async (val) => {
