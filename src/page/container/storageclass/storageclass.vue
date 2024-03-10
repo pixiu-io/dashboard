@@ -13,11 +13,12 @@
         </button>
 
         <el-input
-          v-model="data.pageInfo.query"
+          v-model="data.pageInfo.search.searchInfo"
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
           @clear="syncStorageClasses"
+          @input="searchStorageClassList"
         >
           <template #suffix>
             <el-icon class="el-input__icon" @click="syncStorageClasses">
@@ -135,7 +136,7 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { formatTimestamp, getTableData } from '@/utils/utils';
+import { formatTimestamp, getTableData, searchData } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
 
@@ -163,6 +164,10 @@ const data = reactive({
     query: '',
     total: 0,
     limit: 10,
+    search: {
+      field: 'name',
+      searchInfo: '',
+    },
   },
   tableData: [],
   stroageClassList: [],
@@ -185,6 +190,10 @@ const onChange = (v) => {
   data.pageInfo.page = v.page;
 
   data.tableData = getTableData(data.pageInfo, data.storageClassList);
+
+  if (data.pageInfo.search.searchInfo !== '') {
+    searchStorageClassList();
+  }
 };
 
 onMounted(() => {
@@ -233,6 +242,10 @@ const syncStorageClasses = async () => {
   data.storageClassList = res.items;
   data.pageInfo.total = data.storageClassList.length;
   data.tableData = getTableData(data.pageInfo, data.storageClassList);
+};
+
+const searchStorageClassList = async () => {
+  data.tableData = searchData(data.pageInfo, data.storageClassList);
 };
 
 const createStorageClass = () => {

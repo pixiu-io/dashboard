@@ -13,11 +13,12 @@
         </button>
 
         <el-input
-          v-model="data.pageInfo.query"
+          v-model="data.pageInfo.search.searchInfo"
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
           @clear="getNamespace"
+          @input="searchNamespace"
         >
           <template #suffix>
             <el-icon class="el-input__icon" @click="getNamespace">
@@ -118,7 +119,7 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { formatTimestamp, getTableData } from '@/utils/utils';
+import { formatTimestamp, getTableData, searchData } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { getNamespaceList, deleteNamespace } from '@/services/kubernetes/namespaceService';
 import useClipboard from 'vue-clipboard3';
@@ -137,6 +138,10 @@ const data = reactive({
     query: '',
     total: 0,
     limit: 10,
+    search: {
+      field: 'name',
+      searchInfo: '',
+    },
   },
   tableData: [],
   loading: false,
@@ -187,6 +192,10 @@ const onChange = (v) => {
   data.pageInfo.page = v.page;
 
   data.tableData = getTableData(data.pageInfo, data.namespaceList);
+
+  if (data.pageInfo.search.searchInfo !== '') {
+    searchNamespace();
+  }
 };
 
 const { toClipboard } = useClipboard();
@@ -222,6 +231,10 @@ const getNamespace = async () => {
   data.namespaceList = result.items;
   data.pageInfo.total = data.namespaceList.length;
   data.tableData = getTableData(data.pageInfo, data.namespaceList);
+};
+
+const searchNamespace = async () => {
+  data.tableData = searchData(data.pageInfo, data.namespaceList);
 };
 
 const jumpNamespaceRoute = (row) => {

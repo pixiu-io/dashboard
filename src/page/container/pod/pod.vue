@@ -11,11 +11,12 @@
         <button class="pixiu-two-button2" style="margin-left: 10px" @click="getPods">刷新</button>
 
         <el-input
-          v-model="data.pageInfo.query"
+          v-model="data.pageInfo.search.searchInfo"
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
           @clear="getPods"
+          @input="searchPods"
         >
           <template #suffix>
             <el-icon class="el-input__icon" @click="getPods">
@@ -101,7 +102,7 @@
               style="margin-right: -25px; margin-left: -10px; color: #006eff"
               @click="handleDeleteDialog(scope.row)"
             >
-              销毁重建
+              删除Pod
             </el-button>
 
             <el-button
@@ -140,7 +141,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
-import { formatTimestamp, getTableData } from '@/utils/utils';
+import { formatTimestamp, getTableData, searchData } from '@/utils/utils';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import { getPodList, deletePod } from '@/services/kubernetes/podService';
@@ -161,10 +162,14 @@ const data = reactive({
     limit: 10,
     query: '',
     total: 0,
+    search: {
+      field: 'name',
+      searchInfo: '',
+    },
   },
   tableData: [],
   loading: false,
-
+  multipleSelection: [],
   namespace: 'default',
   namespaces: [],
   podList: [],
@@ -184,6 +189,10 @@ const onChange = (v) => {
   data.pageInfo.page = v.page;
 
   data.tableData = getTableData(data.pageInfo, data.podList);
+
+  if (data.pageInfo.search.searchInfo !== '') {
+    searchPods();
+  }
 };
 
 onMounted(() => {
@@ -237,6 +246,13 @@ const jumpRoute = (row) => {
   });
 };
 
+const handleSelectionChange = (pods) => {
+  data.multipleSelection = [];
+  for (let pod of pods) {
+    data.multipleSelection.push(pod.metadata.name);
+  }
+};
+
 const getPods = async () => {
   data.loading = true;
   const [result, err] = await getPodList(data.cluster, data.namespace);
@@ -249,6 +265,10 @@ const getPods = async () => {
   data.podList = result.items;
   data.pageInfo.total = data.podList.length;
   data.tableData = getTableData(data.pageInfo, data.podList);
+};
+
+const searchPods = async () => {
+  data.tableData = searchData(data.pageInfo, data.podList);
 };
 
 const changeNamespace = async (val) => {

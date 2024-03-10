@@ -13,11 +13,12 @@
         </button>
 
         <el-input
-          v-model="data.pageInfo.query"
+          v-model="data.pageInfo.search.searchInfo"
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
           @clear="getDeployments"
+          @input="searchDeployments"
         >
           <template #suffix>
             <pixiu-icon
@@ -211,7 +212,7 @@
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
-import { getTableData } from '@/utils/utils';
+import { getTableData, searchData } from '@/utils/utils';
 import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
@@ -236,6 +237,10 @@ const data = reactive({
     limit: 10,
     query: '',
     total: 0,
+    search: {
+      field: 'name',
+      searchInfo: '',
+    },
   },
   tableData: [],
   loading: false,
@@ -306,6 +311,10 @@ const onChange = (v) => {
   data.pageInfo.page = v.page;
 
   data.tableData = getTableData(data.pageInfo, data.deploymentList);
+
+  if (data.pageInfo.search.searchInfo !== '') {
+    searchDeployments();
+  }
 };
 
 const handleEditYamlDialog = async (row) => {
@@ -375,6 +384,10 @@ const getDeployments = async () => {
   data.deploymentList = result.items;
   data.pageInfo.total = data.deploymentList.length;
   data.tableData = getTableData(data.pageInfo, data.deploymentList);
+};
+
+const searchDeployments = async () => {
+  data.tableData = searchData(data.pageInfo, data.deploymentList);
 };
 
 const changeNamespace = async (val) => {

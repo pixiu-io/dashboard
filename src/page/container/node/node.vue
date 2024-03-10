@@ -22,11 +22,12 @@
         </div>
 
         <el-input
-          v-model="data.pageInfo.query"
+          v-model="data.pageInfo.search.searchInfo"
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
           @clear="getNodes"
+          @input="searchNodes"
         >
           <template #suffix>
             <pixiu-icon
@@ -140,7 +141,7 @@
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { formatTimestamp, getTableData } from '@/utils/utils';
+import { formatTimestamp, getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getNodeList } from '@/services/kubernetes/nodeService';
@@ -155,6 +156,10 @@ const data = reactive({
     query: '',
     total: 0,
     limit: 10,
+    search: {
+      field: 'name',
+      searchInfo: '',
+    },
   },
   tableData: [],
   loading: false,
@@ -187,6 +192,10 @@ const getNodes = async () => {
   data.nodeList = res.items;
   data.pageInfo.total = data.nodeList.length;
   data.tableData = getTableData(data.pageInfo, data.nodeList);
+};
+
+const searchNodes = async () => {
+  data.tableData = searchData(data.pageInfo, data.nodeList);
 };
 
 const drain = (row) => {
