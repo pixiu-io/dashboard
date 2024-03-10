@@ -38,10 +38,14 @@ onMounted(() => {
   // 优化体验
   initTerm();
   initSocket();
+
+  window.addEventListener('resize', resizeSocket);
 });
 
 onUnmounted(() => {
   closeSocket();
+
+  window.removeEventListener('resize', resizeSocket);
 });
 
 const initTerm = () => {
