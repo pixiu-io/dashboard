@@ -24,9 +24,10 @@
   <el-dialog
     :model-value="data.yamlDialog"
     style="color: #000000; font: 14px; margin-top: 50px"
-    width="50%"
+    :width="data.dialogWidth + 'px'"
     center
     @close="closeYamlDialog"
+    @wheel="handleScroll"
   >
     <template #header>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">{{ data.title }}</div>
@@ -58,6 +59,7 @@ const data = reactive({
   cluster: '',
   yamlDialog: false,
   yaml: '',
+  dialogWidth: 900,
 });
 
 const props = defineProps({
@@ -82,6 +84,14 @@ onMounted(() => {
 const handleCreateYamlDialog = () => {
   data.yaml = jsYaml.dump();
   data.yamlDialog = true;
+};
+
+const handleScroll = (event) => {
+  if (event.deltaY < 0 && data.dialogWidth < 1500) {
+    data.dialogWidth += 10;
+  } else {
+    data.dialogWidth -= 10;
+  }
 };
 
 const closeYamlDialog = () => {
