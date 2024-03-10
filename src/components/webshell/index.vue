@@ -124,7 +124,7 @@ const socketOnClose = () => {
 };
 const socketOnError = () => {
   data.socket.onerror = () => {
-    proxy.$message.error(' websocket 连接失败');
+    proxy.$message.error('websocket 连接失败');
   };
 };
 const closeSocket = () => {
