@@ -240,6 +240,7 @@
   margin-left: -20px;
   margin-right: -20px;
   border-radius: 0px;
+  height: 100px;
 }
 
 .contend-card-container2 {
@@ -439,4 +440,8 @@
 .detail-card-style-form2 {
   font-size: 13px;
   color: #29232b;
+}
+
+.detail-card-new-style {
+  margin-top: 20px;
 }

@@ -1,6 +1,6 @@
 <template>
   <el-card class="title-card-container">
-    <div class="font-container">基本信息</div>
+    <div class="font-container">集群概览</div>
   </el-card>
 
   <dev class="one-line-style">

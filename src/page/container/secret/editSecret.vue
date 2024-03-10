@@ -360,7 +360,7 @@ const comfirmUpdate = async () => {
     if (valid) {
       let name = data.secretForm.metadata.name;
       let url =
-          `/proxy/pixiu/${data.cluster}/api/v1/namespaces/${data.namespace}/secrets/` + name;
+          `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.namespace}/secrets/` + name;
       let form = {
         metadata: {
           name: name,

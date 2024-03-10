@@ -5,7 +5,7 @@ export const getSecretList = async (cluster, namespace) => {
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
-      url: `/proxy/pixiu/${cluster}/api/v1/namespaces/${namespace}/secrets`,
+      url: `/pixiu/proxy/${cluster}/api/v1/namespaces/${namespace}/secrets`,
       data: { limit: 500 },
     }),
   );
@@ -16,7 +16,7 @@ export const updateSecret = async (cluster, namespace, name, data) => {
   const [err, result] = await awaitWrap(
     http({
       method: 'put',
-      url: `/proxy/pixiu/${cluster}/api/v1/namespaces/${namespace}/secrets/${name}`,
+      url: `/pixiu/proxy/${cluster}/api/v1/namespaces/${namespace}/secrets/${name}`,
       data: data,
     }),
   );
@@ -27,7 +27,7 @@ export const getSecret = async (cluster, namespace, name) => {
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
-      url: `/proxy/pixiu/${cluster}/api/v1/namespaces/${namespace}/secrets/${name}`,
+      url: `/pixiu/proxy/${cluster}/api/v1/namespaces/${namespace}/secrets/${name}`,
     }),
   );
   return [result, err];
@@ -37,7 +37,7 @@ export const deleteSecret = async (cluster, namespace, name) => {
   const [err, result] = await awaitWrap(
     http({
       method: 'delete',
-      url: `/proxy/pixiu/${cluster}/api/v1/namespaces/${namespace}/secrets/${name}`,
+      url: `/pixiu/proxy/${cluster}/api/v1/namespaces/${namespace}/secrets/${name}`,
     }),
   );
   return [result, err];
@@ -47,7 +47,7 @@ export const createSecret = async (cluster, namespace, data) => {
   const [err, result] = await awaitWrap(
     http({
       method: 'post',
-      url: `/proxy/pixiu/${cluster}/api/v1/namespaces/${namespace}/secrets`,
+      url: `/pixiu/proxy/${cluster}/api/v1/namespaces/${namespace}/secrets`,
       data: data,
     }),
   );

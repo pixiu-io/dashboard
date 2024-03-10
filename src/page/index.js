@@ -48,6 +48,12 @@ import Namespace from './container/namespace/namespace.vue';
 import CreateNamespace from './container/namespace/createNamespace.vue';
 import NamespaceDetail from './container/namespace/namespaceDetail.vue';
 import NotFound from './notFound/notFound.vue';
+import Job from './container/job/job.vue';
+import CreateJob from './container/job/createJob.vue';
+import EditJob from './container/job/editJob.vue';
+import CronJob from './container/cronjob/cronJob.vue';
+import CreateCronJob from './container/cronjob/createCronJob.vue';
+import EditCronJob from './container/cronjob/editCronJob.vue';
 export {
   Home,
   Login,
@@ -99,4 +105,10 @@ export {
   CreateNamespace,
   NamespaceDetail,
   NotFound,
+  Job,
+  CreateJob,
+  EditJob,
+  CronJob,
+  CreateCronJob,
+  EditCronJob,
 };

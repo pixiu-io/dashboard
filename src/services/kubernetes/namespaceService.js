@@ -5,7 +5,7 @@ export const getNamespaceList = async (cluster) => {
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
-      url: `/proxy/pixiu/${cluster}/api/v1/namespaces`,
+      url: `/pixiu/proxy/${cluster}/api/v1/namespaces`,
       data: {
         limit: 500,
       },
@@ -18,7 +18,7 @@ export const deleteNamespace = async (cluster, name) => {
   const [err, result] = await awaitWrap(
     http({
       method: 'delete',
-      url: `/proxy/pixiu/${cluster}/api/v1/namespaces/${name}`,
+      url: `/pixiu/proxy/${cluster}/api/v1/namespaces/${name}`,
     }),
   );
   return [result, err];
@@ -28,7 +28,7 @@ export const getNamespaceNames = async (cluster) => {
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
-      url: `/proxy/pixiu/${cluster}/api/v1/namespaces`,
+      url: `/pixiu/proxy/${cluster}/api/v1/namespaces`,
       data: {
         limit: 500,
       },
@@ -47,7 +47,7 @@ export const createNamespace = async (cluster, data) => {
   const [err, result] = await awaitWrap(
     http({
       method: 'post',
-      url: `/proxy/pixiu/${cluster}/api/v1/namespaces`,
+      url: `/pixiu/proxy/${cluster}/api/v1/namespaces`,
       data: data,
     }),
   );
