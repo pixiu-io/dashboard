@@ -38,14 +38,10 @@ onMounted(() => {
   // 优化体验
   initTerm();
   initSocket();
-
-  window.addEventListener('resize', resizeSocket);
 });
 
 onUnmounted(() => {
   closeSocket();
-
-  window.removeEventListener('resize', resizeSocket);
 });
 
 const initTerm = () => {
@@ -84,6 +80,13 @@ const initTerm = () => {
     //发送数据
     _data.socket.send(JSON.stringify(msgOrder));
   });
+
+  window.onresize = () => {
+    const cols = parseInt(document.body.clientWidth / 9);
+    const rows = parseInt(document.body.clientHeight / 18);
+    data.term.resize(cols, rows);
+    fitAddon.fit();
+  };
 };
 const initSocket = () => {
   if (data.socket !== null) {
@@ -132,11 +135,10 @@ const closeSocket = () => {
   if (data.socket === null) {
     return;
   }
-  data.socket.close();
-};
 
-const resizeSocket = () => {
-  console.log('ddddd resizeSocket');
+  data.term.dispose();
+  data.socket.close();
+  window.onresize = null;
 };
 </script>
 
