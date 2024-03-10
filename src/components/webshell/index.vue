@@ -92,7 +92,6 @@ const initSocket = () => {
   if (data.socket !== null) {
     return;
   }
-  // 支持配置
 
   const baseAPI = proxy.$http({ method: 'config' });
   const websocketAddr = baseAPI.replace('http', 'ws');
