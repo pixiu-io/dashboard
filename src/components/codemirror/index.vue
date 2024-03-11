@@ -1,6 +1,6 @@
 <template>
   <Codemirror
-    v-if="data.autoRefesh"
+    v-if="data.autoRefresh"
     v-model:value="code"
     :options="data.cmOptions"
     placeholder=""
@@ -42,7 +42,9 @@ const data = reactive({
     gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'], // 添加折叠图标
   },
   height: 600,
-  autoRefesh: false,
+  autoRefresh: false,
+  // textWidth: 80,
+  textWidthStep: 2,
 });
 const props = defineProps({
   yaml: {
@@ -62,7 +64,7 @@ onMounted(() => {
   code.value = props.yaml.valueOf();
   data.cmOptions.readOnly = props.readOnly.valueOf();
   data.height = props.height.valueOf();
-  data.autoRefesh = true;
+  data.autoRefresh = true;
 });
 
 watch(() => {
