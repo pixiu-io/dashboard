@@ -134,7 +134,6 @@
       </div>
       <el-card style="margin-top: 15px" class="contend-card-container2">
         <el-table
-          v-loading="data.loading"
           :data="data.tableData"
           stripe
           style="margin-top: 6px"
@@ -240,7 +239,6 @@
       <div style="margin-top: 15px">
         <el-card class="contend-card-container2">
           <el-table
-            v-loading="data.loading"
             :data="data.eventTableData"
             stripe
             style="margin-top: 10px; width: 100%; margin-bottom: 25px"
