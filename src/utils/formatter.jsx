@@ -1,3 +1,5 @@
+import { formatTimestamp } from '@/utils/utils';
+
 const formatterTime = (row, column, cellValue) => {
   const time = formatTimestamp(cellValue);
   return (
