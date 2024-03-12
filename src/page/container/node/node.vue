@@ -149,6 +149,7 @@ import { formatTimestamp, getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getNodeList } from '@/services/kubernetes/nodeService';
+import { formatterTime } from '@/utils/formatter';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -304,15 +305,6 @@ const unCordon = (row) => {
       getNodes();
     })
     .catch(() => {});
-};
-
-const formatterTime = (row, column, cellValue) => {
-  const time = formatTimestamp(cellValue);
-  return (
-    <el-tooltip effect="light" placement="top" content={time}>
-      <div class="pixiu-ellipsis-style">{time}</div>
-    </el-tooltip>
-  );
 };
 
 const formatStatus = (row, column, cellValue) => {
