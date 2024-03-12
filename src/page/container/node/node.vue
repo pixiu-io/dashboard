@@ -60,7 +60,7 @@
         @selection-change="handleSelectionChange"
       >
         <!-- <el-table-column type="selection" width="30" /> -->
-        <el-table-column prop="metadata.name" sortable label="名称">
+        <el-table-column prop="metadata.name" sortable label="名称" min-width="120px">
           <template #default="scope">
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
@@ -72,7 +72,11 @@
         <el-table-column label="角色" prop="metadata" :formatter="formatRole"> </el-table-column>
         <el-table-column label="地址" prop="status" :formatter="formatIp"> </el-table-column>
         <el-table-column label="节点版本" prop="status.nodeInfo.kubeletVersion"> </el-table-column>
-        <el-table-column label="运行时" prop="status.nodeInfo.containerRuntimeVersion">
+        <el-table-column
+          label="运行时"
+          prop="status.nodeInfo.containerRuntimeVersion"
+          :formatter="formatStr"
+        >
         </el-table-column>
 
         <el-table-column
@@ -339,6 +343,14 @@ const formatRole = (row, column, cellValue) => {
   return (
     <el-tooltip effect="light" placement="top" content={roleContent}>
       <div class="hidden-style">{roleContent}</div>
+    </el-tooltip>
+  );
+};
+
+const formatStr = (row, column, cellValue) => {
+  return (
+    <el-tooltip effect="light" placement="top" content={cellValue}>
+      <div class="hidden-style">{cellValue}</div>
     </el-tooltip>
   );
 };
