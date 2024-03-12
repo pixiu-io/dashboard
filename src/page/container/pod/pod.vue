@@ -58,7 +58,7 @@
               type="primary"
               @click="jumpRoute(scope.row)"
             >
-              {{ scope.row.metadata.name }}
+              <span class="name-text-line">{{ scope.row.metadata.name }}</span>
             </el-link>
           </template>
         </el-table-column>

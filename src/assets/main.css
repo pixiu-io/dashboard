@@ -283,6 +283,10 @@
   font-size: 12.5px;
 }
 
+.name-text-line {
+  text-decoration: underline;
+}
+
 .font-container {
   margin-top: -5px;
   font-weight: bold;
