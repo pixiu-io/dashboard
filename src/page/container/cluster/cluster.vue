@@ -390,7 +390,7 @@ import Pagination from '@/components/pagination/index.vue';
 import useCloudStore from '@/stores/useCloud';
 import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
-import { formatTimestamp } from '@/utils/utils';
+import { formatterTime } from '@/utils/formatter';
 
 const cloudStore = useCloudStore();
 
@@ -509,15 +509,6 @@ const formatProtected = (row, column, cellValue) => {
   }
 
   return <div class="pixiu-table-formatter">未开启</div>;
-};
-
-const formatterTime = (row, column, cellValue) => {
-  const time = formatTimestamp(cellValue);
-  return (
-    <el-tooltip effect="light" placement="top" content={time}>
-      <div class="pixiu-ellipsis-style">{time}</div>
-    </el-tooltip>
-  );
 };
 
 const formatterResource = (row, column, cellValue) => {
