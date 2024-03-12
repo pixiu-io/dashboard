@@ -283,7 +283,7 @@
   font-size: 12.5px;
 }
 
-.name-text-line {
+.name-text-line :hover {
   text-decoration: underline;
 }
 
