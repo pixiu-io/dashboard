@@ -473,7 +473,7 @@
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
-import { formatTimestamp } from '@/utils/utils';
+import { formatterTime } from '@/utils/formatter';
 import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
 import jsYaml from 'js-yaml';
@@ -749,15 +749,6 @@ const formatterStatus = (row, column, cellValue) => {
     return <div class="color-green-word">{phase}</div>;
   }
   return <div>{phase}</div>;
-};
-
-const formatterTime = (row, column, cellValue) => {
-  const time = formatTimestamp(cellValue);
-  return (
-    <el-tooltip effect="light" placement="top" content={time}>
-      <div class="pixiu-ellipsis-style">{time}</div>
-    </el-tooltip>
-  );
 };
 
 const getPodRestartCount = (row, column, cellValue) => {
