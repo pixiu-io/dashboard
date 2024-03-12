@@ -325,7 +325,9 @@ const formatStatus = (row, column, cellValue) => {
       break;
     }
   }
-
+  if (status === 'NotReady') {
+    return <div class="color-red-word">{status}</div>;
+  }
   return <div class="color-green-word">{status}</div>;
 };
 
