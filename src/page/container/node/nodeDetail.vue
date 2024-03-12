@@ -438,7 +438,8 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
 import { getNode } from '@/services/kubernetes/nodeService';
 import { getPodsByNode } from '@/services/kubernetes/podService';
-import { formatTimestamp, getTableData } from '@/utils/utils';
+import { getTableData } from '@/utils/utils';
+import { formatterTime } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import { getRawEventList, deleteEvent } from '@/services/kubernetes/eventService';
@@ -483,7 +484,6 @@ const data = reactive({
   tableData: [],
   eventTableData: [],
 
-  tableData: [],
   activeName: 'second',
 
   yaml: '',
@@ -606,15 +606,6 @@ const getPodRestartCount = (row, column, status) => {
   //   count += item.restartCount;
   // });
   return <div>{count} 次</div>;
-};
-
-const formatterTime = (row, column, cellValue) => {
-  const time = formatTimestamp(cellValue);
-  return (
-    <el-tooltip effect="light" placement="top" content={time}>
-      <div class="pixiu-ellipsis-style">{time}</div>
-    </el-tooltip>
-  );
 };
 
 const handleClick = (tab, event) => {};

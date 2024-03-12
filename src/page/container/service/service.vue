@@ -142,7 +142,8 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { formatTimestamp, getTableData, searchData } from '@/utils/utils';
+import { getTableData, searchData } from '@/utils/utils';
+import { formatterTime } from '@/utils/formatter';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
@@ -316,15 +317,6 @@ const getNamespaces = async () => {
     return;
   }
   data.namespaces = result;
-};
-
-const formatterTime = (row, column, cellValue) => {
-  const time = formatTimestamp(cellValue);
-  return (
-    <el-tooltip effect="light" placement="top" content={time}>
-      <div class="pixiu-ellipsis-style">{time}</div>
-    </el-tooltip>
-  );
 };
 
 const formatterPorts = (row, column, cellValue) => {
