@@ -63,7 +63,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="status" label="状态" :formatter="formatterStatus" />
+        <el-table-column prop="status" label="状态" :formatter="formatterPodStatus" />
 
         <el-table-column
           prop="metadata.labels"
@@ -89,7 +89,7 @@
           </template>
         </el-table-column>
         />
-        <el-table-column prop="status" label="重启次数" :formatter="formatterRestartNumber" />
+        <el-table-column prop="status" label="重启次数" :formatter="formatterRestartCount" />
 
         <!-- <el-table-column label="镜像" prop="spec.containers" :formatter="formatterImage" /> -->
 
@@ -147,7 +147,13 @@ import useClipboard from 'vue-clipboard3';
 import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getTableData, searchData } from '@/utils/utils';
-import { formatterTime } from '@/utils/formatter';
+import {
+  formatterTime,
+  formatterPodStatus,
+  formatterImage,
+  formatterLabels,
+  formatterRestartCount,
+} from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import { getPodList, deletePod } from '@/services/kubernetes/podService';
@@ -354,145 +360,6 @@ const openWindowShell = () => {
     '_blank',
     'width=1000,height=600',
   );
-};
-
-const formatterLabels = (row, column, cellValue) => {
-  if (!cellValue) return <div>-</div>;
-  const labels = Object.entries(cellValue).map(([key, value]) => {
-    return `${key}: ${value}`;
-  });
-
-  let labels1 = labels;
-  if (labels1.length > 2) {
-    labels1 = labels1.slice(0, 2);
-    labels1.push('...');
-  }
-
-  const displayContent = `
-    <div>
-      ${labels.map((label) => `<div class="pixiu-table-formatter">${label}</div>`).join('')}
-    </div>
-  `;
-
-  return (
-    <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
-      <div>
-        {labels1.map((label) => (
-          <div class="pixiu-ellipsis-style">{label}</div>
-        ))}
-      </div>
-    </el-tooltip>
-  );
-};
-
-const formatterStatus = (row, column, cellValue) => {
-  let phase = cellValue.phase;
-  if (phase == 'Failed') {
-    phase = cellValue.reason;
-  } else if (phase == 'Pending') {
-    return <div class="color-yellow-word">{phase}</div>;
-    // const containerStatuses = cellValue.containerStatuses;
-    // for (let i = 0; i < containerStatuses.length; i++) {
-    //   phase = containerStatuses[i].state.waiting.reason;
-    //   break;
-    // }
-  }
-
-  if (phase == 'Running') {
-    return <div class="color-green-word">{phase}</div>;
-  }
-  return <div>{phase}</div>;
-};
-
-// const formatterStatus = (row, column, status) => {
-//   let s = <span class="color-green-word">Running</span>;
-//   if (status.phase === 'Running') {
-//     status.conditions.forEach((item) => {
-//       if (item.status !== 'True') {
-//         let res = '';
-//         status.containerStatuses.forEach((c) => {
-//           if (!c.ready) {
-//             if (c.state.waiting) {
-//               res = (
-//                 <div>
-//                   <div>${c.state.waiting.reason}</div>
-//                   <div style="font-size: 10px">{c.state.waiting.message}</div>
-//                 </div>
-//               );
-//             }
-//             if (c.state.terminated) {
-//               res = (
-//                 <div>
-//                   <div>{c.state.waiting.reason}</div>
-//                   <div style="font-size: 11px">{c.state.waiting.message}</div>
-//                   <div style="font-size: 11px">{c.state.terminated.reason}</div>
-//                 </div>
-//               );
-//             }
-//           }
-//         });
-//         return (s = <span class="color-red-word">{res}</span>);
-//       }
-//     });
-//   } else if (status.phase === 'Succeeded') {
-//     let res = '';
-//     status.containerStatuses.forEach((c) => {
-//       if (!c.ready) {
-//         if (c.state.terminated) {
-//           res = (
-//             <div>
-//               <div>{c.state.waiting.reason}</div>
-//               <div style="font-size: 11px">{c.state.waiting.message}</div>
-//               <div style="font-size: 11px">{c.state.terminated.reason}</div>
-//             </div>
-//           );
-//         }
-//       }
-//     });
-//     return (s = <span style="color: #E6A23C">${res}</span>);
-//   } else {
-//     let res = status.phase;
-//     status.containerStatuses.forEach((c) => {
-//       if (!c.ready) {
-//         if (c.state.waiting) {
-//           res = (
-//             <div>
-//               <div>{c.state.waiting.reason}</div>
-//               <div style="font-size: 11px">{c.state.waiting.message}</div>
-//             </div>
-//           );
-//         }
-//         if (c.state.terminated) {
-//           res = (
-//             <div>
-//               <div>{c.state.waiting.reason}</div>
-//               <div style="font-size: 11px">{c.state.waiting.message}</div>
-//               <div style="font-size: 10px">{c.state.terminated.reason}</div>
-//             </div>
-//           );
-//         }
-//       }
-//     });
-//     return (s = <div style="color: red">{res}</div>);
-//   }
-//   return s;
-// };
-
-const formatterImage = (row, column, cellValue) => {
-  return (
-    <div>
-      {cellValue.map((item) => (
-        <div>{item.image}</div>
-      ))}
-    </div>
-  );
-};
-const formatterRestartNumber = (row, column, status) => {
-  let count = 0;
-  status.containerStatuses.forEach((item) => {
-    count += item.restartCount;
-  });
-  return <div>{count} 次</div>;
 };
 </script>
 
