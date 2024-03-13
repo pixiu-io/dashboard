@@ -145,7 +145,7 @@
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { formatTimestamp, getTableData, searchData } from '@/utils/utils';
+import { getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getNodeList } from '@/services/kubernetes/nodeService';

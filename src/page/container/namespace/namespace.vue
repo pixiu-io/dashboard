@@ -119,7 +119,8 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { formatTimestamp, getTableData, searchData } from '@/utils/utils';
+import { getTableData, searchData } from '@/utils/utils';
+import { formatterTime } from '@/utils/formatter';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { getNamespaceList, deleteNamespace } from '@/services/kubernetes/namespaceService';
 import useClipboard from 'vue-clipboard3';
@@ -245,15 +246,6 @@ const jumpNamespaceRoute = (row) => {
       name: row.metadata.name,
     },
   });
-};
-
-const formatterTime = (row, column, cellValue) => {
-  const time = formatTimestamp(cellValue);
-  return (
-    <el-tooltip effect="light" placement="top" content={time}>
-      <div class="pixiu-ellipsis-style">{time}</div>
-    </el-tooltip>
-  );
 };
 
 const formatStatus = (row, column, cellValue) => {
