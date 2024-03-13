@@ -52,8 +52,13 @@
 
         <el-table-column prop="metadata.name" sortable label="名称" min-width="120px">
           <template #default="scope">
-            <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
-              {{ scope.row.metadata.name }}
+            <el-link
+              class="global-table-world"
+              :underline="false"
+              type="primary"
+              @click="jumpRoute(scope.row)"
+            >
+              <span class="name-text-line">{{ scope.row.metadata.name }}</span>
             </el-link>
           </template>
         </el-table-column>
@@ -141,7 +146,8 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
-import { formatTimestamp, getTableData, searchData } from '@/utils/utils';
+import { getTableData, searchData } from '@/utils/utils';
+import { formatterTime } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import { getPodList, deletePod } from '@/services/kubernetes/podService';
@@ -487,15 +493,6 @@ const formatterRestartNumber = (row, column, status) => {
     count += item.restartCount;
   });
   return <div>{count} 次</div>;
-};
-
-const formatterTime = (row, column, cellValue) => {
-  const time = formatTimestamp(cellValue);
-  return (
-    <el-tooltip effect="light" placement="top" content={time}>
-      <div class="pixiu-ellipsis-style">{time}</div>
-    </el-tooltip>
-  );
 };
 </script>
 
