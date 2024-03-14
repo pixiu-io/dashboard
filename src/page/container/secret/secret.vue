@@ -49,7 +49,7 @@
       >
         <!-- <el-table-column type="selection" width="30" /> -->
 
-        <el-table-column prop="metadata.name" sortable label="名称" width="auto">
+        <el-table-column prop="metadata.name" sortable label="名称" min-width="110px">
           <template #default="scope">
             <el-link
               class="global-table-world"
@@ -59,21 +59,11 @@
             >
               {{ scope.row.metadata.name }}
             </el-link>
-
-            <el-tooltip content="复制">
-              <pixiu-icon
-                name="icon-copy"
-                size="11px"
-                type="iconfont"
-                class-name="icon-box"
-                color="#909399"
-                @click="copy(scope.row)"
-              />
-            </el-tooltip>
           </template>
         </el-table-column>
 
-        <el-table-column label="类型" width="auto" prop="type"> </el-table-column>
+        <el-table-column label="类型" width="auto" prop="type" :formatter="formatString">
+        </el-table-column>
 
         <el-table-column
           prop="metadata.creationTimestamp"
@@ -165,7 +155,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import jsYaml from 'js-yaml';
 import { getTableData, searchData } from '@/utils/utils';
-import { formatterTime } from '@/utils/formatter';
+import { formatterTime, formatString } from '@/utils/formatter';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
