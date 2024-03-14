@@ -49,7 +49,7 @@
       >
         <!-- <el-table-column type="selection" width="30" /> -->
 
-        <el-table-column prop="metadata.name" sortable label="名称" width="auto">
+        <el-table-column prop="metadata.name" sortable label="名称" min-width="110px">
           <template #default="scope">
             <el-link
               class="global-table-world"
@@ -73,9 +73,11 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="Labels" width="auto">
-          <span>-</span>
-        </el-table-column>
+        <el-table-column
+          prop="spec.template.metadata.labels"
+          label="Labels"
+          :formatter="formatterLabels"
+        />
 
         <el-table-column
           prop="metadata.creationTimestamp"
@@ -172,7 +174,7 @@ import {
   deleteConfigMap,
 } from '@/services/kubernetes/configmapService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
-import { formatterTime } from '@/utils/formatter';
+import { formatterLabels, formatterTime } from '@/utils/formatter';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();

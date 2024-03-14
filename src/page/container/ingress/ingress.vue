@@ -149,7 +149,7 @@
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { getTableData, searchData } from '@/utils/utils';
-import { formatterTime } from '@/utils/formatter';
+import { formatterTime, formatterIngressRules, formatterAddress } from '@/utils/formatter';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
@@ -325,67 +325,6 @@ const confirmEditYaml = async () => {
 
   closeEditYamlDialog();
   await getIngresses();
-};
-
-const formatterAnno = (row, column, cellValue) => {
-  if (cellValue.annotations === undefined) {
-    return <div>-</div>;
-  }
-
-  const annotations = Object.entries(cellValue.annotations).map(([key, value]) => {
-    return `${key}: ${value}`;
-  });
-  return (
-    <div>
-      {annotations.map((anno) => (
-        <div class="pixiu-table-formatter">{anno}</div>
-      ))}
-    </div>
-  );
-};
-
-const formatterAddress = (row, column, cellValue) => {
-  if (
-    cellValue === undefined ||
-    cellValue.loadBalancer === undefined ||
-    cellValue.loadBalancer.ingress === undefined ||
-    cellValue.loadBalancer.ingress.length === 0
-  ) {
-    return <div class="pixiu-table-formatter">-</div>;
-  }
-
-  const ingress = cellValue.loadBalancer.ingress;
-  return (
-    <div>
-      {ingress.map((ing) => (
-        <div class="pixiu-table-formatter">{ing}</div>
-      ))}
-    </div>
-  );
-};
-
-const formatterIngressRules = (row, column, cellValue) => {
-  let ingress = [];
-  for (let item of cellValue) {
-    const host = item.host;
-    for (let path of item.http.paths) {
-      const ingressPath = path.path;
-      const name = path.backend.service.name;
-      const port = path.backend.service.port.number;
-      if (ingressPath === undefined || ingressPath === '/') {
-        ingress.push(`${host} -> ${name}:${port}`);
-      } else {
-        ingress.push(`${host}${ingressPath} -> ${name}:${port}`);
-      }
-    }
-  }
-  return (
-    <div>
-      {ingress.map((ing) => (
-        <div class="pixiu-table-formatter">{ing}</div>
-      ))}
-    </div>
-  );
 };
 </script>
 

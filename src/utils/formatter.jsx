@@ -54,79 +54,6 @@ const formatterPodStatus = (row, column, cellValue) => {
   }
   return <div>{phase}</div>;
 };
-
-const formatterPodStatus2 = (row, column, status) => {
-  let s = <span class="color-green-word">Running</span>;
-  if (status.phase === 'Running') {
-    status.conditions.forEach((item) => {
-      if (item.status !== 'True') {
-        let res = '';
-        status.containerStatuses.forEach((c) => {
-          if (!c.ready) {
-            if (c.state.waiting) {
-              res = (
-                <div>
-                  <div>{c.state.waiting.reason}</div>
-                </div>
-              );
-            }
-            if (c.state.terminated) {
-              res = (
-                <div>
-                  <div>{c.state.waiting.reason}</div>
-                  <div style="font-size: 11px">{c.state.terminated.reason}</div>
-                </div>
-              );
-            }
-          }
-        });
-        return (s = <span>{res}</span>);
-      }
-    });
-  } else if (status.phase === 'Succeeded') {
-    let res = '';
-    status.containerStatuses.forEach((c) => {
-      if (!c.ready) {
-        if (c.state.terminated) {
-          res = (
-            <div>
-              <div>{c.state.waiting.reason}</div>
-              <div style="font-size: 11px">{c.state.waiting.message}</div>
-              <div style="font-size: 11px">{c.state.terminated.reason}</div>
-            </div>
-          );
-        }
-      }
-    });
-    return (s = <span style="color: #E6A23C">${res}</span>);
-  } else {
-    let res = status.phase;
-    status.containerStatuses.forEach((c) => {
-      if (!c.ready) {
-        if (c.state.waiting) {
-          res = (
-            <div>
-              <div>{c.state.waiting.reason}</div>
-              <div style="font-size: 11px">{c.state.waiting.message}</div>
-            </div>
-          );
-        }
-        if (c.state.terminated) {
-          res = (
-            <div>
-              <div>{c.state.waiting.reason}</div>
-              <div style="font-size: 11px">{c.state.waiting.message}</div>
-              <div style="font-size: 10px">{c.state.terminated.reason}</div>
-            </div>
-          );
-        }
-      }
-    });
-    return (s = <div style="color: red">{res}</div>);
-  }
-  return s;
-};
-
 export { formatterPodStatus };
 
 const formatterImage = (row, column, cellValue) => {
@@ -179,3 +106,81 @@ const formatterRestartCount = (row, column, status) => {
 };
 
 export { formatterRestartCount };
+
+const formatterReady = (row, column, cellValue) => {
+  let availableReplicas = cellValue.availableReplicas;
+  if (availableReplicas === undefined) {
+    availableReplicas = 0;
+  }
+  return (
+    <div>
+      {availableReplicas}/{row.spec.replicas}
+    </div>
+  );
+};
+export { formatterReady };
+
+const formatString = (row, column, cellValue) => {
+  return (
+    <el-tooltip effect="light" placement="top" content={cellValue}>
+      <div class="hidden-style">{cellValue}</div>
+    </el-tooltip>
+  );
+};
+
+export { formatString };
+
+const formatterAddress = (row, column, cellValue) => {
+  if (
+    cellValue === undefined ||
+    cellValue.loadBalancer === undefined ||
+    cellValue.loadBalancer.ingress === undefined ||
+    cellValue.loadBalancer.ingress.length === 0
+  ) {
+    return <div class="pixiu-table-formatter">-</div>;
+  }
+
+  const ingress = cellValue.loadBalancer.ingress;
+  return (
+    <div>
+      {ingress.map((ing) => (
+        <div class="pixiu-table-formatter">{ing}</div>
+      ))}
+    </div>
+  );
+};
+export { formatterAddress };
+
+const formatterIngressRules = (row, column, cellValue) => {
+  let ingress = [];
+  for (let item of cellValue) {
+    const host = item.host;
+    for (let path of item.http.paths) {
+      const ingressPath = path.path;
+      const name = path.backend.service.name;
+      const port = path.backend.service.port.number;
+      if (ingressPath === undefined || ingressPath === '/') {
+        ingress.push(`${host} -> ${name}:${port}`);
+      } else {
+        ingress.push(`${host}${ingressPath} -> ${name}:${port}`);
+      }
+    }
+  }
+
+  const displayContent = `
+  <div>
+    ${ingress.map((ing) => `<div class="pixiu-table-formatter">${ing}</div>`).join('')}
+  </div>
+`;
+
+  return (
+    <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
+      <div>
+        {ingress.map((ing) => (
+          <div class="pixiu-ellipsis-style">{ing}</div>
+        ))}
+      </div>
+    </el-tooltip>
+  );
+};
+export { formatterIngressRules };

@@ -78,7 +78,7 @@
         >
         </el-table-column>
 
-        <el-table-column prop="status" label="Pod状态" :formatter="formatterStatus" width="90px">
+        <el-table-column prop="status" label="Pod状态" :formatter="formatterReady" width="90px">
         </el-table-column>
 
         <el-table-column
@@ -222,6 +222,7 @@ import {
   updateDeployment,
   deleteDeployment,
 } from '@/services/kubernetes/deploymentService';
+import { formatterImage, formatterLabels, formatterReady } from '@/utils/formatter';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
@@ -441,65 +442,6 @@ const confirmDeploymentScale = async () => {
     getDeployments();
     closeDeploymentScaleDialog();
   } catch (error) {}
-};
-
-const formatterLabels = (row, column, cellValue) => {
-  if (!cellValue) return <div>-</div>;
-  const labels = Object.entries(cellValue).map(([key, value]) => {
-    return `${key}: ${value}`;
-  });
-
-  let labels1 = labels;
-  if (labels1.length > 2) {
-    labels1 = labels1.slice(0, 2);
-    labels1.push('...');
-  }
-
-  const displayContent = `
-    <div>
-      ${labels.map((label) => `<div class="pixiu-table-formatter">${label}</div>`).join('')}
-    </div>
-  `;
-
-  return (
-    <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
-      <div>
-        {labels1.map((label) => (
-          <div class="pixiu-ellipsis-style">{label}</div>
-        ))}
-      </div>
-    </el-tooltip>
-  );
-};
-
-const formatterStatus = (row, column, cellValue) => {
-  let availableReplicas = cellValue.availableReplicas;
-  if (availableReplicas === undefined) {
-    availableReplicas = 0;
-  }
-  return (
-    <div>
-      {availableReplicas}/{row.spec.replicas}
-    </div>
-  );
-};
-
-const formatterImage = (row, column, cellValue) => {
-  const images = [];
-  for (let c of cellValue) {
-    images.push(c.image);
-  }
-
-  const displayContent = `
-    <div>
-      ${images.map((image) => `<div class="pixiu-table-formatter">${image}</div>`).join('')}
-    </div>
-  `;
-  return (
-    <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
-      <div class="pixiu-ellipsis-style">{images.join(',')}</div>;
-    </el-tooltip>
-  );
 };
 </script>
 
