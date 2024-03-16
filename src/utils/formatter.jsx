@@ -184,3 +184,14 @@ const formatterIngressRules = (row, column, cellValue) => {
   );
 };
 export { formatterIngressRules };
+
+const formatterPorts = (row, column, cellValue) => {
+  let ports = [];
+  for (let item of cellValue) {
+    ports.push(`${item.port}/${item.protocol}`);
+  }
+
+  return formatString(ow, column, ports.join(','));
+};
+
+export { formatterPorts };

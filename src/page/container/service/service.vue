@@ -143,7 +143,7 @@
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { getTableData, searchData } from '@/utils/utils';
-import { formatterTime } from '@/utils/formatter';
+import { formatterTime, formatterPorts } from '@/utils/formatter';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
@@ -317,14 +317,6 @@ const getNamespaces = async () => {
     return;
   }
   data.namespaces = result;
-};
-
-const formatterPorts = (row, column, cellValue) => {
-  let ports = [];
-  for (let item of cellValue) {
-    ports.push(`${item.port}/${item.protocol}`);
-  }
-  return <div>{ports.join(',')}</div>;
 };
 
 const jumpRoute = (row) => {
