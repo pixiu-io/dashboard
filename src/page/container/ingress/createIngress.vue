@@ -311,13 +311,14 @@ const syncNamespaces = async () => {
 };
 
 const syncServices = async () => {
-  const [err, svc] = await getServiceList(data.cluster, data.form.metadata.namespace);
+  const [result, err] = await getServiceList(data.cluster, data.form.metadata.namespace);
   if (err) {
+    proxy.$message.error(err.response.data.message);
     return;
   }
 
   data.services = [];
-  for (let item of svc.items) {
+  for (let item of result.items) {
     data.services.push(item.metadata.name);
   }
 
