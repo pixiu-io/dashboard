@@ -215,6 +215,9 @@ const data = reactive({
   },
   objectForm: {
     metadata: {
+      annotations: {
+        'kubernetes.io/ingress.class': 'nginx',
+      },
       name: '',
       namespace: 'default',
     },
