@@ -27,10 +27,17 @@
 
         <el-select
           v-model="data.namespace"
+          filterable
+          :filter-method="filterMethod"
           style="width: 200px; float: right; margin-right: 10px"
           @change="changeNamespace"
         >
-          <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
+          <el-option
+            v-for="item in data.filterNamespaces"
+            :key="item"
+            :value="item"
+            :label="item"
+          />
         </el-select>
         <!-- <dev class="namespace-container" style="width: 112px; float: right">命名空间</dev> -->
       </el-col>
@@ -182,8 +189,11 @@ const data = reactive({
   tableData: [],
   loading: false,
   multipleSelection: [],
+
   namespace: 'default',
+  filterNamespaces: [],
   namespaces: [],
+
   podList: [],
 
   podReplicasDialog: false,
@@ -258,6 +268,20 @@ const jumpRoute = (row) => {
   });
 };
 
+const filterMethod = (f) => {
+  if (f === undefined || f === '') {
+    data.filterNamespaces = data.namespaces;
+    return;
+  }
+
+  data.filterNamespaces = [];
+  for (let item of data.namespaces) {
+    if (item.includes(f)) {
+      data.filterNamespaces.push(item);
+    }
+  }
+};
+
 const handleSelectionChange = (pods) => {
   data.multipleSelection = [];
   for (let pod of pods) {
@@ -297,6 +321,7 @@ const getNamespaces = async () => {
     return;
   }
   data.namespaces = result;
+  data.filterNamespaces = result;
 };
 
 const copy = async (val) => {
