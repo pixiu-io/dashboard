@@ -57,12 +57,21 @@ const formatterPodStatus = (row, column, cellValue) => {
 export { formatterPodStatus };
 
 const formatterImage = (row, column, cellValue) => {
-  return (
+  let images = [];
+  for (let item of cellValue) {
+    images.push(item.image);
+  }
+
+  const displayContent = `
     <div>
-      {cellValue.map((item) => (
-        <div>{item.image}</div>
-      ))}
+      ${images.map((image) => `<div class="pixiu-table-formatter">${image}</div>`).join('')}
     </div>
+  `;
+  const imagesStr = images.join(',');
+  return (
+    <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
+      <div class="pixiu-ellipsis-style">{imagesStr}</div>
+    </el-tooltip>
   );
 };
 export { formatterImage };
