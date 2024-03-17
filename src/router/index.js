@@ -37,6 +37,7 @@ import {
   Secret,
   CreateSecret,
   EditSecret,
+  SecretDetail,
   StatefulSet,
   CreateStatefulSet,
   EditStatefulSet,
@@ -396,6 +397,14 @@ const routes = [
           title: 'createSecret',
         },
         component: CreateSecret,
+      },
+      {
+        path: 'secrets/secretDetail',
+        name: 'SecretDetail',
+        meta: {
+          title: 'secretDetail',
+        },
+        component: SecretDetail,
       },
       // job 路由
       {

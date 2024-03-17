@@ -35,6 +35,7 @@ import EditConfigMap from './container/configmap/editConfigMap.vue';
 import Secret from './container/secret/secret.vue';
 import CreateSecret from './container/secret/createSecret.vue';
 import EditSecret from './container/secret/editSecret.vue';
+import SecretDetail from './container/secret/secretDetail.vue';
 import Ingress from './container/ingress/ingress.vue';
 import CreateIngress from './container/ingress/createIngress.vue';
 import EditIngress from './container/ingress/editIngress.vue';
@@ -91,6 +92,7 @@ export {
   Secret,
   CreateSecret,
   EditSecret,
+  SecretDetail,
   Ingress,
   CreateIngress,
   EditIngress,
