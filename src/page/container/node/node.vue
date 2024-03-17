@@ -22,11 +22,12 @@
         </div>
 
         <el-input
-          v-model="data.pageInfo.query"
+          v-model="data.pageInfo.search.searchInfo"
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
           @clear="getNodes"
+          @input="searchNodes"
         >
           <template #suffix>
             <pixiu-icon
@@ -59,7 +60,7 @@
         @selection-change="handleSelectionChange"
       >
         <!-- <el-table-column type="selection" width="30" /> -->
-        <el-table-column prop="metadata.name" sortable label="名称">
+        <el-table-column prop="metadata.name" sortable label="名称" min-width="120px">
           <template #default="scope">
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
@@ -71,7 +72,11 @@
         <el-table-column label="角色" prop="metadata" :formatter="formatRole"> </el-table-column>
         <el-table-column label="地址" prop="status" :formatter="formatIp"> </el-table-column>
         <el-table-column label="节点版本" prop="status.nodeInfo.kubeletVersion"> </el-table-column>
-        <el-table-column label="运行时" prop="status.nodeInfo.containerRuntimeVersion">
+        <el-table-column
+          label="运行时"
+          prop="status.nodeInfo.containerRuntimeVersion"
+          :formatter="formatStr"
+        >
         </el-table-column>
 
         <el-table-column
@@ -140,10 +145,11 @@
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { formatTimestamp, getTableData } from '@/utils/utils';
+import { getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getNodeList } from '@/services/kubernetes/nodeService';
+import { formatterTime } from '@/utils/formatter';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -155,6 +161,10 @@ const data = reactive({
     query: '',
     total: 0,
     limit: 10,
+    search: {
+      field: 'name',
+      searchInfo: '',
+    },
   },
   tableData: [],
   loading: false,
@@ -187,6 +197,10 @@ const getNodes = async () => {
   data.nodeList = res.items;
   data.pageInfo.total = data.nodeList.length;
   data.tableData = getTableData(data.pageInfo, data.nodeList);
+};
+
+const searchNodes = async () => {
+  data.tableData = searchData(data.pageInfo, data.nodeList);
 };
 
 const drain = (row) => {
@@ -293,15 +307,6 @@ const unCordon = (row) => {
     .catch(() => {});
 };
 
-const formatterTime = (row, column, cellValue) => {
-  const time = formatTimestamp(cellValue);
-  return (
-    <el-tooltip effect="light" placement="top" content={time}>
-      <div class="pixiu-ellipsis-style">{time}</div>
-    </el-tooltip>
-  );
-};
-
 const formatStatus = (row, column, cellValue) => {
   let status = 'NotReady';
   for (let c of cellValue.conditions) {
@@ -312,7 +317,9 @@ const formatStatus = (row, column, cellValue) => {
       break;
     }
   }
-
+  if (status === 'NotReady') {
+    return <div class="color-red-word">{status}</div>;
+  }
   return <div class="color-green-word">{status}</div>;
 };
 
@@ -327,9 +334,13 @@ const formatRole = (row, column, cellValue) => {
   }
 
   let roleContent = roles.toString();
+  return formatStr('', '', roleContent);
+};
+
+const formatStr = (row, column, cellValue) => {
   return (
-    <el-tooltip effect="light" placement="top" content={roleContent}>
-      <div class="hidden-style">{roleContent}</div>
+    <el-tooltip effect="light" placement="top" content={cellValue}>
+      <div class="hidden-style">{cellValue}</div>
     </el-tooltip>
   );
 };

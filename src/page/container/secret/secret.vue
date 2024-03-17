@@ -12,11 +12,12 @@
           刷新
         </button>
         <el-input
-          v-model="data.pageInfo.query"
+          v-model="data.pageInfo.search.searchInfo"
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
           @clear="getSecrets"
+          @input="searchSecrets"
         >
           <template #suffix>
             <el-icon class="el-input__icon" @click="getSecrets">
@@ -48,7 +49,7 @@
       >
         <!-- <el-table-column type="selection" width="30" /> -->
 
-        <el-table-column prop="metadata.name" sortable label="名称" width="auto">
+        <el-table-column prop="metadata.name" sortable label="名称" min-width="110px">
           <template #default="scope">
             <el-link
               class="global-table-world"
@@ -58,21 +59,11 @@
             >
               {{ scope.row.metadata.name }}
             </el-link>
-
-            <el-tooltip content="复制">
-              <pixiu-icon
-                name="icon-copy"
-                size="11px"
-                type="iconfont"
-                class-name="icon-box"
-                color="#909399"
-                @click="copy(scope.row)"
-              />
-            </el-tooltip>
           </template>
         </el-table-column>
 
-        <el-table-column label="类型" width="auto" prop="type"> </el-table-column>
+        <el-table-column label="类型" width="auto" prop="type" :formatter="formatString">
+        </el-table-column>
 
         <el-table-column
           prop="metadata.creationTimestamp"
@@ -163,7 +154,8 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import jsYaml from 'js-yaml';
-import { formatTimestamp, getTableData } from '@/utils/utils';
+import { getTableData, searchData } from '@/utils/utils';
+import { formatterTime, formatString } from '@/utils/formatter';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
@@ -186,6 +178,10 @@ const data = reactive({
     limit: 10,
     query: '',
     total: 0,
+    search: {
+      field: 'name',
+      searchInfo: '',
+    },
   },
   tableData: [],
   loading: false,
@@ -252,6 +248,10 @@ const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
   data.tableData = getTableData(data.pageInfo, data.secretList);
+
+  if (data.pageInfo.search.searchInfo !== '') {
+    searchSecrets();
+  }
 };
 
 const createSecret = () => {
@@ -304,6 +304,10 @@ const getSecrets = async () => {
   data.tableData = getTableData(data.pageInfo, data.secretList);
 };
 
+const searchSecrets = async () => {
+  data.tableData = searchData(data.pageInfo, data.secretList);
+};
+
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
   data.namespace = val;
@@ -317,15 +321,6 @@ const getNamespaces = async () => {
     return;
   }
   data.namespaces = result;
-};
-
-const formatterTime = (row, column, cellValue) => {
-  const time = formatTimestamp(cellValue);
-  return (
-    <el-tooltip effect="light" placement="top" content={time}>
-      <div class="pixiu-ellipsis-style">{time}</div>
-    </el-tooltip>
-  );
 };
 
 const handleEditYamlDialog = async (row) => {

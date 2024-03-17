@@ -13,11 +13,12 @@
         </button>
 
         <el-input
-          v-model="data.pageInfo.query"
+          v-model="data.pageInfo.search.searchInfo"
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
           @clear="getServices"
+          @input="searchService"
         >
           <template #suffix>
             <el-icon class="el-input__icon" @click="getServices">
@@ -141,7 +142,8 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { formatTimestamp, getTableData } from '@/utils/utils';
+import { getTableData, searchData } from '@/utils/utils';
+import { formatterTime, formatterPorts } from '@/utils/formatter';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
@@ -167,6 +169,10 @@ const data = reactive({
     query: '',
     total: 0,
     limit: 10,
+    search: {
+      field: 'name',
+      searchInfo: '',
+    },
   },
   tableData: [],
   loading: false,
@@ -232,6 +238,10 @@ const onChange = (v) => {
   data.pageInfo.page = v.page;
 
   data.tableData = getTableData(data.pageInfo, data.serviceList);
+
+  if (data.pageInfo.search.searchInfo !== '') {
+    searchSecrets();
+  }
 };
 
 const createService = () => {
@@ -289,6 +299,10 @@ const getServices = async () => {
   data.tableData = getTableData(data.pageInfo, data.serviceList);
 };
 
+const searchService = async () => {
+  data.tableData = searchData(data.pageInfo, data.serviceList);
+};
+
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
   data.namespace = val;
@@ -303,23 +317,6 @@ const getNamespaces = async () => {
     return;
   }
   data.namespaces = result;
-};
-
-const formatterTime = (row, column, cellValue) => {
-  const time = formatTimestamp(cellValue);
-  return (
-    <el-tooltip effect="light" placement="top" content={time}>
-      <div class="pixiu-ellipsis-style">{time}</div>
-    </el-tooltip>
-  );
-};
-
-const formatterPorts = (row, column, cellValue) => {
-  let ports = [];
-  for (let item of cellValue) {
-    ports.push(`${item.port}/${item.protocol}`);
-  }
-  return <div>{ports.join(',')}</div>;
 };
 
 const jumpRoute = (row) => {

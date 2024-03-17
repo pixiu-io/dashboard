@@ -11,11 +11,12 @@
         <button class="pixiu-two-button2" style="margin-left: 10px" @click="getPods">刷新</button>
 
         <el-input
-          v-model="data.pageInfo.query"
+          v-model="data.pageInfo.search.searchInfo"
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
           @clear="getPods"
+          @input="searchPods"
         >
           <template #suffix>
             <el-icon class="el-input__icon" @click="getPods">
@@ -37,7 +38,7 @@
     <el-card class="box-card">
       <el-table
         v-loading="data.loading"
-        :data="data.podList"
+        :data="data.tableData"
         stripe
         style="margin-top: 2px; width: 100%"
         header-row-class-name="pixiu-table-header"
@@ -51,13 +52,18 @@
 
         <el-table-column prop="metadata.name" sortable label="名称" min-width="120px">
           <template #default="scope">
-            <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
-              {{ scope.row.metadata.name }}
+            <el-link
+              class="global-table-world"
+              :underline="false"
+              type="primary"
+              @click="jumpRoute(scope.row)"
+            >
+              <span class="name-text-line">{{ scope.row.metadata.name }}</span>
             </el-link>
           </template>
         </el-table-column>
 
-        <el-table-column prop="status" label="状态" :formatter="formatterStatus" />
+        <el-table-column prop="status" label="状态" :formatter="formatterPodStatus" />
 
         <el-table-column
           prop="metadata.labels"
@@ -83,7 +89,7 @@
           </template>
         </el-table-column>
         />
-        <el-table-column prop="status" label="重启次数" :formatter="formatterRestartNumber" />
+        <el-table-column prop="status" label="重启次数" :formatter="formatterRestartCount" />
 
         <!-- <el-table-column label="镜像" prop="spec.containers" :formatter="formatterImage" /> -->
 
@@ -101,7 +107,7 @@
               style="margin-right: -25px; margin-left: -10px; color: #006eff"
               @click="handleDeleteDialog(scope.row)"
             >
-              销毁重建
+              删除Pod
             </el-button>
 
             <el-button
@@ -140,7 +146,14 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
-import { formatTimestamp, getTableData } from '@/utils/utils';
+import { getTableData, searchData } from '@/utils/utils';
+import {
+  formatterTime,
+  formatterPodStatus,
+  formatterImage,
+  formatterLabels,
+  formatterRestartCount,
+} from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import { getPodList, deletePod } from '@/services/kubernetes/podService';
@@ -161,10 +174,14 @@ const data = reactive({
     limit: 10,
     query: '',
     total: 0,
+    search: {
+      field: 'name',
+      searchInfo: '',
+    },
   },
   tableData: [],
   loading: false,
-
+  multipleSelection: [],
   namespace: 'default',
   namespaces: [],
   podList: [],
@@ -184,6 +201,10 @@ const onChange = (v) => {
   data.pageInfo.page = v.page;
 
   data.tableData = getTableData(data.pageInfo, data.podList);
+
+  if (data.pageInfo.search.searchInfo !== '') {
+    searchPods();
+  }
 };
 
 onMounted(() => {
@@ -237,6 +258,13 @@ const jumpRoute = (row) => {
   });
 };
 
+const handleSelectionChange = (pods) => {
+  data.multipleSelection = [];
+  for (let pod of pods) {
+    data.multipleSelection.push(pod.metadata.name);
+  }
+};
+
 const getPods = async () => {
   data.loading = true;
   const [result, err] = await getPodList(data.cluster, data.namespace);
@@ -249,6 +277,10 @@ const getPods = async () => {
   data.podList = result.items;
   data.pageInfo.total = data.podList.length;
   data.tableData = getTableData(data.pageInfo, data.podList);
+};
+
+const searchPods = async () => {
+  data.tableData = searchData(data.pageInfo, data.podList);
 };
 
 const changeNamespace = async (val) => {
@@ -327,154 +359,6 @@ const openWindowShell = () => {
       selectedContainer.value,
     '_blank',
     'width=1000,height=600',
-  );
-};
-
-const formatterLabels = (row, column, cellValue) => {
-  if (!cellValue) return <div>-</div>;
-  const labels = Object.entries(cellValue).map(([key, value]) => {
-    return `${key}: ${value}`;
-  });
-
-  let labels1 = labels;
-  if (labels1.length > 2) {
-    labels1 = labels1.slice(0, 2);
-    labels1.push('...');
-  }
-
-  const displayContent = `
-    <div>
-      ${labels.map((label) => `<div class="pixiu-table-formatter">${label}</div>`).join('')}
-    </div>
-  `;
-
-  return (
-    <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
-      <div>
-        {labels1.map((label) => (
-          <div class="pixiu-ellipsis-style">{label}</div>
-        ))}
-      </div>
-    </el-tooltip>
-  );
-};
-
-const formatterStatus = (row, column, cellValue) => {
-  let phase = cellValue.phase;
-  if (phase == 'Failed') {
-    phase = cellValue.reason;
-  } else if (phase == 'Pending') {
-    return <div class="color-yellow-word">{phase}</div>;
-    // const containerStatuses = cellValue.containerStatuses;
-    // for (let i = 0; i < containerStatuses.length; i++) {
-    //   phase = containerStatuses[i].state.waiting.reason;
-    //   break;
-    // }
-  }
-
-  if (phase == 'Running') {
-    return <div class="color-green-word">{phase}</div>;
-  }
-  return <div>{phase}</div>;
-};
-
-// const formatterStatus = (row, column, status) => {
-//   let s = <span class="color-green-word">Running</span>;
-//   if (status.phase === 'Running') {
-//     status.conditions.forEach((item) => {
-//       if (item.status !== 'True') {
-//         let res = '';
-//         status.containerStatuses.forEach((c) => {
-//           if (!c.ready) {
-//             if (c.state.waiting) {
-//               res = (
-//                 <div>
-//                   <div>${c.state.waiting.reason}</div>
-//                   <div style="font-size: 10px">{c.state.waiting.message}</div>
-//                 </div>
-//               );
-//             }
-//             if (c.state.terminated) {
-//               res = (
-//                 <div>
-//                   <div>{c.state.waiting.reason}</div>
-//                   <div style="font-size: 11px">{c.state.waiting.message}</div>
-//                   <div style="font-size: 11px">{c.state.terminated.reason}</div>
-//                 </div>
-//               );
-//             }
-//           }
-//         });
-//         return (s = <span class="color-red-word">{res}</span>);
-//       }
-//     });
-//   } else if (status.phase === 'Succeeded') {
-//     let res = '';
-//     status.containerStatuses.forEach((c) => {
-//       if (!c.ready) {
-//         if (c.state.terminated) {
-//           res = (
-//             <div>
-//               <div>{c.state.waiting.reason}</div>
-//               <div style="font-size: 11px">{c.state.waiting.message}</div>
-//               <div style="font-size: 11px">{c.state.terminated.reason}</div>
-//             </div>
-//           );
-//         }
-//       }
-//     });
-//     return (s = <span style="color: #E6A23C">${res}</span>);
-//   } else {
-//     let res = status.phase;
-//     status.containerStatuses.forEach((c) => {
-//       if (!c.ready) {
-//         if (c.state.waiting) {
-//           res = (
-//             <div>
-//               <div>{c.state.waiting.reason}</div>
-//               <div style="font-size: 11px">{c.state.waiting.message}</div>
-//             </div>
-//           );
-//         }
-//         if (c.state.terminated) {
-//           res = (
-//             <div>
-//               <div>{c.state.waiting.reason}</div>
-//               <div style="font-size: 11px">{c.state.waiting.message}</div>
-//               <div style="font-size: 10px">{c.state.terminated.reason}</div>
-//             </div>
-//           );
-//         }
-//       }
-//     });
-//     return (s = <div style="color: red">{res}</div>);
-//   }
-//   return s;
-// };
-
-const formatterImage = (row, column, cellValue) => {
-  return (
-    <div>
-      {cellValue.map((item) => (
-        <div>{item.image}</div>
-      ))}
-    </div>
-  );
-};
-const formatterRestartNumber = (row, column, status) => {
-  let count = 0;
-  status.containerStatuses.forEach((item) => {
-    count += item.restartCount;
-  });
-  return <div>{count} 次</div>;
-};
-
-const formatterTime = (row, column, cellValue) => {
-  const time = formatTimestamp(cellValue);
-  return (
-    <el-tooltip effect="light" placement="top" content={time}>
-      <div class="pixiu-ellipsis-style">{time}</div>
-    </el-tooltip>
   );
 };
 </script>

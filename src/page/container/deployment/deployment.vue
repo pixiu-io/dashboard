@@ -13,11 +13,12 @@
         </button>
 
         <el-input
-          v-model="data.pageInfo.query"
+          v-model="data.pageInfo.search.searchInfo"
           placeholder="名称搜索关键字"
-          style="width: 480px; float: right"
+          style="width: 460px; float: right"
           clearable
           @clear="getDeployments"
+          @input="searchDeployments"
         >
           <template #suffix>
             <pixiu-icon
@@ -33,10 +34,17 @@
 
         <el-select
           v-model="data.namespace"
+          filterable
+          :filter-method="filterMethod"
           style="width: 200px; float: right; margin-right: 10px"
           @change="changeNamespace"
         >
-          <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
+          <el-option
+            v-for="item in data.filterNamespaces"
+            :key="item"
+            :value="item"
+            :label="item"
+          />
         </el-select>
         <!-- <dev class="namespace-container" style="width: 112px; float: right">命名空间</dev> -->
       </el-col>
@@ -77,7 +85,7 @@
         >
         </el-table-column>
 
-        <el-table-column prop="status" label="Pod状态" :formatter="formatterStatus" width="90px">
+        <el-table-column prop="status" label="Pod状态" :formatter="formatterReady" width="90px">
         </el-table-column>
 
         <el-table-column
@@ -211,7 +219,7 @@
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
-import { getTableData } from '@/utils/utils';
+import { getTableData, searchData } from '@/utils/utils';
 import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
@@ -221,6 +229,7 @@ import {
   updateDeployment,
   deleteDeployment,
 } from '@/services/kubernetes/deploymentService';
+import { formatterImage, formatterLabels, formatterReady } from '@/utils/formatter';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
@@ -236,12 +245,18 @@ const data = reactive({
     limit: 10,
     query: '',
     total: 0,
+    search: {
+      field: 'name',
+      searchInfo: '',
+    },
   },
   tableData: [],
   loading: false,
 
   namespace: 'default',
   namespaces: [],
+  filterNamespaces: [],
+
   deploymentList: [],
 
   deploymentReplicasDialog: false,
@@ -270,6 +285,20 @@ onMounted(() => {
   getDeployments();
   getNamespaces();
 });
+
+const filterMethod = (f) => {
+  if (f === undefined || f === '') {
+    data.filterNamespaces = data.namespaces;
+    return;
+  }
+
+  data.filterNamespaces = [];
+  for (let item of data.namespaces) {
+    if (item.includes(f)) {
+      data.filterNamespaces.push(item);
+    }
+  }
+};
 
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
@@ -306,6 +335,10 @@ const onChange = (v) => {
   data.pageInfo.page = v.page;
 
   data.tableData = getTableData(data.pageInfo, data.deploymentList);
+
+  if (data.pageInfo.search.searchInfo !== '') {
+    searchDeployments();
+  }
 };
 
 const handleEditYamlDialog = async (row) => {
@@ -377,6 +410,10 @@ const getDeployments = async () => {
   data.tableData = getTableData(data.pageInfo, data.deploymentList);
 };
 
+const searchDeployments = async () => {
+  data.tableData = searchData(data.pageInfo, data.deploymentList);
+};
+
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
   data.namespace = val;
@@ -390,7 +427,9 @@ const getNamespaces = async () => {
     proxy.$message.error(err.response.data.message);
     return;
   }
+
   data.namespaces = result;
+  data.filterNamespaces = result;
 };
 
 const handleDeploymentScaleDialog = (row) => {
@@ -428,65 +467,6 @@ const confirmDeploymentScale = async () => {
     getDeployments();
     closeDeploymentScaleDialog();
   } catch (error) {}
-};
-
-const formatterLabels = (row, column, cellValue) => {
-  if (!cellValue) return <div>-</div>;
-  const labels = Object.entries(cellValue).map(([key, value]) => {
-    return `${key}: ${value}`;
-  });
-
-  let labels1 = labels;
-  if (labels1.length > 2) {
-    labels1 = labels1.slice(0, 2);
-    labels1.push('...');
-  }
-
-  const displayContent = `
-    <div>
-      ${labels.map((label) => `<div class="pixiu-table-formatter">${label}</div>`).join('')}
-    </div>
-  `;
-
-  return (
-    <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
-      <div>
-        {labels1.map((label) => (
-          <div class="pixiu-ellipsis-style">{label}</div>
-        ))}
-      </div>
-    </el-tooltip>
-  );
-};
-
-const formatterStatus = (row, column, cellValue) => {
-  let availableReplicas = cellValue.availableReplicas;
-  if (availableReplicas === undefined) {
-    availableReplicas = 0;
-  }
-  return (
-    <div>
-      {availableReplicas}/{row.spec.replicas}
-    </div>
-  );
-};
-
-const formatterImage = (row, column, cellValue) => {
-  const images = [];
-  for (let c of cellValue) {
-    images.push(c.image);
-  }
-
-  const displayContent = `
-    <div>
-      ${images.map((image) => `<div class="pixiu-table-formatter">${image}</div>`).join('')}
-    </div>
-  `;
-  return (
-    <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
-      <div class="pixiu-ellipsis-style">{images.join(',')}</div>;
-    </el-tooltip>
-  );
 };
 </script>
 

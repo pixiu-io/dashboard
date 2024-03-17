@@ -100,6 +100,12 @@ const axiosIntance = ({ method, url, data, config }) => {
   if (method === 'patch') {
     return instance.patch(url, data, { ...config });
   }
+
+  // 获取 baseUrl
+  if (method === 'config') {
+    return baseUrl ? baseUrl : import.meta.env.VITE_BASE_API;
+  }
+
   // console.error(`UnKnown Method:${method}`);
   return false;
 };

@@ -55,7 +55,6 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="30" />
-
         <el-table-column prop="metadata.name" sortable label="名称">
           <template #default="scope">
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
@@ -77,7 +76,7 @@
         >
         </el-table-column>
 
-        <el-table-column prop="status" label="Pod状态" :formatter="formatterStatus" width="90px">
+        <el-table-column prop="status" label="Pod状态" :formatter="formatterPodStatus">
         </el-table-column>
 
         <el-table-column
@@ -213,6 +212,8 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData } from '@/utils/utils';
 import PixiuTag from '@/components/pixiuTag/index.vue';
+import { formatterImage, formatterLabels, formatterPodStatus } from '@/utils/formatter';
+
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import {
@@ -428,65 +429,6 @@ const confirmDeploymentScale = async () => {
     getDeployments();
     closeDeploymentScaleDialog();
   } catch (error) {}
-};
-
-const formatterLabels = (row, column, cellValue) => {
-  if (!cellValue) return <div>-</div>;
-  const labels = Object.entries(cellValue).map(([key, value]) => {
-    return `${key}: ${value}`;
-  });
-
-  let labels1 = labels;
-  if (labels1.length > 2) {
-    labels1 = labels1.slice(0, 2);
-    labels1.push('...');
-  }
-
-  const displayContent = `
-    <div>
-      ${labels.map((label) => `<div class="pixiu-table-formatter">${label}</div>`).join('')}
-    </div>
-  `;
-
-  return (
-    <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
-      <div>
-        {labels1.map((label) => (
-          <div class="pixiu-ellipsis-style">{label}</div>
-        ))}
-      </div>
-    </el-tooltip>
-  );
-};
-
-const formatterStatus = (row, column, cellValue) => {
-  let availableReplicas = cellValue.availableReplicas;
-  if (availableReplicas === undefined) {
-    availableReplicas = 0;
-  }
-  return (
-    <div>
-      {availableReplicas}/{row.spec.replicas}
-    </div>
-  );
-};
-
-const formatterImage = (row, column, cellValue) => {
-  const images = [];
-  for (let c of cellValue) {
-    images.push(c.image);
-  }
-
-  const displayContent = `
-    <div>
-      ${images.map((image) => `<div class="pixiu-table-formatter">${image}</div>`).join('')}
-    </div>
-  `;
-  return (
-    <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
-      <div class="pixiu-ellipsis-style">{images.join(',')}</div>;
-    </el-tooltip>
-  );
 };
 </script>
 

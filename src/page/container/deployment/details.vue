@@ -526,7 +526,8 @@ import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
 import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
 import jsYaml from 'js-yaml';
-import { formatTimestamp, getTableData } from '@/utils/utils';
+import { getTableData } from '@/utils/utils';
+import { formatterTime } from '@/utils/formatter';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getPodsByLabels, deletePod, getPodLog } from '@/services/kubernetes/podService';
@@ -988,15 +989,6 @@ const formatterStatus = (row, column, cellValue) => {
     return <div class="color-green-word">{phase}</div>;
   }
   return <div>{phase}</div>;
-};
-
-const formatterTime = (row, column, cellValue) => {
-  const time = formatTimestamp(cellValue);
-  return (
-    <el-tooltip effect="light" placement="top" content={time}>
-      <div class="pixiu-ellipsis-style">{time}</div>
-    </el-tooltip>
-  );
 };
 
 const formatterName = (row, column, cellValue) => {

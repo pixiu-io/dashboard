@@ -58,7 +58,7 @@
         </el-form-item>
         <el-form-item label="创建时间" class="namespace-info">
           <span class="namespace-detail-info" style="margin-left: 65px">
-            {{ data.namespace.metadata.creationTimestamp }}
+            {{ data.time }}
           </span>
         </el-form-item>
       </div>
@@ -97,8 +97,8 @@
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
-import { formatTimestamp } from '@/utils/utils';
 import useClipboard from 'vue-clipboard3';
+import { formatTimestamp } from '@/utils/utils';
 import { ElMessage } from 'element-plus';
 import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
@@ -120,7 +120,7 @@ const data = reactive({
   },
 
   namespace: '',
-
+  time: '',
   activeName: 'first',
 
   yaml: '',
@@ -159,8 +159,9 @@ const getNamespace = async () => {
       method: 'get',
       url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.name}`,
     });
-    data.namespace = res;
 
+    data.time = formatTimestamp(res.metadata.creationTimestamp);
+    data.namespace = res;
     data.yaml = jsYaml.dump(data.namespace);
   } catch (error) {}
 };
@@ -171,15 +172,6 @@ const confirm = () => {
 
 const cancel = () => {
   data.readOnly = true;
-};
-
-const formatterTime = (row, column, cellValue) => {
-  const time = formatTimestamp(cellValue);
-  return (
-    <el-tooltip effect="light" placement="top" content={time}>
-      <div class="pixiu-ellipsis-style">{time}</div>
-    </el-tooltip>
-  );
 };
 
 const handleClick = (tab, event) => {};
