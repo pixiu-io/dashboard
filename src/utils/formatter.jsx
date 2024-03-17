@@ -57,17 +57,26 @@ const formatterPodStatus = (row, column, cellValue) => {
 export { formatterPodStatus };
 
 const formatterImage = (row, column, cellValue) => {
-  return (
+  let images = [];
+  for (let item of cellValue) {
+    images.push(item.image);
+  }
+
+  const displayContent = `
     <div>
-      {cellValue.map((item) => (
-        <div>{item.image}</div>
-      ))}
+      ${images.map((image) => `<div class="pixiu-table-formatter">${image}</div>`).join('')}
     </div>
+  `;
+  const imagesStr = images.join(',');
+  return (
+    <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
+      <div class="pixiu-ellipsis-style">{imagesStr}</div>
+    </el-tooltip>
   );
 };
 export { formatterImage };
 
-const formatterLabels = (row, column, cellValue) => {
+const formatterLabelsBackup = (row, column, cellValue) => {
   if (!cellValue) return <div>-</div>;
   const labels = Object.entries(cellValue).map(([key, value]) => {
     return `${key}: ${value}`;
@@ -92,6 +101,28 @@ const formatterLabels = (row, column, cellValue) => {
           <div class="pixiu-ellipsis-style">{label}</div>
         ))}
       </div>
+    </el-tooltip>
+  );
+};
+const formatterLabels = (row, column, cellValue) => {
+  if (!cellValue) return <div>-</div>;
+  const labels = Object.entries(cellValue).map(([key, value]) => {
+    return `${key}: ${value}`;
+  });
+  const selectors = Object.entries(cellValue).map(([key, value]) => {
+    return `${key}: ${value}`;
+  });
+
+  const displayContent = `
+    <div>
+      ${labels.map((label) => `<div class="pixiu-table-formatter">${label}</div>`).join('')}
+    </div>
+  `;
+  const sc = selectors.join(',');
+
+  return (
+    <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
+      <div class="hidden-style">{sc}</div>
     </el-tooltip>
   );
 };

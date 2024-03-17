@@ -15,7 +15,7 @@
         <el-input
           v-model="data.pageInfo.search.searchInfo"
           placeholder="名称搜索关键字"
-          style="width: 460px; float: right"
+          style="width: 400px; float: right"
           clearable
           @clear="getDeployments"
           @input="searchDeployments"
@@ -89,11 +89,17 @@
         </el-table-column>
 
         <el-table-column
+          prop="metadata.creationTimestamp"
+          label="创建时间"
+          :formatter="formatterTime"
+        />
+
+        <!-- <el-table-column
           label="镜像"
           prop="spec.template.spec.containers"
           :formatter="formatterImage"
         >
-        </el-table-column>
+        </el-table-column> -->
 
         <el-table-column fixed="right" label="操作" width="180">
           <template #default="scope">
@@ -229,7 +235,7 @@ import {
   updateDeployment,
   deleteDeployment,
 } from '@/services/kubernetes/deploymentService';
-import { formatterImage, formatterLabels, formatterReady } from '@/utils/formatter';
+import { formatterImage, formatterTime, formatterLabels, formatterReady } from '@/utils/formatter';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
