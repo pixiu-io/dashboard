@@ -191,7 +191,7 @@ const formatterPorts = (row, column, cellValue) => {
     ports.push(`${item.port}/${item.protocol}`);
   }
 
-  return formatString(ow, column, ports.join(','));
+  return formatString(row, column, ports.join(','));
 };
 
 export { formatterPorts };
