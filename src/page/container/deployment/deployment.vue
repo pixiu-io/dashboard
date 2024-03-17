@@ -255,8 +255,8 @@ const data = reactive({
 
   namespace: 'default',
   namespaces: [],
-
   filterNamespaces: [],
+
   deploymentList: [],
 
   deploymentReplicasDialog: false,
@@ -427,7 +427,9 @@ const getNamespaces = async () => {
     proxy.$message.error(err.response.data.message);
     return;
   }
+
   data.namespaces = result;
+  data.filterNamespaces = result;
 };
 
 const handleDeploymentScaleDialog = (row) => {
