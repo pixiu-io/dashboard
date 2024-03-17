@@ -15,7 +15,7 @@
         <el-input
           v-model="data.pageInfo.search.searchInfo"
           placeholder="名称搜索关键字"
-          style="width: 480px; float: right"
+          style="width: 460px; float: right"
           clearable
           @clear="getDeployments"
           @input="searchDeployments"
@@ -34,10 +34,17 @@
 
         <el-select
           v-model="data.namespace"
+          filterable
+          :filter-method="filterMethod"
           style="width: 200px; float: right; margin-right: 10px"
           @change="changeNamespace"
         >
-          <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
+          <el-option
+            v-for="item in data.filterNamespaces"
+            :key="item"
+            :value="item"
+            :label="item"
+          />
         </el-select>
         <!-- <dev class="namespace-container" style="width: 112px; float: right">命名空间</dev> -->
       </el-col>
@@ -248,6 +255,8 @@ const data = reactive({
 
   namespace: 'default',
   namespaces: [],
+  filterNamespaces: [],
+
   deploymentList: [],
 
   deploymentReplicasDialog: false,
@@ -276,6 +285,20 @@ onMounted(() => {
   getDeployments();
   getNamespaces();
 });
+
+const filterMethod = (f) => {
+  if (f === undefined || f === '') {
+    data.filterNamespaces = data.namespaces;
+    return;
+  }
+
+  data.filterNamespaces = [];
+  for (let item of data.namespaces) {
+    if (item.includes(f)) {
+      data.filterNamespaces.push(item);
+    }
+  }
+};
 
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
@@ -404,7 +427,9 @@ const getNamespaces = async () => {
     proxy.$message.error(err.response.data.message);
     return;
   }
+
   data.namespaces = result;
+  data.filterNamespaces = result;
 };
 
 const handleDeploymentScaleDialog = (row) => {
