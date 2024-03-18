@@ -4,7 +4,7 @@
     <PiXiuYaml :refresh="getDeployments"></PiXiuYaml>
   </el-card>
 
-  <div style="margin-top: 25px">
+  <div class="input-custom-style" style="margin-top: 25px">
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createDeployment">新建</button>
@@ -20,6 +20,18 @@
           @clear="getDeployments"
           @input="searchDeployments"
         >
+          <template #prefix>
+            <el-select
+              v-model="data.select"
+              class="select-no-arrow"
+              placeholder="Select"
+              style="width: 115px"
+            >
+              <el-option label="Restaurant" value="1" />
+              <el-option label="Order No." value="2" />
+              <el-option label="Tel" value="3" />
+            </el-select>
+          </template>
           <template #suffix>
             <pixiu-icon
               name="icon-search"
@@ -246,6 +258,7 @@ const editYaml = ref();
 
 const data = reactive({
   cluster: '',
+  select: '1',
   pageInfo: {
     page: 1,
     limit: 10,
@@ -476,7 +489,7 @@ const confirmDeploymentScale = async () => {
 };
 </script>
 
-<style scoped="scoped">
+<style>
 .font-container {
   margin-top: -5px;
   font-weight: bold;
@@ -492,5 +505,35 @@ const confirmDeploymentScale = async () => {
   color: #4c4e58;
   height: 20px;
   padding: 10px;
+}
+
+.select-no-arrow i {
+  display: none !important;
+}
+
+.select-no-arrow .el-select__wrapper {
+  box-shadow: 0 0 0 1px #fff inset !important;
+}
+
+.select-no-arrow .el-input__wrapper {
+  box-shadow: 0 0 0 1px #fff inset !important;
+}
+
+.input-custom-style .el-select .el-input.is-focus .el-input__wrapper {
+  box-shadow: 0 0 0 1px #fff inset !important;
+  border: none;
+}
+
+.input-custom-style .el-select .el-input__wrapper.is-focus {
+  box-shadow: 0 0 0 1px #fff inset !important;
+  border: none;
+}
+
+.select-no-arrow .el-select__wrapper.is-hovering:not(.is-focused) {
+  box-shadow: 0 0 0 1px #fff inset !important;
+}
+
+.select-no-arrow .el-input__wrapper.is-hovering:not(.is-focused) {
+  box-shadow: 0 0 0 1px #fff inset !important;
 }
 </style>
