@@ -4,7 +4,7 @@
     <PiXiuYaml :refresh="getDeployments"></PiXiuYaml>
   </el-card>
 
-  <div style="margin-top: 25px">
+  <div class="input-custom-style" style="margin-top: 25px">
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createDeployment">新建</button>
@@ -512,10 +512,28 @@ const confirmDeploymentScale = async () => {
 }
 
 .select-no-arrow .el-select__wrapper {
-  box-shadow: 0 0 0 1px #fff inset;
+  box-shadow: 0 0 0 1px #fff inset !important;
+}
+
+.select-no-arrow .el-input__wrapper {
+  box-shadow: 0 0 0 1px #fff inset !important;
+}
+
+.input-custom-style .el-select .el-input.is-focus .el-input__wrapper {
+  box-shadow: 0 0 0 1px #fff inset !important;
+  border: none;
+}
+
+.input-custom-style .el-select .el-input__wrapper.is-focus {
+  box-shadow: 0 0 0 1px #fff inset !important;
+  border: none;
 }
 
 .select-no-arrow .el-select__wrapper.is-hovering:not(.is-focused) {
-  box-shadow: 0 0 0 1px #fff inset;
+  box-shadow: 0 0 0 1px #fff inset !important;
+}
+
+.select-no-arrow .el-input__wrapper.is-hovering:not(.is-focused) {
+  box-shadow: 0 0 0 1px #fff inset !important;
 }
 </style>
