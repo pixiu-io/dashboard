@@ -8,7 +8,7 @@
       color: rgba(0, 0, 0, 0.9);
     "
   >
-    操作指导
+    使用指南
     <el-icon style="vertical-align: middle; margin-right: 10px">
       <component :is="'Edit'" />
     </el-icon>
