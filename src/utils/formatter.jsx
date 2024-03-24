@@ -246,12 +246,18 @@ const formatterNamespace = (row, column, cellValue) => {
 export { formatterNamespace };
 
 const runningFormatter = (row, column, cellValue) => {
+  const status = '运行中';
   return (
     <div style="display: flex">
       <div>
-        <pixiu-icon name="icon-circle-dot" size="12px" type="iconfont" color="#28C65A" />
+        <pixiu-icon
+          name={runningStatus[status].name}
+          size="12px"
+          type="iconfont"
+          color={runningStatus[status].color}
+        />
       </div>
-      <div style="margin-left: 6px"> 运行中</div>
+      <div style="margin-left: 6px"> {status}</div>
     </div>
   );
 };
@@ -259,28 +265,23 @@ export { runningFormatter };
 
 const runningStatus = {
   运行中: {
-    icon: 'icon-circle-dot',
-    text: '运行中',
+    name: 'icon-circle-dot',
     color: '#28C65A', // 绿色
   },
-  1: {
-    icon: 'icon-yichang',
-    text: '集群异常',
+  集群异常: {
+    name: 'icon-yichang',
     color: '#FF0000', // 红色
   },
-  2: {
+  构建中: {
     icon: 'icon-dlf-shujuhugoujian',
-    text: '构建中',
     color: '#0000FF', // 蓝色
   },
-  3: {
+  删除中: {
     icon: 'icon-shanchu',
-    text: ' 删除中',
     color: '#FF00FF', // 牡丹红
   },
-  4: {
+  等待构建: {
     icon: 'icon-icon-',
-    text: '等待构建',
     color: '#FFFF00', // 黄色
   },
 };
