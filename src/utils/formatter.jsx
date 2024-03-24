@@ -71,11 +71,11 @@ const formatterImage = (row, column, cellValue) => {
   return (
     <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
       <div>
-        {images.map((label) => (
+        {images.map((image) => (
           <el-tag round>
             <div style="display: flex">
               <pixiu-icon name="icon-docker" size="16px" type="iconfont" color="#409EFF" />
-              <div style="margin-left: 6px"> {label}</div>
+              <div style="margin-left: 6px"> {image}</div>
             </div>
           </el-tag>
         ))}
