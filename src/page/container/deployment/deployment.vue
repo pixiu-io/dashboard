@@ -207,8 +207,7 @@
       </el-form-item>
     </el-form>
 
-    <div style="margin-top: -18px"></div>
-
+    <div style="margin-top: -25px"></div>
     <template #footer>
       <span class="dialog-footer">
         <el-button class="pixiu-small-cancel-button" @click="closeDeploymentScaleDialog"
