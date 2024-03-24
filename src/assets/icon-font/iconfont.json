@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "1898638",
+      "name": "circle",
+      "font_class": "circle",
+      "unicode": "e650",
+      "unicode_decimal": 58960
+    },
+    {
+      "icon_id": "36915150",
+      "name": "circle-dot",
+      "font_class": "circle-dot",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
       "icon_id": "11493424",
       "name": "docker",
       "font_class": "docker",
