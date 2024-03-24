@@ -4,7 +4,7 @@
     <PiXiuYaml :refresh="getDeployments"></PiXiuYaml>
   </el-card>
 
-  <div class="input-custom-style" style="margin-top: 25px">
+  <div style="margin-top: 25px">
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createDeployment">新建</button>
@@ -14,22 +14,21 @@
 
         <el-input
           v-model="data.pageInfo.search.searchInfo"
-          placeholder="名称搜索关键字"
+          placeholder="Name: 关键字，Label: key1=value1,key2=value2"
           style="width: 400px; float: right"
+          class="input-select-style"
           clearable
           @clear="getDeployments"
           @input="searchDeployments"
         >
           <template #prefix>
             <el-select
-              v-model="data.select"
+              v-model="data.pageInfo.search.field"
               class="select-no-arrow"
-              placeholder="Select"
-              style="width: 115px"
+              style="width: 50px"
             >
-              <el-option label="Restaurant" value="1" />
-              <el-option label="Order No." value="2" />
-              <el-option label="Tel" value="3" />
+              <el-option label="名称" value="name" />
+              <el-option label="标签" value="label" />
             </el-select>
           </template>
           <template #suffix>
@@ -78,13 +77,18 @@
 
         <el-table-column prop="metadata.name" sortable label="名称">
           <template #default="scope">
-            <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
+            <el-link
+              class="global-table-world"
+              type="primary"
+              :underline="false"
+              @click="jumpRoute(scope.row)"
+            >
               {{ scope.row.metadata.name }}
             </el-link>
           </template>
         </el-table-column>
 
-        <el-table-column
+        <!-- <el-table-column
           prop="spec.template.metadata.labels"
           label="Labels"
           :formatter="formatterLabels"
@@ -95,42 +99,58 @@
           label="Selector"
           :formatter="formatterLabels"
         >
+        </el-table-column> -->
+
+        <el-table-column prop="status" label="状态" :formatter="runningFormatter">
         </el-table-column>
 
-        <el-table-column prop="status" label="Pod状态" :formatter="formatterReady" width="90px">
+        <el-table-column prop="status" label="实例个数(正常/全部)">
+          <template #default="scope">
+            <div style="display: flex">
+              {{ getDeployReady(scope.row) }}
+
+              <div style="margin-left: 8px">
+                <pixiu-icon
+                  name="icon-edit"
+                  size="12px"
+                  type="iconfont"
+                  color="#909399"
+                  @click="handleDeploymentScaleDialog(scope.row)"
+                />
+              </div>
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="metadata.namespace" label="命名空间" :formatter="formatterNamespace">
         </el-table-column>
 
         <el-table-column
           prop="metadata.creationTimestamp"
           label="创建时间"
+          sortable
           :formatter="formatterTime"
         />
 
-        <!-- <el-table-column
-          label="镜像"
+        <el-table-column
+          label="镜像名称"
           prop="spec.template.spec.containers"
           :formatter="formatterImage"
         >
-        </el-table-column> -->
+        </el-table-column>
 
-        <el-table-column fixed="right" label="操作" width="180">
+        <el-table-column fixed="right" label="操作" width="150px">
           <template #default="scope">
             <el-button
               size="small"
               type="text"
-              style="margin-right: -20px; margin-left: -10px; color: #006eff"
-              @click="editDeployment(scope.row)"
+              style="margin-right: -25px; margin-left: -10px; color: #006eff"
             >
-              编辑
+              监控
             </el-button>
 
-            <el-button
-              type="text"
-              size="small"
-              style="margin-right: 1px; color: #006eff"
-              @click="handleDeploymentScaleDialog(scope.row)"
-            >
-              调整副本数
+            <el-button type="text" size="small" style="margin-right: -2px; color: #006eff">
+              日志
             </el-button>
 
             <el-dropdown>
@@ -247,7 +267,12 @@ import {
   updateDeployment,
   deleteDeployment,
 } from '@/services/kubernetes/deploymentService';
-import { formatterImage, formatterTime, formatterLabels, formatterReady } from '@/utils/formatter';
+import {
+  formatterImage,
+  formatterTime,
+  formatterNamespace,
+  runningFormatter,
+} from '@/utils/formatter';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
@@ -258,7 +283,7 @@ const editYaml = ref();
 
 const data = reactive({
   cluster: '',
-  select: '1',
+
   pageInfo: {
     page: 1,
     limit: 10,
@@ -317,6 +342,15 @@ const filterMethod = (f) => {
       data.filterNamespaces.push(item);
     }
   }
+};
+
+const getDeployReady = (row) => {
+  let availableReplicas = row.status.availableReplicas;
+  if (availableReplicas === undefined) {
+    availableReplicas = 0;
+  }
+
+  return availableReplicas + '/' + row.spec.replicas;
 };
 
 const handleDeleteDialog = (row) => {
@@ -505,35 +539,5 @@ const confirmDeploymentScale = async () => {
   color: #4c4e58;
   height: 20px;
   padding: 10px;
-}
-
-.select-no-arrow i {
-  display: none !important;
-}
-
-.select-no-arrow .el-select__wrapper {
-  box-shadow: 0 0 0 1px #fff inset !important;
-}
-
-.select-no-arrow .el-input__wrapper {
-  box-shadow: 0 0 0 1px #fff inset !important;
-}
-
-.input-custom-style .el-select .el-input.is-focus .el-input__wrapper {
-  box-shadow: 0 0 0 1px #fff inset !important;
-  border: none;
-}
-
-.input-custom-style .el-select .el-input__wrapper.is-focus {
-  box-shadow: 0 0 0 1px #fff inset !important;
-  border: none;
-}
-
-.select-no-arrow .el-select__wrapper.is-hovering:not(.is-focused) {
-  box-shadow: 0 0 0 1px #fff inset !important;
-}
-
-.select-no-arrow .el-input__wrapper.is-hovering:not(.is-focused) {
-  box-shadow: 0 0 0 1px #fff inset !important;
 }
 </style>

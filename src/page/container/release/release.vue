@@ -1,6 +1,6 @@
 <template>
   <el-card class="title-card-container">
-    <div class="font-container">Release</div>
+    <div class="font-container">Helm</div>
     <PiXiuYaml :refresh="getReleases"></PiXiuYaml>
   </el-card>
 
@@ -207,8 +207,7 @@ const getReleases = async () => {
     return;
   }
 
-  data.loading = false;
-  data.releasesList = result.result;
+  data.releasesList = result;
   data.pageInfo.total = data.releasesList.length;
   data.tableData = getTableData(data.pageInfo, data.releasesList);
 };

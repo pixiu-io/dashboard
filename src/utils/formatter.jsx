@@ -67,10 +67,19 @@ const formatterImage = (row, column, cellValue) => {
       ${images.map((image) => `<div class="pixiu-table-formatter">${image}</div>`).join('')}
     </div>
   `;
-  const imagesStr = images.join(',');
+
   return (
     <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
-      <div class="pixiu-ellipsis-style">{imagesStr}</div>
+      <div>
+        {images.map((image) => (
+          <el-tag round>
+            <div style="display: flex">
+              <pixiu-icon name="icon-docker" size="16px" type="iconfont" color="#409EFF" />
+              <div style="margin-left: 6px"> {image}</div>
+            </div>
+          </el-tag>
+        ))}
+      </div>
     </el-tooltip>
   );
 };
@@ -226,3 +235,53 @@ const formatterPorts = (row, column, cellValue) => {
 };
 
 export { formatterPorts };
+
+const formatterNamespace = (row, column, cellValue) => {
+  return (
+    <el-tag type="primary" round>
+      {cellValue}
+    </el-tag>
+  );
+};
+export { formatterNamespace };
+
+const runningFormatter = (row, column, cellValue) => {
+  const status = '运行中';
+  return (
+    <div style="display: flex">
+      <div>
+        <pixiu-icon
+          name={runningStatus[status].name}
+          size="12px"
+          type="iconfont"
+          color={runningStatus[status].color}
+        />
+      </div>
+      <div style="margin-left: 6px"> {status}</div>
+    </div>
+  );
+};
+export { runningFormatter };
+
+const runningStatus = {
+  运行中: {
+    name: 'icon-circle-dot',
+    color: '#28C65A', // 绿色
+  },
+  集群异常: {
+    name: 'icon-yichang',
+    color: '#FF0000', // 红色
+  },
+  构建中: {
+    icon: 'icon-dlf-shujuhugoujian',
+    color: '#0000FF', // 蓝色
+  },
+  删除中: {
+    icon: 'icon-shanchu',
+    color: '#FF00FF', // 牡丹红
+  },
+  等待构建: {
+    icon: 'icon-icon-',
+    color: '#FFFF00', // 黄色
+  },
+};
