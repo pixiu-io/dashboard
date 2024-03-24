@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "11493424",
+      "name": "docker",
+      "font_class": "docker",
+      "unicode": "e618",
+      "unicode_decimal": 58904
+    },
+    {
       "icon_id": "6626205",
       "name": "问号",
       "font_class": "wenhao1",
