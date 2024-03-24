@@ -190,7 +190,7 @@
   <el-dialog
     :model-value="data.deploymentReplicasDialog"
     style="color: #000000; font: 14px"
-    width="500px"
+    width="420px"
     center
     @close="closeDeploymentScaleDialog"
   >
