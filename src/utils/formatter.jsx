@@ -75,7 +75,7 @@ const formatterImage = (row, column, cellValue) => {
           <el-tag round>
             <div style="display: flex">
               <pixiu-icon name="icon-docker" size="16px" type="iconfont" color="#409EFF" />
-              <div style="margin-left: 5px"> {label}</div>
+              <div style="margin-left: 6px"> {label}</div>
             </div>
           </el-tag>
         ))}
