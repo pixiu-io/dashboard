@@ -226,3 +226,17 @@ const formatterPorts = (row, column, cellValue) => {
 };
 
 export { formatterPorts };
+
+const formatterNamespace = (row, column, cellValue) => {
+  return (
+    <el-tag type="primary" round>
+      {cellValue}
+    </el-tag>
+  );
+};
+export { formatterNamespace };
+
+const runningFormatter = (row, column, cellValue) => {
+  return <div>运行中</div>;
+};
+export { runningFormatter };

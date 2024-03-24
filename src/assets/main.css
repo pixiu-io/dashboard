@@ -194,9 +194,9 @@
 .dropdown-buttons {
   display: block;
   /* display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start; */
+ *   flex-direction: column;
+ *     align-items: flex-start;
+ *       justify-content: flex-start; */
 }
 
 .dropdown-item-buttons {
@@ -448,4 +448,34 @@
 
 .detail-card-new-style {
   margin-top: 20px;
+}
+
+.select-no-arrow i {
+  display: none !important;
+}
+
+.select-no-arrow .el-select__wrapper {
+  box-shadow: 0 0 0 1px #fff inset !important;
+}
+
+.select-no-arrow .el-input__wrapper {
+  box-shadow: 0 0 0 1px #fff inset !important;
+}
+
+.input-select-style .el-select .el-input.is-focus .el-input__wrapper {
+  box-shadow: 0 0 0 1px #fff inset !important;
+  border: none;
+}
+
+.input-select-style .el-select .el-input__wrapper.is-focus {
+  box-shadow: 0 0 0 1px #fff inset !important;
+  border: none;
+}
+
+.select-no-arrow .el-select__wrapper.is-hovering:not(.is-focused) {
+  box-shadow: 0 0 0 1px #fff inset !important;
+}
+
+.select-no-arrow .el-input__wrapper.is-hovering:not(.is-focused) {
+  box-shadow: 0 0 0 1px #fff inset !important;
 }
