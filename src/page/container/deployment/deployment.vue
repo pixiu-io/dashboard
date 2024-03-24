@@ -109,7 +109,7 @@
             <div style="display: flex">
               {{ getDeployReady(scope.row) }}
 
-              <div style="margin-left: 8px">
+              <div style="margin-left: 8px; cursor: pointer">
                 <pixiu-icon
                   name="icon-edit"
                   size="12px"
@@ -195,7 +195,7 @@
     @close="closeDeploymentScaleDialog"
   >
     <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">调整副本配置</div>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">调整实例数</div>
     </template>
 
     <el-form label-width="100px" style="max-width: 300px">
