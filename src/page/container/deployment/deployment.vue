@@ -104,7 +104,22 @@
         <el-table-column prop="status" label="状态" :formatter="runningFormatter">
         </el-table-column>
 
-        <el-table-column prop="status" label="实例个数(正常/全部)" :formatter="formatterReady">
+        <el-table-column prop="status" label="实例个数(正常/全部)">
+          <template #default="scope">
+            <div style="display: flex">
+              {{ getDeployReady(scope.row) }}
+
+              <div style="margin-left: 8px">
+                <pixiu-icon
+                  name="icon-edit"
+                  size="12px"
+                  type="iconfont"
+                  color="#909399"
+                  @click="handleDeploymentScaleDialog(scope.row)"
+                />
+              </div>
+            </div>
+          </template>
         </el-table-column>
 
         <el-table-column prop="metadata.namespace" label="命名空间" :formatter="formatterNamespace">
@@ -124,24 +139,18 @@
         >
         </el-table-column>
 
-        <el-table-column fixed="right" label="操作" width="180">
+        <el-table-column fixed="right" label="操作" width="150px">
           <template #default="scope">
             <el-button
               size="small"
               type="text"
-              style="margin-right: -20px; margin-left: -10px; color: #006eff"
-              @click="editDeployment(scope.row)"
+              style="margin-right: -25px; margin-left: -10px; color: #006eff"
             >
-              编辑
+              监控
             </el-button>
 
-            <el-button
-              type="text"
-              size="small"
-              style="margin-right: 1px; color: #006eff"
-              @click="handleDeploymentScaleDialog(scope.row)"
-            >
-              调整副本数
+            <el-button type="text" size="small" style="margin-right: -2px; color: #006eff">
+              日志
             </el-button>
 
             <el-dropdown>
@@ -262,7 +271,6 @@ import {
   formatterImage,
   formatterTime,
   formatterNamespace,
-  formatterReady,
   runningFormatter,
 } from '@/utils/formatter';
 import MyCodeMirror from '@/components/codemirror/index.vue';
@@ -334,6 +342,15 @@ const filterMethod = (f) => {
       data.filterNamespaces.push(item);
     }
   }
+};
+
+const getDeployReady = (row) => {
+  let availableReplicas = row.status.availableReplicas;
+  if (availableReplicas === undefined) {
+    availableReplicas = 0;
+  }
+
+  return availableReplicas + '/' + row.spec.replicas;
 };
 
 const handleDeleteDialog = (row) => {
