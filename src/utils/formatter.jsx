@@ -256,3 +256,31 @@ const runningFormatter = (row, column, cellValue) => {
   );
 };
 export { runningFormatter };
+
+const runningStatus = {
+  运行中: {
+    icon: 'icon-circle-dot',
+    text: '运行中',
+    color: '#28C65A', // 绿色
+  },
+  1: {
+    icon: 'icon-yichang',
+    text: '集群异常',
+    color: '#FF0000', // 红色
+  },
+  2: {
+    icon: 'icon-dlf-shujuhugoujian',
+    text: '构建中',
+    color: '#0000FF', // 蓝色
+  },
+  3: {
+    icon: 'icon-shanchu',
+    text: ' 删除中',
+    color: '#FF00FF', // 牡丹红
+  },
+  4: {
+    icon: 'icon-icon-',
+    text: '等待构建',
+    color: '#FFFF00', // 黄色
+  },
+};
