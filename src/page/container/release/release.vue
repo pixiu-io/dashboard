@@ -1,6 +1,6 @@
 <template>
   <el-card class="title-card-container">
-    <div class="font-container">Release</div>
+    <div class="font-container">Helm</div>
     <PiXiuYaml :refresh="getReleases"></PiXiuYaml>
   </el-card>
 
