@@ -141,6 +141,7 @@
               <el-tooltip content="修改名称">
                 <pixiu-icon
                   name="icon-bianji"
+                  style="cursor: pointer"
                   size="12px"
                   type="iconfont"
                   color="#909399"
@@ -154,6 +155,7 @@
                 <el-tooltip content="复制">
                   <pixiu-icon
                     name="icon-copy"
+                    style="cursor: pointer"
                     size="12px"
                     type="iconfont"
                     color="#909399"
