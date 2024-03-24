@@ -67,10 +67,19 @@ const formatterImage = (row, column, cellValue) => {
       ${images.map((image) => `<div class="pixiu-table-formatter">${image}</div>`).join('')}
     </div>
   `;
-  const imagesStr = images.join(',');
+
   return (
     <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
-      <div class="pixiu-ellipsis-style">{imagesStr}</div>
+      <div>
+        {images.map((label) => (
+          <el-tag round>
+            <div style="display: flex">
+              <pixiu-icon name="icon-docker" size="16px" type="iconfont" color="#409EFF" />
+              <div style="margin-left: 5px"> {label}</div>
+            </div>
+          </el-tag>
+        ))}
+      </div>
     </el-tooltip>
   );
 };
