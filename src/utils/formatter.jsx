@@ -246,6 +246,13 @@ const formatterNamespace = (row, column, cellValue) => {
 export { formatterNamespace };
 
 const runningFormatter = (row, column, cellValue) => {
-  return <div>运行中</div>;
+  return (
+    <div style="display: flex">
+      <div>
+        <pixiu-icon name="icon-circle-dot" size="12px" type="iconfont" color="#28C65A" />
+      </div>
+      <div style="margin-left: 6px"> 运行中</div>
+    </div>
+  );
 };
 export { runningFormatter };
