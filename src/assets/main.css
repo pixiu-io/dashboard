@@ -200,12 +200,13 @@
 }
 
 .dropdown-item-buttons {
-  color: #1919191;
+  color: #191919;
   font-size: 12px;
 }
 
 /* 表格表头样式 */
 .pixiu-table-header {
+  color: #595959;
   font-size: 12px;
 }
 
