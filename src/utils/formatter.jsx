@@ -1,4 +1,5 @@
 import { formatTimestamp } from '@/utils/utils';
+import { ref } from 'vue';
 
 const formatterTime = (row, column, cellValue) => {
   const time = formatTimestamp(cellValue);
@@ -68,19 +69,44 @@ const formatterImage = (row, column, cellValue) => {
     </div>
   `;
 
+  let isOpen = ref(false);
+
+  let showImages = ref(images.slice(0, 2));
+
   return (
-    <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
-      <div>
-        {images.map((image) => (
-          <el-tag round>
-            <div style="display: flex">
-              <pixiu-icon name="icon-docker" size="16px" type="iconfont" color="#409EFF" />
-              <div style="margin-left: 6px"> {image}</div>
-            </div>
-          </el-tag>
-        ))}
-      </div>
-    </el-tooltip>
+    <el-space direction="vertical">
+      <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
+        <el-space direction="vertical">
+          {showImages.value.map((image) => (
+            <el-tag round>
+              <div style="display: flex">
+                <pixiu-icon name="icon-docker" size="16px" type="iconfont" color="#409EFF" />
+                <div style="margin-left: 6px"> {image}</div>
+              </div>
+            </el-tag>
+          ))}
+        </el-space>
+      </el-tooltip>
+      {images.length > 2 ? (
+        <el-space
+          onClick={() => {
+            isOpen.value = !isOpen.value;
+            if (isOpen.value) {
+              showImages.value = images;
+            } else {
+              showImages.value = images.slice(0, 2);
+            }
+          }}
+        >
+          <span style="color:#409EFF">{isOpen.value ? '收起' : '更多'}</span>
+          <pixiu-icon
+            name={isOpen.value ? 'CaretTop' : 'CaretBottom'}
+            size="16px"
+            color="#409EFF"
+          />
+        </el-space>
+      ) : null}
+    </el-space>
   );
 };
 export { formatterImage };
