@@ -159,7 +159,7 @@
 .table-inline-word {
   text-align: center;
   font-size: 12px;
-  color: #29292b;
+  color: #191919;
 }
 
 .table-inline-btn {
@@ -213,7 +213,7 @@
 /* 表格内容 */
 .pixiu-table-formatter {
   font-size: 12px;
-  color: #29292b;
+  color: #191919;
 }
 
 /* 表单内通用按钮样式 */
@@ -355,7 +355,7 @@
 /* 隐藏样式 */
 .pixiu-ellipsis-style {
   font-size: 12px;
-  color: #29292b;
+  color: #191919;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
