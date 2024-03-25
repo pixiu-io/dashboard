@@ -59,18 +59,30 @@
         header-row-class-name="pixiu-table-header"
         @selection-change="handleSelectionChange"
       >
-        <!-- <el-table-column type="selection" width="30" /> -->
-        <el-table-column prop="metadata.name" sortable label="名称" min-width="120px">
+        <el-table-column type="selection" width="30" />
+        <el-table-column prop="metadata.name" sortable label="节点名称">
           <template #default="scope">
-            <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
-              {{ scope.row.metadata.name }}
-            </el-link>
+            <div style="display: flex">
+              <div>
+                <el-link
+                  class="global-table-world"
+                  :underline="false"
+                  type="primary"
+                  @click="jumpRoute(scope.row)"
+                >
+                  {{ scope.row.metadata.name }}
+                </el-link>
+              </div>
+            </div>
           </template>
         </el-table-column>
 
-        <el-table-column label="状态" prop="status" :formatter="formatStatus"> </el-table-column>
+        <el-table-column label="状态" prop="status" :formatter="runningFormatter">
+        </el-table-column>
         <el-table-column label="角色" prop="metadata" :formatter="formatRole"> </el-table-column>
-        <el-table-column label="地址" prop="status" :formatter="formatIp"> </el-table-column>
+
+        <!-- <el-table-column label="节点配置" prop="status" :formatter="formatIp"> </el-table-column> -->
+        <el-table-column label="IP地址" prop="status" :formatter="formatIp"> </el-table-column>
         <el-table-column label="节点版本" prop="status.nodeInfo.kubeletVersion"> </el-table-column>
         <el-table-column
           label="运行时"
@@ -86,20 +98,18 @@
         >
         </el-table-column>
 
-        <el-table-column fixed="right" label="操作" width="180px">
+        <el-table-column fixed="right" label="操作" width="150px">
           <template #default="scope">
             <el-button
               size="small"
               type="text"
-              style="margin-right: -22px; margin-left: -10px; color: #006eff"
+              style="margin-right: -26px; margin-left: -10px; color: #006eff"
               @click="editDeployment(scope.row)"
             >
-              编辑标签
+              监控
             </el-button>
 
-            <el-button type="text" size="small" style="color: #006eff" @click="drain(scope.row)">
-              驱逐
-            </el-button>
+            <el-button type="text" size="small" style="color: #006eff"> 事件 </el-button>
             <el-dropdown>
               <span class="cluster-dropdown">
                 更多
@@ -108,6 +118,10 @@
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
+                  <el-dropdown-item class="dropdown-item-buttons"> 编辑标签 </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons" @click="drain(scope.row)">
+                    驱逐
+                  </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
                     :disabled="
@@ -149,7 +163,7 @@ import { getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getNodeList } from '@/services/kubernetes/nodeService';
-import { formatterTime } from '@/utils/formatter';
+import { formatterTime, runningFormatter } from '@/utils/formatter';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
