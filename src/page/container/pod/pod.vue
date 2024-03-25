@@ -51,22 +51,14 @@
         header-row-class-name="pixiu-table-header"
         :cell-style="{
           'font-size': '12px',
-          color: '#29292b',
+          color: '#191919',
         }"
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="30" />
-
-        <el-table-column prop="metadata.name" sortable label="名称" min-width="120px">
+        <el-table-column prop="metadata.name" sortable label="实例名称" min-width="100px">
           <template #default="scope">
-            <el-link
-              class="global-table-world"
-              :underline="false"
-              type="primary"
-              @click="jumpRoute(scope.row)"
-            >
-              <span class="name-text-line">{{ scope.row.metadata.name }}</span>
-            </el-link>
+            {{ scope.row.metadata.name }}
           </template>
         </el-table-column>
 
