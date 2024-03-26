@@ -184,6 +184,14 @@
       </div>
     </template>
 
+    <el-card class="app-docs" style="margin-top: -10px; height: 40px">
+      <el-icon
+        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+        ><WarningFilled
+      /></el-icon>
+      <div style="vertical-align: middle; margin-top: -40px">基于 WebShell 提供登陆容器的功能</div>
+    </el-card>
+
     <template #footer>
       <span class="dialog-footer">
         <el-button class="pixiu-delete-cancel-button" @click="cancelRemoteLogin">取消</el-button>
