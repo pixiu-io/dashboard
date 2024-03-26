@@ -160,39 +160,6 @@
     @confirm="confirm"
     @cancel="cancel"
   ></pixiuDialog>
-
-  <el-dialog
-    :model-value="data.remoteLogin.close"
-    style="color: #000000; font: 14px"
-    width="500px"
-    align-center
-    center
-    @close="cancelRemoteLogin"
-  >
-    <template #header>
-      <div
-        style="
-          text-align: left;
-          font-weight: bold;
-          padding-left: 5px;
-          margin-top: 5px;
-          font-size: 14.5px;
-          color: #191919;
-        "
-      >
-        远程登录
-      </div>
-    </template>
-
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button class="pixiu-delete-cancel-button" @click="cancelRemoteLogin">取消</el-button>
-        <el-button type="primary" class="pixiu-delete-confirm-button" @click="confirmRemoteLogin"
-          >确认</el-button
-        >
-      </span>
-    </template>
-  </el-dialog>
 </template>
 
 <script setup lang="jsx">
@@ -251,10 +218,6 @@ const data = reactive({
     objectName: 'Pod',
     deleteName: '',
   },
-
-  remoteLogin: {
-    close: false,
-  },
 });
 
 const onChange = (v) => {
@@ -283,16 +246,6 @@ const createPod = () => {
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.metadata.name;
-};
-
-const cancelRemoteLogin = () => {
-  data.remoteLogin.close = false;
-};
-
-const confirmRemoteLogin = () => {};
-
-const handleRemoteLoginDialog = (row) => {
-  data.remoteLogin.close = true;
 };
 
 const confirm = async () => {
