@@ -124,7 +124,7 @@
           header-row-class-name="pixiu-table-header"
           :cell-style="{
             'font-size': '12px',
-            color: '#29292b',
+            color: '#191919',
           }"
         >
           <el-table-column type="selection" width="30px" />
