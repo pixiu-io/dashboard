@@ -44,7 +44,7 @@
         style="margin-top: 2px; width: 100%"
         :cell-style="{
           'font-size': '12px',
-          color: '#29292b',
+          color: '#191919',
         }"
         header-row-class-name="pixiu-table-header"
       >
