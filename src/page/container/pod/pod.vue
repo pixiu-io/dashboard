@@ -192,6 +192,31 @@
       <div style="vertical-align: middle; margin-top: -40px">基于 WebShell 提供登陆容器的功能</div>
     </el-card>
 
+    <el-form>
+      <el-form-item label="容器名称" style="width: 100%; color: #191919">
+        <el-select
+          v-model="data.remoteLogin.container"
+          @change="changeContainer"
+          style="margin-left: 25px; width: 300px"
+        >
+          <el-option
+            v-for="item in data.remoteLogin.containers"
+            :key="item"
+            :value="item"
+            :label="item"
+          />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="Command">
+        <el-radio-group v-model="data.remoteLogin.command" style="margin-left: 15px">
+          <el-radio label="/bin/sh">/bin/sh</el-radio>
+          <el-radio label="/bin/bash">/bin/bash</el-radio>
+        </el-radio-group>
+      </el-form-item>
+    </el-form>
+    <div style="margin-top: -20px" />
+
     <template #footer>
       <span class="dialog-footer">
         <el-button class="pixiu-delete-cancel-button" @click="cancelRemoteLogin">取消</el-button>
@@ -262,6 +287,9 @@ const data = reactive({
 
   remoteLogin: {
     close: false,
+    container: '',
+    containers: [],
+    command: '/bin/sh',
   },
 });
 

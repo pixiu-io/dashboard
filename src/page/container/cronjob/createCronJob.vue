@@ -48,16 +48,14 @@
             </el-form-item>
 
             <el-form-item label="命名空间" style="width: 300px">
-              <div class="namespace-select-container">
-                <el-select v-model="data.form.metadata.namespace" @change="changeNamespace">
-                  <el-option
-                    v-for="item in data.namespaces"
-                    :key="item"
-                    :value="item"
-                    :label="item"
-                  />
-                </el-select>
-              </div>
+              <el-select v-model="data.form.metadata.namespace" @change="changeNamespace">
+                <el-option
+                  v-for="item in data.namespaces"
+                  :key="item"
+                  :value="item"
+                  :label="item"
+                />
+              </el-select>
             </el-form-item>
 
             <el-form-item label="Labels" style="margin-top: 10px">
