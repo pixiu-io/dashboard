@@ -74,7 +74,7 @@
           :formatter="formatterLabels"
         /> -->
 
-        <el-table-column prop="status.podIP" label="实例IP">
+        <!-- <el-table-column prop="status.podIP" label="实例IP">
           <template #default="scope">
             {{ scope.row.status.podIP }}
             <el-tooltip content="复制">
@@ -89,9 +89,10 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        />
-        <el-table-column prop="status.hostIP" label="所在节点" />
+        /> -->
 
+        <el-table-column prop="status.podIP" label="实例IP"> </el-table-column>
+        <el-table-column prop="status.hostIP" label="所在节点"></el-table-column>
         <el-table-column prop="status" label="重启次数" :formatter="formatterRestartCount" />
 
         <!-- <el-table-column label="镜像" prop="spec.containers" :formatter="formatterImage" /> -->
@@ -122,13 +123,21 @@
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
                   <el-dropdown-item class="dropdown-item-buttons"> 日志 </el-dropdown-item>
-
-                  <el-dropdown-item class="dropdown-item-buttons" @click="openShell(scope.row)">
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleRemoteLoginDialog(scope.row)"
+                  >
                     远程登陆
                   </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons"> 详情 </el-dropdown-item>
                   <el-dropdown-item class="dropdown-item-buttons"> 容器列表 </el-dropdown-item>
                   <el-dropdown-item class="dropdown-item-buttons"> 查看YAML </el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons"> 删除 </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleDeleteDialog(scope.row)"
+                  >
+                    删除
+                  </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -151,6 +160,39 @@
     @confirm="confirm"
     @cancel="cancel"
   ></pixiuDialog>
+
+  <el-dialog
+    :model-value="data.remoteLogin.close"
+    style="color: #000000; font: 14px"
+    width="500px"
+    align-center
+    center
+    @close="cancelRemoteLogin"
+  >
+    <template #header>
+      <div
+        style="
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+          margin-top: 5px;
+          font-size: 14.5px;
+          color: #191919;
+        "
+      >
+        远程登录
+      </div>
+    </template>
+
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-delete-cancel-button" @click="cancelRemoteLogin">取消</el-button>
+        <el-button type="primary" class="pixiu-delete-confirm-button" @click="confirmRemoteLogin"
+          >确认</el-button
+        >
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="jsx">
@@ -158,14 +200,11 @@ import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
-import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getTableData, searchData } from '@/utils/utils';
 import {
   formatterTime,
   formatterPodStatus,
-  formatterImage,
-  formatterLabels,
   formatterRestartCount,
   formatterNamespace,
 } from '@/utils/formatter';
@@ -212,6 +251,10 @@ const data = reactive({
     objectName: 'Pod',
     deleteName: '',
   },
+
+  remoteLogin: {
+    close: false,
+  },
 });
 
 const onChange = (v) => {
@@ -240,6 +283,16 @@ const createPod = () => {
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.metadata.name;
+};
+
+const cancelRemoteLogin = () => {
+  data.remoteLogin.close = false;
+};
+
+const confirmRemoteLogin = () => {};
+
+const handleRemoteLoginDialog = (row) => {
+  data.remoteLogin.close = true;
 };
 
 const confirm = async () => {
