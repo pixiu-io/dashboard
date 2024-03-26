@@ -10,7 +10,54 @@ const formatterTime = (row, column, cellValue) => {
 };
 export { formatterTime };
 
+const formatterIcon = (color, status) => {
+  return (
+    <div style="display: flex">
+      <div>
+        <pixiu-icon name="icon-circle-dot" size="12px" type="iconfont" color={color} />
+      </div>
+      <div style="margin-left: 6px"> {status}</div>
+    </div>
+  );
+};
+
 const formatterPodStatus = (row, column, cellValue) => {
+  let phase = cellValue.phase;
+  if (phase == 'Failed') {
+    phase = cellValue.reason;
+  } else if (phase == 'Pending') {
+    const containerStatuses = cellValue.containerStatuses;
+    for (let i = 0; i < containerStatuses.length; i++) {
+      if (containerStatuses[i].ready) {
+        continue;
+      }
+      const waiting = containerStatuses[i].state.waiting;
+      if (waiting) {
+        return formatterIcon('#0000FF', waiting.reason);
+      }
+    }
+    return formatterIcon('#FFFF00', phase);
+  }
+
+  if (phase == 'Running') {
+    const containerStatuses = cellValue.containerStatuses;
+    for (let i = 0; i < containerStatuses.length; i++) {
+      if (containerStatuses[i].ready) {
+        continue;
+      }
+      const waiting = containerStatuses[i].state.waiting;
+      if (waiting) {
+        return formatterIcon('#FFA500', waiting.reason);
+      }
+    }
+    return formatterIcon('#28C65A', phase);
+  }
+
+  return formatterIcon('#28C65A', phase);
+};
+export { formatterPodStatus };
+
+const formatterPodStatusBackup = (row, column, cellValue) => {
   let phase = cellValue.phase;
   if (phase == 'Failed') {
     phase = cellValue.reason;
@@ -54,7 +101,6 @@ const formatterPodStatus = (row, column, cellValue) => {
   }
   return <div>{phase}</div>;
 };
-export { formatterPodStatus };
 
 const formatterImage = (row, column, cellValue) => {
   let images = [];
