@@ -64,15 +64,17 @@
 
         <el-table-column prop="status" label="状态" :formatter="formatterPodStatus" />
 
-        <el-table-column
+        <el-table-column prop="metadata.namespace" label="命名空间" :formatter="formatterNamespace">
+        </el-table-column>
+
+        <!-- <el-table-column
           prop="metadata.labels"
           label="Labels"
           min-width="200px"
           :formatter="formatterLabels"
-        />
+        /> -->
 
-        <el-table-column prop="status.hostIP" label="所在节点" />
-        <el-table-column prop="status.podIP" label="实例IP" min-width="100px">
+        <!-- <el-table-column prop="status.podIP" label="实例IP">
           <template #default="scope">
             {{ scope.row.status.podIP }}
             <el-tooltip content="复制">
@@ -87,7 +89,10 @@
             </el-tooltip>
           </template>
         </el-table-column>
-        />
+        /> -->
+
+        <el-table-column prop="status.podIP" label="实例IP"> </el-table-column>
+        <el-table-column prop="status.hostIP" label="所在节点"></el-table-column>
         <el-table-column prop="status" label="重启次数" :formatter="formatterRestartCount" />
 
         <!-- <el-table-column label="镜像" prop="spec.containers" :formatter="formatterImage" /> -->
@@ -98,25 +103,44 @@
           :formatter="formatterTime"
         />
 
-        <el-table-column fixed="right" label="操作" width="160px">
+        <el-table-column fixed="right" label="操作" width="150px">
           <template #default="scope">
             <el-button
               size="small"
               type="text"
               style="margin-right: -25px; margin-left: -10px; color: #006eff"
-              @click="handleDeleteDialog(scope.row)"
             >
-              删除Pod
+              监控
             </el-button>
 
-            <el-button
-              type="text"
-              size="small"
-              style="color: #006eff"
-              @click="openShell(scope.row)"
-            >
-              远程登陆
-            </el-button>
+            <el-button type="text" size="small" style="color: #006eff"> 事件 </el-button>
+
+            <el-dropdown>
+              <span class="el-dropdown-link">
+                更多
+                <pixiu-icon name="icon-xiala" size="12px" type="iconfont" color="#006eff" />
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu class="dropdown-buttons">
+                  <el-dropdown-item class="dropdown-item-buttons"> 日志 </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleRemoteLoginDialog(scope.row)"
+                  >
+                    远程登陆
+                  </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons"> 详情 </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons"> 容器列表 </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons"> 查看YAML </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleDeleteDialog(scope.row)"
+                  >
+                    删除
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </template>
         </el-table-column>
 
@@ -143,15 +167,13 @@ import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
-import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getTableData, searchData } from '@/utils/utils';
 import {
   formatterTime,
   formatterPodStatus,
-  formatterImage,
-  formatterLabels,
   formatterRestartCount,
+  formatterNamespace,
 } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
