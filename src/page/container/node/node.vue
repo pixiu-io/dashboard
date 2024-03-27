@@ -118,7 +118,12 @@
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
-                  <el-dropdown-item class="dropdown-item-buttons"> 编辑标签 </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleEditLabelDialog(scope.row)"
+                  >
+                    编辑标签
+                  </el-dropdown-item>
                   <el-dropdown-item class="dropdown-item-buttons" @click="drain(scope.row)">
                     驱逐
                   </el-dropdown-item>
@@ -153,6 +158,40 @@
       <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
+
+  <el-dialog
+    :model-value="data.labelData.close"
+    style="color: #000000; font: 14px"
+    width="500px"
+    align-center
+    center
+    @close="confirmEditLabel"
+  >
+    <template #header>
+      <div
+        style="
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+          margin-top: 5px;
+          font-size: 14.5px;
+          color: #191919;
+        "
+      >
+        标签管理
+      </div>
+    </template>
+
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-delete-cancel-button" @click="cancelEditLabel">取消</el-button>
+        <el-button type="primary" class="pixiu-delete-confirm-button" @click="confirmEditLabel"
+          >确认</el-button
+        >
+      </span>
+      <div style="margin-bottom: 10px" />
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="jsx">
@@ -184,6 +223,11 @@ const data = reactive({
   loading: false,
 
   nodeList: [],
+
+  labelData: {
+    close: false,
+    labels: [],
+  },
 });
 
 onMounted(() => {
@@ -368,6 +412,18 @@ const formatIp = (row, column, cellValue) => {
     }
   }
   return <div>{address}</div>;
+};
+
+const handleEditLabelDialog = (row) => {
+  data.labelData.close = true;
+};
+
+const cancelEditLabel = () => {
+  data.labelData.close = false;
+};
+
+const confirmEditLabel = () => {
+  data.labelData.close = false;
 };
 </script>
 
