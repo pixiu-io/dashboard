@@ -122,7 +122,7 @@
                     class="dropdown-item-buttons"
                     @click="handleEditLabelDialog(scope.row)"
                   >
-                    编辑标签
+                    标签管理
                   </el-dropdown-item>
                   <el-dropdown-item class="dropdown-item-buttons" @click="drain(scope.row)">
                     驱逐
