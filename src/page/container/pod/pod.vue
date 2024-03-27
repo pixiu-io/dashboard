@@ -160,6 +160,73 @@
     @confirm="confirm"
     @cancel="cancel"
   ></pixiuDialog>
+
+  <el-dialog
+    :model-value="data.remoteLogin.close"
+    style="color: #000000; font: 14px"
+    width="500px"
+    align-center
+    center
+    @close="cancelRemoteLogin"
+  >
+    <template #header>
+      <div
+        style="
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+          margin-top: 5px;
+          font-size: 14.5px;
+          color: #191919;
+        "
+      >
+        远程登录
+      </div>
+    </template>
+
+    <el-card class="app-docs" style="margin-top: -10px; height: 40px">
+      <el-icon
+        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+        ><WarningFilled
+      /></el-icon>
+      <div style="vertical-align: middle; margin-top: -40px">基于 WebShell 提供登陆容器的功能</div>
+    </el-card>
+
+    <el-form>
+      <el-form-item label="容器名称">
+        <el-select
+          v-model="data.remoteLogin.container"
+          style="margin-left: 25px; width: 300px"
+          @change="changeContainer"
+        >
+          <el-option
+            v-for="item in data.remoteLogin.containers"
+            :key="item"
+            :value="item"
+            :label="item"
+          />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="Command">
+        <el-radio-group v-model="data.remoteLogin.command" style="margin-left: 15px">
+          <el-radio label="/bin/sh">/bin/sh</el-radio>
+          <el-radio label="/bin/bash">/bin/bash</el-radio>
+        </el-radio-group>
+      </el-form-item>
+    </el-form>
+    <div style="margin-top: -25px" />
+
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-delete-cancel-button" @click="cancelRemoteLogin">取消</el-button>
+        <el-button type="primary" class="pixiu-delete-confirm-button" @click="confirmRemoteLogin"
+          >确认</el-button
+        >
+      </span>
+      <div style="margin-bottom: 10px" />
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="jsx">
@@ -218,6 +285,14 @@ const data = reactive({
     objectName: 'Pod',
     deleteName: '',
   },
+
+  remoteLogin: {
+    close: false,
+    pod: '',
+    container: '',
+    containers: [],
+    command: '/bin/sh',
+  },
 });
 
 const onChange = (v) => {
@@ -246,6 +321,44 @@ const createPod = () => {
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.metadata.name;
+};
+
+const cancelRemoteLogin = () => {
+  data.remoteLogin.close = false;
+  data.remoteLogin.container = '';
+  data.remoteLogin.containers = [];
+  data.remoteLogin.pod = '';
+  data.remoteLogin.command = '/bin/sh';
+};
+
+const confirmRemoteLogin = () => {
+  window.open(
+    '/#/podshell?pod=' +
+      data.remoteLogin.pod +
+      '&namespace=' +
+      data.namespace +
+      '&cluster=' +
+      data.cluster +
+      '&container=' +
+      data.remoteLogin.container +
+      '&command=' +
+      data.remoteLogin.command,
+    '_blank',
+    'width=1000,height=600',
+  );
+  cancelRemoteLogin();
+};
+
+const handleRemoteLoginDialog = (row) => {
+  data.remoteLogin.close = true;
+  data.remoteLogin.pod = row.metadata.name;
+  data.remoteLogin.containers = [];
+  for (let c of row.spec.containers) {
+    data.remoteLogin.containers.push(c.name);
+  }
+  if (data.remoteLogin.containers.length >= 1) {
+    data.remoteLogin.container = data.remoteLogin.containers[0];
+  }
 };
 
 const confirm = async () => {
@@ -403,13 +516,6 @@ const openWindowShell = () => {
 </script>
 
 <style scoped="scoped">
-.font-container {
-  margin-top: -5px;
-  font-weight: bold;
-  font-size: 16px;
-  vertical-align: middle;
-}
-
 .namespace-container {
   font-size: 14px;
   margin-top: -2px;
