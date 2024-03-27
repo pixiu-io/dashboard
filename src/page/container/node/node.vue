@@ -182,6 +182,39 @@
       </div>
     </template>
 
+    <el-form>
+      <el-form-item
+        v-for="(item, index) in data.configMapLabels"
+        :key="index"
+        style="margin-top: -20px"
+      >
+        <el-form-item prop="item.key">
+          <el-input v-model="item.key" style="width: 300px" />
+        </el-form-item>
+        <div style="margin-right: 8px; margin-left: 8px"></div>
+        =
+        <div>
+          <el-input v-model="item.value" style="width: 350px; margin-left: 20px" />
+        </div>
+        <div
+          style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
+          @click="deleteLabel(index)"
+        >
+          删除
+        </div>
+        <el-divider />
+      </el-form-item>
+
+      <el-form-item>
+        <el-button
+          class="table-inline-btn"
+          style="margin-left: -14px; margin-right: -20px; margin-top: 15px"
+          @click="addLabel"
+          >+ 添加</el-button
+        >
+      </el-form-item>
+    </el-form>
+
     <template #footer>
       <span class="dialog-footer">
         <el-button class="pixiu-delete-cancel-button" @click="cancelEditLabel">取消</el-button>
