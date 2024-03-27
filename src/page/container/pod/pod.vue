@@ -193,7 +193,11 @@
     </el-card>
 
     <el-form>
-      <el-form-item label="容器名称">
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">容器名称</span>
+        </template>
+
         <el-select
           v-model="data.remoteLogin.container"
           style="margin-left: 25px; width: 300px"
@@ -208,10 +212,16 @@
         </el-select>
       </el-form-item>
 
-      <el-form-item label="Command">
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">Command</span>
+        </template>
+
         <el-radio-group v-model="data.remoteLogin.command" style="margin-left: 15px">
-          <el-radio label="/bin/sh">/bin/sh</el-radio>
-          <el-radio label="/bin/bash">/bin/bash</el-radio>
+          <el-radio label="/bin/sh">
+            <span style="font-size: 13px">/bin/sh</span>
+          </el-radio>
+          <el-radio label="/bin/bash"> <span style="font-size: 13px"> /bin/bash</span></el-radio>
         </el-radio-group>
       </el-form-item>
     </el-form>
