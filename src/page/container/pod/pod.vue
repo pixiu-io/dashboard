@@ -196,8 +196,8 @@
       <el-form-item label="容器名称">
         <el-select
           v-model="data.remoteLogin.container"
-          @change="changeContainer"
           style="margin-left: 25px; width: 300px"
+          @change="changeContainer"
         >
           <el-option
             v-for="item in data.remoteLogin.containers"
