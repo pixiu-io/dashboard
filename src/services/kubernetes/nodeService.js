@@ -23,3 +23,20 @@ export const getNode = async (cluster, name) => {
   );
   return [result, err];
 };
+
+export const patchNode = async (cluster, name, data) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'patch',
+      url: `/pixiu/proxy/${cluster}/api/v1/nodes/${name}`,
+      data: data,
+      config: {
+        header: {
+          'Content-Type': 'application/strategic-merge-patch+json',
+        },
+      },
+    }),
+  );
+
+  return [result, err];
+};

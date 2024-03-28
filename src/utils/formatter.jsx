@@ -309,6 +309,38 @@ const runningFormatter = (row, column, cellValue) => {
 };
 export { runningFormatter };
 
+const formatNodeRole = (row, column, cellValue) => {
+  let roles = [];
+  let ls = JSON.parse(JSON.stringify(cellValue.labels));
+  for (let [label, v] of Object.entries(ls)) {
+    if (label.indexOf('node-role.kubernetes.io') !== -1) {
+      let parts = label.split('/');
+      roles.push(parts[1]);
+    }
+  }
+
+  return formatString('', '', roles.toString());
+};
+export { formatNodeRole };
+
+const formatNodeIp = (row, column, cellValue) => {
+  let address = '';
+  for (let i of cellValue.addresses) {
+    if (i.type === 'InternalIP') {
+      address = i.address;
+      break;
+    }
+  }
+  return (
+    <el-tooltip effect="light" placement="top" content={address} raw-content>
+      <div>
+        <div class="pixiu-ellipsis-style">{address}</div>
+      </div>
+    </el-tooltip>
+  );
+};
+export { formatNodeIp };
+
 const runningStatus = {
   运行中: {
     name: 'icon-circle-dot',
