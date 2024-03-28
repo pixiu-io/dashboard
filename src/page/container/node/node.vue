@@ -79,16 +79,32 @@
 
         <el-table-column label="状态" prop="status" :formatter="runningFormatter">
         </el-table-column>
-        <el-table-column label="角色" prop="metadata" :formatter="formatRole"> </el-table-column>
+
+        <!--
+        <el-table-column label="角色" prop="metadata" :formatter="formatNodeRole">
+        </el-table-column> -->
 
         <!-- <el-table-column label="节点配置" prop="status" :formatter="formatIp"> </el-table-column> -->
-        <el-table-column label="IP地址" prop="status" :formatter="formatIp"> </el-table-column>
+        <el-table-column label="IP地址" prop="status" :formatter="formatNodeIp"> </el-table-column>
+
         <el-table-column label="节点版本" prop="status.nodeInfo.kubeletVersion"> </el-table-column>
         <el-table-column
           label="运行时"
           prop="status.nodeInfo.containerRuntimeVersion"
-          :formatter="formatStr"
+          :formatter="formatString"
         >
+        </el-table-column>
+
+        <el-table-column label="可调度" width="80px">
+          <template #default="scope">
+            <el-switch
+              v-model="scope.row.spec.unschedulable"
+              inline-prompt
+              size="small"
+              @change="changeScheduleStatus(scope.row)"
+            >
+            </el-switch>
+          </template>
         </el-table-column>
 
         <el-table-column
@@ -162,7 +178,7 @@
   <el-dialog
     :model-value="data.labelData.close"
     style="color: #000000; font: 14px"
-    width="750px"
+    width="720px"
     align-center
     center
     @close="confirmEditLabel"
@@ -181,6 +197,16 @@
         标签管理
       </div>
     </template>
+
+    <el-card class="app-docs" style="margin-top: -10px; height: 40px">
+      <el-icon
+        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+        ><WarningFilled
+      /></el-icon>
+      <div style="vertical-align: middle; margin-top: -40px">
+        附加到 Kubernetes 对象上的键值对，用于指定对用户有意义且相关的对象的标识属性。
+      </div>
+    </el-card>
 
     <el-form style="margin-top: 5px">
       <el-form-item
@@ -234,8 +260,14 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
-import { getNodeList } from '@/services/kubernetes/nodeService';
-import { formatterTime, runningFormatter } from '@/utils/formatter';
+import { getNodeList, patchNode } from '@/services/kubernetes/nodeService';
+import {
+  formatterTime,
+  runningFormatter,
+  formatString,
+  formatNodeRole,
+  formatNodeIp,
+} from '@/utils/formatter';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -259,6 +291,7 @@ const data = reactive({
 
   labelData: {
     close: false,
+    name: '',
     labels: [],
   },
 });
@@ -294,17 +327,6 @@ const searchNodes = async () => {
   data.tableData = searchData(data.pageInfo, data.nodeList);
 };
 
-const addLabel = () => {
-  data.labelData.labels.push({
-    key: '',
-    value: '',
-  });
-};
-
-const deleteLabel = (index) => {
-  data.labelData.labels.splice(index, 1);
-};
-
 const drain = (row) => {
   ElMessageBox.confirm('此操作将驱逐 ' + row.metadata.name + ' 上的 pod. 是否继续?', '节点驱逐', {
     confirmButtonText: '确定',
@@ -335,6 +357,31 @@ const jumpRoute = (row) => {
       name: row.metadata.name,
     },
   });
+};
+
+const changeScheduleStatus = async (row) => {
+  const scheduleStatus = row.spec.unschedulable;
+  let patchData = {
+    spec: {
+      unschedulable: true,
+    },
+  };
+  if (scheduleStatus) {
+    patchData.spec.unschedulable = null;
+  }
+
+  try {
+    const resp = await proxy.$http({
+      method: 'patch',
+      url: `/pixiu/proxy/${data.cluster}/api/v1/nodes/${row.metadata.name}`,
+      data: patchData,
+      config: {
+        header: {
+          'Content-Type': 'application/strategic-merge-patch+json',
+        },
+      },
+    });
+  } catch (err) {}
 };
 
 const cordon = (row) => {
@@ -378,96 +425,72 @@ const unCordon = (row) => {
     return;
   }
 
-  ElMessageBox.confirm('开启 ' + row.metadata.name + ' 节点调度. 是否继续?', '节点调度', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-    draggable: true,
-  })
-    .then(async () => {
-      const res = await proxy.$http({
-        method: 'patch',
-        data: {
-          spec: {
-            unschedulable: null,
-          },
-        },
-        url: `/pixiu/proxy/${data.cluster}/api/v1/nodes/${row.metadata.name}`,
-        config: {
-          header: {
-            'Content-Type': 'application/strategic-merge-patch+json',
-          },
-        },
-      });
-      ElMessage({
-        type: 'success',
-        message: '已开启 ' + row.metadata.name + ' 节点调度',
-      });
-
-      getNodes();
-    })
-    .catch(() => {});
-};
-
-const formatStatus = (row, column, cellValue) => {
-  let status = 'NotReady';
-  for (let c of cellValue.conditions) {
-    if (c.type === 'Ready') {
-      if (c.status === 'True') {
-        status = 'Ready';
-      }
-      break;
-    }
-  }
-  if (status === 'NotReady') {
-    return <div class="color-red-word">{status}</div>;
-  }
-  return <div class="color-green-word">{status}</div>;
-};
-
-const formatRole = (row, column, cellValue) => {
-  let roles = [];
-  let ls = JSON.parse(JSON.stringify(cellValue.labels));
-  for (let [label, v] of Object.entries(ls)) {
-    if (label.indexOf('node-role.kubernetes.io') !== -1) {
-      let parts = label.split('/');
-      roles.push(parts[1]);
-    }
+  const patchData = {
+    spec: {
+      unschedulable: null,
+    },
+  };
+  const [res, err] = patchNode(data.cluster, row.metadata.name, patchData);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
   }
 
-  let roleContent = roles.toString();
-  return formatStr('', '', roleContent);
-};
-
-const formatStr = (row, column, cellValue) => {
-  return (
-    <el-tooltip effect="light" placement="top" content={cellValue}>
-      <div class="hidden-style">{cellValue}</div>
-    </el-tooltip>
-  );
-};
-
-const formatIp = (row, column, cellValue) => {
-  let address = '';
-  for (let i of cellValue.addresses) {
-    if (i.type === 'InternalIP') {
-      address = i.address;
-      break;
-    }
-  }
-  return <div>{address}</div>;
+  proxy.$message.success('已开启 ' + row.metadata.name + ' 节点调度');
+  getNodes();
 };
 
 const handleEditLabelDialog = (row) => {
+  data.labelData.labels = [];
+  data.labelData.name = row.metadata.name;
+  const labels = row.metadata.labels;
+  if (labels !== undefined) {
+    for (let label in labels) {
+      data.labelData.labels.push({
+        key: label,
+        value: labels[label],
+      });
+    }
+  }
+
   data.labelData.close = true;
+};
+
+const addLabel = () => {
+  data.labelData.labels.push({
+    key: '',
+    value: '',
+  });
+};
+
+const deleteLabel = (index) => {
+  data.labelData.labels.splice(index, 1);
 };
 
 const cancelEditLabel = () => {
   data.labelData.close = false;
+  data.labelData.name = '';
+  data.labelData.labels = [];
 };
 
 const confirmEditLabel = () => {
-  data.labelData.close = false;
+  const newLabels = {};
+  for (let item of data.labelData.labels) {
+    newLabels[item.key] = item.value;
+  }
+
+  const patchData = {
+    metadata: {
+      labels: newLabels,
+    },
+  };
+
+  cancelEditLabel();
+  // const [res, err] = patchNode(data.cluster, data.labelData.name, patchData);
+  // if (err) {
+  //   proxy.$message.error(err.response.data.message);
+  //   return;
+  // }
 };
 </script>
 
