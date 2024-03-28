@@ -10,8 +10,8 @@
             margin-right: 8px;
             margin-top: -25px;
           "
-          ><WarningFilled
-        /></el-icon>
+          ><WarningFilled />
+        </el-icon>
 
         <div style="vertical-align: middle; margin-top: -27px; margin-left: 10px">
           Pixiu DevOps 继承了 Tekton 的设计理念，提供了一套完整的 CI/CD 解决方案。
