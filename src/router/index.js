@@ -58,6 +58,7 @@ import {
   CronJob,
   CreateCronJob,
   EditCronJob,
+  DevOps,
 } from '@/page';
 
 const routes = [
@@ -469,7 +470,7 @@ const routes = [
         meta: {
           title: 'DevOps',
         },
-        component: Cicd,
+        component: DevOps,
       },
       {
         path: 'user',
