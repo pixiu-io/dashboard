@@ -182,11 +182,11 @@
       </div>
     </template>
 
-    <el-form>
+    <el-form style="margin-top: 5px">
       <el-form-item
         v-for="(item, index) in data.labelData.labels"
         :key="index"
-        style="margin-top: -20px"
+        style="margin-top: -10px"
       >
         <el-form-item prop="item.key">
           <el-input v-model="item.key" style="width: 300px" />
@@ -201,13 +201,12 @@
         >
           删除
         </div>
-        <el-divider />
       </el-form-item>
 
       <el-form-item>
         <el-button
           class="table-inline-btn"
-          style="margin-left: -14px; margin-right: -20px; margin-top: 15px; cursor: pointer"
+          style="margin-left: -14px; margin-right: -20px; cursor: pointer"
           @click="addLabel"
           >+ 添加</el-button
         >
