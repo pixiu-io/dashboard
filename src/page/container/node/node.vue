@@ -141,9 +141,10 @@
                     标签管理
                   </el-dropdown-item>
                   <el-dropdown-item class="dropdown-item-buttons" @click="drain(scope.row)">
-                    驱逐
+                    节点驱逐
                   </el-dropdown-item>
-                  <el-dropdown-item
+                  <el-dropdown-item class="dropdown-item-buttons"> 查看YAML </el-dropdown-item>
+                  <!-- <el-dropdown-item
                     class="dropdown-item-buttons"
                     :disabled="
                       scope.row.spec.unschedulable === undefined ||
@@ -159,7 +160,7 @@
                     @click="cordon(scope.row)"
                   >
                     设置不可调度
-                  </el-dropdown-item>
+                  </el-dropdown-item> -->
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
