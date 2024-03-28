@@ -368,6 +368,42 @@ const changeScheduleStatus = async (row) => {
   } catch (err) {}
 };
 
+const cordon = (row) => {
+  if (row.spec.unschedulable === true) {
+    return;
+  }
+
+  ElMessageBox.confirm('关闭 ' + row.metadata.name + ' 节点调度. 是否继续?', '节点调度', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+    draggable: true,
+  })
+    .then(async () => {
+      const res = await proxy.$http({
+        method: 'patch',
+        data: {
+          spec: {
+            unschedulable: true,
+          },
+        },
+        url: `/pixiu/proxy/${data.cluster}/api/v1/nodes/${row.metadata.name}`,
+        config: {
+          header: {
+            'Content-Type': 'application/strategic-merge-patch+json',
+          },
+        },
+      });
+      ElMessage({
+        type: 'success',
+        message: '已关闭 ' + row.metadata.name + ' 节点调度',
+      });
+
+      getNodes();
+    })
+    .catch(() => {});
+};
+
 const handleEditLabelDialog = (row) => {
   data.labelData.labels = [];
   data.labelData.name = row.metadata.name;
