@@ -144,23 +144,6 @@
                     节点驱逐
                   </el-dropdown-item>
                   <el-dropdown-item class="dropdown-item-buttons"> 查看YAML </el-dropdown-item>
-                  <!-- <el-dropdown-item
-                    class="dropdown-item-buttons"
-                    :disabled="
-                      scope.row.spec.unschedulable === undefined ||
-                      scope.row.spec.unschedulable === false
-                    "
-                    @click="unCordon(scope.row)"
-                  >
-                    设置可调度
-                  </el-dropdown-item>
-                  <el-dropdown-item
-                    class="dropdown-item-buttons"
-                    :disabled="scope.row.spec.unschedulable === true"
-                    @click="cordon(scope.row)"
-                  >
-                    设置不可调度
-                  </el-dropdown-item> -->
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -383,62 +366,6 @@ const changeScheduleStatus = async (row) => {
       },
     });
   } catch (err) {}
-};
-
-const cordon = (row) => {
-  if (row.spec.unschedulable === true) {
-    return;
-  }
-
-  ElMessageBox.confirm('关闭 ' + row.metadata.name + ' 节点调度. 是否继续?', '节点调度', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-    draggable: true,
-  })
-    .then(async () => {
-      const res = await proxy.$http({
-        method: 'patch',
-        data: {
-          spec: {
-            unschedulable: true,
-          },
-        },
-        url: `/pixiu/proxy/${data.cluster}/api/v1/nodes/${row.metadata.name}`,
-        config: {
-          header: {
-            'Content-Type': 'application/strategic-merge-patch+json',
-          },
-        },
-      });
-      ElMessage({
-        type: 'success',
-        message: '已关闭 ' + row.metadata.name + ' 节点调度',
-      });
-
-      getNodes();
-    })
-    .catch(() => {});
-};
-
-const unCordon = (row) => {
-  if (row.spec.unschedulable === undefined || row.spec.unschedulable === false) {
-    return;
-  }
-
-  const patchData = {
-    spec: {
-      unschedulable: null,
-    },
-  };
-  const [res, err] = patchNode(data.cluster, row.metadata.name, patchData);
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-
-  proxy.$message.success('已开启 ' + row.metadata.name + ' 节点调度');
-  getNodes();
 };
 
 const handleEditLabelDialog = (row) => {
