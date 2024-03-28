@@ -213,6 +213,8 @@
       </el-form-item>
     </el-form>
 
+    <div style="margin-top: -20px" />
+
     <template #footer>
       <span class="dialog-footer">
         <el-button class="pixiu-delete-cancel-button" @click="cancelEditLabel">取消</el-button>
