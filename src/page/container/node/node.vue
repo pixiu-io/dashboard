@@ -162,7 +162,7 @@
   <el-dialog
     :model-value="data.labelData.close"
     style="color: #000000; font: 14px"
-    width="500px"
+    width="750px"
     align-center
     center
     @close="confirmEditLabel"
@@ -184,19 +184,18 @@
 
     <el-form>
       <el-form-item
-        v-for="(item, index) in data.configMapLabels"
+        v-for="(item, index) in data.labelData.labels"
         :key="index"
         style="margin-top: -20px"
       >
         <el-form-item prop="item.key">
           <el-input v-model="item.key" style="width: 300px" />
         </el-form-item>
-        <div style="margin-right: 8px; margin-left: 8px"></div>
-        =
         <div>
-          <el-input v-model="item.value" style="width: 350px; margin-left: 20px" />
+          <el-input v-model="item.value" style="width: 300px; margin-left: 20px" />
         </div>
         <div
+          class="table-inline-btn"
           style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
           @click="deleteLabel(index)"
         >
@@ -208,7 +207,7 @@
       <el-form-item>
         <el-button
           class="table-inline-btn"
-          style="margin-left: -14px; margin-right: -20px; margin-top: 15px"
+          style="margin-left: -14px; margin-right: -20px; margin-top: 15px; cursor: pointer"
           @click="addLabel"
           >+ 添加</el-button
         >
@@ -292,6 +291,17 @@ const getNodes = async () => {
 
 const searchNodes = async () => {
   data.tableData = searchData(data.pageInfo, data.nodeList);
+};
+
+const addLabel = () => {
+  data.labelData.labels.push({
+    key: '',
+    value: '',
+  });
+};
+
+const deleteLabel = (index) => {
+  data.labelData.labels.splice(index, 1);
 };
 
 const drain = (row) => {
