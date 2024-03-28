@@ -55,7 +55,7 @@ import EditJob from './container/job/editJob.vue';
 import CronJob from './container/cronjob/cronJob.vue';
 import CreateCronJob from './container/cronjob/createCronJob.vue';
 import EditCronJob from './container/cronjob/editCronJob.vue';
-import DevOps from './cicd/devops/devops.vue'
+import DevOps from './cicd/devops/devops.vue';
 export {
   Home,
   Login,
