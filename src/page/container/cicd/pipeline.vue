@@ -1,3 +1,3 @@
 <template>
-  <div>DevOps</div>
+  <div>Pipeline</div>
 </template>
