@@ -100,6 +100,8 @@
             <el-switch
               v-model="scope.row.spec.unschedulable"
               inline-prompt
+              :active-value="false"
+              :inactive-value="true"
               size="small"
               @change="changeScheduleStatus(scope.row)"
             >
@@ -449,12 +451,17 @@ const confirmEditLabel = () => {
     },
   };
 
-  cancelEditLabel();
-  // const [res, err] = patchNode(data.cluster, data.labelData.name, patchData);
-  // if (err) {
-  //   proxy.$message.error(err.response.data.message);
-  //   return;
-  // }
+  console.log('patchData', patchData);
+  const patchDataString = JSON.stringify(patchData);
+  console.log('dddd', patchDataString);
+
+  try {
+    const [res, err] = patchNode(data.cluster, data.labelData.name, patchDataString);
+    if (err) {
+      proxy.$message.error(err.response.data.message);
+      return;
+    }
+  } catch (err) {}
 };
 </script>
 
