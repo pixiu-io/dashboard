@@ -201,7 +201,7 @@ const data = reactive({
     },
     {
       id: 5,
-      name: 'CI CD',
+      name: 'Cicd',
       icon: 'icon-fuwu',
       iconType: 'iconfont',
       children: [
