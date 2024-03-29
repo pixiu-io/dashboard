@@ -356,18 +356,11 @@ const changeScheduleStatus = async (row) => {
     patchData.spec.unschedulable = null;
   }
 
-  try {
-    const resp = await proxy.$http({
-      method: 'patch',
-      url: `/pixiu/proxy/${data.cluster}/api/v1/nodes/${row.metadata.name}`,
-      data: patchData,
-      config: {
-        header: {
-          'Content-Type': 'application/strategic-merge-patch+json',
-        },
-      },
-    });
-  } catch (err) {}
+  const [res, err] = patchNode(data.cluster, row.metadata.name, patchData);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
 };
 
 const cordon = (row) => {
@@ -450,10 +443,6 @@ const confirmEditLabel = () => {
       labels: newLabels,
     },
   };
-
-  console.log('patchData', patchData);
-  const patchDataString = JSON.stringify(patchData);
-  console.log('dddd', patchDataString);
 
   try {
     const [res, err] = patchNode(data.cluster, data.labelData.name, patchDataString);
