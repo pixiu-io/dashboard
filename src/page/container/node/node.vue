@@ -100,8 +100,6 @@
             <el-switch
               v-model="scope.row.spec.unschedulable"
               inline-prompt
-              :active-value="false"
-              :inactive-value="true"
               size="small"
               @change="changeScheduleStatus(scope.row)"
             >
@@ -356,7 +354,7 @@ const changeScheduleStatus = async (row) => {
     patchData.spec.unschedulable = null;
   }
 
-  const [res, err] = patchNode(data.cluster, row.metadata.name, patchData);
+  const [res, err] = await patchNode(data.cluster, row.metadata.name, patchData);
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
@@ -432,7 +430,7 @@ const cancelEditLabel = () => {
   data.labelData.labels = [];
 };
 
-const confirmEditLabel = () => {
+const confirmEditLabel = async () => {
   const newLabels = {};
   for (let item of data.labelData.labels) {
     newLabels[item.key] = item.value;
@@ -444,13 +442,11 @@ const confirmEditLabel = () => {
     },
   };
 
-  try {
-    const [res, err] = patchNode(data.cluster, data.labelData.name, patchDataString);
-    if (err) {
-      proxy.$message.error(err.response.data.message);
-      return;
-    }
-  } catch (err) {}
+  const [res, err] = await patchNode(data.cluster, data.labelData.name, patchDataString);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
 };
 </script>
 
