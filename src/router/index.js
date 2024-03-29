@@ -8,7 +8,6 @@ import {
   User,
   RegisterUser,
   Menu,
-  Cicd,
   Cluster,
   InsertCluster,
   CreateCluster,
@@ -58,7 +57,10 @@ import {
   CronJob,
   CreateCronJob,
   EditCronJob,
-  DevOps,
+  Task,
+  TaskRun,
+  Pipeline,
+  PipelineRun,
 } from '@/page';
 
 const routes = [
@@ -302,6 +304,38 @@ const routes = [
             },
             component: StorageClass,
           },
+          {
+            path: 'pipeline',
+            name: 'pipeline',
+            meta: {
+              title: 'Pipeline',
+            },
+            component: Pipeline,
+          },
+          {
+            path: 'pipelinerun',
+            name: 'pipelinerun',
+            meta: {
+              title: 'PipelineRun',
+            },
+            component: PipelineRun,
+          },
+          {
+            path: 'task',
+            name: 'task',
+            meta: {
+              title: 'Task',
+            },
+            component: Task,
+          },
+          {
+            path: 'taskrun',
+            name: 'taskrun',
+            meta: {
+              title: 'TaskRun',
+            },
+            component: TaskRun,
+          },
         ],
       },
       // 命名空间路由
@@ -463,14 +497,6 @@ const routes = [
           title: 'EditStatefulSet',
         },
         component: EditStatefulSet,
-      },
-      {
-        path: 'cicd',
-        name: 'Cicd',
-        meta: {
-          title: 'DevOps',
-        },
-        component: DevOps,
       },
       {
         path: 'user',

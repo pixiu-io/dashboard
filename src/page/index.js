@@ -1,4 +1,3 @@
-import Cicd from './cicd/cicd.vue';
 import Cluster from './container/cluster/cluster.vue';
 import InsertCluster from './container/cluster/insertCluster.vue';
 import CreateCluster from './container/cluster/createCluster.vue';
@@ -55,7 +54,10 @@ import EditJob from './container/job/editJob.vue';
 import CronJob from './container/cronjob/cronJob.vue';
 import CreateCronJob from './container/cronjob/createCronJob.vue';
 import EditCronJob from './container/cronjob/editCronJob.vue';
-import DevOps from './cicd/devops/devops.vue';
+import Task from './container/cicd/task.vue';
+import TaskRun from './container/cicd/taskrun.vue';
+import Pipeline from './container/cicd/pipeline.vue';
+import PipelineRun from './container/cicd/pipelinerun.vue';
 export {
   Home,
   Login,
@@ -64,7 +66,6 @@ export {
   Setting,
   User,
   RegisterUser,
-  Cicd,
   Kubernetes,
   Deployment,
   CreateDeployment,
@@ -114,5 +115,8 @@ export {
   CronJob,
   CreateCronJob,
   EditCronJob,
-  DevOps,
+  Task,
+  TaskRun,
+  Pipeline,
+  PipelineRun,
 };
