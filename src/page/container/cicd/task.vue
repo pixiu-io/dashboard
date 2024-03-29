@@ -160,6 +160,8 @@ const data = reactive({
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
+
+  getTasks();
 });
 
 const getTasks = async () => {

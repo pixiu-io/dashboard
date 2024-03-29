@@ -95,12 +95,12 @@ onMounted(() => {
       icon: 'icon-acrrongqijingxiangfuwu',
       iconType: 'iconfont',
     },
-    {
-      name: 'DevOps',
-      url: '/cicd',
-      icon: 'DataLine',
-      iconType: 'el',
-    },
+    // {
+    //   name: 'DevOps',
+    //   url: '/cicd',
+    //   icon: 'DataLine',
+    //   iconType: 'el',
+    // },
     {
       name: '用户管理',
       url: '/user',
