@@ -242,7 +242,7 @@
   <el-dialog
     :model-value="data.drainData.close"
     style="color: #000000; font: 14px"
-    width="720px"
+    width="530px"
     align-center
     center
   >
@@ -267,11 +267,21 @@
         ><WarningFilled
       /></el-icon>
       <div style="vertical-align: middle; margin-top: -40px">
-        附加到 Kubernetes 对象上的键值对，用于指定对用户有意义且相关的对象的标识属性。
+        此操作将清空节点上的 Pod，在节点清空期间，不要求应用具有高可用性。
       </div>
     </el-card>
 
-    <div style="margin-top: -20px" />
+    <el-form>
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">忽略DaemonSet</span>
+        </template>
+
+        <el-switch v-model="data.drainData.ignoreDaemonsets" inline-prompt size="small" />
+      </el-form-item>
+    </el-form>
+
+    <div style="margin-top: -25px" />
 
     <template #footer>
       <span class="dialog-footer">
@@ -330,6 +340,7 @@ const data = reactive({
   drainData: {
     close: false,
     name: '',
+    ignoreDaemonsets: true,
   },
 });
 
