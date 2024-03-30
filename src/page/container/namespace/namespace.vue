@@ -65,11 +65,20 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="状态" prop="status" :formatter="formatStatus"> </el-table-column>
+        <el-table-column label="状态" prop="status" sortable :formatter="formatStatus">
+        </el-table-column>
+
+        <el-table-column
+          prop="metadata.labels"
+          label="Labels"
+          sortable
+          :formatter="formatterLabels"
+        />
 
         <el-table-column
           label="创建时间"
           prop="metadata.creationTimestamp"
+          sortable
           :formatter="formatterTime"
         >
         </el-table-column>
@@ -105,6 +114,7 @@
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
                   <el-dropdown-item class="dropdown-item-buttons"> 编辑YAML </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons"> 强制删除 </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -138,7 +148,7 @@ import { getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
-import { formatterTime, formatterIcon } from '@/utils/formatter';
+import { formatterTime, formatterIcon, formatterLabels } from '@/utils/formatter';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
