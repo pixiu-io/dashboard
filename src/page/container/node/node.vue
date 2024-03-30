@@ -144,9 +144,10 @@
                     class="dropdown-item-buttons"
                     @click="handleDrainDialog(scope.row)"
                   >
-                    节点驱逐
+                    清空节点
                   </el-dropdown-item>
                   <el-dropdown-item class="dropdown-item-buttons"> 查看YAML </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons"> 删除 </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -257,7 +258,7 @@
           color: #191919;
         "
       >
-        节点驱散
+        清空节点
       </div>
     </template>
 
@@ -292,7 +293,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
-import { getNodeList, patchNode, getNode } from '@/services/kubernetes/nodeService';
+import { getNodeList, patchNode, getNode, drainNode } from '@/services/kubernetes/nodeService';
 import {
   formatterTime,
   runningFormatter,
@@ -364,28 +365,6 @@ const searchNodes = async () => {
   data.tableData = searchData(data.pageInfo, data.nodeList);
 };
 
-const drain = (row) => {
-  ElMessageBox.confirm('此操作将驱逐 ' + row.metadata.name + ' 上的 pod. 是否继续?', '节点驱逐', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-    draggable: true,
-  })
-    .then(async () => {
-      // const res = await proxy.$http({
-      //   method: 'delete',
-      //   url: `/pixiu/proxy/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${row.metadata.name}`,
-      // });
-      ElMessage({
-        type: 'success',
-        message: '驱逐 ' + row.metadata.name + ' 成功',
-      });
-
-      getNodes();
-    })
-    .catch(() => {}); // 取消
-};
-
 const jumpRoute = (row) => {
   router.push({
     name: 'NodeDetail',
@@ -452,6 +431,7 @@ const cordon = (row) => {
 
 const handleDrainDialog = async (row) => {
   data.drainData.close = true;
+  data.drainData.name = row.metadata.name;
 };
 
 const cancelDrain = () => {
@@ -459,7 +439,19 @@ const cancelDrain = () => {
   data.drainData.name = '';
 };
 
-const confirmDrain = () => {};
+const confirmDrain = async () => {
+  const [node, err] = await drainNode(data.cluster, data.drainData.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  proxy.$notify.success({
+    title: 'Node',
+    message: `已清空 Node(${data.drainData.name}) 上的所有Pod`,
+  });
+  cancelDrain();
+};
 
 const addLabel = () => {
   data.labelData.labels.push({ key: '', value: '' });

@@ -24,6 +24,16 @@ export const getNode = async (cluster, name) => {
   return [result, err];
 };
 
+export const drainNode = async (cluster, name) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: `/pixiu/proxy/${cluster}/api/v1/nodes/${name}`,
+    }),
+  );
+  return [result, err];
+};
+
 export const patchNode = async (cluster, name, data) => {
   const [err, result] = await awaitWrap(
     http({
