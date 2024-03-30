@@ -140,7 +140,10 @@
                   >
                     标签管理
                   </el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons" @click="drain(scope.row)">
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleDrainDialog(scope.row)"
+                  >
                     节点驱逐
                   </el-dropdown-item>
                   <el-dropdown-item class="dropdown-item-buttons"> 查看YAML </el-dropdown-item>
@@ -235,6 +238,51 @@
       <div style="margin-bottom: 10px" />
     </template>
   </el-dialog>
+
+  <el-dialog
+    :model-value="data.drainData.close"
+    style="color: #000000; font: 14px"
+    width="720px"
+    align-center
+    center
+  >
+    <template #header>
+      <div
+        style="
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+          margin-top: 5px;
+          font-size: 14.5px;
+          color: #191919;
+        "
+      >
+        节点驱散
+      </div>
+    </template>
+
+    <el-card class="app-docs" style="margin-top: -10px; height: 40px">
+      <el-icon
+        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+        ><WarningFilled
+      /></el-icon>
+      <div style="vertical-align: middle; margin-top: -40px">
+        附加到 Kubernetes 对象上的键值对，用于指定对用户有意义且相关的对象的标识属性。
+      </div>
+    </el-card>
+
+    <div style="margin-top: -20px" />
+
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-delete-cancel-button" @click="cancelDrain">取消</el-button>
+        <el-button type="primary" class="pixiu-delete-confirm-button" @click="confirmDrain"
+          >确认</el-button
+        >
+      </span>
+      <div style="margin-bottom: 10px" />
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="jsx">
@@ -277,6 +325,11 @@ const data = reactive({
     close: false,
     name: '',
     labels: [],
+  },
+
+  drainData: {
+    close: false,
+    name: '',
   },
 });
 
@@ -395,6 +448,10 @@ const cordon = (row) => {
       getNodes();
     })
     .catch(() => {});
+};
+
+const handleDrainDialog = async (row) => {
+  data.drainData.close = true;
 };
 
 const addLabel = () => {
