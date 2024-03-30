@@ -17,7 +17,7 @@
           font-size: 14.5px;
         "
       >
-        删除{{ objectName }}
+        删除 {{ objectName }}
       </div>
     </template>
 
