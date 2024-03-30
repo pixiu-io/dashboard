@@ -76,7 +76,7 @@
 
         <el-table-column label="描述" prop="-"> <span>-</span> </el-table-column>
 
-        <el-table-column fixed="right" label="操作" width="180px">
+        <el-table-column fixed="right" label="操作" width="200px">
           <template #default="scope">
             <el-button
               size="small"
