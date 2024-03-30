@@ -72,7 +72,8 @@
           prop="metadata.labels"
           label="Labels"
           sortable
-          :formatter="formatterLabels"
+          :formatter="formatterLabelsBackup2"
+          width="380px"
         />
 
         <el-table-column
@@ -148,7 +149,7 @@ import { getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
-import { formatterTime, formatterIcon, formatterLabels } from '@/utils/formatter';
+import { formatterTime, formatterIcon, formatterLabelsBackup2 } from '@/utils/formatter';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();

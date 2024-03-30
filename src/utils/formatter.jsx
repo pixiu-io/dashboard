@@ -133,7 +133,10 @@ const formatterImage = (row, column, cellValue) => {
 export { formatterImage };
 
 const formatterLabelsBackup = (row, column, cellValue) => {
-  if (!cellValue) return <div>-</div>;
+  if (!cellValue) {
+    return <div>-</div>;
+  }
+
   const labels = Object.entries(cellValue).map(([key, value]) => {
     return `${key}: ${value}`;
   });
@@ -160,6 +163,39 @@ const formatterLabelsBackup = (row, column, cellValue) => {
     </el-tooltip>
   );
 };
+
+const formatterLabelsBackup2 = (row, column, cellValue) => {
+  if (!cellValue) return <div>-</div>;
+  const labels = Object.entries(cellValue).map(([key, value]) => {
+    return `${key}: ${value}`;
+  });
+
+  let labels1 = labels;
+  if (labels1.length > 2) {
+    labels1 = labels1.slice(0, 2);
+    labels1.push('...');
+  }
+
+  const displayContent = `
+    <div>
+      ${labels.map((label) => `<div class="pixiu-table-formatter">${label}</div>`).join('')}
+    </div>
+  `;
+
+  return (
+    <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
+      <div>
+        {labels1.map((label) => (
+          <el-tag round>
+            <div class="pixiu-ellipsis-style">{label}</div>
+          </el-tag>
+        ))}
+      </div>
+    </el-tooltip>
+  );
+};
+export { formatterLabelsBackup2 };
+
 const formatterLabels = (row, column, cellValue) => {
   if (!cellValue) return <div>-</div>;
   const labels = Object.entries(cellValue).map(([key, value]) => {
