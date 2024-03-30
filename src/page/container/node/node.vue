@@ -446,10 +446,6 @@ const confirmDrain = async () => {
     return;
   }
 
-  proxy.$notify.success({
-    title: 'Node',
-    message: `已清空 Node(${data.drainData.name}) 上的所有Pod`,
-  });
   cancelDrain();
 };
 
