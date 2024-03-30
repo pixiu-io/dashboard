@@ -2,7 +2,7 @@
   <el-dialog
     :model-value="closeEvent"
     style="color: #000000; font: 14px"
-    width="500px"
+    width="480px"
     align-center
     center
     @close="cancel"
@@ -21,19 +21,23 @@
       </div>
     </template>
 
+    <!-- <div style="margin-top: -6px; font-weight: bold; font-size: 13.5px; color: #000">
+      此操作将永久删除{{ objectName }} (<span style="color: red">{{ deleteName }}</span
+      >) 是否继续？
+    </div> -->
+
     <el-card class="app-docs" style="margin-top: -10px; height: 40px">
       <el-icon
         style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
         ><WarningFilled
       /></el-icon>
       <div style="vertical-align: middle; margin-top: -40px">
-        此操作将永久删除{{ objectName }} (<span style="color: red">{{ deleteName }}</span
-        >) 是否继续？
+        此操作将永久删除 {{ objectName }} (<span style="color: red">{{ deleteName }}</span
+        >)， 是否继续？
       </div>
     </el-card>
 
-    <div style="margin-top: -25px" />
-
+    <div style="margin-top: -30px" />
     <template #footer>
       <span class="dialog-footer">
         <el-button class="pixiu-delete-cancel-button" @click="cancel">取消</el-button>
@@ -41,7 +45,7 @@
           >确认</el-button
         >
       </span>
-      <div style="margin-bottom: 10px" />
+      <div style="margin-bottom: 8px" />
     </template>
   </el-dialog>
 </template>
