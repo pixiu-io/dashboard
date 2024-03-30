@@ -55,7 +55,7 @@
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
+import { getCurrentInstance, onMounted, reactive } from 'vue';
 import PixiuMenu from '@/components/menu/index.vue';
 import { useRouter } from 'vue-router';
 
@@ -202,7 +202,7 @@ const data = reactive({
     {
       id: 5,
       name: 'Cicd',
-      icon: 'icon-fuwu',
+      icon: 'icon-tekton',
       iconType: 'iconfont',
       children: [
         {

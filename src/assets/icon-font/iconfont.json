@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "24347874",
+      "name": "tekton",
+      "font_class": "tekton",
+      "unicode": "e6db",
+      "unicode_decimal": 59099
+    },
+    {
       "icon_id": "17675156",
       "name": "edit",
       "font_class": "edit",
