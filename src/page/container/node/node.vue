@@ -165,7 +165,7 @@
     width="720px"
     align-center
     center
-    @close="confirmEditLabel"
+    @close="cancelEditLabel"
   >
     <template #header>
       <div
@@ -405,10 +405,16 @@ const deleteLabel = (index) => {
   data.labelData.labels.splice(index, 1);
 };
 
-const handleEditLabelDialog = (row) => {
+const handleEditLabelDialog = async (row) => {
   data.labelData.name = row.metadata.name;
   data.labelData.labels = [];
-  const labels = row.metadata.labels;
+  const [node, err1] = await getNode(data.cluster, data.labelData.name);
+  if (err1) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  const labels = node.metadata.labels;
   if (labels !== undefined) {
     for (let label in labels) {
       data.labelData.labels.push({
@@ -458,7 +464,7 @@ const confirmEditLabel = async () => {
     return;
   }
 
-  data.labelData.close = false;
+  cancelEditLabel();
 };
 </script>
 
