@@ -65,7 +65,8 @@
         <el-table-column prop="metadata.namespace" label="命名空间" :formatter="formatterNamespace">
         </el-table-column>
 
-        <!-- <el-table-column label="镜像" prop="spec.containers" :formatter="formatterImage" /> -->
+        <el-table-column prop="spec.steps" label="镜像名称" :formatter="formatterImage">
+        </el-table-column>
 
         <el-table-column
           prop="metadata.creationTimestamp"
@@ -83,7 +84,7 @@
               详情
             </el-button>
 
-            <el-button type="text" size="small" style="color: #006eff"> 事件 </el-button>
+            <el-button type="text" size="small" style="color: #006eff"> 事件</el-button>
 
             <el-dropdown>
               <span class="el-dropdown-link">
@@ -92,8 +93,7 @@
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
-                  <el-dropdown-item class="dropdown-item-buttons"> 详情 </el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons"> 查看YAML </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons">YAML</el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
                     @click="handleDeleteDialog(scope.row)"
@@ -110,25 +110,25 @@
           <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
         </template>
       </el-table>
-
       <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
+
+  <pixiuDialog
+    :close-event="data.deleteDialog.close"
+    :object-name="data.deleteDialog.objectName"
+    :delete-name="data.deleteDialog.deleteName"
+    @confirm="confirm"
+    @cancel="cancel"
+  ></pixiuDialog>
 </template>
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { getCurrentInstance, onMounted, reactive } from 'vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
-import { getTableData, searchData } from '@/utils/utils';
-import {
-  formatterTime,
-  formatterPodStatus,
-  formatterRestartCount,
-  formatterNamespace,
-} from '@/utils/formatter';
-import { getTaskList } from '@/services/cicd/taskService';
+import { formatterImage, formatterNamespace, formatterTime } from '@/utils/formatter';
+import { deleteTask, getTaskList } from '@/services/cicd/tektonService';
 
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
@@ -156,6 +156,12 @@ const data = reactive({
   namespace: 'default',
   filterNamespaces: [],
   namespaces: [],
+
+  deleteDialog: {
+    close: false,
+    objectName: 'Task',
+    deleteName: '',
+  },
 });
 
 onMounted(() => {
@@ -163,6 +169,37 @@ onMounted(() => {
 
   getTasks();
 });
+
+const handleDeleteDialog = (row) => {
+  data.deleteDialog.close = true;
+  data.deleteDialog.deleteName = row.metadata.name;
+};
+
+const confirm = async () => {
+  const [result, err] = await deleteTask(
+    data.cluster,
+    data.namespace,
+    data.deleteDialog.deleteName,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(
+    `${data.deleteDialog.objectName}(${data.deleteDialog.deleteName}) 删除成功`,
+  );
+
+  clean();
+  await getTasks();
+};
+
+const cancel = () => {
+  clean();
+};
+const clean = () => {
+  data.deleteDialog.close = false;
+  data.deleteDialog.deleteName = '';
+};
 
 const getTasks = async () => {
   data.loading = true;
