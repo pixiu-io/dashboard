@@ -20,6 +20,7 @@ const formatterIcon = (color, status) => {
     </div>
   );
 };
+export { formatterIcon };
 
 const formatterPodStatus = (row, column, cellValue) => {
   let phase = cellValue.phase;
