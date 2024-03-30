@@ -104,7 +104,6 @@ const formatterPodStatusBackup = (row, column, cellValue) => {
 
 const formatterImage = (row, column, cellValue) => {
   let images = [];
-  console.log('aaa', cellValue);
   for (let item of cellValue) {
     images.push(item.image);
   }
