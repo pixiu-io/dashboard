@@ -271,16 +271,6 @@
       </div>
     </el-card>
 
-    <el-form>
-      <el-form-item>
-        <template #label>
-          <span style="font-size: 13px; color: #191919">忽略DaemonSet</span>
-        </template>
-
-        <el-switch v-model="data.drainData.ignoreDaemonsets" inline-prompt size="small" />
-      </el-form-item>
-    </el-form>
-
     <div style="margin-top: -25px" />
 
     <template #footer>
@@ -340,7 +330,6 @@ const data = reactive({
   drainData: {
     close: false,
     name: '',
-    ignoreDaemonsets: true,
   },
 });
 
@@ -464,6 +453,13 @@ const cordon = (row) => {
 const handleDrainDialog = async (row) => {
   data.drainData.close = true;
 };
+
+const cancelDrain = () => {
+  data.drainData.close = false;
+  data.drainData.name = '';
+};
+
+const confirmDrain = () => {};
 
 const addLabel = () => {
   data.labelData.labels.push({ key: '', value: '' });
