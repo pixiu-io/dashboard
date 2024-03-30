@@ -44,13 +44,13 @@
         <!-- <el-table-column type="selection" width="30" /> -->
         <el-table-column prop="metadata.name" sortable label="命名空间">
           <template #default="scope">
-            <el-link
+            <!-- <el-link
               class="global-table-world"
               type="primary"
               @click="jumpNamespaceRoute(scope.row)"
-            >
-              {{ scope.row.metadata.name }}
-            </el-link>
+            > -->
+            {{ scope.row.metadata.name }}
+            <!-- </el-link> -->
 
             <!-- <el-tooltip content="复制">
               <pixiu-icon
