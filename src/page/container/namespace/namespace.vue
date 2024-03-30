@@ -140,7 +140,7 @@
 
   <el-dialog
     :model-value="data.quotaData.close"
-    style="color: #000000; font: 14px"
+    style="color: #191919; font: 14px"
     width="530px"
     align-center
     center
