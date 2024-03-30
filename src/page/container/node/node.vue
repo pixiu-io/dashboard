@@ -408,12 +408,12 @@ const deleteLabel = (index) => {
 const handleEditLabelDialog = async (row) => {
   data.labelData.name = row.metadata.name;
   data.labelData.labels = [];
+
   const [node, err1] = await getNode(data.cluster, data.labelData.name);
   if (err1) {
     proxy.$notify.error(err.response.data.message);
     return;
   }
-
   const labels = node.metadata.labels;
   if (labels !== undefined) {
     for (let label in labels) {
