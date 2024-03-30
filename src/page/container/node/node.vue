@@ -397,9 +397,17 @@ const cordon = (row) => {
     .catch(() => {});
 };
 
+const addLabel = () => {
+  data.labelData.labels.push({ key: '', value: '' });
+};
+
+const deleteLabel = (index) => {
+  data.labelData.labels.splice(index, 1);
+};
+
 const handleEditLabelDialog = (row) => {
-  data.labelData.labels = [];
   data.labelData.name = row.metadata.name;
+  data.labelData.labels = [];
   const labels = row.metadata.labels;
   if (labels !== undefined) {
     for (let label in labels) {
@@ -411,17 +419,6 @@ const handleEditLabelDialog = (row) => {
   }
 
   data.labelData.close = true;
-};
-
-const addLabel = () => {
-  data.labelData.labels.push({
-    key: '',
-    value: '',
-  });
-};
-
-const deleteLabel = (index) => {
-  data.labelData.labels.splice(index, 1);
 };
 
 const cancelEditLabel = () => {
@@ -457,11 +454,11 @@ const confirmEditLabel = async () => {
   };
   const [res, err] = await patchNode(data.cluster, data.labelData.name, patchData);
   if (err) {
-    proxy.$message.error(err.response.data.message);
+    proxy.$notify.error(err.response.data.message);
     return;
   }
 
-  cancelEditLabel();
+  data.labelData.close = false;
 };
 </script>
 
