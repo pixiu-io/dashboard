@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     :model-value="closeEvent"
-    style="color: #000000; font: 14px"
+    style="color: #191919; font: 14px"
     width="480px"
     align-center
     center
