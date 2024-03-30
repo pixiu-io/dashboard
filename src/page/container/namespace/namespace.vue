@@ -42,17 +42,17 @@
         @selection-change="handleSelectionChange"
       >
         <!-- <el-table-column type="selection" width="30" /> -->
-        <el-table-column prop="metadata.name" sortable label="名称" width="auto">
+        <el-table-column prop="metadata.name" sortable label="命名空间">
           <template #default="scope">
-            <el-link
+            <!-- <el-link
               class="global-table-world"
               type="primary"
               @click="jumpNamespaceRoute(scope.row)"
-            >
-              {{ scope.row.metadata.name }}
-            </el-link>
+            > -->
+            {{ scope.row.metadata.name }}
+            <!-- </el-link> -->
 
-            <el-tooltip content="复制">
+            <!-- <el-tooltip content="复制">
               <pixiu-icon
                 name="icon-copy"
                 size="11px"
@@ -61,42 +61,64 @@
                 color="#909399"
                 @click="copy(scope.row)"
               />
-            </el-tooltip>
+            </el-tooltip> -->
           </template>
         </el-table-column>
 
-        <el-table-column label="状态" prop="status" width="160px" :formatter="formatStatus">
+        <el-table-column label="状态" prop="status" sortable :formatter="formatStatus">
         </el-table-column>
+
+        <el-table-column
+          prop="metadata.labels"
+          label="Labels"
+          sortable
+          :formatter="formatterLabelsBackup2"
+          width="380px"
+        />
 
         <el-table-column
           label="创建时间"
           prop="metadata.creationTimestamp"
-          width="220px"
+          sortable
           :formatter="formatterTime"
         >
         </el-table-column>
 
         <el-table-column label="描述" prop="-"> <span>-</span> </el-table-column>
 
-        <el-table-column fixed="right" label="操作" width="180px">
+        <el-table-column fixed="right" label="操作" width="200px">
           <template #default="scope">
             <el-button
               size="small"
               type="text"
-              style="margin-right: -20px; margin-left: -10px; color: #006eff"
+              style="margin-right: -25px; margin-left: -10px; color: #006eff"
               @click="editDeployment(scope.row)"
             >
-              配额管理
+              管理配额
             </el-button>
 
             <el-button
               type="text"
               size="small"
-              style="margin-right: 1px; color: #006eff"
+              style="margin-right: -2px; color: #006eff"
               @click="handleDeleteDialog(scope.row)"
             >
               删除
             </el-button>
+
+            <el-dropdown>
+              <span class="cluster-dropdown">
+                更多
+                <div style="margin-left: 2px"></div>
+                <pixiu-icon name="icon-xiala" size="12px" type="iconfont" color="#006eff" />
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu class="dropdown-buttons">
+                  <el-dropdown-item class="dropdown-item-buttons"> 编辑YAML </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons"> 强制删除 </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </template>
         </el-table-column>
 
@@ -119,15 +141,15 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { getTableData, searchData } from '@/utils/utils';
-import { formatterTime } from '@/utils/formatter';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
-import { getNamespaceList, deleteNamespace } from '@/services/kubernetes/namespaceService';
 import useClipboard from 'vue-clipboard3';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { getNamespaceList, deleteNamespace } from '@/services/kubernetes/namespaceService';
+import { getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
+import { formatterTime, formatterIcon, formatterLabelsBackup2 } from '@/utils/formatter';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -136,7 +158,6 @@ const data = reactive({
   cluster: '',
   pageInfo: {
     page: 1,
-    query: '',
     total: 0,
     limit: 10,
     search: {
@@ -250,10 +271,9 @@ const jumpNamespaceRoute = (row) => {
 
 const formatStatus = (row, column, cellValue) => {
   if (cellValue.phase === 'Active') {
-    return <div class="color-green-word">{cellValue.phase}</div>;
+    return formatterIcon('#28C65A', '运行中');
   }
-
-  return <div>{cellValue.phase}</div>;
+  return formatterIcon('#FFFF00', cellValue.phase);
 };
 </script>
 
