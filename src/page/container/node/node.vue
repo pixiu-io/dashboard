@@ -244,7 +244,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
-import { getNodeList, patchNode } from '@/services/kubernetes/nodeService';
+import { getNodeList, patchNode, getNode } from '@/services/kubernetes/nodeService';
 import {
   formatterTime,
   runningFormatter,
@@ -436,17 +436,32 @@ const confirmEditLabel = async () => {
     newLabels[item.key] = item.value;
   }
 
+  const [node, err1] = await getNode(data.cluster, data.labelData.name);
+  if (err1) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  const oldLabels = node.metadata.labels;
+  for (let key in oldLabels) {
+    if (key in newLabels) {
+      continue;
+    }
+    newLabels[key] = null;
+  }
+
   const patchData = {
     metadata: {
       labels: newLabels,
     },
   };
-
-  const [res, err] = await patchNode(data.cluster, data.labelData.name, patchDataString);
+  const [res, err] = await patchNode(data.cluster, data.labelData.name, patchData);
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
+
+  cancelEditLabel();
 };
 </script>
 
