@@ -58,6 +58,7 @@ import Task from './container/cicd/task.vue';
 import TaskRun from './container/cicd/taskrun.vue';
 import Pipeline from './container/cicd/pipeline.vue';
 import PipelineRun from './container/cicd/pipelinerun.vue';
+import CreateTask from './container/cicd/createtask.vue';
 export {
   Home,
   Login,
@@ -119,4 +120,5 @@ export {
   TaskRun,
   Pipeline,
   PipelineRun,
+  CreateTask,
 };

@@ -61,6 +61,7 @@ import {
   TaskRun,
   Pipeline,
   PipelineRun,
+  CreateTask,
 } from '@/page';
 
 const routes = [
@@ -521,6 +522,14 @@ const routes = [
           title: '权限',
         },
         component: Menu,
+      },
+      {
+        path: 'tasks/createTask',
+        name: 'CreateTask',
+        meta: {
+          title: 'CreateTask',
+        },
+        component: CreateTask,
       },
     ],
   },
