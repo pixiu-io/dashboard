@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "21687034",
+      "name": "flowjob",
+      "font_class": "flowjob",
+      "unicode": "e681",
+      "unicode_decimal": 59009
+    },
+    {
+      "icon_id": "24636995",
+      "name": "devops",
+      "font_class": "devops",
+      "unicode": "e760",
+      "unicode_decimal": 59232
+    },
+    {
       "icon_id": "24347874",
       "name": "tekton",
       "font_class": "tekton",
