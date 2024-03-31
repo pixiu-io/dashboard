@@ -19,7 +19,7 @@
           @input="searchTasks"
         >
           <template #suffix>
-            <el-icon class="el-input__icon" @click="getPods">
+            <el-icon class="el-input__icon" @click="getTasks">
               <component :is="'Search'" />
             </el-icon>
           </template>
@@ -79,30 +79,44 @@
             <el-button
               size="small"
               type="text"
-              style="margin-right: -25px; margin-left: -10px; color: #006eff"
+              style="margin-right: -20px; margin-left: -10px; color: #006eff"
+              @click="handleDeleteDialog(scope.row)"
             >
-              详情
+              删除
+            </el-button>
+            <el-button
+              size="small"
+              type="text"
+              style="margin-right: -1px; margin-left: 5px; color: #006eff"
+              @click="handleEditYamlDialog(scope.row)"
+            >
+              编辑 YAML
             </el-button>
 
-            <el-button type="text" size="small" style="color: #006eff"> 事件</el-button>
+            <!--            <el-button type="text" size="small" style="color: #006eff"> 事件</el-button>-->
 
-            <el-dropdown>
-              <span class="el-dropdown-link">
-                更多
-                <pixiu-icon name="icon-xiala" size="12px" type="iconfont" color="#006eff" />
-              </span>
-              <template #dropdown>
-                <el-dropdown-menu class="dropdown-buttons">
-                  <el-dropdown-item class="dropdown-item-buttons">YAML</el-dropdown-item>
-                  <el-dropdown-item
-                    class="dropdown-item-buttons"
-                    @click="handleDeleteDialog(scope.row)"
-                  >
-                    删除
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
+            <!--            <el-dropdown>-->
+            <!--              <span class="el-dropdown-link">-->
+            <!--                更多-->
+            <!--                <pixiu-icon name="icon-xiala" size="12px" type="iconfont" color="#006eff" />-->
+            <!--              </span>-->
+            <!--              <template #dropdown>-->
+            <!--                <el-dropdown-menu class="dropdown-buttons">-->
+            <!--                  <el-dropdown-item-->
+            <!--                    class="dropdown-item-buttons"-->
+            <!--                    @click="handleDeleteDialog(scope.row)"-->
+            <!--                  >-->
+            <!--                    删除-->
+            <!--                  </el-dropdown-item>-->
+            <!--                  <el-dropdown-item-->
+            <!--                    class="dropdown-item-buttons"-->
+            <!--                    @click="handleEditYamlDialog(scope.row)"-->
+            <!--                  >-->
+            <!--                    编辑 YAML-->
+            <!--                  </el-dropdown-item>-->
+            <!--                </el-dropdown-menu>-->
+            <!--              </template>-->
+            <!--            </el-dropdown>-->
           </template>
         </el-table-column>
 
@@ -113,6 +127,28 @@
       <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
+
+  <el-dialog
+    :model-value="data.editYamlDialog"
+    style="color: #000000; font: 14px; margin-top: 50px"
+    width="800px"
+    center
+    @close="closeEditYamlDialog"
+  >
+    <template #header>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">YAML 设置</div>
+    </template>
+    <div style="margin-top: -18px"></div>
+    <MyCodeMirror ref="editYaml" :yaml="data.yaml" :height="650"></MyCodeMirror>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-small-cancel-button" @click="closeEditYamlDialog">取消</el-button>
+        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmEditYaml"
+          >确认</el-button
+        >
+      </span>
+    </template>
+  </el-dialog>
 
   <pixiuDialog
     :close-event="data.deleteDialog.close"
@@ -125,13 +161,16 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { getCurrentInstance, onMounted, reactive } from 'vue';
+import { getCurrentInstance, onMounted, reactive, ref } from 'vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { formatterImage, formatterNamespace, formatterTime } from '@/utils/formatter';
-import { deleteTask, getTaskList } from '@/services/cicd/tektonService';
+import { deleteTask, getTaskDetail, getTaskList, updateTask } from '@/services/cicd/tektonService';
 
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
+import jsYaml from 'js-yaml';
+import MyCodeMirror from '@/components/codemirror/index.vue';
+import { searchData } from '@/utils/utils';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -162,13 +201,72 @@ const data = reactive({
     objectName: 'Task',
     deleteName: '',
   },
+
+  yaml: '',
+  yamlName: '',
+  editYamlDialog: false,
 });
+
+const editYaml = ref();
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
 
   getTasks();
 });
+
+const filterMethod = (f) => {
+  if (f === undefined || f === '') {
+    data.filterNamespaces = data.namespaces;
+    return;
+  }
+
+  data.filterNamespaces = [];
+  for (let item of data.namespaces) {
+    if (item.includes(f)) {
+      data.filterNamespaces.push(item);
+    }
+  }
+};
+
+const changeNamespace = async (val) => {
+  localStorage.setItem('namespace', val);
+  data.namespace = val;
+
+  await getTasks();
+};
+
+const searchTasks = async () => {
+  data.tableData = searchData(data.pageInfo, data.taskList);
+};
+
+const confirmEditYaml = async () => {
+  const yamlData = jsYaml.load(editYaml.value.code);
+  const [result, err] = await updateTask(data.cluster, data.namespace, data.yamlName, yamlData);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+  proxy.$notify.success(`Task (${data.yamlName}) YAML 更新成功`);
+  closeEditYamlDialog();
+  await getTasks();
+};
+
+const closeEditYamlDialog = (row) => {
+  data.yaml = '';
+  data.yamlName = '';
+  data.editYamlDialog = false;
+};
+const handleEditYamlDialog = async (row) => {
+  data.yamlName = row.metadata.name;
+  const [result, err] = await getTaskDetail(data.cluster, data.namespace, data.yamlName);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  data.yaml = jsYaml.dump(result);
+  data.editYamlDialog = true;
+};
 
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
@@ -211,6 +309,11 @@ const getTasks = async () => {
   }
 
   data.taskList = result.items;
+};
+
+const createTask = () => {
+  const url = `/tasks/createTask?cluster=${data.cluster}`;
+  router.push(url);
 };
 </script>
 
