@@ -378,6 +378,62 @@ const formatNodeIp = (row, column, cellValue) => {
 };
 export { formatNodeIp };
 
+const formatterContainersCPU = (row, column, cellValue) => {
+  let result = [];
+  for (let container of cellValue) {
+    let req = '-';
+    let limit = '-';
+    const resources = container.resources;
+    if (resources.requests !== undefined && resources.requests.cpu !== undefined) {
+      req = resources.requests.cpu;
+    }
+    if (resources.limits !== undefined && resources.limits.cpu !== undefined) {
+      limit = resources.limits.cpu;
+    }
+    result.push({ request: req, limit: limit });
+  }
+
+  return (
+    <div>
+      {result.map((item) => (
+        <div style="display: block">
+          <div>{item.request}</div>
+          <div>{item.limit}</div>
+        </div>
+      ))}
+    </div>
+  );
+};
+export { formatterContainersCPU };
+
+const formatterContainersMem = (row, column, cellValue) => {
+  let result = [];
+  for (let container of cellValue) {
+    let req = '-';
+    let limit = '-';
+    const resources = container.resources;
+    if (resources.requests !== undefined && resources.requests.memory !== undefined) {
+      req = resources.requests.memory;
+    }
+    if (resources.limits !== undefined && resources.limits.memory !== undefined) {
+      limit = resources.limits.memory;
+    }
+    result.push({ request: req, limit: limit });
+  }
+
+  return (
+    <div>
+      {result.map((item) => (
+        <div style="display: block">
+          <div>{item.request}</div>
+          <div>{item.limit}</div>
+        </div>
+      ))}
+    </div>
+  );
+};
+export { formatterContainersMem };
+
 const runningStatus = {
   运行中: {
     name: 'icon-circle-dot',

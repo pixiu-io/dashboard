@@ -67,35 +67,41 @@
         <el-table-column prop="metadata.namespace" label="命名空间" :formatter="formatterNamespace">
         </el-table-column>
 
-        <!-- <el-table-column
-          prop="metadata.labels"
-          label="Labels"
-          min-width="200px"
-          :formatter="formatterLabels"
-        /> -->
+        <el-table-column prop="status.podIP" label="实例IP"> </el-table-column>
 
-        <!-- <el-table-column prop="status.podIP" label="实例IP">
+        <el-table-column prop="status.hostIP" sortable label="所在节点">
           <template #default="scope">
-            {{ scope.row.status.podIP }}
-            <el-tooltip content="复制">
-              <pixiu-icon
-                name="icon-copy"
-                size="11px"
-                type="iconfont"
-                class-name="icon-box"
-                color="#909399"
-                @click="copyIP(scope.row)"
-              />
-            </el-tooltip>
+            <div style="display: flex">
+              <div>
+                {{ scope.row.status.hostIP }}
+              </div>
+              <div style="margin-left: 5px">
+                <pixiu-icon
+                  name="icon-share"
+                  style="cursor: pointer"
+                  size="12px"
+                  type="iconfont"
+                  color="#191919"
+                />
+              </div>
+            </div>
           </template>
         </el-table-column>
-        /> -->
 
-        <el-table-column prop="status.podIP" label="实例IP"> </el-table-column>
-        <el-table-column prop="status.hostIP" label="所在节点"></el-table-column>
         <el-table-column prop="status" label="重启次数" :formatter="formatterRestartCount" />
 
         <!-- <el-table-column label="镜像" prop="spec.containers" :formatter="formatterImage" /> -->
+
+        <el-table-column
+          prop="spec.containers"
+          label="CPU申请值/限制值"
+          :formatter="formatterContainersCPU"
+        />
+        <el-table-column
+          prop="spec.containers"
+          label="内存申请值/限制值"
+          :formatter="formatterContainersMem"
+        />
 
         <el-table-column
           prop="metadata.creationTimestamp"
@@ -251,6 +257,8 @@ import {
   formatterPodStatus,
   formatterRestartCount,
   formatterNamespace,
+  formatterContainersCPU,
+  formatterContainersMem,
 } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';

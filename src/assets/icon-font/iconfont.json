@@ -6,18 +6,11 @@
   "description": "",
   "glyphs": [
     {
-      "icon_id": "16076043",
-      "name": "入口网关",
-      "font_class": "ingressgateway",
-      "unicode": "e783",
-      "unicode_decimal": 59267
-    },
-    {
-      "icon_id": "34453287",
-      "name": "store",
-      "font_class": "store",
-      "unicode": "e86b",
-      "unicode_decimal": 59499
+      "icon_id": "15838526",
+      "name": "share",
+      "font_class": "share",
+      "unicode": "e67d",
+      "unicode_decimal": 59005
     },
     {
       "icon_id": "21687034",
