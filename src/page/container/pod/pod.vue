@@ -265,6 +265,7 @@ import {
   formatterNamespace,
   formatterContainersCPU,
   formatterContainersMem,
+  formatterContainersResource,
 } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
