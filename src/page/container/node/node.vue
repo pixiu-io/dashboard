@@ -140,10 +140,14 @@
                   >
                     标签管理
                   </el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons" @click="drain(scope.row)">
-                    节点驱逐
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleDrainDialog(scope.row)"
+                  >
+                    清空节点
                   </el-dropdown-item>
                   <el-dropdown-item class="dropdown-item-buttons"> 查看YAML </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons"> 删除 </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
@@ -235,6 +239,51 @@
       <div style="margin-bottom: 10px" />
     </template>
   </el-dialog>
+
+  <el-dialog
+    :model-value="data.drainData.close"
+    style="color: #000000; font: 14px"
+    width="530px"
+    align-center
+    center
+  >
+    <template #header>
+      <div
+        style="
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+          margin-top: 5px;
+          font-size: 14.5px;
+          color: #191919;
+        "
+      >
+        清空节点
+      </div>
+    </template>
+
+    <el-card class="app-docs" style="margin-top: -10px; height: 40px">
+      <el-icon
+        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+        ><WarningFilled
+      /></el-icon>
+      <div style="vertical-align: middle; margin-top: -40px">
+        此操作将清空节点上的 Pod，在节点清空期间，不要求应用具有高可用性。
+      </div>
+    </el-card>
+
+    <div style="margin-top: -25px" />
+
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-delete-cancel-button" @click="cancelDrain">取消</el-button>
+        <el-button type="primary" class="pixiu-delete-confirm-button" @click="confirmDrain"
+          >确认</el-button
+        >
+      </span>
+      <div style="margin-bottom: 10px" />
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="jsx">
@@ -244,7 +293,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import { getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
-import { getNodeList, patchNode, getNode } from '@/services/kubernetes/nodeService';
+import { getNodeList, patchNode, getNode, drainNode } from '@/services/kubernetes/nodeService';
 import {
   formatterTime,
   runningFormatter,
@@ -278,6 +327,11 @@ const data = reactive({
     name: '',
     labels: [],
   },
+
+  drainData: {
+    close: false,
+    name: '',
+  },
 });
 
 onMounted(() => {
@@ -309,28 +363,6 @@ const getNodes = async () => {
 
 const searchNodes = async () => {
   data.tableData = searchData(data.pageInfo, data.nodeList);
-};
-
-const drain = (row) => {
-  ElMessageBox.confirm('此操作将驱逐 ' + row.metadata.name + ' 上的 pod. 是否继续?', '节点驱逐', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-    draggable: true,
-  })
-    .then(async () => {
-      // const res = await proxy.$http({
-      //   method: 'delete',
-      //   url: `/pixiu/proxy/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${row.metadata.name}`,
-      // });
-      ElMessage({
-        type: 'success',
-        message: '驱逐 ' + row.metadata.name + ' 成功',
-      });
-
-      getNodes();
-    })
-    .catch(() => {}); // 取消
 };
 
 const jumpRoute = (row) => {
@@ -395,6 +427,26 @@ const cordon = (row) => {
       getNodes();
     })
     .catch(() => {});
+};
+
+const handleDrainDialog = async (row) => {
+  data.drainData.close = true;
+  data.drainData.name = row.metadata.name;
+};
+
+const cancelDrain = () => {
+  data.drainData.close = false;
+  data.drainData.name = '';
+};
+
+const confirmDrain = async () => {
+  const [node, err] = await drainNode(data.cluster, data.drainData.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  cancelDrain();
 };
 
 const addLabel = () => {

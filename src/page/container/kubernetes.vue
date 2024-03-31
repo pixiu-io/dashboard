@@ -171,7 +171,7 @@ const data = reactive({
     {
       id: 9,
       name: '任务',
-      icon: 'icon-fuwu',
+      icon: 'icon-flowjob',
       iconType: 'iconfont',
       children: [
         {
@@ -202,7 +202,7 @@ const data = reactive({
     {
       id: 5,
       name: 'Cicd',
-      icon: 'icon-tekton',
+      icon: 'icon-devops',
       iconType: 'iconfont',
       children: [
         {
