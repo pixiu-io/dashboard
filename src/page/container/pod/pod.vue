@@ -91,7 +91,7 @@
         </el-table-column>
         /> -->
 
-        <el-table-column prop="status.podIP" label="实例IP"></el-table-column>
+        <el-table-column prop="status.podIP" label="实例IP"> </el-table-column>
         <el-table-column prop="status.hostIP" label="所在节点"></el-table-column>
         <el-table-column prop="status" label="重启次数" :formatter="formatterRestartCount" />
 
@@ -113,7 +113,7 @@
               监控
             </el-button>
 
-            <el-button type="text" size="small" style="color: #006eff"> 事件</el-button>
+            <el-button type="text" size="small" style="color: #006eff"> 事件 </el-button>
 
             <el-dropdown>
               <span class="el-dropdown-link">
@@ -122,16 +122,16 @@
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
-                  <el-dropdown-item class="dropdown-item-buttons"> 日志</el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons"> 日志 </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
                     @click="handleRemoteLoginDialog(scope.row)"
                   >
                     远程登陆
                   </el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons"> 详情</el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons"> 容器列表</el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons"> 查看YAML</el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons"> 详情 </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons"> 容器列表 </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons"> 查看YAML </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
                     @click="handleDeleteDialog(scope.row)"
@@ -187,9 +187,8 @@
     <el-card class="app-docs" style="margin-top: -10px; height: 40px">
       <el-icon
         style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
-      >
-        <WarningFilled />
-      </el-icon>
+        ><WarningFilled
+      /></el-icon>
       <div style="vertical-align: middle; margin-top: -40px">基于 WebShell 提供登陆容器的功能</div>
     </el-card>
 
@@ -222,7 +221,7 @@
           <el-radio label="/bin/sh">
             <span style="font-size: 13px">/bin/sh</span>
           </el-radio>
-          <el-radio label="/bin/bash"><span style="font-size: 13px"> /bin/bash</span></el-radio>
+          <el-radio label="/bin/bash"> <span style="font-size: 13px"> /bin/bash</span></el-radio>
         </el-radio-group>
       </el-form-item>
     </el-form>
@@ -242,20 +241,20 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { getCurrentInstance, onMounted, reactive, ref } from 'vue';
-import { ElMessage } from 'element-plus';
+import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getTableData, searchData } from '@/utils/utils';
 import {
-  formatterNamespace,
+  formatterTime,
   formatterPodStatus,
   formatterRestartCount,
-  formatterTime,
+  formatterNamespace,
 } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
-import { deletePod, getPodList } from '@/services/kubernetes/podService';
+import { getPodList, deletePod } from '@/services/kubernetes/podService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { toClipboard } = useClipboard();
@@ -293,7 +292,7 @@ const data = reactive({
   // 删除对象属性
   deleteDialog: {
     close: false,
-    objectName: 'Task',
+    objectName: 'Pod',
     deleteName: '',
   },
 
