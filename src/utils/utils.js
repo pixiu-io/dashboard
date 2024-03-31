@@ -32,7 +32,6 @@ const searchData = (pageInfo, sourceData) => {
       item.metadata.name.includes(pageInfo.search.searchInfo),
     );
   }
-
   pageInfo.total = filteredData.length;
   return getTableData(pageInfo, filteredData);
 };
