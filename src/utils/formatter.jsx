@@ -378,6 +378,19 @@ const formatNodeIp = (row, column, cellValue) => {
 };
 export { formatNodeIp };
 
+const formatterContainersCPU = (row, column, cellValue) => {
+  console.log('cellValue', cellValue);
+
+  return <div>-</div>;
+};
+export { formatterContainersCPU };
+
+const formatterContainersMem = (row, column, cellValue) => {
+  console.log('cellValue', cellValue);
+  <div>-</div>;
+};
+export { formatterContainersMem };
+
 const runningStatus = {
   运行中: {
     name: 'icon-circle-dot',

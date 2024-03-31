@@ -92,8 +92,16 @@
 
         <!-- <el-table-column label="镜像" prop="spec.containers" :formatter="formatterImage" /> -->
 
-        <el-table-column prop="status" label="CPU申请值/限制值" />
-        <el-table-column prop="status" label="内存申请值/限制值" />
+        <el-table-column
+          prop="spec.containers"
+          label="CPU申请值/限制值"
+          :formatter="formatterContainersCPU"
+        />
+        <el-table-column
+          prop="spec.containers"
+          label="内存申请值/限制值"
+          :formatter="formatterContainersMem"
+        />
 
         <el-table-column
           prop="metadata.creationTimestamp"
@@ -249,6 +257,8 @@ import {
   formatterPodStatus,
   formatterRestartCount,
   formatterNamespace,
+  formatterContainersCPU,
+  formatterContainersMem,
 } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
