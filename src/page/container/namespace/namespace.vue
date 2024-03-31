@@ -92,7 +92,7 @@
               size="small"
               type="text"
               style="margin-right: -25px; margin-left: -10px; color: #006eff"
-              @click="editDeployment(scope.row)"
+              @click="handleQuotaDialog(scope.row)"
             >
               管理配额
             </el-button>
@@ -137,6 +137,51 @@
     @confirm="confirm"
     @cancel="cancel"
   ></pixiuDialog>
+
+  <el-dialog
+    :model-value="data.quotaData.close"
+    style="color: #191919; font: 14px"
+    width="530px"
+    align-center
+    center
+  >
+    <template #header>
+      <div
+        style="
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+          margin-top: 5px;
+          font-size: 14.5px;
+          color: #191919;
+        "
+      >
+        配额管理
+      </div>
+    </template>
+
+    <el-card class="app-docs" style="margin-top: -10px; height: 40px">
+      <el-icon
+        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+        ><WarningFilled
+      /></el-icon>
+      <div style="vertical-align: middle; margin-top: -40px">
+        配额可以限制命名空间下的资源使用，支持以命名空间为粒度的资源划分。
+      </div>
+    </el-card>
+
+    <div style="margin-top: -25px" />
+
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-delete-cancel-button" @click="cancelQuota">取消</el-button>
+        <el-button type="primary" class="pixiu-delete-confirm-button" @click="confirmQuota"
+          >确认</el-button
+        >
+      </span>
+      <div style="margin-bottom: 10px" />
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="jsx">
@@ -175,6 +220,11 @@ const data = reactive({
     objectName: '命名空间',
     deleteName: '',
   },
+
+  quotaData: {
+    close: false,
+    name: '',
+  },
 });
 
 onMounted(() => {
@@ -182,6 +232,19 @@ onMounted(() => {
 
   getNamespace();
 });
+
+const handleQuotaDialog = (row) => {
+  data.quotaData.name = row.metadata.name;
+  data.quotaData.close = true;
+};
+
+const cancelQuota = () => {
+  data.quotaData.close = false;
+  data.quotaData.name = '';
+};
+const confirmQuota = () => {
+  data.quotaData.close = false;
+};
 
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
