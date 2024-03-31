@@ -129,7 +129,7 @@
         >
           <!-- <el-table-column type="selection" width="38" /> -->
 
-          <el-table-column prop="name" label="名称/ID">
+          <el-table-column prop="name" sortable label="集群名称">
             <template #default="scope">
               <el-link
                 style="color: #006eff; font-size: 12px; margin-right: 2px"
@@ -176,9 +176,24 @@
           </el-table-column>
           <el-table-column prop="nodes" label="节点数" :formatter="cloudNodeFormatter" />
 
-          <el-table-column prop="protected" label="集群保护" :formatter="formatProtected" />
+          <el-table-column>
+            <template #header>
+              <Icon icon="QuestionFilled" desc="启用集群删除保护时，集群不能被删除。">
+                删除保护
+              </Icon>
+            </template>
+            <template #default="scope">
+              <el-switch
+                v-model="scope.row.protected"
+                inline-prompt
+                size="small"
+                @change="changeProtectStatus(scope.row)"
+              >
+              </el-switch>
+            </template>
+          </el-table-column>
 
-          <el-table-column label="创建时间" prop="gmt_create" :formatter="formatterTime">
+          <el-table-column label="创建时间" prop="gmt_create" sortable :formatter="formatterTime">
           </el-table-column>
 
           <!-- <el-table-column prop="resources" label="资源量" :formatter="formatterResource" /> -->
@@ -216,9 +231,6 @@
                 <template #dropdown>
                   <el-dropdown-menu class="dropdown-buttons">
                     <el-dropdown-item class="dropdown-item-buttons"> 连接集群 </el-dropdown-item>
-                    <el-dropdown-item class="dropdown-item-buttons">
-                      关闭删除保护
-                    </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -424,6 +436,8 @@ onMounted(() => {
 //   4: '等待构建',
 // };
 
+const changeProtectStatus = async (row) => {};
+
 const cloudStatus = {
   0: {
     icon: 'icon-B',
@@ -504,14 +518,6 @@ const cloudStatus2Formatter = (row, column, cellValue) => (
     </el-space>
   </div>
 );
-
-const formatProtected = (row, column, cellValue) => {
-  if (cellValue === true) {
-    return <div class="pixiu-table-formatter">开启</div>;
-  }
-
-  return <div class="pixiu-table-formatter">未开启</div>;
-};
 
 const formatterResource = (row, column, cellValue) => {
   return (
