@@ -95,15 +95,19 @@
 
         <el-table-column prop="status.hostIP" sortable label="所在节点">
           <template #default="scope">
-            <div>
-              {{ scope.row.status.hostIP }}
-              <pixiu-icon
-                name="icon-bianji"
-                style="cursor: pointer"
-                size="12px"
-                type="iconfont"
-                color="#909399"
-              />
+            <div style="display: flex">
+              <div>
+                {{ scope.row.status.hostIP }}
+              </div>
+              <div style="margin-left: 5px">
+                <pixiu-icon
+                  name="icon-share"
+                  style="cursor: pointer"
+                  size="14px"
+                  type="iconfont"
+                  color="#0000FF"
+                />
+              </div>
             </div>
           </template>
         </el-table-column>
