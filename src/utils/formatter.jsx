@@ -379,14 +379,27 @@ const formatNodeIp = (row, column, cellValue) => {
 export { formatNodeIp };
 
 const formatterContainersCPU = (row, column, cellValue) => {
-  console.log('cellValue', cellValue);
+  let result = [];
+  for (let container of cellValue) {
+    let req = '-';
+    let limit = '-';
+    const resources = container.resources;
+    if (resources.requests !== undefined && resources.requests.cpu !== undefined) {
+      req = resources.requests.cpu;
+    }
+    if (resources.limits !== undefined && resources.limits.cpu !== undefined) {
+      limit = resources.limits.cpu;
+    }
+    result.push({ request: req, limit: limit });
+  }
+
+  console.log('result', result);
 
   return <div>-</div>;
 };
 export { formatterContainersCPU };
 
 const formatterContainersMem = (row, column, cellValue) => {
-  console.log('cellValue', cellValue);
   <div>-</div>;
 };
 export { formatterContainersMem };
