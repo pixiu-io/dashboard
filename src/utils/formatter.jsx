@@ -393,14 +393,44 @@ const formatterContainersCPU = (row, column, cellValue) => {
     result.push({ request: req, limit: limit });
   }
 
-  console.log('result', result);
-
-  return <div>-</div>;
+  return (
+    <div>
+      {result.map((item) => (
+        <div style="display: block">
+          <div>{item.request}</div>
+          <div>{item.limit}</div>
+        </div>
+      ))}
+    </div>
+  );
 };
 export { formatterContainersCPU };
 
 const formatterContainersMem = (row, column, cellValue) => {
-  <div>-</div>;
+  let result = [];
+  for (let container of cellValue) {
+    let req = '-';
+    let limit = '-';
+    const resources = container.resources;
+    if (resources.requests !== undefined && resources.requests.memory !== undefined) {
+      req = resources.requests.memory;
+    }
+    if (resources.limits !== undefined && resources.limits.memory !== undefined) {
+      limit = resources.limits.memory;
+    }
+    result.push({ request: req, limit: limit });
+  }
+
+  return (
+    <div>
+      {result.map((item) => (
+        <div style="display: block">
+          <div>{item.request}</div>
+          <div>{item.limit}</div>
+        </div>
+      ))}
+    </div>
+  );
 };
 export { formatterContainersMem };
 
