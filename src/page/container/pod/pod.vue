@@ -92,7 +92,7 @@
 
         <!-- <el-table-column label="镜像" prop="spec.containers" :formatter="formatterImage" /> -->
 
-        <el-table-column
+        <!-- <el-table-column
           prop="spec.containers"
           label="CPU申请值/限制值"
           :formatter="formatterContainersCPU"
@@ -101,6 +101,12 @@
           prop="spec.containers"
           label="内存申请值/限制值"
           :formatter="formatterContainersMem"
+        /> -->
+
+        <el-table-column
+          prop="spec.containers"
+          label="资源申请值/限制值"
+          :formatter="formatterContainersResource"
         />
 
         <el-table-column
