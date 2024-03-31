@@ -89,6 +89,10 @@
               标签键值以字母、数字开头和结尾, 且只能包含字母、数字及分隔符。
             </div>
 
+            <!--            <el-form-item label="参数配置" style="margin-top: 10px; margin-bottom: 10px">-->
+            <!--              <el-button type="text" class="app-action-btn" @click="addStep">增加参数</el-button>-->
+            <!--            </el-form-item>-->
+
             <el-form-item label="任务配置" style="margin-top: 10px; margin-bottom: 10px">
               <el-button type="text" class="app-action-btn" @click="addStep">增加任务</el-button>
             </el-form-item>

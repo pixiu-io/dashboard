@@ -45,7 +45,7 @@
     <el-card class="box-card">
       <el-table
         v-loading="data.loading"
-        :data="data.taskList"
+        :data="data.tableData"
         stripe
         style="margin-top: 2px; width: 100%"
         header-row-class-name="pixiu-table-header"
@@ -56,7 +56,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="30" />
-        <el-table-column prop="metadata.name" sortable label="任务名称" min-width="100px">
+        <el-table-column prop="metadata.name" label="任务名称" min-width="100px">
           <template #default="scope">
             {{ scope.row.metadata.name }}
           </template>
@@ -170,7 +170,7 @@ import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
-import { searchData } from '@/utils/utils';
+import { getTableData, searchData } from '@/utils/utils';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -261,7 +261,7 @@ const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
   const [result, err] = await getTaskDetail(data.cluster, data.namespace, data.yamlName);
   if (err) {
-    proxy.$message.error(err.response.data.message);
+    proxy.$notify.error(err.response.data.message);
     return;
   }
   data.yaml = jsYaml.dump(result);
@@ -280,10 +280,10 @@ const confirm = async () => {
     data.deleteDialog.deleteName,
   );
   if (err) {
-    proxy.$message.error(err.response.data.message);
+    proxy.$notify.error(err.response.data.message);
     return;
   }
-  proxy.$message.success(
+  proxy.$notify.success(
     `${data.deleteDialog.objectName}(${data.deleteDialog.deleteName}) 删除成功`,
   );
 
@@ -304,11 +304,13 @@ const getTasks = async () => {
   const [result, err] = await getTaskList(data.cluster, data.namespace);
   data.loading = false;
   if (err) {
-    proxy.$message.error(err.response.data.message);
+    proxy.$notify.error(err.response.data.message);
     return;
   }
 
   data.taskList = result.items;
+  data.pageInfo.total = data.taskList.length;
+  data.tableData = getTableData(data.pageInfo, data.taskList);
 };
 
 const createTask = () => {
