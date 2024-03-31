@@ -28,6 +28,10 @@ const formatterPodStatus = (row, column, cellValue) => {
     phase = cellValue.reason;
   } else if (phase == 'Pending') {
     const containerStatuses = cellValue.containerStatuses;
+    if (containerStatuses === undefined) {
+      return formatterIcon('#FFFF00', phase);
+    }
+
     for (let i = 0; i < containerStatuses.length; i++) {
       if (containerStatuses[i].ready) {
         continue;
@@ -222,12 +226,14 @@ export { formatterLabels };
 
 const formatterRestartCount = (row, column, status) => {
   let count = 0;
+  if (status.containerStatuses === undefined) {
+    return <div>-</div>;
+  }
   status.containerStatuses.forEach((item) => {
     count += item.restartCount;
   });
   return <div>{count} 次</div>;
 };
-
 export { formatterRestartCount };
 
 const formatterReady = (row, column, cellValue) => {
