@@ -67,30 +67,6 @@
         <el-table-column prop="metadata.namespace" label="命名空间" :formatter="formatterNamespace">
         </el-table-column>
 
-        <!-- <el-table-column
-          prop="metadata.labels"
-          label="Labels"
-          min-width="200px"
-          :formatter="formatterLabels"
-        /> -->
-
-        <!-- <el-table-column prop="status.podIP" label="实例IP">
-          <template #default="scope">
-            {{ scope.row.status.podIP }}
-            <el-tooltip content="复制">
-              <pixiu-icon
-                name="icon-copy"
-                size="11px"
-                type="iconfont"
-                class-name="icon-box"
-                color="#909399"
-                @click="copyIP(scope.row)"
-              />
-            </el-tooltip>
-          </template>
-        </el-table-column>
-        /> -->
-
         <el-table-column prop="status.podIP" label="实例IP"> </el-table-column>
 
         <el-table-column prop="status.hostIP" sortable label="所在节点">
@@ -115,6 +91,9 @@
         <el-table-column prop="status" label="重启次数" :formatter="formatterRestartCount" />
 
         <!-- <el-table-column label="镜像" prop="spec.containers" :formatter="formatterImage" /> -->
+
+        <el-table-column prop="status" label="CPU申请值/限制值" />
+        <el-table-column prop="status" label="内存申请值/限制值" />
 
         <el-table-column
           prop="metadata.creationTimestamp"
