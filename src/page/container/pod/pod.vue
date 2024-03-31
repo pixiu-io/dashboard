@@ -103,9 +103,9 @@
                 <pixiu-icon
                   name="icon-share"
                   style="cursor: pointer"
-                  size="14px"
+                  size="12px"
                   type="iconfont"
-                  color="#0000FF"
+                  color="#191919"
                 />
               </div>
             </div>
