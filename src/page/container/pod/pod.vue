@@ -92,7 +92,22 @@
         /> -->
 
         <el-table-column prop="status.podIP" label="实例IP"> </el-table-column>
-        <el-table-column prop="status.hostIP" label="所在节点"></el-table-column>
+
+        <el-table-column prop="status.hostIP" sortable label="所在节点">
+          <template #default="scope">
+            <div>
+              {{ scope.row.status.hostIP }}
+              <pixiu-icon
+                name="icon-bianji"
+                style="cursor: pointer"
+                size="12px"
+                type="iconfont"
+                color="#909399"
+              />
+            </div>
+          </template>
+        </el-table-column>
+
         <el-table-column prop="status" label="重启次数" :formatter="formatterRestartCount" />
 
         <!-- <el-table-column label="镜像" prop="spec.containers" :formatter="formatterImage" /> -->
