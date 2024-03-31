@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "16076043",
+      "name": "入口网关",
+      "font_class": "ingressgateway",
+      "unicode": "e783",
+      "unicode_decimal": 59267
+    },
+    {
+      "icon_id": "34453287",
+      "name": "store",
+      "font_class": "store",
+      "unicode": "e86b",
+      "unicode_decimal": 59499
+    },
+    {
       "icon_id": "21687034",
       "name": "flowjob",
       "font_class": "flowjob",
@@ -18,13 +32,6 @@
       "font_class": "devops",
       "unicode": "e760",
       "unicode_decimal": 59232
-    },
-    {
-      "icon_id": "24347874",
-      "name": "tekton",
-      "font_class": "tekton",
-      "unicode": "e6db",
-      "unicode_decimal": 59099
     },
     {
       "icon_id": "17675156",
