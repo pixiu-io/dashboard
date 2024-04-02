@@ -78,14 +78,6 @@
               size="small"
               type="text"
               style="margin-right: -1px; margin-left: 5px; color: #006eff"
-              @click="handleEditYamlDialog(scope.row)"
-            >
-              详情
-            </el-button>
-            <el-button
-              size="small"
-              type="text"
-              style="margin-right: -1px; margin-left: 5px; color: #006eff"
               @click="handleReset(scope.row)"
             >
               重新运行
@@ -100,27 +92,6 @@
       <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
-  <el-dialog
-    :model-value="data.editYamlDialog"
-    style="color: #000000; font: 14px; margin-top: 50px"
-    width="800px"
-    center
-    @close="closeEditYamlDialog"
-  >
-    <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">详情</div>
-    </template>
-    <div style="margin-top: -18px"></div>
-    <MyCodeMirror ref="editYaml" :yaml="data.yaml" :height="200"></MyCodeMirror>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button class="pixiu-small-cancel-button" @click="closeEditYamlDialog">取消</el-button>
-        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmEditYaml"
-          >确认</el-button
-        >
-      </span>
-    </template>
-  </el-dialog>
 
   <pixiuDialog
     :close-event="data.deleteDialog.close"
@@ -168,14 +139,11 @@ const data = reactive({
     },
   },
   tableData: [],
-  filterNamespaces: [],
   loading: false,
   cluster: '',
   namespace: 'default',
   namespaces: [],
   taskRunsList: [],
-  yamlName: '',
-  yaml: '',
   editYamlDialog: false,
   deleteDialog: {
     close: false,
@@ -203,6 +171,7 @@ const getNamespaces = async () => {
   data.namespaces = result;
 };
 const getTaskRuns = async () => {
+  console.log('111');
   data.loading = true;
   const [result, err] = await getTaskRunList(data.cluster, data.namespace);
   data.loading = false;
@@ -215,6 +184,7 @@ const getTaskRuns = async () => {
   data.taskRunsList = result.items;
   data.pageInfo.total = data.taskRunsList.length;
   data.tableData = getTableData(data.pageInfo, data.taskRunsList);
+  console.log(data.tableData);
 };
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
@@ -235,27 +205,7 @@ const onChange = (v) => {
 const searchTaskRuns = async () => {
   data.tableData = searchData(data.pageInfo, data.taskRunsList);
 };
-const handleEditYamlDialog = async (row) => {
-  data.yamlName = row.metadata.name;
-  const [result, err] = await getTaskRunDetail(data.cluster, data.namespace, data.yamlName);
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-  // .status.taskSpec.steps[0]
-  if (result.status.conditions[0].reason !== 'Succeeded') {
-    data.yaml = jsYaml.dump(result.status.conditions[0].message);
-  } else {
-    data.yaml = jsYaml.dump(result.status.taskSpec.steps[0]);
-  }
 
-  data.editYamlDialog = true;
-};
-const closeEditYamlDialog = () => {
-  data.yaml = '';
-  data.yamlName = '';
-  data.editYamlDialog = false;
-};
 const handleDeleteDialog = async (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.metadata.name;
@@ -284,50 +234,37 @@ const confirm = async () => {
   clean();
   await getTaskRuns();
 };
-const confirmEditYaml = async () => {
-  const yamlData = jsYaml.load(editYaml.value.code);
-  const [result, err] = await updateTaskRun(data.cluster, data.namespace, data.yamlName, yamlData);
-  if (err) {
-    proxy.$notify.error(err.response.data.message);
-    return;
-  }
-  proxy.$notify.success(`TaskRun (${data.yamlName}) YAML 更新成功`);
-  closeEditYamlDialog();
-  await getTaskRuns();
-};
+
 const formatStatus = (row, column, cellValue) => {
-  let reason = cellValue.conditions[0].reason;
-  if (reason === 'Succeeded') {
-    return formatterIcon('#28C65A', reason);
+  if (cellValue.conditions) {
+    let reason = cellValue.conditions[0].reason;
+    if (reason === 'Succeeded') {
+      return formatterIcon('#28C65A', reason);
+    }
+    if (reason === 'Failed') {
+      return formatterIcon('rgba(250,56,91,0.8)', reason);
+    }
+    return formatterIcon('#FFFF00', reason);
   }
-  if (reason === 'Failed') {
-    return formatterIcon('rgba(250,56,91,0.8)', reason);
-  }
-  return formatterIcon('#FFFF00', reason);
+  return null;
 };
 const handleReset = async (row) => {
-  alert('重新运行');
   let objectForm = reactive({
     apiVersion: 'tekton.dev/v1',
     kind: 'TaskRun',
     metadata: {
-      name: '',
       namespace: 'default',
+      generateName: row.metadata.name + '-r-',
     },
     spec: {
       serviceAccountName: 'default',
       taskRef: {
-        name: '',
-        kind: '',
+        name: row.spec.taskRef.name,
+        kind: row.spec.taskRef.kind,
       },
     },
   });
-  objectForm.metadata.name = row.metadata.name;
-  objectForm.spec.taskRef.name = row.spec.taskRef.name;
-  objectForm.spec.taskRef.kind = row.spec.taskRef.kind;
-  await deleteTaskRun(data.cluster, data.namespace, row.metadata.name);
-  await createTaskRun(data.cluster, data.namespace, objectForm);
+  const [result, err] = await createTaskRun(data.cluster, data.namespace, objectForm);
   await getTaskRuns();
-  // await createTaskRun()
 };
 </script>
