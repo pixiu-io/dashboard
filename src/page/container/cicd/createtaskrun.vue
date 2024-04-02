@@ -56,19 +56,13 @@
               :key="index"
               class="labels-item-style"
             >
-              <el-form-item
-                :prop="'labels[' + index + '].key'"
-                :rules="[{ required: true, message: '标签键不能为空', trigger: 'blur' }]"
-              >
+              <el-form-item :prop="'labels[' + index + '].key'">
                 <el-input v-model="item.key" placeholder="标签键" style="width: 280px" />
               </el-form-item>
 
               <div style="margin-right: 10px; margin-left: 10px">=</div>
 
-              <el-form-item
-                :prop="'labels[' + index + '].value'"
-                :rules="[{ required: true, message: '标签值不能为空', trigger: 'blur' }]"
-              >
+              <el-form-item :prop="'labels[' + index + '].value'">
                 <el-input v-model="item.value" placeholder="标签值" style="width: 280px" />
               </el-form-item>
 
@@ -88,12 +82,41 @@
             <div class="app-pixiu-line-describe" style="margin-top: -5px">
               标签键值以字母、数字开头和结尾, 且只能包含字母、数字及分隔符。
             </div>
-            <!--            <el-form-item label="命名空间" style="margin-top: 10px; margin-bottom: 10px">-->
-            <!--              <el-input v-model="data.namespace" style="width: 120px" />-->
-            <!--            </el-form-item>-->
-            <!--            <el-form-item label="服务账号" style="margin-top: 10px; margin-bottom: 10px">-->
-            <!--              <el-input v-model="data.form.serviceAccountName" style="width: 120px" />-->
-            <!--            </el-form-item>-->
+
+            <el-form-item label="节点选择器" style="margin-top: 10px">
+              <el-button type="text" class="app-action-btn" @click="addNodeSelector"
+                >新增</el-button
+              >
+            </el-form-item>
+            <div style="margin-top: -15px"></div>
+            <el-form-item
+              v-for="(item, index) in data.form.nodeSelectors"
+              :key="index"
+              class="labels-item-style"
+            >
+              <el-form-item :prop="'podTemplate[nodeSelector][' + index + '].key'">
+                <el-input v-model="item.key" placeholder="标签键" style="width: 280px" />
+              </el-form-item>
+
+              <div style="margin-right: 10px; margin-left: 10px">=</div>
+
+              <el-form-item :prop="'podTemplate[nodeSelector][' + index + '].value'">
+                <el-input v-model="item.value" placeholder="标签值" style="width: 280px" />
+              </el-form-item>
+
+              <div
+                style="float: right; cursor: pointer; margin-left: 10px"
+                @click="deleteNodeSelector(index)"
+              >
+                <pixiu-icon
+                  name="icon-shanchu"
+                  size="14px"
+                  type="iconfont"
+                  style="margin-top: 10px; margin-left: 4px"
+                  color="#909399"
+                />
+              </div>
+            </el-form-item>
 
             <el-form-item label="Task 配置" style="margin-top: 10px; margin-bottom: 10px">
             </el-form-item>
@@ -114,11 +137,18 @@
 
                 <el-form-item class="deploy-pixiu-column" prop="taskRef.name"
                   >Task名称
-                  <el-input
+                  <!--                  <el-input-->
+                  <!--                    v-model="data.form.taskRef.name"-->
+                  <!--                    class="deploy-pixiu-incard"-->
+                  <!--                    style="margin-left: 30px"-->
+                  <!--                  />-->
+                  <el-select
                     v-model="data.form.taskRef.name"
-                    class="deploy-pixiu-incard"
-                    style="margin-left: 30px"
-                  />
+                    style="width: 200px; float: right; margin-left: 30px"
+                    @change="changeTaskName"
+                  >
+                    <el-option v-for="item in data.tasks" :key="item" :value="item" :label="item" />
+                  </el-select>
                 </el-form-item>
                 <el-form-item class="deploy-pixiu-column" prop="taskRef.kind"
                   >Kind
@@ -147,8 +177,7 @@
 
 <script setup>
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
-import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
-import { createTaskRun, getTaskRunList } from '@/services/cicd/tektonService';
+import { createTaskRun, getTaskList } from '@/services/cicd/tektonService';
 
 const ruleFormRef = ref();
 
@@ -162,7 +191,7 @@ const data = reactive({
   clusterName: '',
   namespace: 'default',
 
-  namespaces: [],
+  tasks: [],
 
   // 检验 form
   form: {
@@ -171,6 +200,7 @@ const data = reactive({
       namespace: 'default',
     },
     labels: [],
+    nodeSelectors: [],
     serviceAccountName: 'default',
     taskRef: {
       name: '',
@@ -191,6 +221,9 @@ const data = reactive({
         name: '',
         kind: '',
       },
+      podTemplate: {
+        nodeSelector: {},
+      },
     },
   },
 });
@@ -209,6 +242,7 @@ onMounted(() => {
   if (typeof data.query.taskName !== 'undefined') {
     data.form.taskRef.name = data.query.taskName;
   }
+  getTaskRunNameList();
 });
 
 watch(
@@ -216,9 +250,8 @@ watch(
   (newActive, oldActive) => {},
 );
 
-const changeNamespace = async (val) => {
-  localStorage.setItem('namespace', val);
-  data.form.metadata.namespace = val;
+const changeTaskName = async (val) => {
+  data.form.taskRef.name = val;
 };
 
 const confirm = async () => {
@@ -231,6 +264,13 @@ const confirm = async () => {
         data.objectForm.metadata['labels'] = {};
         for (let item of data.form.labels) {
           data.objectForm.metadata['labels'][item.key] = item.value;
+        }
+      }
+      // 追加 nodeSelectors
+      if (data.form.nodeSelectors.length > 0) {
+        data.objectForm.spec.podTemplate.nodeSelector = {};
+        for (let item of data.form.nodeSelectors) {
+          data.objectForm.spec.podTemplate.nodeSelector[item.key] = item.value;
         }
       }
 
@@ -256,16 +296,36 @@ const addLabel = () => {
     value: '',
   });
 };
-
+const addNodeSelector = () => {
+  data.form.nodeSelectors.push({
+    key: '',
+    value: '',
+  });
+};
 const deleteLabel = (index) => {
   data.form.labels.splice(index, 1);
 };
-
+const deleteNodeSelector = (index) => {
+  data.form.nodeSelectors.splice(index, 1);
+};
 const backToTask = () => {
   proxy.$router.push({
     name: 'taskrun',
     query: data.query,
   });
+};
+
+const getTaskRunNameList = async () => {
+  const [result, err] = await getTaskList(data.cluster, data.namespace);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+
+  let nameList = result.items;
+  for (let nameListElement of nameList) {
+    data.tasks.push(nameListElement.metadata.name);
+  }
 };
 </script>
 
