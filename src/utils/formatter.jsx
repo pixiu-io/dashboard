@@ -28,6 +28,10 @@ const formatterPodStatus = (row, column, cellValue) => {
     phase = cellValue.reason;
   } else if (phase == 'Pending') {
     const containerStatuses = cellValue.containerStatuses;
+    if (containerStatuses === undefined) {
+      return formatterIcon('#FFFF00', phase);
+    }
+
     for (let i = 0; i < containerStatuses.length; i++) {
       if (containerStatuses[i].ready) {
         continue;
@@ -222,12 +226,14 @@ export { formatterLabels };
 
 const formatterRestartCount = (row, column, status) => {
   let count = 0;
+  if (status.containerStatuses === undefined) {
+    return <div>-</div>;
+  }
   status.containerStatuses.forEach((item) => {
     count += item.restartCount;
   });
   return <div>{count} 次</div>;
 };
-
 export { formatterRestartCount };
 
 const formatterReady = (row, column, cellValue) => {
@@ -433,6 +439,47 @@ const formatterContainersMem = (row, column, cellValue) => {
   );
 };
 export { formatterContainersMem };
+
+const formatterContainersResource = (row, column, cellValue) => {
+  let result = [];
+  for (let container of cellValue) {
+    let cpuReq = '无限制';
+    let cpuLimit = '无限制';
+    let memReq = '无限制';
+    let memLimit = '无限制';
+    const resources = container.resources;
+    if (resources.requests !== undefined && resources.requests.cpu !== undefined) {
+      cpuReq = resources.requests.cpu;
+    }
+    if (resources.limits !== undefined && resources.limits.cpu !== undefined) {
+      cpuLimit = resources.limits.cpu;
+    }
+    if (resources.requests !== undefined && resources.requests.memory !== undefined) {
+      memReq = resources.requests.memory;
+    }
+    if (resources.limits !== undefined && resources.limits.memory !== undefined) {
+      memLimit = resources.limits.memory;
+    }
+
+    result.push({ cpuRequest: cpuReq, cpuLimit: cpuLimit, memRequest: memReq, memLimit: memLimit });
+  }
+
+  return (
+    <div>
+      {result.map((item) => (
+        <div style="display: block">
+          <div>
+            CPU: {item.cpuRequest}/{item.cpuLimit}
+          </div>
+          <div>
+            内存: {item.memRequest}/{item.memLimit}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+export { formatterContainersResource };
 
 const runningStatus = {
   运行中: {

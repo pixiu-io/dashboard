@@ -88,14 +88,14 @@
             <div class="app-pixiu-line-describe" style="margin-top: -5px">
               标签键值以字母、数字开头和结尾, 且只能包含字母、数字及分隔符。
             </div>
-            <el-form-item label="命名空间" style="margin-top: 10px; margin-bottom: 10px">
-              <el-input v-model="data.namespace" style="width: 120px" />
-            </el-form-item>
-            <el-form-item label="服务账号" style="margin-top: 10px; margin-bottom: 10px">
-              <el-input v-model="data.form.serviceAccountName" style="width: 120px" />
-            </el-form-item>
+            <!--            <el-form-item label="命名空间" style="margin-top: 10px; margin-bottom: 10px">-->
+            <!--              <el-input v-model="data.namespace" style="width: 120px" />-->
+            <!--            </el-form-item>-->
+            <!--            <el-form-item label="服务账号" style="margin-top: 10px; margin-bottom: 10px">-->
+            <!--              <el-input v-model="data.form.serviceAccountName" style="width: 120px" />-->
+            <!--            </el-form-item>-->
 
-            <el-form-item label="Task配置" style="margin-top: 10px; margin-bottom: 10px">
+            <el-form-item label="Task 配置" style="margin-top: 10px; margin-bottom: 10px">
             </el-form-item>
             <div style="margin-top: -15px"></div>
             <el-form-item style="margin-top: -25px">
@@ -207,7 +207,7 @@ onMounted(() => {
   data.cluster = data.query.cluster;
   data.clusterName = localStorage.getItem(data.cluster);
   if (typeof data.query.taskName !== 'undefined') {
-    data.form.taskRef.taskName = data.query.taskName;
+    data.form.taskRef.name = data.query.taskName;
   }
 });
 
