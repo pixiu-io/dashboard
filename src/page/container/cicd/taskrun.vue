@@ -171,7 +171,6 @@ const getNamespaces = async () => {
   data.namespaces = result;
 };
 const getTaskRuns = async () => {
-  console.log('111');
   data.loading = true;
   const [result, err] = await getTaskRunList(data.cluster, data.namespace);
   data.loading = false;
@@ -184,7 +183,6 @@ const getTaskRuns = async () => {
   data.taskRunsList = result.items;
   data.pageInfo.total = data.taskRunsList.length;
   data.tableData = getTableData(data.pageInfo, data.taskRunsList);
-  console.log(data.tableData);
 };
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
