@@ -80,43 +80,51 @@
               size="small"
               type="text"
               style="margin-right: -20px; margin-left: -10px; color: #006eff"
-              @click="handleDeleteDialog(scope.row)"
+              @click="jumpRoute(scope.row)"
             >
-              删除
+              运行
             </el-button>
+            <!--            <el-button-->
+            <!--              size="small"-->
+            <!--              type="text"-->
+            <!--              style="margin-right: -20px; margin-left: -10px; color: #006eff"-->
+            <!--              @click="handleDeleteDialog(scope.row)"-->
+            <!--            >-->
+            <!--              删除-->
+            <!--            </el-button>-->
             <el-button
               size="small"
               type="text"
               style="margin-right: -1px; margin-left: 5px; color: #006eff"
               @click="handleEditYamlDialog(scope.row)"
             >
-              编辑 YAML
+              YAML
             </el-button>
 
             <!--            <el-button type="text" size="small" style="color: #006eff"> 事件</el-button>-->
 
-            <!--            <el-dropdown>-->
-            <!--              <span class="el-dropdown-link">-->
-            <!--                更多-->
-            <!--                <pixiu-icon name="icon-xiala" size="12px" type="iconfont" color="#006eff" />-->
-            <!--              </span>-->
-            <!--              <template #dropdown>-->
-            <!--                <el-dropdown-menu class="dropdown-buttons">-->
-            <!--                  <el-dropdown-item-->
-            <!--                    class="dropdown-item-buttons"-->
-            <!--                    @click="handleDeleteDialog(scope.row)"-->
-            <!--                  >-->
-            <!--                    删除-->
-            <!--                  </el-dropdown-item>-->
-            <!--                  <el-dropdown-item-->
-            <!--                    class="dropdown-item-buttons"-->
-            <!--                    @click="handleEditYamlDialog(scope.row)"-->
-            <!--                  >-->
-            <!--                    编辑 YAML-->
-            <!--                  </el-dropdown-item>-->
-            <!--                </el-dropdown-menu>-->
-            <!--              </template>-->
-            <!--            </el-dropdown>-->
+            <el-dropdown>
+              <span class="el-dropdown-link">
+                更多
+                <pixiu-icon name="icon-xiala" size="12px" type="iconfont" color="#006eff" />
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu class="dropdown-buttons">
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleDeleteDialog(scope.row)"
+                  >
+                    删除
+                  </el-dropdown-item>
+                  <!--                  <el-dropdown-item-->
+                  <!--                    class="dropdown-item-buttons"-->
+                  <!--                    @click="handleEditYamlDialog(scope.row)"-->
+                  <!--                  >-->
+                  <!--                    编辑 YAML-->
+                  <!--                  </el-dropdown-item>-->
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </template>
         </el-table-column>
 
@@ -316,6 +324,17 @@ const getTasks = async () => {
 const createTask = () => {
   const url = `/tasks/createTask?cluster=${data.cluster}`;
   router.push(url);
+};
+
+const jumpRoute = (row) => {
+  router.push({
+    name: 'taskrun',
+    query: {
+      cluster: data.cluster,
+      namespace: data.namespace,
+      taskName: row.metadata.name,
+    },
+  });
 };
 </script>
 
