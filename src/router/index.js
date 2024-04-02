@@ -62,6 +62,7 @@ import {
   Pipeline,
   PipelineRun,
   CreateTask,
+  CreateTaskRun,
 } from '@/page';
 
 const routes = [
@@ -530,6 +531,14 @@ const routes = [
           title: 'CreateTask',
         },
         component: CreateTask,
+      },
+      {
+        path: 'taskruns/createTaskRun',
+        name: 'createTaskRun',
+        meta: {
+          title: 'createTaskRun',
+        },
+        component: CreateTaskRun,
       },
     ],
   },
