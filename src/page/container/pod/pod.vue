@@ -134,16 +134,23 @@
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
+                  <el-dropdown-item class="dropdown-item-buttons"> 详情 </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons"> 查看YAML </el-dropdown-item>
                   <el-dropdown-item class="dropdown-item-buttons"> 日志 </el-dropdown-item>
+
                   <el-dropdown-item
                     class="dropdown-item-buttons"
                     @click="handleRemoteLoginDialog(scope.row)"
                   >
                     远程登陆
                   </el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons"> 详情 </el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons"> 容器列表 </el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons"> 查看YAML </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleContainerListDialog(scope.row)"
+                  >
+                    容器列表
+                  </el-dropdown-item>
+
                   <el-dropdown-item
                     class="dropdown-item-buttons"
                     @click="handleDeleteDialog(scope.row)"
@@ -249,6 +256,50 @@
       <div style="margin-bottom: 10px" />
     </template>
   </el-dialog>
+
+  <el-dialog
+    :model-value="data.podContainers.close"
+    style="color: #000000; font: 14px"
+    width="500px"
+    align-center
+    center
+    @close="cancelpodContainers"
+  >
+    <template #header>
+      <div
+        style="
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+          margin-top: 5px;
+          font-size: 14.5px;
+          color: #191919;
+        "
+      >
+        容器列表
+      </div>
+    </template>
+
+    <el-card class="app-docs" style="margin-top: -10px; height: 40px">
+      <el-icon
+        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+        ><WarningFilled
+      /></el-icon>
+      <div style="vertical-align: middle; margin-top: -40px">Pod 所包含的容器列表</div>
+    </el-card>
+
+    <div style="margin-top: -25px" />
+
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-delete-cancel-button" @click="cancelRemoteLogin">取消</el-button>
+        <el-button type="primary" class="pixiu-delete-confirm-button" @click="confirmRemoteLogin"
+          >确认</el-button
+        >
+      </span>
+      <div style="margin-bottom: 10px" />
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="jsx">
@@ -318,6 +369,11 @@ const data = reactive({
     containers: [],
     command: '/bin/sh',
   },
+
+  podContainers: {
+    close: false,
+    containers: [],
+  },
 });
 
 const onChange = (v) => {
@@ -384,6 +440,17 @@ const handleRemoteLoginDialog = (row) => {
   if (data.remoteLogin.containers.length >= 1) {
     data.remoteLogin.container = data.remoteLogin.containers[0];
   }
+};
+
+const handleContainerListDialog = (row) => {
+  data.podContainers.close = true;
+};
+
+const cancelpodContainers = () => {
+  data.podContainers.close = false;
+};
+const confirmpodContainers = () => {
+  data.podContainers.close = false;
 };
 
 const confirm = async () => {
