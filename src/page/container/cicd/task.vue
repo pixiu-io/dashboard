@@ -85,6 +85,7 @@
               size="small"
               type="text"
               style="margin-right: -25px; margin-left: -10px; color: #006eff"
+              @click="jumpRoute(scope.row)"
             >
               启动
             </el-button>
@@ -313,6 +314,17 @@ const getTasks = async () => {
 const createTask = () => {
   const url = `/tasks/createTask?cluster=${data.cluster}`;
   router.push(url);
+};
+
+const jumpRoute = (row) => {
+  router.push({
+    name: 'createTaskRun',
+    query: {
+      cluster: data.cluster,
+      namespace: data.namespace,
+      taskName: row.metadata.name,
+    },
+  });
 };
 </script>
 
