@@ -1,7 +1,7 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { ref } from 'vue';
-import { getClouds, deleteCloudById, changeCluserAliasName } from '@/services/cloudService';
+import { getClouds, deleteCloudById, changeClustersAliasName } from '@/services/cloudService';
 import { router } from '@/router';
 const useCloudStore = defineStore('cloud', () => {
   const pageInfo = ref({
@@ -81,7 +81,7 @@ const useCloudStore = defineStore('cloud', () => {
   };
 
   const changeAliasName = async () => {
-    await changeCluserAliasName(
+    await changeClustersAliasName(
       selectCloudId.value,
       resourceVersion.value,
       selectCloudAliasName.value,
@@ -103,11 +103,13 @@ const useCloudStore = defineStore('cloud', () => {
   };
   const jumpRoute = (row) => {
     localStorage.setItem(row.name, row.alias_name);
+    localStorage.setItem('clusterId', row.id);
 
     router.push({
       name: 'Info',
       query: {
         cluster: row.name,
+        id: row.id,
       },
     });
   };
