@@ -664,6 +664,7 @@ const viewYaml = async (row) => {
     proxy.$notify.error(err.response.data.message);
     return;
   }
+
   data.yamlDialog = true;
   data.yaml = result;
 };
