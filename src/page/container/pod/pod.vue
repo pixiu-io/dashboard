@@ -257,6 +257,8 @@
     </template>
   </el-dialog>
 
+  <PiXiuViewOrEdit :yaml-dialog="data.yamlDialog" :yaml="data.yaml"></PiXiuViewOrEdit>
+
   <el-dialog
     :model-value="data.podContainers.close"
     style="color: #000000; font: 14px"
@@ -650,6 +652,16 @@ const openWindowShell = () => {
     '_blank',
     'width=1000,height=600',
   );
+};
+
+const viewYaml = async (row) => {
+  const [result, err] = await getPodByName(data.cluster, data.namespace, row.metadata.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+  data.yamlDialog = true;
+  data.yaml = result;
 };
 </script>
 
