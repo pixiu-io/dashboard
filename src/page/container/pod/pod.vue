@@ -350,8 +350,10 @@ import {
 } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
-import { getPodList, deletePod, getPod } from '@/services/kubernetes/podService';
+import { getPodList, deletePod, getPodByName, getPod } from '@/services/kubernetes/podService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
+import { getNode } from '@/services/kubernetes/nodeService';
+import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 
 const { toClipboard } = useClipboard();
 const { proxy } = getCurrentInstance();
@@ -376,6 +378,8 @@ const data = reactive({
   tableData: [],
   loading: false,
   multipleSelection: [],
+  yamlDialog: false,
+  yaml: '',
 
   namespace: 'default',
   filterNamespaces: [],
