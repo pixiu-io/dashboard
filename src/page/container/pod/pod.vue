@@ -260,7 +260,6 @@
   <el-dialog
     :model-value="data.podContainers.close"
     style="color: #000000; font: 14px"
-    width="500px"
     align-center
     center
     @close="cancelpodContainers"
@@ -285,15 +284,44 @@
         style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
         ><WarningFilled
       /></el-icon>
-      <div style="vertical-align: middle; margin-top: -40px">Pod 所包含的容器列表</div>
+      <div style="vertical-align: middle; margin-top: -40px">
+        Pod 所包含的容器列表。支持指定镜像的直接更新
+      </div>
     </el-card>
+    <div style="margin-top: -10px" />
 
-    <div style="margin-top: -25px" />
+    <el-table
+      v-loading="data.podContainers.loading"
+      :data="data.podContainers.containers"
+      stripe
+      style="margin-top: 2px"
+      header-row-class-name="pixiu-table-header"
+      :cell-style="{
+        'font-size': '12px',
+        color: '#191919',
+      }"
+    >
+      <el-table-column prop="metadata.name" sortable label="容器名称"> </el-table-column>
+
+      <el-table-column prop="status" label="状态" />
+
+      <el-table-column prop="status" label="重启次数" />
+
+      <el-table-column
+        prop="metadata.creationTimestamp"
+        label="创建时间"
+        :formatter="formatterTime"
+      />
+
+      <el-table-column label="镜像" />
+    </el-table>
+
+    <div style="margin-top: -5px" />
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button class="pixiu-delete-cancel-button" @click="cancelRemoteLogin">取消</el-button>
-        <el-button type="primary" class="pixiu-delete-confirm-button" @click="confirmRemoteLogin"
+        <el-button class="pixiu-delete-cancel-button" @click="cancelpodContainers">取消</el-button>
+        <el-button type="primary" class="pixiu-delete-confirm-button" @click="confirmpodContainers"
           >确认</el-button
         >
       </span>
@@ -320,7 +348,7 @@ import {
 } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
-import { getPodList, deletePod } from '@/services/kubernetes/podService';
+import { getPodList, deletePod, getPod } from '@/services/kubernetes/podService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { toClipboard } = useClipboard();
@@ -372,6 +400,7 @@ const data = reactive({
 
   podContainers: {
     close: false,
+    podName: '',
     containers: [],
   },
 });
@@ -442,7 +471,24 @@ const handleRemoteLoginDialog = (row) => {
   }
 };
 
-const handleContainerListDialog = (row) => {
+const handleContainerListDialog = async (row) => {
+  const [pod, err] = await getPod(data.cluster, data.namespace, row.metadata.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  let containerStatus = {};
+  for (let cs of pod.status.containerStatuses) {
+    containerStatus[cs.name] = cs;
+  }
+  for (let c of pod.spec.containers) {
+    data.podContainers.containers.push({
+      container: c,
+      status: containerStatus[c.name],
+    });
+  }
+
   data.podContainers.close = true;
 };
 
