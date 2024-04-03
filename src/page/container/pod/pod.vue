@@ -143,7 +143,9 @@
                   </el-dropdown-item>
                   <el-dropdown-item class="dropdown-item-buttons"> 详情 </el-dropdown-item>
                   <el-dropdown-item class="dropdown-item-buttons"> 容器列表 </el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons"> 查看YAML </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons" @click="viewYaml(scope.row)">
+                    查看YAML
+                  </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
                     @click="handleDeleteDialog(scope.row)"
@@ -249,6 +251,8 @@
       <div style="margin-bottom: 10px" />
     </template>
   </el-dialog>
+
+  <PiXiuViewOrEdit :yaml-dialog="data.yamlDialog" :yaml="data.yaml"></PiXiuViewOrEdit>
 </template>
 
 <script setup lang="jsx">
@@ -269,8 +273,10 @@ import {
 } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
-import { getPodList, deletePod } from '@/services/kubernetes/podService';
+import { getPodList, deletePod, getPodByName } from '@/services/kubernetes/podService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
+import { getNode } from '@/services/kubernetes/nodeService';
+import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 
 const { toClipboard } = useClipboard();
 const { proxy } = getCurrentInstance();
@@ -295,6 +301,8 @@ const data = reactive({
   tableData: [],
   loading: false,
   multipleSelection: [],
+  yamlDialog: false,
+  yaml: '',
 
   namespace: 'default',
   filterNamespaces: [],
@@ -537,6 +545,17 @@ const openWindowShell = () => {
     '_blank',
     'width=1000,height=600',
   );
+};
+
+const viewYaml = async (row) => {
+  const [result, err] = await getPodByName(data.cluster, data.namespace, row.metadata.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.yamlDialog = true;
+  data.yaml = result;
 };
 </script>
 
