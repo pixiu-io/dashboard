@@ -303,11 +303,11 @@
         color: '#191919',
       }"
     >
-      <el-table-column prop="metadata.name" sortable label="容器名称"> </el-table-column>
+      <el-table-column prop="container.name" sortable label="容器名称"> </el-table-column>
 
-      <el-table-column prop="status" label="状态" />
+      <el-table-column prop="status.restartCount" sortable label="状态" />
 
-      <el-table-column prop="status" label="重启次数" />
+      <el-table-column prop="status.restartCount" sortable label="重启次数" />
 
       <el-table-column
         prop="metadata.creationTimestamp"
@@ -315,10 +315,8 @@
         :formatter="formatterTime"
       />
 
-      <el-table-column label="镜像" />
+      <el-table-column prop="container.image" label="镜像" min-width="200px" />
     </el-table>
-
-    <div style="margin-top: -5px" />
 
     <template #footer>
       <span class="dialog-footer">
@@ -406,7 +404,6 @@ const data = reactive({
 
   podContainers: {
     close: false,
-    podName: '',
     containers: [],
   },
 });
@@ -495,11 +492,14 @@ const handleContainerListDialog = async (row) => {
     });
   }
 
+  console.log('data.podContainers', data.podContainers);
+
   data.podContainers.close = true;
 };
 
 const cancelpodContainers = () => {
   data.podContainers.close = false;
+  data.podContainers.containers = [];
 };
 const confirmpodContainers = () => {
   data.podContainers.close = false;
