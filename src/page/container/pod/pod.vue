@@ -263,6 +263,7 @@
     :model-value="data.podContainers.close"
     style="color: #000000; font: 14px"
     align-center
+    draggable
     center
     @close="cancelpodContainers"
   >
