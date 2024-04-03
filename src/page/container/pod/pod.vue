@@ -305,17 +305,18 @@
     >
       <el-table-column prop="container.name" sortable label="容器名称"> </el-table-column>
 
-      <el-table-column prop="status.restartCount" sortable label="状态" />
+      <el-table-column prop="status" sortable label="状态" :formatter="formatterContainerStatus" />
 
       <el-table-column prop="status.restartCount" sortable label="重启次数" />
 
       <el-table-column
-        prop="metadata.creationTimestamp"
+        prop="status"
         label="创建时间"
-        :formatter="formatterTime"
+        sortable
+        :formatter="formatterContainerStartTime"
       />
 
-      <el-table-column prop="container.image" label="镜像" min-width="200px" />
+      <el-table-column prop="container.image" label="镜像" :formatter="formatterContainerImage" />
     </el-table>
 
     <template #footer>
@@ -492,8 +493,6 @@ const handleContainerListDialog = async (row) => {
     });
   }
 
-  console.log('data.podContainers', data.podContainers);
-
   data.podContainers.close = true;
 };
 
@@ -503,6 +502,53 @@ const cancelpodContainers = () => {
 };
 const confirmpodContainers = () => {
   data.podContainers.close = false;
+  data.podContainers.containers = [];
+};
+
+const formatterContainerStatus = (row, column, cellValue) => {
+  let status = '运行中';
+  let color = '#28C65A';
+
+  const state = cellValue.state;
+  if (state.terminated !== undefined) {
+    status = state.terminated.reason;
+    color = '#0000FF';
+  }
+
+  return (
+    <div style="display: flex">
+      <div>
+        <pixiu-icon name="icon-circle-dot" size="12px" type="iconfont" color={color} />
+      </div>
+      <div style="margin-left: 6px"> {status}</div>
+    </div>
+  );
+};
+
+const formatterContainerStartTime = (row, column, cellValue) => {
+  const state = cellValue.state;
+  const time = '';
+  if (state.terminated !== undefined) {
+    const time = state.terminated.startedAt;
+    return formatterTime(row, column, time);
+  }
+  if (state.running !== undefined) {
+    const time = state.running.startedAt;
+    return formatterTime(row, column, time);
+  }
+};
+
+const formatterContainerImage = (row, column, cellValue) => {
+  return (
+    <div>
+      <el-tag round>
+        <div style="display: flex">
+          <pixiu-icon name="icon-docker" size="16px" type="iconfont" color="#409EFF" />
+          <div style="margin-left: 6px"> {cellValue}</div>
+        </div>
+      </el-tag>
+    </div>
+  );
 };
 
 const confirm = async () => {
