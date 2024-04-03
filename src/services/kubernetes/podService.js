@@ -14,6 +14,16 @@ export const getPodList = async (cluster, namespace) => {
   return [result, err];
 };
 
+export const getPod = async (cluster, namespace, name) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: `/pixiu/proxy/${cluster}/api/v1/namespaces/${namespace}/pods/${name}`,
+    }),
+  );
+  return [result, err];
+};
+
 export const getPodByName = async (cluster, namespace, name) => {
   const [err, result] = await awaitWrap(
     http({
