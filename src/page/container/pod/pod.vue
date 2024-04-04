@@ -134,9 +134,14 @@
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
-                  <el-dropdown-item class="dropdown-item-buttons"> 详情 </el-dropdown-item>
+                  <!-- <el-dropdown-item class="dropdown-item-buttons"> 详情 </el-dropdown-item> -->
                   <el-dropdown-item class="dropdown-item-buttons"> 查看YAML </el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons"> 日志 </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="data.logData.drawer = true"
+                  >
+                    日志
+                  </el-dropdown-item>
 
                   <el-dropdown-item
                     class="dropdown-item-buttons"
@@ -339,6 +344,10 @@
       <div style="margin-bottom: 10px" />
     </template>
   </el-dialog>
+
+  <el-drawer v-model="data.logData.drawer" title="I am the title" :with-header="false">
+    <span>Hi there!</span>
+  </el-drawer>
 </template>
 
 <script setup lang="jsx">
@@ -416,6 +425,10 @@ const data = reactive({
   podContainers: {
     close: false,
     containers: [],
+  },
+
+  logData: {
+    drawer: false,
   },
 });
 

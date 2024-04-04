@@ -162,15 +162,15 @@
                 <el-dropdown-menu class="dropdown-buttons">
                   <el-dropdown-item
                     class="dropdown-item-buttons"
-                    @click="handleDeleteDialog(scope.row)"
+                    @click="handleEditYamlDialog(scope.row)"
                   >
-                    删除
+                    编辑YAML
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
-                    @click="handleEditYamlDialog(scope.row)"
+                    @click="handleDeleteDialog(scope.row)"
                   >
-                    编辑yaml
+                    删除
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
