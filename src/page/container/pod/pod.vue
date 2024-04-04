@@ -186,6 +186,7 @@
     width="500px"
     align-center
     center
+    draggable
     @close="cancelRemoteLogin"
   >
     <template #header>
@@ -304,17 +305,25 @@
         color: '#191919',
       }"
     >
-      <el-table-column prop="container.name" sortable label="容器名称"> </el-table-column>
+      <el-table-column prop="container.name" sortable label="容器名称" width="150px">
+      </el-table-column>
 
-      <el-table-column prop="status" sortable label="状态" :formatter="formatterContainerStatus" />
+      <el-table-column
+        prop="status"
+        sortable
+        label="状态"
+        :formatter="formatterContainerStatus"
+        width="140px"
+      />
 
-      <el-table-column prop="status.restartCount" sortable label="重启次数" />
+      <el-table-column prop="status.restartCount" sortable label="重启次数" width="110px" />
 
       <el-table-column
         prop="status"
         label="创建时间"
         sortable
         :formatter="formatterContainerStartTime"
+        width="160px"
       />
 
       <el-table-column prop="container.image" label="镜像" :formatter="formatterContainerImage" />
@@ -540,15 +549,23 @@ const formatterContainerStartTime = (row, column, cellValue) => {
 };
 
 const formatterContainerImage = (row, column, cellValue) => {
-  return (
+  let images = [cellValue];
+  const displayContent = `
     <div>
-      <el-tag round>
-        <div style="display: flex">
-          <pixiu-icon name="icon-docker" size="16px" type="iconfont" color="#409EFF" />
-          <div style="margin-left: 6px"> {cellValue}</div>
-        </div>
-      </el-tag>
+      ${images.map((image) => `<div class="pixiu-table-formatter">${image}</div>`).join('')}
     </div>
+  `;
+  return (
+    <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
+      <div>
+        <el-tag round>
+          <div style="display: flex">
+            <pixiu-icon name="icon-docker" size="16px" type="iconfont" color="#409EFF" />
+            <div style="margin-left: 6px"> {cellValue}</div>
+          </div>
+        </el-tag>
+      </div>
+    </el-tooltip>
   );
 };
 
