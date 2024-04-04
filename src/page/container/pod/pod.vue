@@ -549,15 +549,23 @@ const formatterContainerStartTime = (row, column, cellValue) => {
 };
 
 const formatterContainerImage = (row, column, cellValue) => {
-  return (
+  let images = [cellValue];
+  const displayContent = `
     <div>
-      <el-tag round>
-        <div style="display: flex">
-          <pixiu-icon name="icon-docker" size="16px" type="iconfont" color="#409EFF" />
-          <div style="margin-left: 6px"> {cellValue}</div>
-        </div>
-      </el-tag>
+      ${images.map((image) => `<div class="pixiu-table-formatter">${image}</div>`).join('')}
     </div>
+  `;
+  return (
+    <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
+      <div>
+        <el-tag round>
+          <div style="display: flex">
+            <pixiu-icon name="icon-docker" size="16px" type="iconfont" color="#409EFF" />
+            <div style="margin-left: 6px"> {cellValue}</div>
+          </div>
+        </el-tag>
+      </div>
+    </el-tooltip>
   );
 };
 
