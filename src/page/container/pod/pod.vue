@@ -186,6 +186,7 @@
     width="500px"
     align-center
     center
+    draggable
     @close="cancelRemoteLogin"
   >
     <template #header>
@@ -322,7 +323,7 @@
         label="创建时间"
         sortable
         :formatter="formatterContainerStartTime"
-        width="150px"
+        width="160px"
       />
 
       <el-table-column prop="container.image" label="镜像" :formatter="formatterContainerImage" />
