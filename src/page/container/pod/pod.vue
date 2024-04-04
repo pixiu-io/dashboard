@@ -345,8 +345,19 @@
     </template>
   </el-dialog>
 
-  <el-drawer v-model="data.logData.drawer" title="I am the title" :with-header="false">
-    <span>Hi there!</span>
+  <el-drawer v-model="data.logData.drawer" :size="data.logData.width" :with-header="false">
+    <div
+      style="
+        text-align: left;
+        font-weight: bold;
+        padding-left: 5px;
+        margin-top: 5px;
+        font-size: 14.5px;
+        color: #191919;
+      "
+    >
+      日志查询
+    </div>
   </el-drawer>
 </template>
 
@@ -428,6 +439,7 @@ const data = reactive({
   },
 
   logData: {
+    width: '38%',
     drawer: false,
   },
 });
