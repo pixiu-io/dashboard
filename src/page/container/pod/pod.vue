@@ -304,17 +304,25 @@
         color: '#191919',
       }"
     >
-      <el-table-column prop="container.name" sortable label="容器名称"> </el-table-column>
+      <el-table-column prop="container.name" sortable label="容器名称" width="150px">
+      </el-table-column>
 
-      <el-table-column prop="status" sortable label="状态" :formatter="formatterContainerStatus" />
+      <el-table-column
+        prop="status"
+        sortable
+        label="状态"
+        :formatter="formatterContainerStatus"
+        width="140px"
+      />
 
-      <el-table-column prop="status.restartCount" sortable label="重启次数" />
+      <el-table-column prop="status.restartCount" sortable label="重启次数" width="110px" />
 
       <el-table-column
         prop="status"
         label="创建时间"
         sortable
         :formatter="formatterContainerStartTime"
+        width="150px"
       />
 
       <el-table-column prop="container.image" label="镜像" :formatter="formatterContainerImage" />
