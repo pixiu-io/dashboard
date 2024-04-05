@@ -475,7 +475,7 @@ const handleImageDialog = async (row) => {
   }
   const containers = deploy.spec.template.spec.containers;
 
-  for (container of containers) {
+  for (let container of containers) {
     data.imageData.images.push({
       image: container.image,
       name: container.name,
