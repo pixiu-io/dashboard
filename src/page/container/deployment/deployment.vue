@@ -166,7 +166,10 @@
                   >
                     编辑YAML
                   </el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons" @click="scope.row;">
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleImageDialog(scope.row)"
+                  >
                     镜像管理
                   </el-dropdown-item>
                   <el-dropdown-item
@@ -275,14 +278,14 @@
         ><WarningFilled
       /></el-icon>
       <div style="vertical-align: middle; margin-top: -40px">
-        Pod 所包含的容器列表。支持指定镜像的直接更新
+        Deployment 所包含的镜像列表。支持指定镜像的直接更新
       </div>
     </el-card>
     <div style="margin-top: -10px" />
 
     <el-table
-      v-loading="data.podContainers.loading"
-      :data="data.podContainers.containers"
+      v-loading="data.imageData.loading"
+      :data="data.imageData.images"
       stripe
       style="margin-top: 2px"
       header-row-class-name="pixiu-table-header"
@@ -384,6 +387,7 @@ const data = reactive({
   },
 
   imageData: {
+    loading: false,
     close: false,
     images: [],
   },

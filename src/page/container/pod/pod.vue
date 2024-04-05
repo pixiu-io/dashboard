@@ -293,9 +293,7 @@
         style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
         ><WarningFilled
       /></el-icon>
-      <div style="vertical-align: middle; margin-top: -40px">
-        Pod 所包含的容器列表。支持指定镜像的直接更新
-      </div>
+      <div style="vertical-align: middle; margin-top: -40px">Pod 所包含的容器列表。</div>
     </el-card>
     <div style="margin-top: -10px" />
 
