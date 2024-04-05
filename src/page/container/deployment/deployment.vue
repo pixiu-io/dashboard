@@ -474,7 +474,14 @@ const handleImageDialog = async (row) => {
     return;
   }
   const containers = deploy.spec.template.spec.containers;
-  console.log('containers', containers);
+
+  for (container of containers) {
+    data.imageData.images.push({
+      image: container.image,
+      name: container.name,
+      policy: container.imagePullPolicy,
+    });
+  }
 
   data.imageData.close = true;
 };
