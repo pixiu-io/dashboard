@@ -294,7 +294,9 @@
         color: '#191919',
       }"
     >
-      <el-table-column label="镜像" />
+      <el-table-column prop="name" sortable label="容器名称" width="200px" />
+      <el-table-column prop="policy" sortable label="PullPolicy" width="150px" />
+      <el-table-column prop="image" sortable label="镜像" />
     </el-table>
 
     <template #footer>
@@ -475,6 +477,7 @@ const handleImageDialog = async (row) => {
   }
   const containers = deploy.spec.template.spec.containers;
 
+  data.imageData.images = [];
   for (let container of containers) {
     data.imageData.images.push({
       image: container.image,
@@ -488,10 +491,12 @@ const handleImageDialog = async (row) => {
 
 const cancelImageFunc = () => {
   data.imageData.close = false;
+  data.imageData.images = [];
 };
 
 const confirmImageFunc = () => {
   data.imageData.close = false;
+  data.imageData.images = [];
 };
 
 const handleEditYamlDialog = async (row) => {
