@@ -196,19 +196,36 @@
   <el-dialog
     :model-value="data.deploymentReplicasDialog"
     style="color: #000000; font: 14px"
-    width="420px"
+    width="400px"
     center
     @close="closeDeploymentScaleDialog"
   >
     <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">调整实例数</div>
+      <div
+        style="
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+          margin-top: 5px;
+          font-size: 14.5px;
+          color: #191919;
+        "
+      >
+        调整实例数
+      </div>
     </template>
 
-    <el-form label-width="100px" style="max-width: 300px">
-      <el-form-item label="原副本数">
+    <el-form label-width="80px" style="max-width: 300px">
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">原副本数</span>
+        </template>
         <el-input v-model="data.deploymentRepcliasFrom.origin" disabled />
       </el-form-item>
-      <el-form-item label="新副本数">
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">新副本数</span>
+        </template>
         <el-input v-model="data.deploymentRepcliasFrom.target" placeholder="请输入新副本数" />
       </el-form-item>
     </el-form>
