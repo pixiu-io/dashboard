@@ -295,8 +295,8 @@
       }"
     >
       <el-table-column prop="name" sortable label="容器名称" width="200px" />
-      <el-table-column prop="policy" sortable label="PullPolicy" width="150px" />
-      <el-table-column prop="image" sortable label="镜像" />
+      <el-table-column prop="policy" sortable label="PullPolicy" width="200px" />
+      <el-table-column prop="image" sortable label="镜像" :formatter="formatterContainerImage" />
     </el-table>
 
     <template #footer>
@@ -338,6 +338,7 @@ import {
   formatterTime,
   formatterNamespace,
   runningFormatter,
+  formatterContainerImage,
 } from '@/utils/formatter';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
