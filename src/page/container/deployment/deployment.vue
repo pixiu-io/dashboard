@@ -465,13 +465,27 @@ const onChange = (v) => {
 };
 
 const handleImageDialog = async (row) => {
-  console.log('data.imageData.close', data.imageData.close);
+  const namespace = row.metadata.namespace;
+  const name = row.metadata.name;
+
+  const [deploy, err] = await getDeployment(data.cluster, namespace, name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+  const containers = deploy.spec.template.spec.containers;
+  console.log('containers', containers);
+
   data.imageData.close = true;
 };
 
-const cancelImageFunc = () => {};
+const cancelImageFunc = () => {
+  data.imageData.close = false;
+};
 
-const confirmImageFunc = () => {};
+const confirmImageFunc = () => {
+  data.imageData.close = false;
+};
 
 const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
