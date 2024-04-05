@@ -166,6 +166,9 @@
                   >
                     编辑YAML
                   </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons" @click="scope.row;">
+                    镜像管理
+                  </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
                     @click="handleDeleteDialog(scope.row)"
@@ -240,6 +243,65 @@
           >确认</el-button
         >
       </span>
+    </template>
+  </el-dialog>
+
+  <el-dialog
+    :model-value="data.imageData.close"
+    style="color: #000000; font: 14px"
+    align-center
+    draggable
+    center
+    @close="cancelImageFunc"
+  >
+    <template #header>
+      <div
+        style="
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+          margin-top: 5px;
+          font-size: 14.5px;
+          color: #191919;
+        "
+      >
+        镜像列表
+      </div>
+    </template>
+
+    <el-card class="app-docs" style="margin-top: -10px; height: 40px">
+      <el-icon
+        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+        ><WarningFilled
+      /></el-icon>
+      <div style="vertical-align: middle; margin-top: -40px">
+        Pod 所包含的容器列表。支持指定镜像的直接更新
+      </div>
+    </el-card>
+    <div style="margin-top: -10px" />
+
+    <el-table
+      v-loading="data.podContainers.loading"
+      :data="data.podContainers.containers"
+      stripe
+      style="margin-top: 2px"
+      header-row-class-name="pixiu-table-header"
+      :cell-style="{
+        'font-size': '12px',
+        color: '#191919',
+      }"
+    >
+      <el-table-column label="镜像" />
+    </el-table>
+
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-delete-cancel-button" @click="cancelImageFunc">取消</el-button>
+        <el-button type="primary" class="pixiu-delete-confirm-button" @click="confirmImageFunc"
+          >确认</el-button
+        >
+      </span>
+      <div style="margin-bottom: 10px" />
     </template>
   </el-dialog>
 
@@ -320,6 +382,11 @@ const data = reactive({
     objectName: 'Deployment',
     deleteName: '',
   },
+
+  imageData: {
+    close: false,
+    images: [],
+  },
 });
 
 onMounted(() => {
@@ -392,6 +459,15 @@ const onChange = (v) => {
     searchDeployments();
   }
 };
+
+const handleImageDialog = async (row) => {
+  console.log('data.imageData.close', data.imageData.close);
+  data.imageData.close = true;
+};
+
+const cancelImageFunc = () => {};
+
+const confirmImageFunc = () => {};
 
 const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
