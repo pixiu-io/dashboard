@@ -371,8 +371,29 @@
     <el-form>
       <el-form-item>
         <template #label>
-          <span style="margin-left: 8px; font-size: 13px; color: #191919">Pod选项 </span>
+          <span style="margin-left: 8px; font-size: 13px; color: #191919">容器选项 </span>
         </template>
+
+        <span style="margin-left: 40px">
+          <el-select
+            v-model="data.logData.selectedContainer"
+            style="width: 230px; float: right; margin-right: 10px"
+          >
+            <el-option
+              v-for="item in data.logData.containers"
+              :key="item"
+              :value="item"
+              :label="item"
+            />
+          </el-select>
+
+          <div>
+            <el-switch v-model="data.logData.previous" inline-prompt width="35px" /><span
+              style="font-size: 12px; margin-left: 5px; color: #191919"
+              >查看已退出的容器</span
+            >
+          </div>
+        </span>
       </el-form-item>
     </el-form>
   </el-drawer>
@@ -459,6 +480,9 @@ const data = reactive({
   logData: {
     width: '45%',
     drawer: false,
+    containers: [],
+    selectedContainer: '',
+    previous: false,
   },
 });
 
