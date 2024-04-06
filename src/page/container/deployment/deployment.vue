@@ -381,6 +381,7 @@ import {
   getDeployment,
   updateDeployment,
   deleteDeployment,
+  patchDeployment,
 } from '@/services/kubernetes/deploymentService';
 import {
   formatterImage,
@@ -517,8 +518,32 @@ const onChange = (v) => {
   }
 };
 
-const confirmEvent = (row) => {
-  console.log('confirm!', row);
+const confirmEvent = async (row) => {
+  if (row.newImage === '') {
+    proxy.$notify.warning('新的镜像名称为必选项');
+    return;
+  }
+
+  const patchData = {
+    spec: {
+      template: {
+        spec: {
+          '$setElementOrder/containers': [{ name: row.name }],
+          containers: [{ image: row.newImage, name: row.name }],
+        },
+      },
+    },
+  };
+
+  const [result, err] = await patchDeployment(data.cluster, row.ns, row.deploymentName, patchData);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  row.image = row.newImage;
+  row.newImage = '';
+  row.change = false;
 };
 
 const cancelEvent = (row) => {
@@ -527,9 +552,7 @@ const cancelEvent = (row) => {
 };
 
 const handleImageChange = (row) => {
-  console.log('before', row);
   row.change = true;
-  console.log('after', row);
 };
 
 const handleImageDialog = async (row) => {
@@ -543,13 +566,14 @@ const handleImageDialog = async (row) => {
 
   const containers = deploy.spec.template.spec.containers;
   data.imageData.images = [];
-  for (var i = 0; i < containers.length; i++) {
+  for (let container of containers) {
     data.imageData.images.push({
-      image: containers[i].image,
-      name: containers[i].name,
+      image: container.image,
+      name: container.name,
       change: false,
       newImage: '',
-      index: i,
+      deploymentName: row.metadata.name,
+      ns: row.metadata.namespace,
     });
   }
   data.imageData.close = true;
