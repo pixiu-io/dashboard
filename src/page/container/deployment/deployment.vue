@@ -522,7 +522,8 @@ const confirmEvent = (row) => {
 };
 
 const cancelEvent = (row) => {
-  console.log('cancel!', row);
+  row.change = false;
+  row.newImage = '';
 };
 
 const handleImageChange = (row) => {
