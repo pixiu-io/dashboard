@@ -170,7 +170,7 @@
                     class="dropdown-item-buttons"
                     @click="handleImageDialog(scope.row)"
                   >
-                    镜像管理
+                    镜像列表
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
@@ -295,7 +295,7 @@
         ><WarningFilled
       /></el-icon>
       <div style="vertical-align: middle; margin-top: -40px">
-        Deployment 所包含的镜像列表。支持指定镜像的直接更新
+        Workload 包含的镜像列表，支持指定镜像的直接更新。
       </div>
     </el-card>
     <div style="margin-top: -10px" />
@@ -311,9 +311,18 @@
         color: '#191919',
       }"
     >
-      <el-table-column prop="name" sortable label="容器名称" width="200px" />
-      <el-table-column prop="policy" sortable label="PullPolicy" width="200px" />
-      <el-table-column prop="image" sortable label="镜像" :formatter="formatterContainerImage" />
+      <el-table-column prop="name" sortable label="容器名称" width="300px" />
+      <el-table-column prop="image" sortable label="镜像">
+        <template #default="scope">
+          <div style="display: flex">
+            {{ scope.row.image }}
+            <div style="margin-left: 8px; cursor: pointer">
+              <pixiu-icon name="icon-edit" size="12px" type="iconfont" color="#909399" />
+            </div>
+          </div>
+        </template>
+      </el-table-column>
+      />
     </el-table>
 
     <template #footer>
@@ -493,14 +502,13 @@ const handleImageDialog = async (row) => {
     proxy.$notify.error(err.response.data.message);
     return;
   }
-  const containers = deploy.spec.template.spec.containers;
 
+  const containers = deploy.spec.template.spec.containers;
   data.imageData.images = [];
   for (let container of containers) {
     data.imageData.images.push({
       image: container.image,
       name: container.name,
-      policy: container.imagePullPolicy,
     });
   }
 
