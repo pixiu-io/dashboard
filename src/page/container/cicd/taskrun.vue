@@ -255,6 +255,7 @@ const handleReset = async (row) => {
     metadata: {
       namespace: 'default',
       generateName: array[0] + '-r-',
+
     },
     spec: {
       serviceAccountName: 'default',

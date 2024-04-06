@@ -146,7 +146,9 @@
                   >
                     清空节点
                   </el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons"> 查看YAML </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons" @click="viewYaml(scope.row)">
+                    查看YAML
+                  </el-dropdown-item>
                   <el-dropdown-item class="dropdown-item-buttons"> 删除 </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
@@ -284,6 +286,8 @@
       <div style="margin-bottom: 10px" />
     </template>
   </el-dialog>
+
+  <PiXiuViewOrEdit :yaml-dialog="data.yamlDialog" :yaml="data.yaml"></PiXiuViewOrEdit>
 </template>
 
 <script setup lang="jsx">
@@ -292,6 +296,7 @@ import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
+import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getNodeList, patchNode, getNode, drainNode } from '@/services/kubernetes/nodeService';
 import {
@@ -319,7 +324,8 @@ const data = reactive({
   },
   tableData: [],
   loading: false,
-
+  yamlDialog: false,
+  yaml: '',
   nodeList: [],
 
   labelData: {
@@ -517,6 +523,18 @@ const confirmEditLabel = async () => {
   }
 
   cancelEditLabel();
+};
+
+const viewYaml = async (row) => {
+  data.labelData.name = row.metadata.name;
+
+  const [node, err] = await getNode(data.cluster, data.labelData.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+  data.yamlDialog = true;
+  data.yaml = node;
 };
 </script>
 

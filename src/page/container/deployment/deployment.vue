@@ -162,15 +162,21 @@
                 <el-dropdown-menu class="dropdown-buttons">
                   <el-dropdown-item
                     class="dropdown-item-buttons"
-                    @click="handleDeleteDialog(scope.row)"
+                    @click="handleEditYamlDialog(scope.row)"
                   >
-                    删除
+                    编辑YAML
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
-                    @click="handleEditYamlDialog(scope.row)"
+                    @click="handleImageDialog(scope.row)"
                   >
-                    编辑yaml
+                    镜像列表
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleDeleteDialog(scope.row)"
+                  >
+                    删除
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
@@ -190,19 +196,36 @@
   <el-dialog
     :model-value="data.deploymentReplicasDialog"
     style="color: #000000; font: 14px"
-    width="420px"
+    width="400px"
     center
     @close="closeDeploymentScaleDialog"
   >
     <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">调整实例数</div>
+      <div
+        style="
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+          margin-top: 5px;
+          font-size: 14.5px;
+          color: #191919;
+        "
+      >
+        调整实例数
+      </div>
     </template>
 
-    <el-form label-width="100px" style="max-width: 300px">
-      <el-form-item label="原副本数">
+    <el-form label-width="80px" style="max-width: 300px">
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">原副本数</span>
+        </template>
         <el-input v-model="data.deploymentRepcliasFrom.origin" disabled />
       </el-form-item>
-      <el-form-item label="新副本数">
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">新副本数</span>
+        </template>
         <el-input v-model="data.deploymentRepcliasFrom.target" placeholder="请输入新副本数" />
       </el-form-item>
     </el-form>
@@ -243,6 +266,99 @@
     </template>
   </el-dialog>
 
+  <el-dialog
+    :model-value="data.imageData.close"
+    style="color: #000000; font: 14px"
+    align-center
+    draggable
+    center
+    @close="cancelImageFunc"
+  >
+    <template #header>
+      <div
+        style="
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+          margin-top: 5px;
+          font-size: 14.5px;
+          color: #191919;
+        "
+      >
+        镜像列表
+      </div>
+    </template>
+
+    <el-card class="app-docs" style="margin-top: -10px; height: 40px">
+      <el-icon
+        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+        ><WarningFilled
+      /></el-icon>
+      <div style="vertical-align: middle; margin-top: -40px">
+        Workload 包含的镜像列表，支持指定镜像的直接更新。
+      </div>
+    </el-card>
+    <div style="margin-top: -10px" />
+
+    <el-table
+      v-loading="data.imageData.loading"
+      :data="data.imageData.images"
+      stripe
+      style="margin-top: 2px"
+      header-row-class-name="pixiu-table-header"
+      :cell-style="{
+        'font-size': '12px',
+        color: '#191919',
+      }"
+    >
+      <el-table-column prop="name" sortable label="容器名称" width="280px" />
+      <el-table-column prop="image" sortable label="镜像">
+        <template #default="scope">
+          <div style="display: flex">
+            <el-tag round>
+              <div style="display: flex">
+                <pixiu-icon name="icon-docker" size="16px" type="iconfont" color="#409EFF" />
+                <div style="margin-left: 6px">{{ scope.row.image }}</div>
+              </div>
+            </el-tag>
+
+            <div v-if="!scope.row.change">
+              <pixiu-icon
+                name="icon-setting"
+                style="cursor: pointer; margin-left: 6px; margin-top: 5px"
+                size="16px"
+                type="iconfont"
+                color="#409EFF"
+                @click="handleImageChange(scope.row)"
+              />
+            </div>
+
+            <div v-if="scope.row.change" style="margin-left: 10px">
+              <el-input v-model="scope.row.newImage"></el-input>
+              <div style="display: flex">
+                <div style="cursor: pointer" @click="confirmEvent(scope.row)">确认</div>
+                <div style="margin-left: 10px; cursor: pointer" @click="cancelEvent(scope.row)">
+                  取消
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </el-table-column>
+      />
+    </el-table>
+
+    <div style="margin-bottom: -15px" />
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button style="float: right" class="pixiu-delete-cancel-button" @click="cancelImageFunc"
+          >关闭</el-button
+        >
+      </span>
+      <div style="margin-bottom: 35px" />
+    </template>
+  </el-dialog>
+
   <pixiuDialog
     :close-event="data.deleteDialog.close"
     :object-name="data.deleteDialog.objectName"
@@ -265,12 +381,14 @@ import {
   getDeployment,
   updateDeployment,
   deleteDeployment,
+  patchDeployment,
 } from '@/services/kubernetes/deploymentService';
 import {
   formatterImage,
   formatterTime,
   formatterNamespace,
   runningFormatter,
+  formatterContainerImage,
 } from '@/utils/formatter';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
@@ -319,6 +437,12 @@ const data = reactive({
     close: false,
     objectName: 'Deployment',
     deleteName: '',
+  },
+
+  imageData: {
+    loading: false,
+    close: false,
+    images: [],
   },
 });
 
@@ -391,6 +515,72 @@ const onChange = (v) => {
   if (data.pageInfo.search.searchInfo !== '') {
     searchDeployments();
   }
+};
+
+const confirmEvent = async (row) => {
+  if (row.newImage === '') {
+    proxy.$notify.warning('新的镜像名称为必选项');
+    return;
+  }
+
+  const patchData = {
+    spec: {
+      template: {
+        spec: {
+          '$setElementOrder/containers': [{ name: row.name }],
+          containers: [{ image: row.newImage, name: row.name }],
+        },
+      },
+    },
+  };
+
+  const [result, err] = await patchDeployment(data.cluster, row.ns, row.deploymentName, patchData);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  row.image = row.newImage;
+  row.newImage = '';
+  row.change = false;
+};
+
+const cancelEvent = (row) => {
+  row.change = false;
+  row.newImage = '';
+};
+
+const handleImageChange = (row) => {
+  row.change = true;
+};
+
+const handleImageDialog = async (row) => {
+  const namespace = row.metadata.namespace;
+  const name = row.metadata.name;
+  const [deploy, err] = await getDeployment(data.cluster, namespace, name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  const containers = deploy.spec.template.spec.containers;
+  data.imageData.images = [];
+  for (let container of containers) {
+    data.imageData.images.push({
+      image: container.image,
+      name: container.name,
+      change: false,
+      newImage: '',
+      deploymentName: row.metadata.name,
+      ns: row.metadata.namespace,
+    });
+  }
+  data.imageData.close = true;
+};
+
+const cancelImageFunc = () => {
+  data.imageData.close = false;
+  data.imageData.images = [];
 };
 
 const handleEditYamlDialog = async (row) => {
@@ -500,25 +690,25 @@ const closeDeploymentScaleDialog = (row) => {
 };
 
 const confirmDeploymentScale = async () => {
-  try {
-    const res = await proxy.$http({
-      method: 'patch',
-      url: `/pixiu/proxy/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${data.deploymentRepcliasFrom.name}/scale`,
-      data: {
-        spec: {
-          replicas: Number(data.deploymentRepcliasFrom.target),
-        },
-      },
-      config: {
-        header: {
-          'Content-Type': 'application/merge-patch+json',
-        },
-      },
-    });
+  const patchData = {
+    spec: {
+      replicas: Number(data.deploymentRepcliasFrom.target),
+    },
+  };
 
-    getDeployments();
-    closeDeploymentScaleDialog();
-  } catch (error) {}
+  const [result, err] = await patchDeployment(
+    data.cluster,
+    data.namespace,
+    data.deploymentRepcliasFrom.name,
+    patchData,
+  );
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  getDeployments();
+  closeDeploymentScaleDialog();
 };
 </script>
 
