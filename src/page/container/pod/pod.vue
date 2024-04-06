@@ -383,7 +383,7 @@
         <span style="margin-left: 40px">
           <el-select
             v-model="data.logData.selectedContainer"
-            style="width: 230px; float: right; margin-right: 10px"
+            style="width: 260px; float: right; margin-right: 10px"
           >
             <el-option
               v-for="item in data.logData.containers"
@@ -392,13 +392,37 @@
               :label="item"
             />
           </el-select>
-          <div>
-            <el-switch v-model="data.logData.previous" inline-prompt width="35px" /><span
-              style="font-size: 12px; margin-left: 5px; color: #191919"
-              >查看已退出的容器</span
-            >
-          </div>
         </span>
+      </el-form-item>
+
+      <el-form-item>
+        <template #label>
+          <span style="margin-left: 8px; font-size: 13px; color: #191919">日志行数 </span>
+        </template>
+
+        <span style="margin-left: 40px">
+          <el-select
+            v-model="data.logData.line"
+            style="width: 80px; float: right; margin-right: 10px"
+          >
+            <el-option
+              v-for="item in data.logData.lineOptions"
+              :key="item"
+              :value="item"
+              :label="item"
+            />
+          </el-select>
+        </span>
+        行
+      </el-form-item>
+
+      <el-form-item>
+        <div style="margin-left: 110px; margin-top: -12px">
+          <el-switch v-model="data.logData.previous" inline-prompt width="35px" /><span
+            style="font-size: 12px; margin-left: 5px; color: #191919"
+            >查看已退出的容器</span
+          >
+        </div>
       </el-form-item>
     </el-form>
   </el-drawer>
@@ -490,6 +514,8 @@ const data = reactive({
     containers: [],
     selectedContainer: '',
     previous: false,
+    line: 50,
+    lineOptions: [50, 100, 200, 500],
   },
 });
 
