@@ -429,6 +429,25 @@
     <div style="display: flex; margin-top: 25px; margin-left: 8px">
       <button style="width: 70px" class="pixiu-two-button" @click="getPodLogs">查询</button>
     </div>
+
+    <div style="margin-top: 15px">
+      <el-card class="contend-card-container2">
+        <div style="background-color: #29232b; color: white; min-height: 440px">
+          <div style="margin-left: 20px">
+            <div v-if="data.logData.podLogs.length === 0" style="font-size: 14px">暂无日志</div>
+            <div v-else>
+              <div
+                v-for="(item, index) in data.logData.podLogs"
+                :key="item"
+                style="font-size: 14px"
+              >
+                {{ index + 1 }} <span style="margin-left: 18px"></span> {{ item }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </el-card>
+    </div>
   </el-drawer>
 </template>
 
@@ -618,8 +637,6 @@ const handleContainerListDialog = async (row) => {
 };
 
 const getPodLogs = async () => {
-  console.log('dddd', data.logData);
-
   if (data.logData.selectedContainer === '') {
     proxy.$notify.error('查询日志时，容器名称为必选项');
     return;
@@ -636,8 +653,8 @@ const getPodLogs = async () => {
     proxy.$notify.error(err.response.data.message);
     return;
   }
+
   data.logData.podLogs = result;
-  console.log('data.logData.podLogs', data.logData.podLogs);
 };
 
 const cancelpodContainers = () => {
@@ -688,6 +705,8 @@ const closeLogDrawer = () => {
   data.logData.containers = [];
   data.logData.selectedContainer = '';
   data.logData.previous = false;
+  data.logData.line = 50;
+  data.logData.podLogs = [];
 };
 
 const formatterContainerStartTime = (row, column, cellValue) => {
