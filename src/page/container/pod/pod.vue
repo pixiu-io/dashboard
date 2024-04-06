@@ -134,9 +134,14 @@
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
-                  <el-dropdown-item class="dropdown-item-buttons"> 详情 </el-dropdown-item>
+                  <!-- <el-dropdown-item class="dropdown-item-buttons"> 详情 </el-dropdown-item> -->
                   <el-dropdown-item class="dropdown-item-buttons"> 查看YAML </el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons"> 日志 </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="data.logData.drawer = true"
+                  >
+                    日志
+                  </el-dropdown-item>
 
                   <el-dropdown-item
                     class="dropdown-item-buttons"
@@ -288,9 +293,7 @@
         style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
         ><WarningFilled
       /></el-icon>
-      <div style="vertical-align: middle; margin-top: -40px">
-        Pod 所包含的容器列表。支持指定镜像的直接更新
-      </div>
+      <div style="vertical-align: middle; margin-top: -40px">Pod 所包含的容器列表。</div>
     </el-card>
     <div style="margin-top: -10px" />
 
@@ -339,6 +342,21 @@
       <div style="margin-bottom: 10px" />
     </template>
   </el-dialog>
+
+  <el-drawer v-model="data.logData.drawer" :size="data.logData.width" :with-header="false">
+    <div
+      style="
+        text-align: left;
+        font-weight: bold;
+        padding-left: 5px;
+        margin-top: 5px;
+        font-size: 14.5px;
+        color: #191919;
+      "
+    >
+      日志查询
+    </div>
+  </el-drawer>
 </template>
 
 <script setup lang="jsx">
@@ -356,6 +374,7 @@ import {
   formatterContainersCPU,
   formatterContainersMem,
   formatterContainersResource,
+  formatterContainerImage,
 } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
@@ -416,6 +435,11 @@ const data = reactive({
   podContainers: {
     close: false,
     containers: [],
+  },
+
+  logData: {
+    width: '38%',
+    drawer: false,
   },
 });
 
@@ -546,27 +570,6 @@ const formatterContainerStartTime = (row, column, cellValue) => {
     const time = state.running.startedAt;
     return formatterTime(row, column, time);
   }
-};
-
-const formatterContainerImage = (row, column, cellValue) => {
-  let images = [cellValue];
-  const displayContent = `
-    <div>
-      ${images.map((image) => `<div class="pixiu-table-formatter">${image}</div>`).join('')}
-    </div>
-  `;
-  return (
-    <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
-      <div>
-        <el-tag round>
-          <div style="display: flex">
-            <pixiu-icon name="icon-docker" size="16px" type="iconfont" color="#409EFF" />
-            <div style="margin-left: 6px"> {cellValue}</div>
-          </div>
-        </el-tag>
-      </div>
-    </el-tooltip>
-  );
 };
 
 const confirm = async () => {

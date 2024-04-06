@@ -55,3 +55,20 @@ export const getDeploymentList = async (cluster, namespace) => {
   );
   return [result, err];
 };
+
+export const patchDeployment = async (cluster, namespace, name, data) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'patch',
+      url: `/pixiu/proxy/${cluster}/apis/apps/v1/namespaces/${namespace}/deployments/${name}`,
+      data: data,
+      config: {
+        header: {
+          'Content-Type': 'application/strategic-merge-patch+json',
+        },
+      },
+    }),
+  );
+
+  return [result, err];
+};
