@@ -311,7 +311,7 @@
         color: '#191919',
       }"
     >
-      <el-table-column prop="name" sortable label="容器名称" width="300px" />
+      <el-table-column prop="name" sortable label="容器名称" width="280px" />
       <el-table-column prop="image" sortable label="镜像">
         <template #default="scope">
           <div style="display: flex">
@@ -348,14 +348,14 @@
       />
     </el-table>
 
+    <div style="margin-bottom: -15px" />
     <template #footer>
       <span class="dialog-footer">
-        <el-button class="pixiu-delete-cancel-button" @click="cancelImageFunc">取消</el-button>
-        <el-button type="primary" class="pixiu-delete-confirm-button" @click="confirmImageFunc"
-          >确认</el-button
+        <el-button style="float: right" class="pixiu-delete-cancel-button" @click="cancelImageFunc"
+          >关闭</el-button
         >
       </span>
-      <div style="margin-bottom: 10px" />
+      <div style="margin-bottom: 35px" />
     </template>
   </el-dialog>
 
@@ -559,13 +559,6 @@ const handleImageDialog = async (row) => {
 const cancelImageFunc = () => {
   data.imageData.close = false;
   data.imageData.images = [];
-};
-
-const confirmImageFunc = () => {
-  data.imageData.close = false;
-  data.imageData.images = [];
-
-  console.log(data.imageData.images);
 };
 
 const handleEditYamlDialog = async (row) => {
