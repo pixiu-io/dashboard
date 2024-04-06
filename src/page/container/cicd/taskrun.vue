@@ -55,7 +55,7 @@
 
         <el-table-column prop="metadata.namespace" label="命名空间" :formatter="formatterNamespace">
         </el-table-column>
-        <el-table-column prop="status" label="状态" :formatter="formatStatus" />
+        <el-table-column prop="status" label="状态" :formatter="formatStatus"> </el-table-column>
         <el-table-column prop="spec.taskRef.name" label="Task" />
 
         <el-table-column
@@ -234,8 +234,8 @@ const confirm = async () => {
 };
 
 const formatStatus = (row, column, cellValue) => {
-  if (cellValue.conditions) {
-    let reason = cellValue.conditions[0].reason;
+  if (row.status.conditions) {
+    let reason = row.status.conditions[0].reason;
     if (reason === 'Succeeded') {
       return formatterIcon('#28C65A', reason);
     }
@@ -247,12 +247,14 @@ const formatStatus = (row, column, cellValue) => {
   return null;
 };
 const handleReset = async (row) => {
+  const str = row.metadata.name;
+  const array = str.split('-');
   let objectForm = reactive({
     apiVersion: 'tekton.dev/v1',
     kind: 'TaskRun',
     metadata: {
       namespace: 'default',
-      generateName: row.metadata.name + '-r-',
+      generateName: array[0] + '-r-',
     },
     spec: {
       serviceAccountName: 'default',
@@ -266,3 +268,13 @@ const handleReset = async (row) => {
   await getTaskRuns();
 };
 </script>
+<style scoped="scoped">
+.info-tooltip {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 150px; /* 设置一个最大宽度 */
+  display: inline-block;
+  vertical-align: bottom;
+}
+</style>
