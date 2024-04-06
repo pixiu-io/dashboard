@@ -841,6 +841,7 @@ const getPodLogs = async () => {
       data.namespace,
       data.selectedPod,
       data.selectedContainer,
+      50,
     );
     if (err) {
       proxy.$notify.error(err.response.data.message);
@@ -855,6 +856,7 @@ const getPodLogs = async () => {
         data.namespace,
         pod,
         data.selectedContainer,
+        50,
       );
       if (err) {
         proxy.$notify.error({ title: 'Pod', message: err.response.data.message });
