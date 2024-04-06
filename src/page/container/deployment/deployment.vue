@@ -329,8 +329,8 @@
             <div v-if="!scope.row.change">
               <pixiu-icon
                 name="icon-setting"
-                style="cursor: pointer; margin-left: 6px; margin-top: 3.5px"
-                size="15px"
+                style="cursor: pointer; margin-left: 6px; margin-top: 5px"
+                size="16px"
                 type="iconfont"
                 color="#409EFF"
                 @click="handleImageChange(scope.row)"
