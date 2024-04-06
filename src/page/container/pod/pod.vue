@@ -694,9 +694,9 @@ const handleLogDrawer = (row) => {
 };
 
 const openLogDrawer = () => {
-  // if (data.logData.containers.length > 0) {
-  //   data.logData.selectedContainer = data.logData.containers[0];
-  // }
+  if (data.logData.containers.length > 0) {
+    data.logData.selectedContainer = data.logData.containers[0];
+  }
 };
 
 const closeLogDrawer = () => {
