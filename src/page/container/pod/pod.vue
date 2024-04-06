@@ -367,7 +367,14 @@
       /></el-icon>
       <div style="vertical-align: middle; margin-top: -40px">获取 Pod 的实时日志</div>
     </el-card>
-    <div style="margin-top: -10px" />
+
+    <el-form>
+      <el-form-item>
+        <template #label>
+          <span style="margin-left: 8px; font-size: 13px; color: #191919">Pod选项 </span>
+        </template>
+      </el-form-item>
+    </el-form>
   </el-drawer>
 </template>
 
@@ -450,7 +457,7 @@ const data = reactive({
   },
 
   logData: {
-    width: '38%',
+    width: '45%',
     drawer: false,
   },
 });
