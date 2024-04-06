@@ -425,6 +425,10 @@
         </div>
       </el-form-item>
     </el-form>
+
+    <div style="display: flex; margin-top: 25px; margin-left: 8px">
+      <button style="width: 70px" class="pixiu-two-button" @click="getPodLogs">查询</button>
+    </div>
   </el-drawer>
 </template>
 
@@ -522,6 +526,8 @@ const data = reactive({
     previous: false,
     line: 50,
     lineOptions: [50, 100, 200, 500],
+    podLogs: [],
+    aggLog: false,
   },
 });
 
@@ -611,11 +617,30 @@ const handleContainerListDialog = async (row) => {
   data.podContainers.close = true;
 };
 
-const cancelpodContainers = () => {
-  data.podContainers.close = false;
-  data.podContainers.containers = [];
+const getPodLogs = async () => {
+  console.log('dddd', data.logData);
+
+  if (data.logData.selectedContainer === '') {
+    proxy.$notify.error('查询日志时，容器名称为必选项');
+    return;
+  }
+
+  const [result, err] = await getPodLog(
+    data.cluster,
+    data.logData.namespace,
+    data.logData.pod,
+    data.logData.selectedContainer,
+    data.logData.line,
+  );
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+  data.logData.podLogs = result;
+  console.log('data.logData.podLogs', data.logData.podLogs);
 };
-const confirmpodContainers = () => {
+
+const cancelpodContainers = () => {
   data.podContainers.close = false;
   data.podContainers.containers = [];
 };
