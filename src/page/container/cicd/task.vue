@@ -61,6 +61,7 @@
             {{ scope.row.metadata.name }}
           </template>
         </el-table-column>
+        <el-table-column prop="status" label="状态" :formatter="formatStatus"></el-table-column>
 
         <el-table-column prop="metadata.namespace" label="命名空间" :formatter="formatterNamespace">
         </el-table-column>
@@ -161,8 +162,21 @@
 import { useRouter } from 'vue-router';
 import { getCurrentInstance, onMounted, reactive, ref } from 'vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
-import { formatterImage, formatterNamespace, formatterTime } from '@/utils/formatter';
-import { deleteTask, getTaskDetail, getTaskList, updateTask } from '@/services/cicd/tektonService';
+import {
+  formatterIcon,
+  formatterImage,
+  formatterNamespace,
+  formatterTime,
+} from '@/utils/formatter';
+import {
+  createTaskRun,
+  deleteTask,
+  deleteTaskRun,
+  getTaskDetail,
+  getTaskList,
+  getTaskRunList,
+  updateTask,
+} from '@/services/cicd/tektonService';
 
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
@@ -189,6 +203,7 @@ const data = reactive({
   loading: false,
 
   taskList: [],
+  taskRunList: [],
 
   namespace: 'default',
   filterNamespaces: [],
@@ -272,11 +287,22 @@ const handleDeleteDialog = (row) => {
 };
 
 const confirm = async () => {
+  const task = data.taskRunList.filter((task) => task.taskName === data.deleteDialog.deleteName);
+  for (const taskElement of task) {
+    const [result, err] = await deleteTaskRun(data.cluster, data.namespace, taskElement.runName);
+    if (err) {
+      proxy.$notify.error(err.response.data.message);
+      return;
+    }
+    proxy.$notify.success(`TaskRun(${taskElement.runName}) 删除成功`);
+  }
+
   const [result, err] = await deleteTask(
     data.cluster,
     data.namespace,
     data.deleteDialog.deleteName,
   );
+
   if (err) {
     proxy.$notify.error(err.response.data.message);
     return;
@@ -296,8 +322,23 @@ const clean = () => {
   data.deleteDialog.close = false;
   data.deleteDialog.deleteName = '';
 };
+const getTaskRunStatus = async (name) => {
+  const [res, err] = await getTaskRunList(data.cluster, data.namespace);
 
+  for (const re of res.items) {
+    let stats = {
+      taskName: '',
+      runName: '',
+      status: '',
+    };
+    stats.runName = re.metadata.name;
+    stats.taskName = re.spec.taskRef.name;
+    stats.status = re.status.conditions[0].reason;
+    data.taskRunList.push(stats);
+  }
+};
 const getTasks = async () => {
+  await getTaskRunStatus();
   data.loading = true;
   const [result, err] = await getTaskList(data.cluster, data.namespace);
   data.loading = false;
@@ -305,8 +346,27 @@ const getTasks = async () => {
     proxy.$notify.error(err.response.data.message);
     return;
   }
-
   data.taskList = result.items;
+  data.taskList = [];
+  for (const item of result.items) {
+    const taskDetail = {
+      metadata: {},
+      spec: {
+        steps: [],
+      },
+      status: '',
+    };
+    // let a = [{ runName: 'sys-hello', status: 'Succeeded', taskName: 'sys' }];
+    const task = data.taskRunList.find((task) => task.taskName === item.metadata.name);
+    if (typeof task == 'undefined') {
+      taskDetail.status = 'notCreated';
+    } else {
+      taskDetail.status = task.status;
+    }
+    taskDetail.metadata = item.metadata;
+    taskDetail.spec = item.spec;
+    data.taskList.push(taskDetail);
+  }
   data.pageInfo.total = data.taskList.length;
   data.tableData = getTableData(data.pageInfo, data.taskList);
 };
@@ -316,15 +376,55 @@ const createTask = () => {
   router.push(url);
 };
 
-const jumpRoute = (row) => {
-  router.push({
-    name: 'createTaskRun',
-    query: {
-      cluster: data.cluster,
-      namespace: data.namespace,
-      taskName: row.metadata.name,
+const jumpRoute = async (row) => {
+  // router.push({
+  //   name: 'createTaskRun',
+  //   query: {
+  //     cluster: data.cluster,
+  //     namespace: data.namespace,
+  //     taskName: row.metadata.name,
+  //   },
+  // });
+  const objectForm = {
+    apiVersion: 'tekton.dev/v1',
+    kind: 'TaskRun',
+    metadata: {
+      namespace: 'default',
+      generateName: row.metadata.name + '-r-',
     },
-  });
+    spec: {
+      serviceAccountName: 'default',
+      taskRef: {
+        name: row.metadata.name,
+        kind: 'Task',
+      },
+      podTemplate: {
+        nodeSelector: {},
+      },
+    },
+  };
+  const [result, err] = await createTaskRun(data.cluster, data.namespace, objectForm);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+  proxy.$notify.success(`Task ${data.form.metadata.name} 创建成功`);
+};
+
+const formatStatus = (row) => {
+  if (row.status === 'Succeeded') {
+    return formatterIcon('#939893', '已完成');
+  }
+  if (row.status === 'Running') {
+    return formatterIcon('#28C65A', '在运行中');
+  }
+  if (row.status === 'notCreated') {
+    return formatterIcon('#FFFFFF', '未创建');
+  }
+  if (row.status === 'Failed') {
+    return formatterIcon('rgba(250,56,91,0.8)', '失败');
+  }
+  return formatterIcon('#FFFF00', row.status);
 };
 </script>
 
