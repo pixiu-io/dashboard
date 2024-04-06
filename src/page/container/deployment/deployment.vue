@@ -535,7 +535,6 @@ const handleImageChange = (row) => {
 const handleImageDialog = async (row) => {
   const namespace = row.metadata.namespace;
   const name = row.metadata.name;
-
   const [deploy, err] = await getDeployment(data.cluster, namespace, name);
   if (err) {
     proxy.$notify.error(err.response.data.message);
@@ -544,15 +543,15 @@ const handleImageDialog = async (row) => {
 
   const containers = deploy.spec.template.spec.containers;
   data.imageData.images = [];
-  for (let container of containers) {
+  for (var i = 0; i < containers.length; i++) {
     data.imageData.images.push({
-      image: container.image,
-      name: container.name,
+      image: containers[i].image,
+      name: containers[i].name,
       change: false,
       newImage: '',
+      index: i,
     });
   }
-
   data.imageData.close = true;
 };
 
