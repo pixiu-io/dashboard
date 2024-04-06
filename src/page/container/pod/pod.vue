@@ -138,7 +138,7 @@
                   <el-dropdown-item class="dropdown-item-buttons"> 查看YAML </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
-                    @click="data.logData.drawer = true"
+                    @click="handleLogDrawer(scope.row)"
                   >
                     日志
                   </el-dropdown-item>
@@ -346,7 +346,13 @@
     </template>
   </el-dialog>
 
-  <el-drawer v-model="data.logData.drawer" :size="data.logData.width" :with-header="false">
+  <el-drawer
+    v-model="data.logData.drawer"
+    :size="data.logData.width"
+    :with-header="false"
+    @open="openLogDrawer"
+    @close="closeLogDrawer"
+  >
     <div
       style="
         text-align: left;
@@ -358,6 +364,89 @@
       "
     >
       日志查询
+    </div>
+
+    <el-card class="app-docs" style="margin-left: 8px; height: 40px">
+      <el-icon
+        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+        ><WarningFilled
+      /></el-icon>
+      <div style="vertical-align: middle; margin-top: -40px">获取 Pod 的实时日志</div>
+    </el-card>
+
+    <el-form>
+      <el-form-item>
+        <template #label>
+          <span style="margin-left: 8px; font-size: 13px; color: #191919">容器选项 </span>
+        </template>
+
+        <span style="margin-left: 40px">
+          <el-select
+            v-model="data.logData.selectedContainer"
+            style="width: 260px; float: right; margin-right: 10px"
+          >
+            <el-option
+              v-for="item in data.logData.containers"
+              :key="item"
+              :value="item"
+              :label="item"
+            />
+          </el-select>
+        </span>
+      </el-form-item>
+
+      <el-form-item>
+        <template #label>
+          <span style="margin-left: 8px; font-size: 13px; color: #191919">日志行数 </span>
+        </template>
+
+        <span style="margin-left: 40px">
+          <el-select
+            v-model="data.logData.line"
+            style="width: 80px; float: right; margin-right: 10px"
+          >
+            <el-option
+              v-for="item in data.logData.lineOptions"
+              :key="item"
+              :value="item"
+              :label="item"
+            />
+          </el-select>
+        </span>
+        行
+      </el-form-item>
+
+      <el-form-item>
+        <div style="margin-left: 110px; margin-top: -12px">
+          <el-switch v-model="data.logData.previous" inline-prompt width="35px" /><span
+            style="font-size: 12px; margin-left: 5px; color: #191919"
+            >查看已退出的容器</span
+          >
+        </div>
+      </el-form-item>
+    </el-form>
+
+    <div style="display: flex; margin-top: 25px; margin-left: 8px">
+      <button style="width: 70px" class="pixiu-two-button" @click="getPodLogs">查询</button>
+    </div>
+
+    <div style="margin-top: 15px">
+      <el-card class="contend-card-container2">
+        <div style="background-color: #29232b; color: white; min-height: 440px">
+          <div style="margin-left: 20px">
+            <div v-if="data.logData.podLogs.length === 0" style="font-size: 14px">暂无日志</div>
+            <div v-else>
+              <div
+                v-for="(item, index) in data.logData.podLogs"
+                :key="item"
+                style="font-size: 14px"
+              >
+                {{ index + 1 }} <span style="margin-left: 18px"></span> {{ item }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </el-card>
     </div>
   </el-drawer>
 </template>
@@ -381,7 +470,13 @@ import {
 } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
-import { getPodList, deletePod, getPodByName, getPod } from '@/services/kubernetes/podService';
+import {
+  getPodList,
+  deletePod,
+  getPodByName,
+  getPod,
+  getPodLog,
+} from '@/services/kubernetes/podService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { getNode } from '@/services/kubernetes/nodeService';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
@@ -441,15 +536,23 @@ const data = reactive({
   },
 
   logData: {
-    width: '38%',
+    width: '45%',
     drawer: false,
+    pod: '',
+    namespace: '',
+    containers: [],
+    selectedContainer: '',
+    previous: false,
+    line: 50,
+    lineOptions: [50, 100, 200, 500],
+    podLogs: [],
+    aggLog: false,
   },
 });
 
 const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
-
   data.tableData = getTableData(data.pageInfo, data.podList);
 
   if (data.pageInfo.search.searchInfo !== '') {
@@ -533,11 +636,28 @@ const handleContainerListDialog = async (row) => {
   data.podContainers.close = true;
 };
 
-const cancelpodContainers = () => {
-  data.podContainers.close = false;
-  data.podContainers.containers = [];
+const getPodLogs = async () => {
+  if (data.logData.selectedContainer === '') {
+    proxy.$notify.error('查询日志时，容器名称为必选项');
+    return;
+  }
+
+  const [result, err] = await getPodLog(
+    data.cluster,
+    data.logData.namespace,
+    data.logData.pod,
+    data.logData.selectedContainer,
+    data.logData.line,
+  );
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.logData.podLogs = result;
 };
-const confirmpodContainers = () => {
+
+const cancelpodContainers = () => {
   data.podContainers.close = false;
   data.podContainers.containers = [];
 };
@@ -560,6 +680,33 @@ const formatterContainerStatus = (row, column, cellValue) => {
       <div style="margin-left: 6px"> {status}</div>
     </div>
   );
+};
+
+const handleLogDrawer = (row) => {
+  data.logData.pod = row.metadata.name;
+  data.logData.namespace = row.metadata.namespace;
+
+  data.logData.containers = [];
+  for (let c of row.spec.containers) {
+    data.logData.containers.push(c.name);
+  }
+  data.logData.drawer = true;
+};
+
+const openLogDrawer = () => {
+  // if (data.logData.containers.length > 0) {
+  //   data.logData.selectedContainer = data.logData.containers[0];
+  // }
+};
+
+const closeLogDrawer = () => {
+  data.logData.pod = '';
+  data.logData.namespace = '';
+  data.logData.containers = [];
+  data.logData.selectedContainer = '';
+  data.logData.previous = false;
+  data.logData.line = 50;
+  data.logData.podLogs = [];
 };
 
 const formatterContainerStartTime = (row, column, cellValue) => {
