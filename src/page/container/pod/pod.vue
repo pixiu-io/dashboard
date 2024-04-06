@@ -134,16 +134,28 @@
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
-                  <el-dropdown-item class="dropdown-item-buttons"> 日志 </el-dropdown-item>
+                  <!-- <el-dropdown-item class="dropdown-item-buttons"> 详情 </el-dropdown-item> -->
+                  <el-dropdown-item class="dropdown-item-buttons"> 查看YAML </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="data.logData.drawer = true"
+                  >
+                    日志
+                  </el-dropdown-item>
+
                   <el-dropdown-item
                     class="dropdown-item-buttons"
                     @click="handleRemoteLoginDialog(scope.row)"
                   >
                     远程登陆
                   </el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons"> 详情 </el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons"> 容器列表 </el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons"> 查看YAML </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleContainerListDialog(scope.row)"
+                  >
+                    容器列表
+                  </el-dropdown-item>
+
                   <el-dropdown-item
                     class="dropdown-item-buttons"
                     @click="handleDeleteDialog(scope.row)"
@@ -179,6 +191,7 @@
     width="500px"
     align-center
     center
+    draggable
     @close="cancelRemoteLogin"
   >
     <template #header>
@@ -249,6 +262,104 @@
       <div style="margin-bottom: 10px" />
     </template>
   </el-dialog>
+
+  <PiXiuViewOrEdit :yaml-dialog="data.yamlDialog" :yaml="data.yaml"></PiXiuViewOrEdit>
+
+  <el-dialog
+    :model-value="data.podContainers.close"
+    style="color: #000000; font: 14px"
+    align-center
+    draggable
+    center
+    @close="cancelpodContainers"
+  >
+    <template #header>
+      <div
+        style="
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+          margin-top: 5px;
+          font-size: 14.5px;
+          color: #191919;
+        "
+      >
+        容器列表
+      </div>
+    </template>
+
+    <el-card class="app-docs" style="margin-top: -10px; height: 40px">
+      <el-icon
+        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+        ><WarningFilled
+      /></el-icon>
+      <div style="vertical-align: middle; margin-top: -40px">Pod 所包含的容器列表。</div>
+    </el-card>
+    <div style="margin-top: -10px" />
+
+    <el-table
+      v-loading="data.podContainers.loading"
+      :data="data.podContainers.containers"
+      stripe
+      style="margin-top: 2px"
+      header-row-class-name="pixiu-table-header"
+      :cell-style="{
+        'font-size': '12px',
+        color: '#191919',
+      }"
+    >
+      <el-table-column prop="container.name" sortable label="容器名称" width="150px">
+      </el-table-column>
+
+      <el-table-column
+        prop="status"
+        sortable
+        label="状态"
+        :formatter="formatterContainerStatus"
+        width="140px"
+      />
+
+      <el-table-column prop="status.restartCount" sortable label="重启次数" width="110px" />
+
+      <el-table-column
+        prop="status"
+        label="创建时间"
+        sortable
+        :formatter="formatterContainerStartTime"
+        width="160px"
+      />
+
+      <el-table-column prop="container.image" label="镜像" :formatter="formatterContainerImage" />
+    </el-table>
+
+    <div style="margin-bottom: -15px" />
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button
+          style="float: right"
+          class="pixiu-delete-cancel-button"
+          @click="cancelpodContainers"
+          >关闭</el-button
+        >
+      </span>
+      <div style="margin-bottom: 35px" />
+    </template>
+  </el-dialog>
+
+  <el-drawer v-model="data.logData.drawer" :size="data.logData.width" :with-header="false">
+    <div
+      style="
+        text-align: left;
+        font-weight: bold;
+        padding-left: 5px;
+        margin-top: 5px;
+        font-size: 14.5px;
+        color: #191919;
+      "
+    >
+      日志查询
+    </div>
+  </el-drawer>
 </template>
 
 <script setup lang="jsx">
@@ -266,11 +377,14 @@ import {
   formatterContainersCPU,
   formatterContainersMem,
   formatterContainersResource,
+  formatterContainerImage,
 } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
-import { getPodList, deletePod } from '@/services/kubernetes/podService';
+import { getPodList, deletePod, getPodByName, getPod } from '@/services/kubernetes/podService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
+import { getNode } from '@/services/kubernetes/nodeService';
+import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 
 const { toClipboard } = useClipboard();
 const { proxy } = getCurrentInstance();
@@ -295,6 +409,8 @@ const data = reactive({
   tableData: [],
   loading: false,
   multipleSelection: [],
+  yamlDialog: false,
+  yaml: '',
 
   namespace: 'default',
   filterNamespaces: [],
@@ -317,6 +433,16 @@ const data = reactive({
     container: '',
     containers: [],
     command: '/bin/sh',
+  },
+
+  podContainers: {
+    close: false,
+    containers: [],
+  },
+
+  logData: {
+    width: '38%',
+    drawer: false,
   },
 });
 
@@ -383,6 +509,69 @@ const handleRemoteLoginDialog = (row) => {
   }
   if (data.remoteLogin.containers.length >= 1) {
     data.remoteLogin.container = data.remoteLogin.containers[0];
+  }
+};
+
+const handleContainerListDialog = async (row) => {
+  const [pod, err] = await getPod(data.cluster, data.namespace, row.metadata.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  let containerStatus = {};
+  for (let cs of pod.status.containerStatuses) {
+    containerStatus[cs.name] = cs;
+  }
+  for (let c of pod.spec.containers) {
+    data.podContainers.containers.push({
+      container: c,
+      status: containerStatus[c.name],
+    });
+  }
+
+  data.podContainers.close = true;
+};
+
+const cancelpodContainers = () => {
+  data.podContainers.close = false;
+  data.podContainers.containers = [];
+};
+const confirmpodContainers = () => {
+  data.podContainers.close = false;
+  data.podContainers.containers = [];
+};
+
+const formatterContainerStatus = (row, column, cellValue) => {
+  let status = '运行中';
+  let color = '#28C65A';
+
+  const state = cellValue.state;
+  if (state.terminated !== undefined) {
+    status = state.terminated.reason;
+    color = '#0000FF';
+  }
+
+  return (
+    <div style="display: flex">
+      <div>
+        <pixiu-icon name="icon-circle-dot" size="12px" type="iconfont" color={color} />
+      </div>
+      <div style="margin-left: 6px"> {status}</div>
+    </div>
+  );
+};
+
+const formatterContainerStartTime = (row, column, cellValue) => {
+  const state = cellValue.state;
+  const time = '';
+  if (state.terminated !== undefined) {
+    const time = state.terminated.startedAt;
+    return formatterTime(row, column, time);
+  }
+  if (state.running !== undefined) {
+    const time = state.running.startedAt;
+    return formatterTime(row, column, time);
   }
 };
 
@@ -537,6 +726,17 @@ const openWindowShell = () => {
     '_blank',
     'width=1000,height=600',
   );
+};
+
+const viewYaml = async (row) => {
+  const [result, err] = await getPodByName(data.cluster, data.namespace, row.metadata.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.yamlDialog = true;
+  data.yaml = result;
 };
 </script>
 

@@ -234,6 +234,7 @@ const confirm = async () => {
 };
 
 const formatStatus = (row, column, cellValue) => {
+
   if (row.status.conditions) {
     let reason = row.status.conditions[0].reason;
     if (reason === 'Succeeded') {
@@ -255,6 +256,7 @@ const handleReset = async (row) => {
     metadata: {
       namespace: 'default',
       generateName: array[0] + '-r-',
+
     },
     spec: {
       serviceAccountName: 'default',

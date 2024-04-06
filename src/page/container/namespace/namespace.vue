@@ -1,14 +1,14 @@
 <template>
   <el-card class="title-card-container">
     <div class="font-container">命名空间</div>
-    <PiXiuYaml :refresh="getNamespace"></PiXiuYaml>
+    <PiXiuYaml :refresh="getNamespaces"></PiXiuYaml>
   </el-card>
 
   <div style="margin-top: 25px">
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createNamespace">新建</button>
-        <button class="pixiu-two-button2" style="margin-left: 10px" @click="getNamespace">
+        <button class="pixiu-two-button2" style="margin-left: 10px" @click="getNamespaces">
           刷新
         </button>
 
@@ -21,7 +21,7 @@
           @input="searchNamespace"
         >
           <template #suffix>
-            <el-icon class="el-input__icon" @click="getNamespace">
+            <el-icon class="el-input__icon" @click="getNamespaces">
               <component :is="'Search'" />
             </el-icon>
           </template>
@@ -114,7 +114,9 @@
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
-                  <el-dropdown-item class="dropdown-item-buttons"> 编辑YAML </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons" @click="editYaml(scope.row)">
+                    编辑YAML
+                  </el-dropdown-item>
                   <el-dropdown-item class="dropdown-item-buttons"> 强制删除 </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
@@ -182,6 +184,12 @@
       <div style="margin-bottom: 10px" />
     </template>
   </el-dialog>
+
+  <PiXiuViewOrEdit
+    :yaml-dialog="data.yamlDialog"
+    :yaml="data.yaml"
+    :title="data.yamlTitle"
+  ></PiXiuViewOrEdit>
 </template>
 
 <script setup lang="jsx">
@@ -189,12 +197,18 @@ import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
 import useClipboard from 'vue-clipboard3';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import { getNamespaceList, deleteNamespace } from '@/services/kubernetes/namespaceService';
+import {
+  getNamespaceList,
+  getNamespace,
+  deleteNamespace,
+} from '@/services/kubernetes/namespaceService';
 import { getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { formatterTime, formatterIcon, formatterLabelsBackup2 } from '@/utils/formatter';
+import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
+import { getNode } from '@/services/kubernetes/nodeService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -212,6 +226,9 @@ const data = reactive({
   },
   tableData: [],
   loading: false,
+  yamlDialog: false,
+  yamlTitle: '编辑Yaml',
+  yaml: '',
   namespaceList: [],
 
   // 删除对象属性
@@ -230,7 +247,7 @@ const data = reactive({
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
 
-  getNamespace();
+  getNamespaces();
 });
 
 const handleQuotaDialog = (row) => {
@@ -260,7 +277,7 @@ const confirm = async () => {
   proxy.$message.success(`Namespace(${data.deleteDialog.deleteName}) 删除成功`);
 
   clean();
-  getNamespace();
+  getNamespaces();
 };
 
 const cancel = () => {
@@ -304,7 +321,7 @@ const createNamespace = () => {
   router.push(url);
 };
 
-const getNamespace = async () => {
+const getNamespaces = async () => {
   data.loading = true;
   const [result, err] = await getNamespaceList(data.cluster);
   data.loading = false;
@@ -337,6 +354,16 @@ const formatStatus = (row, column, cellValue) => {
     return formatterIcon('#28C65A', '运行中');
   }
   return formatterIcon('#FFFF00', cellValue.phase);
+};
+
+const editYaml = async (row) => {
+  const [result, err] = await getNamespace(data.cluster, row.metadata.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+  data.yamlDialog = true;
+  data.yaml = result;
 };
 </script>
 
