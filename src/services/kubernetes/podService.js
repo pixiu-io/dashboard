@@ -84,12 +84,15 @@ export const getPodsByLabels = async (cluster, namespace, labels) => {
   return [result, err];
 };
 
-export const getPodLog = async (cluster, namespace, name, container) => {
+export const getPodLog = async (cluster, namespace, name, container, line) => {
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
       url: `/pixiu/proxy/${cluster}/api/v1/namespaces/${namespace}/pods/${name}/log`,
-      data: { container: container },
+      data: {
+        container: container,
+        tailLines: line,
+      },
     }),
   );
   return [result.split('\n'), err];
