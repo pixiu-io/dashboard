@@ -337,7 +337,9 @@
               <el-input v-model="scope.row.newImage"></el-input>
               <div style="display: flex">
                 <div style="cursor: pointer" @click="confirmEvent(scope.row)">确认</div>
-                <div style="margin-left: 10px; cursor: pointer" @click="cancelEvent(scope.row)>取消</div>
+                <div style="margin-left: 10px; cursor: pointer" @click="cancelEvent(scope.row)">
+                  取消
+                </div>
               </div>
             </div>
           </div>
@@ -515,6 +517,14 @@ const onChange = (v) => {
   }
 };
 
+const confirmEvent = (row) => {
+  console.log('confirm!', row);
+};
+
+const cancelEvent = (row) => {
+  console.log('cancel!', row);
+};
+
 const handleImageChange = (row) => {
   console.log('before', row);
   row.change = true;
@@ -555,13 +565,6 @@ const confirmImageFunc = () => {
   data.imageData.images = [];
 
   console.log(data.imageData.images);
-};
-
-const confirmEvent = (row) => {
-  console.log('confirm!');
-};
-const cancelEvent = (row) => {
-  console.log('cancel!');
 };
 
 const handleEditYamlDialog = async (row) => {
