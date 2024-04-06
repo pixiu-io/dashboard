@@ -359,6 +359,15 @@
     >
       日志查询
     </div>
+
+    <el-card class="app-docs" style="margin-left: 8px; height: 40px">
+      <el-icon
+        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+        ><WarningFilled
+      /></el-icon>
+      <div style="vertical-align: middle; margin-top: -40px">获取 Pod 的实时日志</div>
+    </el-card>
+    <div style="margin-top: -10px" />
   </el-drawer>
 </template>
 
