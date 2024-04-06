@@ -138,7 +138,7 @@
                   <el-dropdown-item class="dropdown-item-buttons"> 查看YAML </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
-                    @click="data.logData.drawer = true"
+                    @click="handleLogDrawer(scope.row)"
                   >
                     日志
                   </el-dropdown-item>
@@ -346,7 +346,13 @@
     </template>
   </el-dialog>
 
-  <el-drawer v-model="data.logData.drawer" :size="data.logData.width" :with-header="false">
+  <el-drawer
+    v-model="data.logData.drawer"
+    :size="data.logData.width"
+    :with-header="false"
+    @open="openLogDrawer"
+    @close="closeLogDrawer"
+  >
     <div
       style="
         text-align: left;
@@ -386,7 +392,6 @@
               :label="item"
             />
           </el-select>
-
           <div>
             <el-switch v-model="data.logData.previous" inline-prompt width="35px" /><span
               style="font-size: 12px; margin-left: 5px; color: #191919"
@@ -480,6 +485,8 @@ const data = reactive({
   logData: {
     width: '45%',
     drawer: false,
+    pod: '',
+    namespace: '',
     containers: [],
     selectedContainer: '',
     previous: false,
@@ -489,7 +496,6 @@ const data = reactive({
 const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
-
   data.tableData = getTableData(data.pageInfo, data.podList);
 
   if (data.pageInfo.search.searchInfo !== '') {
@@ -600,6 +606,31 @@ const formatterContainerStatus = (row, column, cellValue) => {
       <div style="margin-left: 6px"> {status}</div>
     </div>
   );
+};
+
+const handleLogDrawer = (row) => {
+  data.logData.pod = row.metadata.name;
+  data.logData.namespace = row.metadata.namespace;
+
+  data.logData.containers = [];
+  for (let c of row.spec.containers) {
+    data.logData.containers.push(c.name);
+  }
+  data.logData.drawer = true;
+};
+
+const openLogDrawer = () => {
+  // if (data.logData.containers.length > 0) {
+  //   data.logData.selectedContainer = data.logData.containers[0];
+  // }
+};
+
+const closeLogDrawer = () => {
+  data.logData.pod = '';
+  data.logData.namespace = '';
+  data.logData.containers = [];
+  data.logData.selectedContainer = '';
+  data.logData.previous = false;
 };
 
 const formatterContainerStartTime = (row, column, cellValue) => {
