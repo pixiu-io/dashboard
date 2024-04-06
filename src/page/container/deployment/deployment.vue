@@ -315,9 +315,26 @@
       <el-table-column prop="image" sortable label="镜像">
         <template #default="scope">
           <div style="display: flex">
-            {{ scope.row.image }}
-            <div style="margin-left: 8px; cursor: pointer">
-              <pixiu-icon name="icon-edit" size="12px" type="iconfont" color="#909399" />
+            <el-tag round>
+              <div style="display: flex">
+                <pixiu-icon name="icon-docker" size="16px" type="iconfont" color="#409EFF" />
+                <div style="margin-left: 6px">{{ scope.row.image }}</div>
+              </div>
+            </el-tag>
+
+            <div v-if="scope.row.change" style="margin-left: 10px">
+              <el-input v-model="scope.row.newImage"></el-input>
+            </div>
+
+            <div v-if="!scope.row.change">
+              <pixiu-icon
+                name="icon-setting"
+                style="cursor: pointer; margin-left: 6px; margin-top: 3.5px"
+                size="15px"
+                type="iconfont"
+                color="#409EFF"
+                @click="handleImageChange(scope.row)"
+              />
             </div>
           </div>
         </template>
@@ -419,6 +436,7 @@ const data = reactive({
     loading: false,
     close: false,
     images: [],
+    changeImages: {},
   },
 });
 
@@ -493,6 +511,12 @@ const onChange = (v) => {
   }
 };
 
+const handleImageChange = (row) => {
+  console.log('before', row);
+  row.change = true;
+  console.log('after', row);
+};
+
 const handleImageDialog = async (row) => {
   const namespace = row.metadata.namespace;
   const name = row.metadata.name;
@@ -509,6 +533,8 @@ const handleImageDialog = async (row) => {
     data.imageData.images.push({
       image: container.image,
       name: container.name,
+      change: false,
+      newImage: '',
     });
   }
 
@@ -523,6 +549,8 @@ const cancelImageFunc = () => {
 const confirmImageFunc = () => {
   data.imageData.close = false;
   data.imageData.images = [];
+
+  console.log(data.imageData.images);
 };
 
 const handleEditYamlDialog = async (row) => {
