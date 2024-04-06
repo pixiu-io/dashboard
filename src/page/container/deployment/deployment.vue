@@ -443,7 +443,6 @@ const data = reactive({
     loading: false,
     close: false,
     images: [],
-    changeImages: {},
   },
 });
 
