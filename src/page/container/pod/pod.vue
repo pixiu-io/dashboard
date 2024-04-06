@@ -332,14 +332,17 @@
       <el-table-column prop="container.image" label="镜像" :formatter="formatterContainerImage" />
     </el-table>
 
+    <div style="margin-bottom: -15px" />
     <template #footer>
       <span class="dialog-footer">
-        <el-button class="pixiu-delete-cancel-button" @click="cancelpodContainers">取消</el-button>
-        <el-button type="primary" class="pixiu-delete-confirm-button" @click="confirmpodContainers"
-          >确认</el-button
+        <el-button
+          style="float: right"
+          class="pixiu-delete-cancel-button"
+          @click="cancelpodContainers"
+          >关闭</el-button
         >
       </span>
-      <div style="margin-bottom: 10px" />
+      <div style="margin-bottom: 35px" />
     </template>
   </el-dialog>
 

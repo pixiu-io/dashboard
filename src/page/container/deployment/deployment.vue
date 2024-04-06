@@ -690,25 +690,25 @@ const closeDeploymentScaleDialog = (row) => {
 };
 
 const confirmDeploymentScale = async () => {
-  try {
-    const res = await proxy.$http({
-      method: 'patch',
-      url: `/pixiu/proxy/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${data.deploymentRepcliasFrom.name}/scale`,
-      data: {
-        spec: {
-          replicas: Number(data.deploymentRepcliasFrom.target),
-        },
-      },
-      config: {
-        header: {
-          'Content-Type': 'application/merge-patch+json',
-        },
-      },
-    });
+  const patchData = {
+    spec: {
+      replicas: Number(data.deploymentRepcliasFrom.target),
+    },
+  };
 
-    getDeployments();
-    closeDeploymentScaleDialog();
-  } catch (error) {}
+  const [result, err] = await patchDeployment(
+    data.cluster,
+    data.namespace,
+    data.deploymentRepcliasFrom.name,
+    patchData,
+  );
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  getDeployments();
+  closeDeploymentScaleDialog();
 };
 </script>
 
