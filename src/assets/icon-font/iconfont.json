@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "2159373",
+      "name": "webshell",
+      "font_class": "webshell",
+      "unicode": "e7cf",
+      "unicode_decimal": 59343
+    },
+    {
+      "icon_id": "5810273",
+      "name": "storage",
+      "font_class": "storage",
+      "unicode": "e806",
+      "unicode_decimal": 59398
+    },
+    {
       "icon_id": "27078912",
       "name": "folder-kubernetes",
       "font_class": "folder-kubernetes",
