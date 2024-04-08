@@ -12,6 +12,7 @@
     <el-icon style="vertical-align: middle; margin-right: 10px">
       <component :is="'Edit'" />
     </el-icon>
+
     <button
       class="pixiu-two-button"
       style="width: 120px; margin-top: -10px"
