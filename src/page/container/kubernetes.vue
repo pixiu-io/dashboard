@@ -189,7 +189,7 @@ const data = reactive({
     {
       id: 3,
       name: '存储',
-      icon: 'icon-yidongyunkongzhitaiicon06',
+      icon: 'icon-storage',
       iconType: 'iconfont',
       children: [
         {
@@ -332,7 +332,7 @@ const data = reactive({
     {
       id: 3,
       name: '存储',
-      icon: 'icon-yidongyunkongzhitaiicon06',
+      icon: 'icon-storage',
       iconType: 'iconfont',
       children: [
         {
