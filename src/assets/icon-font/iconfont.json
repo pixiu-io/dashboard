@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "27078912",
+      "name": "folder-kubernetes",
+      "font_class": "folder-kubernetes",
+      "unicode": "e637",
+      "unicode_decimal": 58935
+    },
+    {
       "icon_id": "4765891",
       "name": "setting",
       "font_class": "setting",

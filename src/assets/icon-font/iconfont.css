@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3708393 */
-  src: url('iconfont.woff2?t=1712386756556') format('woff2'),
-       url('iconfont.woff?t=1712386756556') format('woff'),
-       url('iconfont.ttf?t=1712386756556') format('truetype');
+  src: url('iconfont.woff2?t=1712535880409') format('woff2'),
+       url('iconfont.woff?t=1712535880409') format('woff'),
+       url('iconfont.ttf?t=1712535880409') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,10 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-folder-kubernetes:before {
+  content: "\e637";
 }
 
 .icon-setting:before {
