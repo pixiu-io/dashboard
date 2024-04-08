@@ -705,7 +705,7 @@ const closeLogDrawer = () => {
   data.logData.containers = [];
   data.logData.selectedContainer = '';
   data.logData.previous = false;
-  data.logData.line = 50;
+  data.logData.line = 25;
   data.logData.podLogs = [];
 };
 

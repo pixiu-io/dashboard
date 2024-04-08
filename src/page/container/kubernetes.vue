@@ -80,9 +80,9 @@ const data = reactive({
   openedMenu: JSON.parse(localStorage.getItem('openMenu')) || [],
   clusterItems: [
     {
-      name: '基本信息',
-      icon: 'Postcard',
-      iconType: 'el',
+      name: '概览',
+      icon: 'icon-overview',
+      iconType: 'iconfont',
       url: '/kubernetes/info',
     },
     {
@@ -189,7 +189,7 @@ const data = reactive({
     {
       id: 3,
       name: '存储',
-      icon: 'icon-yidongyunkongzhitaiicon06',
+      icon: 'icon-storage',
       iconType: 'iconfont',
       children: [
         {
@@ -332,7 +332,7 @@ const data = reactive({
     {
       id: 3,
       name: '存储',
-      icon: 'icon-yidongyunkongzhitaiicon06',
+      icon: 'icon-storage',
       iconType: 'iconfont',
       children: [
         {
