@@ -321,7 +321,6 @@ const confirm = async () => {
       //     data.objectForm.metadata['annotations'][item.key] = item.value;
       //   }
       // }
-      console.log(data.objectForm);
 
       const [result, err] = await createTask(data.cluster, data.namespace, data.objectForm);
       if (err) {
