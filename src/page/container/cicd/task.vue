@@ -185,6 +185,7 @@ import MyCodeMirror from '@/components/codemirror/index.vue';
 import { getTableData, searchData } from '@/utils/utils';
 
 const { proxy } = getCurrentInstance();
+
 const router = useRouter();
 
 const data = reactive({
@@ -270,6 +271,7 @@ const closeEditYamlDialog = (row) => {
   data.yamlName = '';
   data.editYamlDialog = false;
 };
+
 const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
   const [result, err] = await getTaskDetail(data.cluster, data.namespace, data.yamlName);
@@ -318,10 +320,12 @@ const confirm = async () => {
 const cancel = () => {
   clean();
 };
+
 const clean = () => {
   data.deleteDialog.close = false;
   data.deleteDialog.deleteName = '';
 };
+
 const getTaskRunStatus = async (name) => {
   const [res, err] = await getTaskRunList(data.cluster, data.namespace);
 
@@ -337,6 +341,7 @@ const getTaskRunStatus = async (name) => {
     data.taskRunList.push(stats);
   }
 };
+
 const getTasks = async () => {
   await getTaskRunStatus();
   data.loading = true;
@@ -377,14 +382,6 @@ const createTask = () => {
 };
 
 const jumpRoute = async (row) => {
-  // router.push({
-  //   name: 'createTaskRun',
-  //   query: {
-  //     cluster: data.cluster,
-  //     namespace: data.namespace,
-  //     taskName: row.metadata.name,
-  //   },
-  // });
   const objectForm = {
     apiVersion: 'tekton.dev/v1',
     kind: 'TaskRun',
@@ -403,6 +400,7 @@ const jumpRoute = async (row) => {
       },
     },
   };
+
   const [result, err] = await createTaskRun(data.cluster, data.namespace, objectForm);
   if (err) {
     proxy.$notify.error(err.response.data.message);
@@ -413,13 +411,13 @@ const jumpRoute = async (row) => {
 
 const formatStatus = (row) => {
   if (row.status === 'Succeeded') {
-    return formatterIcon('#939893', '已完成');
+    return formatterIcon('#28C65A', '已完成');
   }
   if (row.status === 'Running') {
-    return formatterIcon('#28C65A', '在运行中');
+    return formatterIcon('#FFFF00', '在运行中');
   }
   if (row.status === 'notCreated') {
-    return formatterIcon('#FFFFFF', '未创建');
+    return formatterIcon('#727272', '未创建');
   }
   if (row.status === 'Failed') {
     return formatterIcon('rgba(250,56,91,0.8)', '失败');
