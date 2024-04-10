@@ -406,7 +406,7 @@ const jumpRoute = async (row) => {
     proxy.$notify.error(err.response.data.message);
     return;
   }
-  proxy.$notify.success(`Task ${data.form.metadata.name} 创建成功`);
+  proxy.$notify.success(`TaskRun (${result.metadata.name}) 创建成功`);
 };
 
 const formatStatus = (row) => {

@@ -90,19 +90,19 @@
             </div>
 
             <el-form-item label="变量声明" style="margin-top: 10px">
-              <el-button type="text" class="app-action-btn" @click="addAnnotations">新增</el-button>
+              <el-button type="text" class="app-action-btn" @click="addParams">新增</el-button>
             </el-form-item>
             <div style="margin-top: -15px"></div>
             <el-form-item
-              v-for="(item, index) in data.form.annotations"
+              v-for="(item, index) in data.form.params"
               :key="index"
               class="labels-item-style"
             >
               <el-form-item
-                :prop="'annotations[' + index + '].key'"
-                :rules="[{ required: false, message: '参数键可以为空', trigger: 'blur' }]"
+                :prop="'params[' + index + '].name'"
+                :rules="[{ required: false, message: '变量名可以为空', trigger: 'blur' }]"
               >
-                <el-input v-model="item.key" placeholder="参数键" style="width: 280px" />
+                <el-input v-model="item.name" placeholder="变量名" style="width: 280px" />
               </el-form-item>
 
               <div style="margin-right: 10px; margin-left: 10px">=</div>
@@ -115,22 +115,23 @@
               <!--              </el-form-item>-->
 
               <el-form-item
-                :prop="'annotations[' + index + '].value'"
-                :rules="[{ required: false, message: '参数类型可以为空', trigger: 'blur' }]"
+                :prop="'params[' + index + '].value'"
+                :rules="[{ required: false, message: '变量值可以空', trigger: 'blur' }]"
               >
-                <el-select v-model="item.value" placeholder="参数类型" style="width: 280px">
-                  <el-option
-                    v-for="(option, optionIndex) in ['string', 'number']"
-                    :key="optionIndex"
-                    :label="option"
-                    :value="option"
-                  ></el-option>
-                </el-select>
+                <el-input v-model="item.default" placeholder="变量值" style="width: 280px" />
+                <!--                <el-select v-model="item.value" placeholder="变量值" style="width: 280px">-->
+                <!--                  <el-option-->
+                <!--                    v-for="(option, optionIndex) in ['string', 'number']"-->
+                <!--                    :key="optionIndex"-->
+                <!--                    :label="option"-->
+                <!--                    :value="option"-->
+                <!--                  ></el-option>-->
+                <!--                </el-select>-->
               </el-form-item>
 
               <div
                 style="float: right; cursor: pointer; margin-left: 10px"
-                @click="deleteAnnotations(index)"
+                @click="deleteParams(index)"
               >
                 <pixiu-icon
                   name="icon-shanchu"
@@ -246,7 +247,7 @@ const data = reactive({
       name: '',
       namespace: 'default',
     },
-    annotations: [],
+    params: [],
     labels: [],
     steps: [],
   },
@@ -259,6 +260,7 @@ const data = reactive({
       namespace: 'default',
     },
     spec: {
+      params: [],
       steps: [],
     },
   },
@@ -302,6 +304,7 @@ const confirm = async () => {
     if (valid) {
       data.objectForm.metadata = data.form.metadata;
       data.objectForm.spec.steps = data.form.steps;
+      data.objectForm.spec.params = data.form.params;
 
       // 追加 labels
       if (data.form.labels.length > 0) {
@@ -312,12 +315,13 @@ const confirm = async () => {
       }
 
       // 追加 annotations
-      if (data.form.annotations.length > 0) {
-        data.objectForm.metadata['annotations'] = {};
-        for (let item of data.form.annotations) {
-          data.objectForm.metadata['annotations'][item.key] = item.value;
-        }
-      }
+      // if (data.form.params.length > 0) {
+      //   data.objectForm.spec['annotations'] = {};
+      //   for (let item of data.form.annotations) {
+      //     data.objectForm.metadata['annotations'][item.key] = item.value;
+      //   }
+      // }
+      console.log(data.objectForm);
 
       const [result, err] = await createTask(data.cluster, data.namespace, data.objectForm);
       if (err) {
@@ -342,10 +346,10 @@ const addLabel = () => {
   });
 };
 
-const addAnnotations = () => {
-  data.form.annotations.push({
-    key: '',
-    value: '',
+const addParams = () => {
+  data.form.params.push({
+    name: '',
+    default: '',
   });
 };
 
@@ -353,8 +357,8 @@ const deleteLabel = (index) => {
   data.form.labels.splice(index, 1);
 };
 
-const deleteAnnotations = (index) => {
-  data.form.annotations.splice(index, 1);
+const deleteParams = (index) => {
+  data.form.params.splice(index, 1);
 };
 
 const addStep = () => {
