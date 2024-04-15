@@ -135,7 +135,9 @@
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
                   <!-- <el-dropdown-item class="dropdown-item-buttons"> 详情 </el-dropdown-item> -->
-                  <el-dropdown-item class="dropdown-item-buttons"> 查看YAML </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons" @click="viewYaml(scope.row)">
+                    查看YAML
+                  </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
                     @click="handleLogDrawer(scope.row)"
