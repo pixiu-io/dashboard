@@ -397,7 +397,7 @@
 </template>
 
 <script setup lang="jsx">
-import { onMounted } from 'vue';
+import { getCurrentInstance, onMounted } from 'vue';
 import PixiuRadioCard from '@/components/radioCard/index.vue';
 import Icon from '@/components/pixiuTooltip/index.vue';
 import Pagination from '@/components/pagination/index.vue';
@@ -405,10 +405,12 @@ import useCloudStore from '@/stores/useCloud';
 import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
 import { formatterTime } from '@/utils/formatter';
+import { changeClusterProtected } from '@/services/cloudService';
 
 const cloudStore = useCloudStore();
-
 const { toClipboard } = useClipboard();
+const { proxy } = getCurrentInstance();
+
 const copy = async (val) => {
   try {
     await toClipboard(val.name);
@@ -436,7 +438,14 @@ onMounted(() => {
 //   4: '等待构建',
 // };
 
-const changeProtectStatus = async (row) => {};
+const changeProtectStatus = async (row) => {
+  const [result, err] = await changeClusterProtected(row.id, row.resource_version, row.protected);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+  row.resource_version = row.resource_version + 1;
+};
 
 const cloudStatus = {
   0: {
