@@ -70,6 +70,7 @@ onMounted(() => {
 watch(() => {
   code.value = props.yaml.valueOf();
   data.cmOptions.readOnly = props.readOnly.valueOf();
+  data.height = props.height.valueOf();
 });
 
 const change = () => {

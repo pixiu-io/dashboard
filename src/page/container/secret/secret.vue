@@ -116,29 +116,13 @@
     </el-card>
   </div>
 
-  <el-dialog
-    :model-value="data.editYamlDialog"
-    style="color: #000000; font: 14px; margin-top: 50px"
-    width="800px"
-    center
-    @close="closeYamlDialog"
-  >
-    <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">编辑yaml</div>
-    </template>
-    <div style="margin-top: -18px"></div>
-    <MyCodeMirror ref="editYaml" :yaml="data.yaml" :height="560"></MyCodeMirror>
-
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button class="pixiu-small-cancel-button" @click="closeYamlDialog">取消</el-button>
-        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmEditYaml"
-          >确认</el-button
-        >
-      </span>
-    </template>
-  </el-dialog>
-
+  <PiXiuViewOrEdit
+    :yaml-dialog="data.editYamlDialog"
+    title="编辑Yaml"
+    :yaml="data.yaml"
+    :read-only="false"
+    :confirm="confirmEditYaml"
+  ></PiXiuViewOrEdit>
   <pixiuDialog
     :close-event="data.deleteDialog.close"
     :object-name="data.deleteDialog.objectName"
@@ -157,6 +141,7 @@ import jsYaml from 'js-yaml';
 import { getTableData, searchData } from '@/utils/utils';
 import { formatterTime, formatString } from '@/utils/formatter';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
+import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
@@ -167,6 +152,7 @@ import {
   deleteSecret,
 } from '@/services/kubernetes/secretService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
+import { updateConfigMap } from '@/services/kubernetes/configmapService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -330,7 +316,7 @@ const handleEditYamlDialog = async (row) => {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  data.yaml = jsYaml.dump(result);
+  data.yaml = result;
   data.editYamlDialog = true;
 };
 
@@ -340,15 +326,19 @@ const closeYamlDialog = () => {
   data.editYamlDialog = false;
 };
 
-const confirmEditYaml = async () => {
-  let yamlData = jsYaml.load(editYaml.value.code);
-  const [result, err] = await updateSecret(data.cluster, data.namespace, data.yamlName, yamlData);
+const confirmEditYaml = async (yamlData) => {
+  const [result, err] = await updateSecret(
+    data.cluster,
+    yamlData.metadata.namespace,
+    yamlData.metadata.name,
+    yamlData,
+  );
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
   closeYamlDialog();
-  proxy.$message.success(`Secret(${data.yamlName}) YAML 更新成功`);
+  proxy.$message.success(`Secret(${yamlData.metadata.name}) YAML 更新成功`);
 };
 </script>
 
