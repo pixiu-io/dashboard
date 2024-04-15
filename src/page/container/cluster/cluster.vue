@@ -444,6 +444,7 @@ const changeProtectStatus = async (row) => {
     proxy.$notify.error(err.response.data.message);
     return;
   }
+  row.resource_version = row.resource_version + 1;
 };
 
 const cloudStatus = {
