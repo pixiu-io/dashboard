@@ -23,18 +23,24 @@
   </div>
 
   <el-dialog
+    v-model:visible="data.dialogVisible"
+    :fullscreen="data.isFullscreen"
     :model-value="data.yamlDialog"
     style="color: #000000; font: 14px; margin-top: 50px"
     :width="data.dialogWidth + 'px'"
     center
     @close="closeYamlDialog"
-    @wheel="handleScroll"
   >
     <template #header>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">{{ data.title }}</div>
     </template>
     <div style="margin-top: -18px"></div>
-    <MyCodeMirror ref="editYaml" :yaml="data.yaml" :height="560"></MyCodeMirror>
+    <el-radio-group v-model="data.fromSize" style="margin-top: 4px">
+      <el-radio-button label="small">小窗</el-radio-button>
+      <el-radio-button label="middle">中等</el-radio-button>
+      <el-radio-button label="large">全屏</el-radio-button>
+    </el-radio-group>
+    <MyCodeMirror ref="editYaml" :yaml="data.yaml" :height="data.dialogHeight"></MyCodeMirror>
 
     <template #footer>
       <span class="dialog-footer">
@@ -60,7 +66,11 @@ const data = reactive({
   cluster: '',
   yamlDialog: false,
   yaml: '',
-  dialogWidth: 900,
+  fromSize: 'small',
+  dialogWidth: 300,
+  dialogHeight: 450,
+  dialogVisible: false, // 控制对话框显示与隐藏的变量
+  isFullscreen: false, // 控制对话框是否全屏的变量
 });
 
 const props = defineProps({
@@ -82,17 +92,23 @@ onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
 });
 
+watch(() => {
+  if (data.fromSize === 'small') {
+    data.dialogWidth = 900;
+    data.dialogHeight = 450;
+    data.isFullscreen = false;
+  } else if (data.fromSize === 'middle') {
+    data.dialogWidth = 1200;
+    data.dialogHeight = 560;
+    data.isFullscreen = false;
+  } else {
+    data.dialogHeight = 800;
+    data.isFullscreen = !data.isFullscreen; // 切换全屏状态
+  }
+});
 const handleCreateYamlDialog = () => {
   data.yaml = jsYaml.dump();
   data.yamlDialog = true;
-};
-
-const handleScroll = (event) => {
-  if (event.deltaY < 0 && data.dialogWidth < 1500) {
-    data.dialogWidth += 10;
-  } else {
-    data.dialogWidth -= 10;
-  }
 };
 
 const closeYamlDialog = () => {
@@ -217,3 +233,12 @@ const confirmYaml = async () => {
   }
 };
 </script>
+<style>
+/* 根据 isFullscreen 的状态来设置对话框的大小 */
+.el-dialog__wrapper.is-fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  top: 0 !important;
+  left: 0 !important;
+}
+</style>
