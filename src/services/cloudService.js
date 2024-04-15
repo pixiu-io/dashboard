@@ -48,3 +48,22 @@ export const getClustersById = async (id) => {
 
   return [err, result];
 };
+
+export const changeClusterProtected = async (cid, resource_version, protect) => {
+  let data = {
+    resource_version: resource_version,
+  };
+  if (protect) {
+    data['protected'] = protect;
+  }
+
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'post',
+      url: `/pixiu/clusters/protect/${cid}`,
+      data: data,
+    }),
+  );
+
+  return [err, result];
+};
