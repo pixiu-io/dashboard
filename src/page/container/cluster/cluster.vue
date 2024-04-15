@@ -439,13 +439,11 @@ onMounted(() => {
 // };
 
 const changeProtectStatus = async (row) => {
-  const [result, err] = await changeClusterProtected(row.id, row.resource_version, !row.protected);
+  const [result, err] = await changeClusterProtected(row.id, row.resource_version, row.protected);
   if (err) {
     proxy.$notify.error(err.response.data.message);
     return;
   }
-
-  cloudStore.getCloudList();
 };
 
 const cloudStatus = {
