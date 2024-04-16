@@ -127,27 +127,13 @@
     </el-card>
   </div>
 
-  <el-dialog
-    :model-value="data.editYamlDialog"
-    style="color: #000000; font: 14px; margin-top: 50px"
-    width="800px"
-    center
-    @close="closeEditYamlDialog"
-  >
-    <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">YAML 设置</div>
-    </template>
-    <div style="margin-top: -18px"></div>
-    <MyCodeMirror ref="editYaml" :yaml="data.yaml" :height="650"></MyCodeMirror>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button class="pixiu-small-cancel-button" @click="closeEditYamlDialog">取消</el-button>
-        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmEditYaml"
-          >确认</el-button
-        >
-      </span>
-    </template>
-  </el-dialog>
+  <PiXiuViewOrEdit
+    :yaml-dialog="data.editYamlDialog"
+    title="编辑Yaml"
+    :yaml="data.yaml"
+    :read-only="false"
+    :refresh="getTasks"
+  ></PiXiuViewOrEdit>
 
   <pixiuDialog
     :close-event="data.deleteDialog.close"
@@ -175,14 +161,13 @@ import {
   getTaskDetail,
   getTaskList,
   getTaskRunList,
-  updateTask,
 } from '@/services/cicd/tektonService';
 
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import jsYaml from 'js-yaml';
-import MyCodeMirror from '@/components/codemirror/index.vue';
 import { getTableData, searchData } from '@/utils/utils';
+import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -253,23 +238,6 @@ const searchTasks = async () => {
   data.tableData = searchData(data.pageInfo, data.taskList);
 };
 
-const confirmEditYaml = async () => {
-  const yamlData = jsYaml.load(editYaml.value.code);
-  const [result, err] = await updateTask(data.cluster, data.namespace, data.yamlName, yamlData);
-  if (err) {
-    proxy.$notify.error(err.response.data.message);
-    return;
-  }
-  proxy.$notify.success(`Task (${data.yamlName}) YAML 更新成功`);
-  closeEditYamlDialog();
-  await getTasks();
-};
-
-const closeEditYamlDialog = (row) => {
-  data.yaml = '';
-  data.yamlName = '';
-  data.editYamlDialog = false;
-};
 const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
   const [result, err] = await getTaskDetail(data.cluster, data.namespace, data.yamlName);
@@ -277,7 +245,7 @@ const handleEditYamlDialog = async (row) => {
     proxy.$notify.error(err.response.data.message);
     return;
   }
-  data.yaml = jsYaml.dump(result);
+  data.yaml = result;
   data.editYamlDialog = true;
 };
 

@@ -121,7 +121,7 @@
     title="编辑Yaml"
     :yaml="data.yaml"
     :read-only="false"
-    :confirm="confirmEditYaml"
+    :refresh="getSecrets"
   ></PiXiuViewOrEdit>
   <pixiuDialog
     :close-event="data.deleteDialog.close"
@@ -137,20 +137,13 @@ import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
-import jsYaml from 'js-yaml';
 import { getTableData, searchData } from '@/utils/utils';
 import { formatterTime, formatString } from '@/utils/formatter';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
-import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
-import {
-  getSecretList,
-  updateSecret,
-  getSecret,
-  deleteSecret,
-} from '@/services/kubernetes/secretService';
+import { getSecretList, getSecret, deleteSecret } from '@/services/kubernetes/secretService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { updateConfigMap } from '@/services/kubernetes/configmapService';
 
@@ -318,27 +311,6 @@ const handleEditYamlDialog = async (row) => {
   }
   data.yaml = result;
   data.editYamlDialog = true;
-};
-
-const closeYamlDialog = () => {
-  data.yaml = '';
-  data.yamlName = '';
-  data.editYamlDialog = false;
-};
-
-const confirmEditYaml = async (yamlData) => {
-  const [result, err] = await updateSecret(
-    data.cluster,
-    yamlData.metadata.namespace,
-    yamlData.metadata.name,
-    yamlData,
-  );
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-  closeYamlDialog();
-  proxy.$message.success(`Secret(${yamlData.metadata.name}) YAML 更新成功`);
 };
 </script>
 
