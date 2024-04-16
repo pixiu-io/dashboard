@@ -265,7 +265,11 @@
     </template>
   </el-dialog>
 
-  <PiXiuViewOrEdit :yaml-dialog="data.yamlDialog" :yaml="data.yaml"></PiXiuViewOrEdit>
+  <PiXiuViewOrEdit
+    :yaml-dialog="data.yamlDialog"
+    :yaml="data.yaml"
+    title="查看Yaml"
+  ></PiXiuViewOrEdit>
 
   <el-dialog
     :model-value="data.podContainers.close"

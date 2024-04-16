@@ -138,7 +138,7 @@
     title="编辑Yaml"
     :yaml="data.yaml"
     :read-only="false"
-    :confirm="confirmEditYaml"
+    :refresh="getConfigMaps"
   ></PiXiuViewOrEdit>
 </template>
 <script setup lang="jsx">
@@ -153,7 +153,6 @@ import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import {
   getConfigmapList,
-  updateConfigMap,
   getConfigMap,
   deleteConfigMap,
 } from '@/services/kubernetes/configmapService';
@@ -305,7 +304,7 @@ const searchConfigMaps = async () => {
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
   data.namespace = val;
-  getConfigMaps();
+  await getConfigMaps();
 };
 
 const getNamespaces = async () => {
@@ -327,28 +326,6 @@ const handleEditYamlDialog = async (row) => {
 
   data.yaml = result;
   data.editYamlDialog = true;
-};
-
-const closeEditYamlDialog = () => {
-  data.editYamlDialog = false;
-  data.yaml = '';
-  data.yamlName = '';
-};
-
-const confirmEditYaml = async (yamlData) => {
-  const [result, err] = await updateConfigMap(
-    data.cluster,
-    yamlData.metadata.namespace,
-    yamlData.metadata.name,
-    yamlData,
-  );
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-  proxy.$message.success(`Configmap(${data.yamlName}) YAML 更新成功`);
-  closeEditYamlDialog();
-  await getConfigMaps();
 };
 </script>
 
