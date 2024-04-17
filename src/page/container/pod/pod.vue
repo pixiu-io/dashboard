@@ -542,7 +542,7 @@ const data = reactive({
   },
 
   logData: {
-    width: '45%',
+    width: '68%',
     drawer: false,
     pod: '',
     namespace: '',
