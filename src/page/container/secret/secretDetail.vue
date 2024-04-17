@@ -159,7 +159,7 @@ const getSecretByName = async () => {
     return;
   }
   data.time = formatTimestamp(result.metadata.creationTimestamp);
-  data.yaml = jsYaml.dump(result);
+  data.yaml = jsYaml.dump(result, { quotingType: '"' });
 };
 
 const confirm = () => {

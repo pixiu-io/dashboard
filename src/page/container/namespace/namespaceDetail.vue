@@ -162,7 +162,7 @@ const getNamespace = async () => {
 
     data.time = formatTimestamp(res.metadata.creationTimestamp);
     data.namespace = res;
-    data.yaml = jsYaml.dump(data.namespace);
+    data.yaml = jsYaml.dump(data.namespace, { quotingType: '"' });
   } catch (error) {}
 };
 

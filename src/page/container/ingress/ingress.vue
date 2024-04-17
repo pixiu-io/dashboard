@@ -304,7 +304,7 @@ const handleEditYamlDialog = async (row) => {
     return;
   }
 
-  data.yaml = jsYaml.dump(result);
+  data.yaml = jsYaml.dump(result, { quotingType: '"' });
   data.editYamlDialog = true;
 };
 

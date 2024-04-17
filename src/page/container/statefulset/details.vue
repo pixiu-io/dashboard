@@ -654,7 +654,7 @@ const getStatefulSet = async () => {
   });
   data.statefulset = res;
 
-  data.yaml = jsYaml.dump(data.statefulset);
+  data.yaml = jsYaml.dump(data.statefulset, { quotingType: '"' });
 };
 
 const deletePod = async (row) => {
