@@ -136,7 +136,6 @@ const checkEmpty = (name, value) => {
 };
 
 const confirmYaml = () => {
-  console.log(editYaml.value.code);
   if (data.title === '编辑Yaml') {
     updateYaml();
   }
