@@ -40,7 +40,7 @@
       <el-radio-button label="middle">中等</el-radio-button>
       <el-radio-button label="large">全屏</el-radio-button>
     </el-radio-group>
-    <MyCodeMirror ref="editYaml" :yaml="data.yaml" :height="data.dialogHeight"></MyCodeMirror>
+    <MyMonaco ref="editYaml" :yaml="data.yaml" :height="data.dialogHeight"></MyMonaco>
 
     <template #footer>
       <span class="dialog-footer">
@@ -55,7 +55,7 @@
 
 <script setup lang="jsx">
 import jsYaml from 'js-yaml';
-import MyCodeMirror from '@/components/codemirror/index.vue';
+import MyMonaco from '@/components/monaco/index.vue';
 import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
 import { ElMessage } from 'element-plus';
 

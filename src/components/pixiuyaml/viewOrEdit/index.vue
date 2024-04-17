@@ -20,12 +20,12 @@
       </el-radio-group>
     </div>
 
-    <MyCodeMirror
+    <MyMonaco
       ref="editYaml"
       :yaml="data.yaml"
       :height="data.dialogHeight"
       :read-only="readOnly"
-    ></MyCodeMirror>
+    ></MyMonaco>
 
     <template #footer>
       <span class="dialog-footer">
@@ -39,8 +39,8 @@
 </template>
 
 <script setup lang="jsx">
-import MyCodeMirror from '@/components/codemirror/index.vue';
-import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
+import MyMonaco from '@/components/monaco/index.vue';
+import { reactive, getCurrentInstance, onMounted, ref, watch, toRaw } from 'vue';
 import jsYaml from 'js-yaml';
 import { ElMessage } from 'element-plus';
 const { proxy } = getCurrentInstance();
@@ -136,6 +136,7 @@ const checkEmpty = (name, value) => {
 };
 
 const confirmYaml = () => {
+  console.log(editYaml.value.code);
   if (data.title === '编辑Yaml') {
     updateYaml();
   }
