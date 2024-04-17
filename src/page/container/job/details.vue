@@ -656,7 +656,7 @@ const getDeployment = async () => {
   });
   data.deployment = res;
 
-  data.yaml = jsYaml.dump(data.deployment);
+  data.yaml = jsYaml.dump(data.deployment, { quotingType: '"' });
 };
 
 const deletePod = async (row) => {

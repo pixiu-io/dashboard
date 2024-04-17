@@ -95,7 +95,7 @@ onMounted(() => {
 });
 
 watch(() => {
-  data.yaml = jsYaml.dump(props.yaml.valueOf());
+  data.yaml = jsYaml.dump(props.yaml.valueOf(), { quotingType: '"' });
   yamlDialog.value = props.yamlDialog.valueOf();
   data.title = props.title.valueOf();
 

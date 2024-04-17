@@ -316,7 +316,7 @@ const handleEditYamlDialog = async (row) => {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  data.yaml = jsYaml.dump(result);
+  data.yaml = jsYaml.dump(result, { quotingType: '"' });
   data.editYamlDialog = true;
 };
 

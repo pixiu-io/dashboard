@@ -393,7 +393,7 @@ const GetPod = async () => {
       url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${data.name}`,
     });
     data.pod = res;
-    data.yaml = jsYaml.dump(data.pod);
+    data.yaml = jsYaml.dump(data.pod, { quotingType: '"' });
     data.createTime = formatTimestamp(data.pod.metadata.creationTimestamp);
 
     data.containerMap = {};

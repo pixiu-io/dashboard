@@ -230,7 +230,7 @@ const GetService = async () => {
     data.service = res;
 
     data.createTime = formatTimestamp(data.service.metadata.creationTimestamp);
-    data.yaml = jsYaml.dump(data.service);
+    data.yaml = jsYaml.dump(data.service, { quotingType: '"' });
   } catch (error) {}
 };
 
