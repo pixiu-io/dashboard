@@ -95,7 +95,7 @@
         >
         </el-table-column>
 
-        <el-table-column label="可调度" width="80px">
+        <el-table-column label="不可调度">
           <template #default="scope">
             <el-switch
               v-model="scope.row.spec.unschedulable"
@@ -385,13 +385,9 @@ const changeScheduleStatus = async (row) => {
   const scheduleStatus = row.spec.unschedulable;
   let patchData = {
     spec: {
-      unschedulable: true,
+      unschedulable: scheduleStatus,
     },
   };
-  if (scheduleStatus) {
-    patchData.spec.unschedulable = null;
-  }
-
   const [res, err] = await patchNode(data.cluster, row.metadata.name, patchData);
   if (err) {
     proxy.$message.error(err.response.data.message);
