@@ -382,9 +382,10 @@ const jumpRoute = (row) => {
 };
 
 const changeScheduleStatus = async (row) => {
+  const scheduleStatus = row.spec.unschedulable;
   let patchData = {
     spec: {
-      unschedulable: row.spec.unschedulable,
+      unschedulable: scheduleStatus,
     },
   };
   const [res, err] = await patchNode(data.cluster, row.metadata.name, patchData);
