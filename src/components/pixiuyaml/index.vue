@@ -1,7 +1,7 @@
 <template>
   <div style="display: flex">
-    <div style="font-size: 14px">命名空间:</div>
-    <div style="margin-left: 10px">
+    <div style="font-size: 14px">命名空间</div>
+    <div style="margin-left: 8px">
       <el-select
         v-model="data.nsData.namespace"
         filterable
@@ -137,7 +137,7 @@ onMounted(() => {
 });
 
 const changeNamespace = (val) => {
-  console.log(val);
+  localStorage.setItem('activeNamespace', val);
 };
 
 const getNamespaces = async () => {
