@@ -1,37 +1,40 @@
 <template>
-  <el-select
-    v-model="data.nsData.namespace"
-    filterable
-    :filter-method="filterMethod"
-    style="width: 180px; margin-right: 10px"
-    @change="changeNamespace"
-  >
-    <el-option v-for="item in data.nsData.namespaceList" :key="item" :value="item" :label="item" />
-  </el-select>
+  <div>
+    <div style="display: flex">
+      <div style="font-size: 14px">命名空间:</div>
+      <div style="margin-left: 10px">
+        <el-select
+          v-model="data.nsData.namespace"
+          filterable
+          :filter-method="filterMethod"
+          style="width: 180px; margin-right: 10px"
+          @change="changeNamespace"
+        >
+          <el-option
+            v-for="item in data.nsData.namespaceList"
+            :key="item"
+            :value="item"
+            :label="item"
+          />
+        </el-select>
+      </div>
+    </div>
 
-  <div
-    style="
-      display: block;
-      font-size: 12px;
-      margin-top: -20px;
-      float: right;
-      color: rgba(0, 0, 0, 0.9);
-    "
-  >
-    使用指南
-    <el-icon style="vertical-align: middle; margin-right: 10px">
-      <component :is="'Edit'" />
-    </el-icon>
+    <div style="font-size: 12px; margin-top: -35px; float: right; color: rgba(0, 0, 0, 0.9)">
+      使用指南
+      <el-icon style="vertical-align: middle; margin-right: 10px">
+        <component :is="'Edit'" />
+      </el-icon>
 
-    <button
-      class="pixiu-two-button"
-      style="width: 120px; margin-top: -10px"
-      @click="handleCreateYamlDialog"
-    >
-      YAML创建资源
-    </button>
+      <button
+        class="pixiu-two-button"
+        style="width: 120px; margin-top: -10px"
+        @click="handleCreateYamlDialog"
+      >
+        YAML创建资源
+      </button>
+    </div>
   </div>
-
   <el-dialog
     v-model:visible="data.dialogVisible"
     :fullscreen="data.isFullscreen"
