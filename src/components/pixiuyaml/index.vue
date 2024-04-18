@@ -63,6 +63,23 @@
           />
         </span> -->
       </div>
+
+      <div>
+        <el-select
+          v-model="data.namespaceData.namespace"
+          filterable
+          :filter-method="filterMethod"
+          style="width: 200px; float: right; margin-right: 10px"
+          @change="changeNamespace"
+        >
+          <el-option
+            v-for="item in data.namespaceData.namespaces"
+            :key="item"
+            :value="item"
+            :label="item"
+          />
+        </el-select>
+      </div>
     </template>
     <div style="margin-top: -18px"></div>
     <MyMonaco ref="editYaml" :yaml="data.yaml" :height="data.dialogHeight"></MyMonaco>
@@ -96,6 +113,11 @@ const data = reactive({
   dialogHeight: 450,
   dialogVisible: false, // 控制对话框显示与隐藏的变量
   isFullscreen: false, // 控制对话框是否全屏的变量
+
+  namespaceData: {
+    namespace: 'default',
+    namespaces: [],
+  },
 });
 
 const props = defineProps({
