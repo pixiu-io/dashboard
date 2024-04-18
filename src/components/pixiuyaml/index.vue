@@ -32,14 +32,38 @@
     @close="closeYamlDialog"
   >
     <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">{{ data.title }}</div>
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+        "
+      >
+        <span> {{ data.title }}</span>
+        <span style="display: flex; align-items: center">
+          <pixiu-icon
+            name="icon-zuixiaohua"
+            size="18px"
+            type="iconfont"
+            style="vertical-align: middle; padding-right: 10px"
+            color="#909399"
+            @click="exitFullScreen"
+          />
+          <pixiu-icon
+            name="icon-quanping"
+            size="18px"
+            type="iconfont"
+            style="vertical-align: middle; padding-right: 20px"
+            color="#909399"
+            @click="fullScreen"
+          />
+        </span>
+      </div>
     </template>
     <div style="margin-top: -18px"></div>
-    <el-radio-group v-model="data.fromSize" style="margin-top: 4px">
-      <el-radio-button label="small">小窗</el-radio-button>
-      <el-radio-button label="middle">中等</el-radio-button>
-      <el-radio-button label="large">全屏</el-radio-button>
-    </el-radio-group>
     <MyMonaco ref="editYaml" :yaml="data.yaml" :height="data.dialogHeight"></MyMonaco>
 
     <template #footer>
@@ -58,6 +82,7 @@ import jsYaml from 'js-yaml';
 import MyMonaco from '@/components/monaco/index.vue';
 import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
 import { ElMessage } from 'element-plus';
+import PixiuIcon from '@/components/pixiuIcon/index.vue';
 
 const { proxy } = getCurrentInstance();
 const editYaml = ref();
@@ -106,6 +131,14 @@ watch(() => {
     data.isFullscreen = !data.isFullscreen; // 切换全屏状态
   }
 });
+
+const fullScreen = () => {
+  data.fromSize = 'large';
+};
+const exitFullScreen = () => {
+  data.fromSize = 'small';
+};
+
 const handleCreateYamlDialog = () => {
   data.yaml = jsYaml.dump();
   data.yamlDialog = true;

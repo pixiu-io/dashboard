@@ -8,7 +8,13 @@
     <!--    <button @click="handleBtn">获取</button>-->
     <!--    <button @click="handleFormat">格式化</button>-->
     <!--    <button @click="handelSet">设置值</button>-->
-    <div ref="editorContainer" :style="{ width: data.width, height: data.height + 'px' }"></div>
+    <div
+      ref="editorContainer"
+      :style="{
+        width: data.width,
+        height: data.height,
+      }"
+    ></div>
   </div>
 </template>
 
@@ -19,11 +25,10 @@ const monacoEditor = ref(undefined);
 const editorContainer = ref(null);
 const code = ref(null);
 // let languageList = ref(['javascript', 'json', 'sql', 'java', 'groovy', 'shell', 'python', 'yaml']);
-import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
 const data = reactive({
   yaml: '',
   width: '100%',
-  height: 800,
+  height: '100%',
 });
 
 const props = defineProps({
@@ -37,7 +42,7 @@ const props = defineProps({
   },
   height: {
     type: Number,
-    default: 600,
+    default: 450,
   },
   type: {
     type: String,
@@ -53,7 +58,6 @@ const handleFormat = () => {
 };
 const handleBtn = () => {
   let demo = toRaw(monacoEditor.value).getValue(); //获取编辑器中的文本
-  console.log(demo);
 };
 const handelChange = (val) => {
   monaco.editor.setModelLanguage(monacoEditor.value.getModel(), val);
@@ -62,10 +66,29 @@ const handelSet = () => {
   toRaw(monacoEditor.value).setModel(monaco.editor.createModel(data.yaml, 'yaml'));
 };
 
+/**
+ * 判断是否为数字类型
+ * @param value
+ * @returns {boolean}
+ */
+const isNumber = (value) => {
+  let numReg = /^[0-9]*$/;
+
+  let numRe = new RegExp(numReg);
+  if (numRe.test(value)) {
+    return true;
+  }
+
+  return false;
+};
+
 watch(() => {
   data.yaml = props.yaml.valueOf();
   data.readOnly = props.readOnly.valueOf();
-  data.height = props.height.valueOf();
+  data.height = isNumber(props.height.valueOf())
+    ? props.height.valueOf() + 'px'
+    : props.height.valueOf();
+
   if (monacoEditor.value !== undefined) {
     toRaw(monacoEditor.value).setModel(monaco.editor.createModel(data.yaml, 'yaml'));
   }
@@ -94,7 +117,7 @@ const init = () => {
     enableSplitViewResizing: false,
     readOnly: props.readOnly, //是否只读  取值 true | false
   });
-  toRaw(monacoEditor.value).setModel(monaco.editor.createModel(data.yaml, 'yaml'));
+  toRaw(monacoEditor.value).setModel(monaco.editor.createModel(data.yaml, props.type));
 
   monacoEditor.value.onDidChangeModelContent(() => {
     //内容改变时给父组件实时返回值
