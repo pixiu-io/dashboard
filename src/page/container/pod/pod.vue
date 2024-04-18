@@ -437,22 +437,7 @@
     </div>
 
     <div style="margin-top: 15px">
-      <el-card class="contend-card-container2">
-        <div style="background-color: #29232b; color: white; min-height: 440px">
-          <div style="margin-left: 20px">
-            <div v-if="data.logData.podLogs.length === 0" style="font-size: 14px">暂无日志</div>
-            <div v-else>
-              <div
-                v-for="(item, index) in data.logData.podLogs"
-                :key="item"
-                style="font-size: 14px"
-              >
-                {{ index + 1 }} <span style="margin-left: 18px"></span> {{ item }}
-              </div>
-            </div>
-          </div>
-        </div>
-      </el-card>
+      <PixiuLog :yaml-dialog="data.logData.drawer" :log="data.logData.podLogs"></PixiuLog>
     </div>
   </el-drawer>
 </template>
@@ -486,6 +471,7 @@ import {
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { getNode } from '@/services/kubernetes/nodeService';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
+import PixiuLog from '@/components/pixiulog/index.vue';
 
 const { toClipboard } = useClipboard();
 const { proxy } = getCurrentInstance();
@@ -542,7 +528,7 @@ const data = reactive({
   },
 
   logData: {
-    width: '68%',
+    width: '60%',
     drawer: false,
     pod: '',
     namespace: '',
@@ -551,7 +537,7 @@ const data = reactive({
     previous: false,
     line: 25,
     lineOptions: [25, 50, 100, 200, 500],
-    podLogs: [],
+    podLogs: '点击查询获取日志',
     aggLog: false,
   },
 });
@@ -659,7 +645,6 @@ const getPodLogs = async () => {
     proxy.$notify.error(err.response.data.message);
     return;
   }
-
   data.logData.podLogs = result;
 };
 
@@ -712,7 +697,7 @@ const closeLogDrawer = () => {
   data.logData.selectedContainer = '';
   data.logData.previous = false;
   data.logData.line = 25;
-  data.logData.podLogs = [];
+  data.logData.podLogs = '点击查询获取日志';
 };
 
 const formatterContainerStartTime = (row, column, cellValue) => {

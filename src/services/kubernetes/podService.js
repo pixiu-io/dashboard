@@ -95,5 +95,5 @@ export const getPodLog = async (cluster, namespace, name, container, line) => {
       },
     }),
   );
-  return [result.split('\n'), err];
+  return [result, err];
 };
