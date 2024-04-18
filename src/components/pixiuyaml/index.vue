@@ -42,25 +42,26 @@
           padding-left: 5px;
         "
       >
-        <span> {{ data.title }}</span>
+        <span> YAML创建资源 </span>
+        <!--
         <span style="display: flex; align-items: center">
           <pixiu-icon
-            name="icon-zuixiaohua"
-            size="18px"
+            name="icon-zuixiaohua-01"
+            size="15px"
             type="iconfont"
-            style="vertical-align: middle; padding-right: 10px"
+            style="vertical-align: middle; padding-right: 10px; cursor: pointer"
             color="#909399"
             @click="exitFullScreen"
           />
           <pixiu-icon
-            name="icon-quanping"
-            size="18px"
+            name="icon-quanpingzuidahua"
+            size="15px"
             type="iconfont"
-            style="vertical-align: middle; padding-right: 20px"
+            style="vertical-align: middle; padding-right: 10px; cursor: pointer"
             color="#909399"
             @click="fullScreen"
           />
-        </span>
+        </span> -->
       </div>
     </template>
     <div style="margin-top: -18px"></div>
@@ -82,7 +83,6 @@ import jsYaml from 'js-yaml';
 import MyMonaco from '@/components/monaco/index.vue';
 import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
 import { ElMessage } from 'element-plus';
-import PixiuIcon from '@/components/pixiuIcon/index.vue';
 
 const { proxy } = getCurrentInstance();
 const editYaml = ref();

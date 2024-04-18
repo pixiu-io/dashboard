@@ -21,22 +21,22 @@
       >
         <span> {{ data.title }}</span>
         <span style="display: flex; align-items: center">
-          <pixiu-icon
-            name="icon-zuixiaohua"
-            size="18px"
+          <!-- <pixiu-icon
+            name="icon-zuixiaohua-01"
+            size="15px"
             type="iconfont"
-            style="vertical-align: middle; padding-right: 10px"
+            style="vertical-align: middle; padding-right: 10px; cursor: pointer"
             color="#909399"
             @click="exitFullScreen"
           />
           <pixiu-icon
-            name="icon-quanping"
-            size="18px"
+            name="icon-quanpingzuidahua"
+            size="15px"
             type="iconfont"
-            style="vertical-align: middle; padding-right: 20px"
+            style="vertical-align: middle; margin-right: 10px; cursor: pointer"
             color="#909399"
             @click="fullScreen"
-          />
+          /> -->
         </span>
       </div>
     </template>
