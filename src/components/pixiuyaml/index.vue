@@ -8,6 +8,21 @@
       color: rgba(0, 0, 0, 0.9);
     "
   >
+    <el-select
+      v-model="data.nsData.namespace"
+      filterable
+      :filter-method="filterMethod"
+      style="width: 120px; float: right; margin-right: 10px"
+      @change="changeNamespace"
+    >
+      <el-option
+        v-for="item in data.nsData.namespaceList"
+        :key="item"
+        :value="item"
+        :label="item"
+      />
+    </el-select>
+
     使用指南
     <el-icon style="vertical-align: middle; margin-right: 10px">
       <component :is="'Edit'" />
@@ -63,23 +78,6 @@
           />
         </span> -->
       </div>
-
-      <div>
-        <el-select
-          v-model="data.namespaceData.namespace"
-          filterable
-          :filter-method="filterMethod"
-          style="width: 200px; float: right; margin-right: 10px"
-          @change="changeNamespace"
-        >
-          <el-option
-            v-for="item in data.namespaceData.namespaces"
-            :key="item"
-            :value="item"
-            :label="item"
-          />
-        </el-select>
-      </div>
     </template>
     <div style="margin-top: -18px"></div>
     <MyMonaco ref="editYaml" :yaml="data.yaml" :height="data.dialogHeight"></MyMonaco>
@@ -100,6 +98,7 @@ import jsYaml from 'js-yaml';
 import MyMonaco from '@/components/monaco/index.vue';
 import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
 import { ElMessage } from 'element-plus';
+import { getNamespaceList } from '@/services/kubernetes/namespaceService';
 
 const { proxy } = getCurrentInstance();
 const editYaml = ref();
@@ -114,9 +113,9 @@ const data = reactive({
   dialogVisible: false, // 控制对话框显示与隐藏的变量
   isFullscreen: false, // 控制对话框是否全屏的变量
 
-  namespaceData: {
+  nsData: {
     namespace: 'default',
-    namespaces: [],
+    namespaceList: [],
   },
 });
 
@@ -137,7 +136,20 @@ const props = defineProps({
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
+
+  getNamespaces();
 });
+
+const getNamespaces = async () => {
+  const [result, err] = await getNamespaceList(data.cluster);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  for (let ns of result.items) {
+    data.nsData.namespaceList.push(ns.metadata.name);
+  }
+};
 
 watch(() => {
   if (data.fromSize === 'small') {
