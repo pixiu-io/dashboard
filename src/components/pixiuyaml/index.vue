@@ -6,7 +6,7 @@
         v-model="data.nsData.namespace"
         filterable
         :filter-method="filterMethod"
-        style="width: 180px; margin-right: 10px;m"
+        style="width: 180px; margin-right: 10px"
         @change="changeNamespace"
       >
         <el-option
