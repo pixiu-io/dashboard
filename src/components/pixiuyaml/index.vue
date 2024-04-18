@@ -1,4 +1,14 @@
 <template>
+  <el-select
+    v-model="data.nsData.namespace"
+    filterable
+    :filter-method="filterMethod"
+    style="width: 180px; margin-right: 10px"
+    @change="changeNamespace"
+  >
+    <el-option v-for="item in data.nsData.namespaceList" :key="item" :value="item" :label="item" />
+  </el-select>
+
   <div
     style="
       display: block;
@@ -8,21 +18,6 @@
       color: rgba(0, 0, 0, 0.9);
     "
   >
-    <el-select
-      v-model="data.nsData.namespace"
-      filterable
-      :filter-method="filterMethod"
-      style="width: 120px; float: right; margin-right: 10px"
-      @change="changeNamespace"
-    >
-      <el-option
-        v-for="item in data.nsData.namespaceList"
-        :key="item"
-        :value="item"
-        :label="item"
-      />
-    </el-select>
-
     使用指南
     <el-icon style="vertical-align: middle; margin-right: 10px">
       <component :is="'Edit'" />
