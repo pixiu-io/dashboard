@@ -3,22 +3,51 @@
     v-model:visible="data.dialogVisible"
     :fullscreen="data.isFullscreen"
     :model-value="yamlDialog.valueOf()"
-    style="color: #000000; font: 14px; margin-top: 50px"
+    :style="{ color: '#000000', font: '14px', marginTop: data.marginTop }"
     :width="data.dialogWidth + 'px'"
     center
     @close="closeYamlDialog"
   >
     <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">{{ data.title }}</div>
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+        "
+      >
+        <span> {{ data.title }}</span>
+        <span style="display: flex; align-items: center">
+          <!-- <pixiu-icon
+            name="icon-zuixiaohua-01"
+            size="15px"
+            type="iconfont"
+            style="vertical-align: middle; padding-right: 10px; cursor: pointer"
+            color="#909399"
+            @click="exitFullScreen"
+          />
+          <pixiu-icon
+            name="icon-quanpingzuidahua"
+            size="15px"
+            type="iconfont"
+            style="vertical-align: middle; margin-right: 10px; cursor: pointer"
+            color="#909399"
+            @click="fullScreen"
+          /> -->
+        </span>
+      </div>
     </template>
     <div style="margin-top: -18px"></div>
-    <div class="custom-radio-group">
-      <el-radio-group v-model="data.fromSize" style="margin-top: 4px">
-        <el-radio-button label="small">小窗</el-radio-button>
-        <el-radio-button label="middle">中等</el-radio-button>
-        <el-radio-button label="large">全屏</el-radio-button>
-      </el-radio-group>
-    </div>
+    <!--    <div class="custom-radio-group">-->
+    <!--      <el-radio-group v-model="data.fromSize" style="margin-top: 4px">-->
+    <!--        <el-radio-button label="small">小窗</el-radio-button>-->
+    <!--        <el-radio-button label="middle">中等</el-radio-button>-->
+    <!--        <el-radio-button label="large">全屏</el-radio-button>-->
+    <!--      </el-radio-group>-->
+    <!--    </div>-->
 
     <MyMonaco
       ref="editYaml"
@@ -43,6 +72,7 @@ import MyMonaco from '@/components/monaco/index.vue';
 import { reactive, getCurrentInstance, onMounted, ref, watch, toRaw } from 'vue';
 import jsYaml from 'js-yaml';
 import { ElMessage } from 'element-plus';
+import PixiuIcon from '@/components/pixiuIcon/index.vue';
 const { proxy } = getCurrentInstance();
 const editYaml = ref();
 
@@ -51,8 +81,9 @@ const data = reactive({
   cluster: '',
   yaml: '',
   fromSize: 'small',
-  dialogWidth: 300,
+  dialogWidth: 900,
   dialogHeight: 450,
+  marginTop: '50px',
   dialogVisible: false, // 控制对话框显示与隐藏的变量
   isFullscreen: false, // 控制对话框是否全屏的变量
 });
@@ -140,6 +171,13 @@ const confirmYaml = () => {
     updateYaml();
   }
   yamlDialog.value = false;
+};
+
+const fullScreen = () => {
+  data.fromSize = 'large';
+};
+const exitFullScreen = () => {
+  data.fromSize = 'small';
 };
 
 /**
@@ -240,6 +278,7 @@ const updateYaml = async () => {
   width: 100vw !important;
   height: 100vh !important;
   top: 0 !important;
+  margin-top: 0 !important;
   left: 0 !important;
 }
 

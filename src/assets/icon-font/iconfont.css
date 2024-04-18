@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3708393 */
-  src: url('iconfont.woff2?t=1712536825901') format('woff2'),
-       url('iconfont.woff?t=1712536825901') format('woff'),
-       url('iconfont.ttf?t=1712536825901') format('truetype');
+  src: url('iconfont.woff2?t=1713453203320') format('woff2'),
+       url('iconfont.woff?t=1713453203320') format('woff'),
+       url('iconfont.ttf?t=1713453203320') format('truetype');
 }
 
 .iconfont {
@@ -13,12 +13,16 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-overview:before {
-  content: "\e619";
+.icon-quanpingzuidahua:before {
+  content: "\e786";
 }
 
-.icon-overview1:before {
-  content: "\e600";
+.icon-zuixiaohua-01:before {
+  content: "\e61f";
+}
+
+.icon-overview:before {
+  content: "\e619";
 }
 
 .icon-webshell:before {
