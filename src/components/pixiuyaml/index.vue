@@ -1,25 +1,57 @@
 <template>
-  <div
-    style="
-      display: block;
-      font-size: 12px;
-      margin-top: -20px;
-      float: right;
-      color: rgba(0, 0, 0, 0.9);
-    "
-  >
-    使用指南
-    <el-icon style="vertical-align: middle; margin-right: 10px">
-      <component :is="'Edit'" />
-    </el-icon>
-
-    <button
-      class="pixiu-two-button"
-      style="width: 120px; margin-top: -10px"
-      @click="handleCreateYamlDialog"
+  <div style="display: flex; width: 100%; align-items: center">
+    <div style="margin-left: 20px; font-size: 13px; color: #29292b; font-weight: bold">
+      命名空间
+    </div>
+    <el-select
+      v-model="data.nsData.namespace"
+      filterable
+      style="width: 150px; margin-left: 8px"
+      @change="changeNamespace"
     >
-      YAML创建资源
-    </button>
+      <el-option
+        v-for="item in data.nsData.namespaceList"
+        :key="item"
+        :value="item"
+        :label="item"
+      />
+    </el-select>
+
+    <div style="margin-left: 4px; margin-top: 5px">
+      <pixiu-icon
+        name="icon-icon-refresh"
+        style="cursor: pointer"
+        size="14px"
+        type="iconfont"
+        color="#909399"
+        @click="getNamespaces"
+      />
+    </div>
+
+    <div style="margin-left: 6px; font-size: 14px; color: #29292b; font-weight: bold">
+      {{ title }}
+    </div>
+
+    <div
+      style="
+        font-size: 12px;
+        color: #29292b;
+        margin-left: auto;
+        padding-right: 20px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+      "
+    >
+      使用指南
+      <el-icon style="vertical-align: middle; margin-right: 10px">
+        <component :is="'Edit'" />
+      </el-icon>
+
+      <button class="pixiu-two-button" style="width: 120px" @click="handleCreateYamlDialog">
+        YAML创建资源
+      </button>
+    </div>
   </div>
 
   <el-dialog
@@ -83,6 +115,7 @@ import jsYaml from 'js-yaml';
 import MyMonaco from '@/components/monaco/index.vue';
 import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
 import { ElMessage } from 'element-plus';
+import { getNamespaceList } from '@/services/kubernetes/namespaceService';
 
 const { proxy } = getCurrentInstance();
 const editYaml = ref();
@@ -96,6 +129,11 @@ const data = reactive({
   dialogHeight: 450,
   dialogVisible: false, // 控制对话框显示与隐藏的变量
   isFullscreen: false, // 控制对话框是否全屏的变量
+
+  nsData: {
+    namespace: 'default',
+    namespaceList: [],
+  },
 });
 
 const props = defineProps({
@@ -111,11 +149,35 @@ const props = defineProps({
     type: Function,
     default: () => {},
   },
+  title: {
+    type: String,
+    default: '',
+  },
 });
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
+
+  getNamespaces();
 });
+
+const changeNamespace = async (val) => {
+  localStorage.setItem('namespace', val);
+  data.nsData.namespace = val;
+};
+
+const getNamespaces = async () => {
+  const [result, err] = await getNamespaceList(data.cluster);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+
+  data.nsData.namespaceList = [];
+  for (let ns of result.items) {
+    data.nsData.namespaceList.push(ns.metadata.name);
+  }
+};
 
 watch(() => {
   if (data.fromSize === 'small') {

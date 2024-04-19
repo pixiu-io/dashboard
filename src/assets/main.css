@@ -236,6 +236,20 @@
   border-radius: 0px;
 }
 
+/* 标题卡片 */
+.title-card-container2 {
+  height: 55px;
+  margin-top: -20px;
+  margin-left: -20px;
+  margin-right: -20px;
+  border-radius: 0px;
+  background-color: #fff;
+  display: flex;
+  padding: 0;
+  align-items: center;
+  box-shadow: var(--el-box-shadow-light);
+}
+
 .contend-card-container {
   margin-top: -20px;
   margin-left: -20px;
@@ -290,6 +304,13 @@
 
 .font-container {
   margin-top: -5px;
+  font-weight: bold;
+  font-size: 16px;
+  vertical-align: middle;
+}
+
+.font-container2 {
+  padding: 0px 20px;
   font-weight: bold;
   font-size: 16px;
   vertical-align: middle;

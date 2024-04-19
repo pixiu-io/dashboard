@@ -1,8 +1,7 @@
 <template>
-  <el-card class="title-card-container">
-    <div class="font-container">Deployment</div>
-    <PiXiuYaml :refresh="getDeployments"></PiXiuYaml>
-  </el-card>
+  <div class="title-card-container2">
+    <PiXiuYaml :refresh="getDeployments" title=""></PiXiuYaml>
+  </div>
 
   <div style="margin-top: 25px">
     <el-row>
@@ -57,22 +56,6 @@
             />
           </template>
         </el-input> -->
-
-        <el-select
-          v-model="data.namespace"
-          filterable
-          :filter-method="filterMethod"
-          style="width: 200px; float: right; margin-right: 10px"
-          @change="changeNamespace"
-        >
-          <el-option
-            v-for="item in data.filterNamespaces"
-            :key="item"
-            :value="item"
-            :label="item"
-          />
-        </el-select>
-        <!-- <dev class="namespace-container" style="width: 112px; float: right">命名空间</dev> -->
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -496,7 +479,7 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData, searchData } from '@/utils/utils';
 import PixiuTag from '@/components/pixiuTag/index.vue';
@@ -528,6 +511,7 @@ const editYaml = ref();
 
 const data = reactive({
   cluster: '',
+  namespace: 'default',
 
   pageInfo: {
     page: 1,
@@ -541,10 +525,6 @@ const data = reactive({
   },
   tableData: [],
   loading: false,
-
-  namespace: 'default',
-  namespaces: [],
-  filterNamespaces: [],
 
   deploymentList: [],
 
@@ -597,7 +577,6 @@ onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
 
   getDeployments();
-  getNamespaces();
 });
 
 const handleLogDrawer = (row) => {
@@ -699,20 +678,6 @@ const getPodLogs = async () => {
       return;
     }
     data.logData.podLogs = result;
-  }
-};
-
-const filterMethod = (f) => {
-  if (f === undefined || f === '') {
-    data.filterNamespaces = data.namespaces;
-    return;
-  }
-
-  data.filterNamespaces = [];
-  for (let item of data.namespaces) {
-    if (item.includes(f)) {
-      data.filterNamespaces.push(item);
-    }
   }
 };
 
@@ -887,17 +852,6 @@ const changeNamespace = async (val) => {
   data.namespace = val;
 
   getDeployments();
-};
-
-const getNamespaces = async () => {
-  const [result, err] = await getNamespaceNames(data.cluster);
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-
-  data.namespaces = result;
-  data.filterNamespaces = result;
 };
 
 const handleDeploymentScaleDialog = (row) => {

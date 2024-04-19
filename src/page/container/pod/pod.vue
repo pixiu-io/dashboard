@@ -1,8 +1,16 @@
 <template>
-  <el-card class="title-card-container">
+  <div class="title-card-container2">
+    <!-- <div class="font-container2">Pod</div> -->
+    <div style="flex-grow: 1">
+      <PiXiuYaml :refresh="getPods"></PiXiuYaml>
+    </div>
+  </div>
+  <!-- <el-card class="title-card-container">
     <div class="font-container">Pod</div>
-    <PiXiuYaml :refresh="getPods"></PiXiuYaml>
-  </el-card>
+    <div>
+      <PiXiuYaml :refresh="getPods"></PiXiuYaml>
+    </div>
+  </el-card> -->
 
   <div style="margin-top: 25px">
     <el-row>
