@@ -479,7 +479,7 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref, watch, onUnmounted } from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData, searchData } from '@/utils/utils';
 import PixiuTag from '@/components/pixiuTag/index.vue';
@@ -587,6 +587,10 @@ onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
 
   getDeployments();
+});
+
+onUnmounted(() => {
+  window.removeEventListener('setItem', handleStorageChange);
 });
 
 const handleLogDrawer = (row) => {
