@@ -1,5 +1,17 @@
 <template>
   <div style="display: flex; width: 100%; align-items: center">
+    <!-- <div style="margin-left: 20px; font-size: 13px; color: #29292b; font-weight: bold">
+      容器集群
+    </div>
+    <el-select
+      v-model="data.cluster"
+      filterable
+      style="width: 150px; margin-left: 8px"
+      @change="changeCluster"
+    >
+      <el-option v-for="item in data.clusters" :key="item" :value="item" :label="item" />
+    </el-select> -->
+
     <div style="margin-left: 20px; font-size: 13px; color: #29292b; font-weight: bold">
       命名空间
     </div>
@@ -122,6 +134,7 @@ const editYaml = ref();
 
 const data = reactive({
   cluster: '',
+  clusters: [],
   yamlDialog: false,
   yaml: '',
   fromSize: 'small',
