@@ -1,14 +1,14 @@
 <template>
   <el-card class="title-card-container">
     <div class="font-container">CronJob</div>
-    <PiXiuYaml :refresh="getDeployments"></PiXiuYaml>
+    <PiXiuYaml :refresh="getCronJobs"></PiXiuYaml>
   </el-card>
 
   <div style="margin-top: 25px">
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createDeployment">新建</button>
-        <button class="pixiu-two-button2" style="margin-left: 10px" @click="getDeployments">
+        <button class="pixiu-two-button2" style="margin-left: 10px" @click="getCronJobs">
           刷新
         </button>
 
@@ -17,7 +17,7 @@
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
-          @clear="getDeployments"
+          @clear="getCronJobs"
         >
           <template #suffix>
             <pixiu-icon
@@ -26,7 +26,7 @@
               size="15px"
               type="iconfont"
               color="#909399"
-              @click="getDeployments"
+              @click="getCronJobs"
             />
           </template>
         </el-input>
@@ -179,7 +179,7 @@
     title="编辑Yaml"
     :yaml="data.yaml"
     :read-only="false"
-    :refresh="getDeployments"
+    :refresh="getCronJobs"
   ></PiXiuViewOrEdit>
   <pixiuDialog
     :close-event="data.deleteDialog.close"
@@ -206,7 +206,6 @@ import {
   updateDeployment,
   deleteDeployment,
 } from '@/services/kubernetes/deploymentService';
-import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
@@ -253,7 +252,7 @@ const data = reactive({
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
 
-  getDeployments();
+  getCronJobs();
   getNamespaces();
 });
 
@@ -275,7 +274,7 @@ const confirm = async () => {
   proxy.$message.success(`Deployment(${data.deleteDialog.deleteName}) 删除成功`);
 
   clean();
-  await getDeployments();
+  await getCronJobs();
 };
 
 const cancel = () => {
@@ -325,7 +324,7 @@ const confirmEditYaml = async () => {
   }
   proxy.$message.success(`Deployment(${data.yamlName}) YAML 更新成功`);
   closeEditYamlDialog();
-  await getDeployments();
+  await getCronJobs();
 };
 
 const createDeployment = () => {
@@ -349,7 +348,7 @@ const jumpRoute = (row) => {
   });
 };
 
-const getDeployments = async () => {
+const getCronJobs = async () => {
   data.loading = true;
   const [result, err] = await getDeploymentList(data.cluster, data.namespace);
   data.loading = false;
@@ -367,7 +366,7 @@ const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
   data.namespace = val;
 
-  getDeployments();
+  getCronJobs();
 };
 
 const getNamespaces = async () => {
@@ -411,7 +410,7 @@ const confirmDeploymentScale = async () => {
       },
     });
 
-    getDeployments();
+    getCronJobs();
     closeDeploymentScaleDialog();
   } catch (error) {}
 };
