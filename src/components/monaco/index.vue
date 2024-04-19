@@ -118,6 +118,8 @@ const init = () => {
     readOnly: props.readOnly, //是否只读  取值 true | false
   });
   toRaw(monacoEditor.value).setModel(monaco.editor.createModel(data.yaml, props.type));
+  // 初始化赋值
+  code.value = toRaw(monacoEditor.value).getValue();
 
   monacoEditor.value.onDidChangeModelContent(() => {
     //内容改变时给父组件实时返回值
