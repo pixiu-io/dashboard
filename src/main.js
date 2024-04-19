@@ -18,7 +18,6 @@ import '@/assets/icon-font/iconfont';
 import PixiuIcon from '@/components/pixiuIcon/index.vue';
 // 引入 codemirror
 import { InstallCodemirro } from 'codemirror-editor-vue3';
-import customListener from '@/utils/customListener';
 
 const app = createApp(App);
 
@@ -30,8 +29,6 @@ setupRouter(app); // 装载路由
 setupPinia(app); // 装载状态管理
 setupDirective(app); // 装载指令集
 setupI18n(app); // 装载i18n
-
-customListener();
 
 app.use(ElementPlus, {
   locale: zhCn,

@@ -16,13 +16,13 @@
       命名空间
     </div>
     <el-select
-      v-model="data.nsData.namespace"
+      v-model="namespaceStore.defaultNamespace"
       filterable
       style="width: 150px; margin-left: 8px"
-      @change="changeNamespace"
+      @change="namespaceStore.changeNamespace"
     >
       <el-option
-        v-for="item in data.nsData.namespaceList"
+        v-for="item in namespaceStore.namespaces"
         :key="item"
         :value="item"
         :label="item"
@@ -127,10 +127,14 @@ import jsYaml from 'js-yaml';
 import MyMonaco from '@/components/monaco/index.vue';
 import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
 import { ElMessage } from 'element-plus';
-import { getNamespaceList } from '@/services/kubernetes/namespaceService';
+// import { getNamespaceList } from '@/services/kubernetes/namespaceService';
+
+import useNamespaceStore from '@/stores/kubernetes/namespace';
 
 const { proxy } = getCurrentInstance();
 const editYaml = ref();
+
+const namespaceStore = useNamespaceStore();
 
 const data = reactive({
   cluster: '',
@@ -143,10 +147,10 @@ const data = reactive({
   dialogVisible: false, // 控制对话框显示与隐藏的变量
   isFullscreen: false, // 控制对话框是否全屏的变量
 
-  nsData: {
-    namespace: 'default',
-    namespaceList: [],
-  },
+  // nsData: {
+  //   namespace: 'default',
+  //   namespaceList: namespaceStore.namespaces,
+  // },
 });
 
 const props = defineProps({
@@ -171,26 +175,27 @@ const props = defineProps({
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
 
-  getNamespaces();
+  // getNamespaces();
+  namespaceStore.list(data.cluster);
 });
 
-const changeNamespace = async (val) => {
-  localStorage.setItem('namespace', val);
-  data.nsData.namespace = val;
-};
+// const changeNamespace = async (val) => {
+//   localStorage.setItem('namespace', val);
+//   data.nsData.namespace = val;
+// };
 
-const getNamespaces = async () => {
-  const [result, err] = await getNamespaceList(data.cluster);
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
+// const getNamespaces = async () => {
+//   const [result, err] = await getNamespaceList(data.cluster);
+//   if (err) {
+//     proxy.$message.error(err.response.data.message);
+//     return;
+//   }
 
-  data.nsData.namespaceList = [];
-  for (let ns of result.items) {
-    data.nsData.namespaceList.push(ns.metadata.name);
-  }
-};
+//   data.nsData.namespaceList = [];
+//   for (let ns of result.items) {
+//     data.nsData.namespaceList.push(ns.metadata.name);
+//   }
+// };
 
 watch(() => {
   if (data.fromSize === 'small') {

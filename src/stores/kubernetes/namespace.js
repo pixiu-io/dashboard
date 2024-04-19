@@ -1,15 +1,24 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
-import { listNamespaces } from '@/services/kubernetes/namespaceService.js';
+import { ref } from 'vue';
+import { getNamespaceList } from '@/services/kubernetes/namespaceService';
 import { ElMessage } from 'element-plus';
 
 export const useNamespaceStore = defineStore('namespapce', () => {
-  const list = async (namespace) => {
-    const [err, result] = await listNamespaces(namespace.cloud);
+  const namespaces = ref([]);
+  const defaultNamespace = ref('default');
+  const list = async (cloud) => {
+    const [result, err] = await getNamespaceList(cloud);
     if (err !== null) {
       return;
     }
+    for (let ns of result.items) {
+      namespaces.value.push(ns.metadata.name);
+    }
   };
-  return { list };
+  const changeNamespace = (namespace) => {
+    defaultNamespace.value = namespace;
+  };
+  return { list, changeNamespace, namespaces, defaultNamespace };
 });
 
 // 开启对应的热更新支持

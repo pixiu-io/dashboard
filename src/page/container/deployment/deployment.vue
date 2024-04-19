@@ -504,6 +504,10 @@ import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import PixiuLog from '@/components/pixiulog/index.vue';
+import useNamespaceStore from '@/stores/kubernetes/namespace';
+import useStoreWatcher from '@/utils/hooks/useStoreWatcher';
+
+const namespaceStore = useNamespaceStore();
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -573,25 +577,29 @@ const data = reactive({
   },
 });
 
-const handleStorageChange = (e) => {
-  console.log('dddd', e.key);
-  if (e.storageArea === localStorage) {
-    console.log(`Key "${e.key}" in localStorage changed!`);
-    console.log(`New value: ${e.newValue}`);
-    console.log(`Old value: ${e.oldValue}`);
-  }
-};
+// const handleStorageChange = (e) => {
+//   console.log('dddd', e.key);
+//   if (e.storageArea === localStorage) {
+//     console.log(`Key "${e.key}" in localStorage changed!`);
+//     console.log(`New value: ${e.newValue}`);
+//     console.log(`Old value: ${e.oldValue}`);
+//   }
+// };
 
 onMounted(() => {
-  window.addEventListener('setItem', handleStorageChange);
+  // window.addEventListener('setItem', handleStorageChange);
   data.cluster = proxy.$route.query.cluster;
 
   getDeployments();
 });
 
-onUnmounted(() => {
-  window.removeEventListener('setItem', handleStorageChange);
+useStoreWatcher(namespaceStore, 'defaultNamespace', (newVal, oldVal) => {
+  console.log('namespace change', newVal, oldVal);
 });
+
+// onUnmounted(() => {
+//   window.removeEventListener('setItem', handleStorageChange);
+// });
 
 const handleLogDrawer = (row) => {
   data.logData.deployment = row;
