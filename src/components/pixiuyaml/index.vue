@@ -29,7 +29,7 @@
       />
     </el-select>
 
-    <div style="margin-left: 4px; margin-top: 5px">
+    <!-- <div style="margin-left: 4px; margin-top: 5px">
       <pixiu-icon
         name="icon-icon-refresh"
         style="cursor: pointer"
@@ -38,7 +38,7 @@
         color="#909399"
         @click="getNamespaces"
       />
-    </div>
+    </div> -->
 
     <div style="margin-left: 6px; font-size: 14px; color: #29292b; font-weight: bold">
       {{ title }}
