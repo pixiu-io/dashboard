@@ -511,6 +511,7 @@ const editYaml = ref();
 
 const data = reactive({
   cluster: '',
+  namespace: 'default',
 
   pageInfo: {
     page: 1,
@@ -524,10 +525,6 @@ const data = reactive({
   },
   tableData: [],
   loading: false,
-
-  namespace: 'default',
-  namespaces: [],
-  filterNamespaces: [],
 
   deploymentList: [],
 
@@ -580,14 +577,7 @@ onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
 
   getDeployments();
-  getNamespaces();
-
-  window.addEventListener('namespace', handleStorageChange);
 });
-
-const handleStorageChange = (event) => {
-  console.log('event', event);
-};
 
 const handleLogDrawer = (row) => {
   data.logData.deployment = row;
@@ -862,17 +852,6 @@ const changeNamespace = async (val) => {
   data.namespace = val;
 
   getDeployments();
-};
-
-const getNamespaces = async () => {
-  const [result, err] = await getNamespaceNames(data.cluster);
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-
-  data.namespaces = result;
-  data.filterNamespaces = result;
 };
 
 const handleDeploymentScaleDialog = (row) => {
