@@ -127,7 +127,7 @@ import jsYaml from 'js-yaml';
 import MyMonaco from '@/components/monaco/index.vue';
 import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
 import { ElMessage } from 'element-plus';
-import { getNamespaceList } from '@/services/kubernetes/namespaceService';
+import { getNamespaceList, getLocalNamespace } from '@/services/kubernetes/namespaceService';
 
 const { proxy } = getCurrentInstance();
 const editYaml = ref();
@@ -170,6 +170,7 @@ const props = defineProps({
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
+  data.nsData.namespace = getLocalNamespace();
 
   getNamespaces();
 });
@@ -186,7 +187,7 @@ const getNamespaces = async () => {
     return;
   }
 
-  data.nsData.namespaceList = [];
+  data.nsData.namespaceList = ['全部命名空间'];
   for (let ns of result.items) {
     data.nsData.namespaceList.push(ns.metadata.name);
   }

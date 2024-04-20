@@ -484,7 +484,7 @@ import jsYaml from 'js-yaml';
 import { getTableData, searchData } from '@/utils/utils';
 import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
-import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
+import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import { getPodsByLabels, deletePod, getPodLog } from '@/services/kubernetes/podService';
 import {
   getDeploymentList,
@@ -574,9 +574,13 @@ const data = reactive({
 });
 
 onMounted(() => {
+  data.cluster = proxy.$route.query.cluster;
+  data.namespace = getLocalNamespace();
+
+  console.log('data.namespace', data.namespace);
+
   window.addEventListener('setItem', handleStorageChange);
 
-  data.cluster = proxy.$route.query.cluster;
   getDeployments();
 });
 
@@ -587,9 +591,12 @@ const handleStorageChange = (e) => {
         return;
       }
       data.namespace = e.newValue;
+      console.log('data.namespace', data.namespace);
     }
   }
 };
+
+const GetLocaNamespace = () => {};
 
 const handleLogDrawer = (row) => {
   data.logData.deployment = row;
