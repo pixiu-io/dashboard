@@ -1,8 +1,9 @@
 <template>
-  <el-card class="title-card-container">
-    <div class="font-container">ConfigMap</div>
-    <PiXiuYaml :refresh="getConfigMaps"></PiXiuYaml>
-  </el-card>
+  <div class="title-card-container2">
+    <div style="flex-grow: 1">
+      <PiXiuYaml :refresh="getConfigMaps"></PiXiuYaml>
+    </div>
+  </div>
 
   <div style="margin-top: 25px">
     <el-row>
@@ -25,14 +26,6 @@
             </el-icon>
           </template>
         </el-input>
-
-        <el-select
-          v-model="data.namespace"
-          style="width: 200px; float: right; margin-right: 10px"
-          @change="changeNamespace"
-        >
-          <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
-        </el-select>
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -71,6 +64,14 @@
               />
             </el-tooltip>
           </template>
+        </el-table-column>
+
+        <el-table-column
+          v-if="data.namespace === '全部空间'"
+          prop="metadata.namespace"
+          label="命名空间"
+          :formatter="formatterNamespace"
+        >
         </el-table-column>
 
         <el-table-column
@@ -150,14 +151,14 @@ import { getTableData, searchData } from '@/utils/utils';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
-import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
+import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import {
   getConfigmapList,
   getConfigMap,
   deleteConfigMap,
 } from '@/services/kubernetes/configmapService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
-import { formatterLabels, formatterTime } from '@/utils/formatter';
+import { formatterLabels, formatterTime, formatterNamespace } from '@/utils/formatter';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -165,6 +166,8 @@ const editYaml = ref();
 
 const data = reactive({
   cluster: '',
+  namespace: 'default',
+
   pageInfo: {
     page: 1,
     limit: 10,
@@ -179,8 +182,7 @@ const data = reactive({
   loading: false,
   yaml: '',
   yamlName: '',
-  namespace: 'default',
-  namespaces: [],
+
   configMapsList: [],
   editYamlDialog: false,
   isShow: false,
@@ -199,10 +201,26 @@ onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
   data.cloud = proxy.$route.query;
   data.path = proxy.$route.fullPath;
+  data.namespace = getLocalNamespace();
 
-  getNamespaces();
+  // 启动 localstorage 缓存监听，用于检测命名空间是否发生了变化
+  window.addEventListener('setItem', handleStorageChange);
+
   getConfigMaps();
 });
+
+const handleStorageChange = (e) => {
+  if (e.storageArea === localStorage) {
+    if (e.key === 'namespace') {
+      if (e.oldValue === e.newValue) {
+        return;
+      }
+      data.namespace = e.newValue;
+      // 监控到切换命名空间之后，重新获取 workload 列表
+      getConfigMaps();
+    }
+  }
+};
 
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
@@ -299,21 +317,6 @@ const getConfigMaps = async () => {
 
 const searchConfigMaps = async () => {
   data.tableData = searchData(data.pageInfo, data.configMapsList);
-};
-
-const changeNamespace = async (val) => {
-  localStorage.setItem('namespace', val);
-  data.namespace = val;
-  await getConfigMaps();
-};
-
-const getNamespaces = async () => {
-  const [result, err] = await getNamespaceNames(data.cluster);
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-  data.namespaces = result;
 };
 
 const handleEditYamlDialog = async (row) => {
