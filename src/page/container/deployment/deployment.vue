@@ -577,10 +577,10 @@ onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
   data.namespace = getLocalNamespace();
 
-  console.log('data.namespace', data.namespace);
-
+  // 启动 localstorage 缓存监听，用于检测命名空间是否发生了变化
   window.addEventListener('setItem', handleStorageChange);
 
+  // 初始化 workload 列表
   getDeployments();
 });
 
@@ -591,12 +591,11 @@ const handleStorageChange = (e) => {
         return;
       }
       data.namespace = e.newValue;
-      console.log('data.namespace', data.namespace);
+      // 监控到切换命名空间之后，重新获取 workload 列表
+      getDeployments();
     }
   }
 };
-
-const GetLocaNamespace = () => {};
 
 const handleLogDrawer = (row) => {
   data.logData.deployment = row;
