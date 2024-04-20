@@ -32,22 +32,6 @@
             </el-icon>
           </template>
         </el-input>
-
-        <el-select
-          v-model="data.namespace"
-          filterable
-          :filter-method="filterMethod"
-          style="width: 200px; float: right; margin-right: 10px"
-          @change="changeNamespace"
-        >
-          <el-option
-            v-for="item in data.filterNamespaces"
-            :key="item"
-            :value="item"
-            :label="item"
-          />
-        </el-select>
-        <!-- <dev class="namespace-container" style="width: 112px; float: right">命名空间</dev> -->
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -72,7 +56,12 @@
 
         <el-table-column prop="status" label="状态" :formatter="formatterPodStatus" />
 
-        <el-table-column prop="metadata.namespace" label="命名空间" :formatter="formatterNamespace">
+        <el-table-column
+          v-if="data.namespace === '全部空间'"
+          prop="metadata.namespace"
+          label="命名空间"
+          :formatter="formatterNamespace"
+        >
         </el-table-column>
 
         <el-table-column prop="status.podIP" label="实例IP"> </el-table-column>
@@ -468,7 +457,7 @@ import {
   formatterContainerImage,
 } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
-import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
+import { getNamespaceNames, getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import {
   getPodList,
   deletePod,
@@ -491,6 +480,8 @@ const selectedPod = ref('');
 
 const data = reactive({
   cluster: '',
+  namespace: 'default',
+
   pageInfo: {
     page: 1,
     limit: 10,
@@ -507,12 +498,7 @@ const data = reactive({
   yamlDialog: false,
   yaml: '',
 
-  namespace: 'default',
-  filterNamespaces: [],
-  namespaces: [],
-
   podList: [],
-
   podReplicasDialog: false,
 
   // 删除对象属性
@@ -562,10 +548,26 @@ const onChange = (v) => {
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
+  data.namespace = getLocalNamespace();
+
+  // 启动 localstorage 缓存监听，用于检测命名空间是否发生了变化
+  window.addEventListener('setItem', handleStorageChange);
 
   getPods();
-  getNamespaces();
 });
+
+const handleStorageChange = (e) => {
+  if (e.storageArea === localStorage) {
+    if (e.key === 'namespace') {
+      if (e.oldValue === e.newValue) {
+        return;
+      }
+      data.namespace = e.newValue;
+      // 监控到切换命名空间之后，重新获取 workload 列表
+      getPods();
+    }
+  }
+};
 
 const createPod = () => {
   const url = `/pods/createPod?cluster=${data.cluster}`;
@@ -755,20 +757,6 @@ const jumpRoute = (row) => {
   });
 };
 
-const filterMethod = (f) => {
-  if (f === undefined || f === '') {
-    data.filterNamespaces = data.namespaces;
-    return;
-  }
-
-  data.filterNamespaces = [];
-  for (let item of data.namespaces) {
-    if (item.includes(f)) {
-      data.filterNamespaces.push(item);
-    }
-  }
-};
-
 const handleSelectionChange = (pods) => {
   data.multipleSelection = [];
   for (let pod of pods) {
@@ -792,23 +780,6 @@ const getPods = async () => {
 
 const searchPods = async () => {
   data.tableData = searchData(data.pageInfo, data.podList);
-};
-
-const changeNamespace = async (val) => {
-  localStorage.setItem('namespace', val);
-  data.namespace = val;
-
-  getPods();
-};
-
-const getNamespaces = async () => {
-  const [result, err] = await getNamespaceNames(data.cluster);
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-  data.namespaces = result;
-  data.filterNamespaces = result;
 };
 
 const copy = async (val) => {
