@@ -1,9 +1,9 @@
 <template>
-  <el-card class="title-card-container">
-    <div class="font-container">CronJob</div>
-    <PiXiuYaml :refresh="getCronJobs"></PiXiuYaml>
-  </el-card>
-
+  <div class="title-card-container2">
+    <div style="flex-grow: 1">
+      <PiXiuYaml :refresh="getCronJobs"></PiXiuYaml>
+    </div>
+  </div>
   <div style="margin-top: 25px">
     <el-row>
       <el-col>
@@ -30,15 +30,6 @@
             />
           </template>
         </el-input>
-
-        <el-select
-          v-model="data.namespace"
-          style="width: 200px; float: right; margin-right: 10px"
-          @change="changeNamespace"
-        >
-          <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
-        </el-select>
-        <!-- <dev class="namespace-container" style="width: 112px; float: right">命名空间</dev> -->
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -61,6 +52,14 @@
               {{ scope.row.metadata.name }}
             </el-link>
           </template>
+        </el-table-column>
+
+        <el-table-column
+          v-if="data.namespace === '全部空间'"
+          prop="metadata.namespace"
+          label="命名空间"
+          :formatter="formatterNamespace"
+        >
         </el-table-column>
 
         <el-table-column
@@ -196,10 +195,15 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData } from '@/utils/utils';
 import PixiuTag from '@/components/pixiuTag/index.vue';
-import { formatterImage, formatterLabels, formatterPodStatus } from '@/utils/formatter';
+import {
+  formatterImage,
+  formatterLabels,
+  formatterPodStatus,
+  formatterNamespace,
+} from '@/utils/formatter';
 
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
-import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
+import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import {
   getDeploymentList,
   getDeployment,
@@ -216,6 +220,8 @@ const editYaml = ref();
 
 const data = reactive({
   cluster: '',
+  namespace: 'default',
+
   pageInfo: {
     page: 1,
     limit: 10,
@@ -225,8 +231,6 @@ const data = reactive({
   tableData: [],
   loading: false,
 
-  namespace: 'default',
-  namespaces: [],
   deploymentList: [],
 
   deploymentReplicasDialog: false,
@@ -251,10 +255,26 @@ const data = reactive({
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
+  data.namespace = getLocalNamespace();
+
+  // 启动 localstorage 缓存监听，用于检测命名空间是否发生了变化
+  window.addEventListener('setItem', handleStorageChange);
 
   getCronJobs();
-  getNamespaces();
 });
+
+const handleStorageChange = (e) => {
+  if (e.storageArea === localStorage) {
+    if (e.key === 'namespace') {
+      if (e.oldValue === e.newValue) {
+        return;
+      }
+      data.namespace = e.newValue;
+      // 监控到切换命名空间之后，重新获取 workload 列表
+      getCronJobs();
+    }
+  }
+};
 
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
