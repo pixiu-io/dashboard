@@ -187,7 +187,7 @@ const getNamespaces = async () => {
     return;
   }
 
-  data.nsData.namespaceList = ['全部命名空间'];
+  data.nsData.namespaceList = ['全部空间'];
   for (let ns of result.items) {
     data.nsData.namespaceList.push(ns.metadata.name);
   }
