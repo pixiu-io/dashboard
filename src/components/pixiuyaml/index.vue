@@ -1,5 +1,17 @@
 <template>
   <div style="display: flex; width: 100%; align-items: center">
+    <!-- <div style="margin-left: 20px; font-size: 13px; color: #29292b; font-weight: bold">
+      容器集群
+    </div>
+    <el-select
+      v-model="data.cluster"
+      filterable
+      style="width: 150px; margin-left: 8px"
+      @change="changeCluster"
+    >
+      <el-option v-for="item in data.clusters" :key="item" :value="item" :label="item" />
+    </el-select> -->
+
     <div style="margin-left: 20px; font-size: 13px; color: #29292b; font-weight: bold">
       命名空间
     </div>
@@ -17,7 +29,7 @@
       />
     </el-select>
 
-    <div style="margin-left: 4px; margin-top: 5px">
+    <!-- <div style="margin-left: 4px; margin-top: 5px">
       <pixiu-icon
         name="icon-icon-refresh"
         style="cursor: pointer"
@@ -26,7 +38,7 @@
         color="#909399"
         @click="getNamespaces"
       />
-    </div>
+    </div> -->
 
     <div style="margin-left: 6px; font-size: 14px; color: #29292b; font-weight: bold">
       {{ title }}
@@ -115,13 +127,14 @@ import jsYaml from 'js-yaml';
 import MyMonaco from '@/components/monaco/index.vue';
 import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
 import { ElMessage } from 'element-plus';
-import { getNamespaceList } from '@/services/kubernetes/namespaceService';
+import { getNamespaceList, getLocalNamespace } from '@/services/kubernetes/namespaceService';
 
 const { proxy } = getCurrentInstance();
 const editYaml = ref();
 
 const data = reactive({
   cluster: '',
+  clusters: [],
   yamlDialog: false,
   yaml: '',
   fromSize: 'small',
@@ -157,6 +170,7 @@ const props = defineProps({
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
+  data.nsData.namespace = getLocalNamespace();
 
   getNamespaces();
 });
@@ -173,7 +187,7 @@ const getNamespaces = async () => {
     return;
   }
 
-  data.nsData.namespaceList = [];
+  data.nsData.namespaceList = ['全部空间'];
   for (let ns of result.items) {
     data.nsData.namespaceList.push(ns.metadata.name);
   }

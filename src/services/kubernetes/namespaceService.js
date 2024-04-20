@@ -66,3 +66,12 @@ export const createNamespace = async (cluster, data) => {
   );
   return [result, err];
 };
+
+export const getLocalNamespace = () => {
+  const ns = localStorage.getItem('namespace');
+  if (ns) {
+    return ns;
+  }
+
+  return 'default';
+};
