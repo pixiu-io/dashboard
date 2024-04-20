@@ -120,9 +120,13 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="metadata.namespace" label="命名空间" :formatter="formatterNamespace">
+        <el-table-column
+          v-if="data.namespace === '全部空间'"
+          prop="metadata.namespace"
+          label="命名空间"
+          :formatter="formatterNamespace"
+        >
         </el-table-column>
-
         <el-table-column
           prop="metadata.creationTimestamp"
           label="创建时间"
