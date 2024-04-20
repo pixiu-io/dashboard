@@ -366,117 +366,121 @@
     @open="openLogDrawer"
     @close="closeLogDrawer"
   >
-    <div
-      style="
-        text-align: left;
-        font-weight: bold;
-        padding-left: 5px;
-        margin-top: 5px;
-        font-size: 14.5px;
-        color: #191919;
-      "
-    >
-      日志查询
-    </div>
-
-    <el-card class="app-docs" style="margin-left: 8px; height: 40px">
-      <el-icon
-        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
-        ><WarningFilled
-      /></el-icon>
-      <div style="vertical-align: middle; margin-top: -40px">获取 Deployment 的实时日志</div>
-    </el-card>
-
-    <el-form>
-      <el-form-item>
-        <template #label>
-          <span style="margin-left: 8px; font-size: 13px; color: #191919">Pod选项 </span>
-        </template>
-
-        <span style="margin-left: 40px">
-          <el-select
-            v-model="data.logData.selectedPod"
-            style="width: 210px; float: right; margin-right: 10px"
-            @change="changePod"
-          >
-            <el-option
-              v-for="item in data.logData.selectedPods"
-              :key="item"
-              :value="item"
-              :label="item"
-            />
-          </el-select>
-        </span>
-
-        <span style="margin-left: 10px">
-          <el-select
-            v-model="data.logData.selectedContainer"
-            style="width: 210px; float: right; margin-right: 10px"
-          >
-            <el-option
-              v-for="item in data.logData.selectedContainers"
-              :key="item"
-              :value="item"
-              :label="item"
-            />
-          </el-select>
-        </span>
-
-        <div style="margin-left: 4px; margin-top: 6px">
-          <pixiu-icon
-            name="icon-icon-refresh"
-            style="cursor: pointer"
-            size="16px"
-            type="iconfont"
-            color="#909399"
-            @click="getDeploymentPods"
-          />
-        </div>
-      </el-form-item>
-
-      <el-form-item>
-        <template #label>
-          <span style="margin-left: 8px; font-size: 13px; color: #191919">日志行数 </span>
-        </template>
-
-        <span style="margin-left: 40px">
-          <el-select
-            v-model="data.logData.line"
-            style="width: 80px; float: right; margin-right: 10px"
-          >
-            <el-option
-              v-for="item in data.logData.lineOptions"
-              :key="item"
-              :value="item"
-              :label="item"
-            />
-          </el-select>
-        </span>
-        行
-      </el-form-item>
-
-      <el-form-item>
-        <div style="margin-left: 110px; margin-top: -12px">
-          <el-switch v-model="data.logData.previous" inline-prompt width="35px" /><span
-            style="font-size: 12px; margin-left: 5px; color: #191919"
-            >查看已退出的容器</span
-          >
-        </div>
-      </el-form-item>
-    </el-form>
-
-    <div style="display: flex; margin-top: 25px; margin-left: 8px">
-      <button style="width: 70px" class="pixiu-two-button" @click="getPodLogs">查询</button>
-      <div style="margin-left: 30px">
-        <el-switch v-model="data.logData.aggLog" inline-prompt width="36px" /><span
-          style="font-size: 13px; margin-left: 5px; margin-right: 10px"
-          >聚合</span
+    <div style="display: flex; flex-direction: column; height: 100%">
+      <div>
+        <div
+          style="
+            text-align: left;
+            font-weight: bold;
+            padding-left: 5px;
+            margin-top: 5px;
+            font-size: 14.5px;
+            color: #191919;
+          "
         >
-      </div>
-    </div>
+          日志查询
+        </div>
 
-    <div style="margin-top: 15px">
-      <PixiuLog :yaml-dialog="data.logData.drawer" :log="data.logData.podLogs"></PixiuLog>
+        <el-card class="app-docs" style="margin-left: 8px; height: 40px">
+          <el-icon
+            style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+            ><WarningFilled
+          /></el-icon>
+          <div style="vertical-align: middle; margin-top: -40px">获取 Deployment 的实时日志</div>
+        </el-card>
+
+        <el-form>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 8px; font-size: 13px; color: #191919">Pod选项 </span>
+            </template>
+
+            <span style="margin-left: 40px">
+              <el-select
+                v-model="data.logData.selectedPod"
+                style="width: 210px; float: right; margin-right: 10px"
+                @change="changePod"
+              >
+                <el-option
+                  v-for="item in data.logData.selectedPods"
+                  :key="item"
+                  :value="item"
+                  :label="item"
+                />
+              </el-select>
+            </span>
+
+            <span style="margin-left: 10px">
+              <el-select
+                v-model="data.logData.selectedContainer"
+                style="width: 210px; float: right; margin-right: 10px"
+              >
+                <el-option
+                  v-for="item in data.logData.selectedContainers"
+                  :key="item"
+                  :value="item"
+                  :label="item"
+                />
+              </el-select>
+            </span>
+
+            <div style="margin-left: 4px; margin-top: 6px">
+              <pixiu-icon
+                name="icon-icon-refresh"
+                style="cursor: pointer"
+                size="16px"
+                type="iconfont"
+                color="#909399"
+                @click="getDeploymentPods"
+              />
+            </div>
+          </el-form-item>
+
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 8px; font-size: 13px; color: #191919">日志行数 </span>
+            </template>
+
+            <span style="margin-left: 40px">
+              <el-select
+                v-model="data.logData.line"
+                style="width: 80px; float: right; margin-right: 10px"
+              >
+                <el-option
+                  v-for="item in data.logData.lineOptions"
+                  :key="item"
+                  :value="item"
+                  :label="item"
+                />
+              </el-select>
+            </span>
+            行
+          </el-form-item>
+
+          <el-form-item>
+            <div style="margin-left: 110px; margin-top: -12px">
+              <el-switch v-model="data.logData.previous" inline-prompt width="35px" /><span
+                style="font-size: 12px; margin-left: 5px; color: #191919"
+                >查看已退出的容器</span
+              >
+            </div>
+          </el-form-item>
+        </el-form>
+
+        <div style="display: flex; margin-top: 25px; margin-left: 8px">
+          <button style="width: 70px" class="pixiu-two-button" @click="getPodLogs">查询</button>
+          <div style="margin-left: 30px">
+            <el-switch v-model="data.logData.aggLog" inline-prompt width="36px" /><span
+              style="font-size: 13px; margin-left: 5px; margin-right: 10px"
+              >聚合</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 15px; flex: 1">
+        <PixiuLog :yaml-dialog="data.logData.drawer" :log="data.logData.podLogs"></PixiuLog>
+      </div>
     </div>
   </el-drawer>
 </template>
