@@ -457,7 +457,7 @@ import {
   formatterContainerImage,
 } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
-import { getNamespaceNames, getLocalNamespace } from '@/services/kubernetes/namespaceService';
+import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import {
   getPodList,
   deletePod,

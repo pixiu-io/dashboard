@@ -44,10 +44,14 @@ export const deleteJob = async (cluster, namespace, name) => {
 };
 
 export const getJobList = async (cluster, namespace) => {
+  let url = `/pixiu/proxy/${cluster}/apis/batch/v1/namespaces/${namespace}/jobs`;
+  if (namespace === '全部空间') {
+    url = `/pixiu/proxy/${cluster}/apis/batch/v1/jobs`;
+  }
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
-      url: `/pixiu/proxy/${cluster}/apis/batch/v1/namespaces/${namespace}/jobs`,
+      url: url,
       data: {
         limit: 500,
       },

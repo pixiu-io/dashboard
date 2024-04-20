@@ -2,10 +2,14 @@ import http from '@/utils/http';
 import { awaitWrap } from '@/utils/utils';
 
 export const getServiceList = async (cluster, namespace) => {
+  let url = `/pixiu/proxy/${cluster}/api/v1/namespaces/${namespace}/services`;
+  if (namespace === '全部空间') {
+    url = `/pixiu/proxy/${cluster}/api/v1/services`;
+  }
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
-      url: `/pixiu/proxy/${cluster}/api/v1/namespaces/${namespace}/services`,
+      url: url,
     }),
   );
   return [result, err];
