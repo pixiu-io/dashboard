@@ -186,7 +186,6 @@ const getTaskRuns = async () => {
   data.loading = true;
   const [result, err] = await getTaskRunList(data.cluster, data.namespace);
   data.loading = false;
-
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
