@@ -1,8 +1,10 @@
 <template>
-  <el-card class="title-card-container">
-    <div class="font-container">TaskRuns</div>
-    <PiXiuYaml :refresh="getTaskRuns"></PiXiuYaml>
-  </el-card>
+  <div class="title-card-container2">
+    <!-- <div class="font-container2">Pod</div> -->
+    <div style="flex-grow: 1">
+      <PiXiuYaml :refresh="getTaskRuns"></PiXiuYaml>
+    </div>
+  </div>
   <div style="margin-top: 25px">
     <el-row>
       <el-col>
@@ -24,13 +26,6 @@
             </el-icon>
           </template>
         </el-input>
-        <el-select
-          v-model="data.namespace"
-          style="width: 200px; float: right; margin-right: 10px"
-          @change="changeNamespace"
-        >
-          <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
-        </el-select>
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -53,7 +48,12 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="metadata.namespace" label="命名空间" :formatter="formatterNamespace">
+        <el-table-column
+          v-if="data.namespace === '全部空间'"
+          prop="metadata.namespace"
+          label="命名空间"
+          :formatter="formatterNamespace"
+        >
         </el-table-column>
         <el-table-column prop="status" label="状态" :formatter="formatStatus"> </el-table-column>
         <el-table-column prop="spec.taskRef.name" label="Task" />
@@ -113,7 +113,7 @@ import {
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 import { getCurrentInstance, onMounted, reactive, ref } from 'vue';
-import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
+import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import {
   formatterIcon,
   formatterImage,
@@ -153,23 +153,35 @@ const data = reactive({
 });
 const router = useRouter();
 const editYaml = ref();
+
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
-  getNamespaces();
+  data.namespace = getLocalNamespace();
+
+  // 启动 localstorage 缓存监听，用于检测命名空间是否发生了变化
+  window.addEventListener('setItem', handleStorageChange);
+
   getTaskRuns();
 });
+
+const handleStorageChange = (e) => {
+  if (e.storageArea === localStorage) {
+    if (e.key === 'namespace') {
+      if (e.oldValue === e.newValue) {
+        return;
+      }
+      data.namespace = e.newValue;
+      // 监控到切换命名空间之后，重新获取 workload 列表
+      getTaskRuns();
+    }
+  }
+};
+
 const createTaskRunPage = () => {
   const url = `/taskruns/createTaskRun?cluster=${data.cluster}`;
   router.push(url);
 };
-const getNamespaces = async () => {
-  const [result, err] = await getNamespaceNames(data.cluster);
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-  data.namespaces = result;
-};
+
 const getTaskRuns = async () => {
   data.loading = true;
   const [result, err] = await getTaskRunList(data.cluster, data.namespace);
@@ -184,11 +196,7 @@ const getTaskRuns = async () => {
   data.pageInfo.total = data.taskRunsList.length;
   data.tableData = getTableData(data.pageInfo, data.taskRunsList);
 };
-const changeNamespace = async (val) => {
-  localStorage.setItem('namespace', val);
-  data.namespace = val;
-  await getTaskRuns();
-};
+
 const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;

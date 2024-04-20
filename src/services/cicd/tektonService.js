@@ -2,10 +2,14 @@ import http from '@/utils/http';
 import { awaitWrap } from '@/utils/utils';
 
 export const getTaskList = async (cluster, namespace) => {
+  let url = `/pixiu/proxy/${cluster}/apis/tekton.dev/v1/namespaces/${namespace}/tasks`;
+  if (namespace === '全部空间') {
+    url = `/pixiu/proxy/${cluster}/apis/tekton.dev/v1/tasks`;
+  }
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
-      url: `/pixiu/proxy/${cluster}/apis/tekton.dev/v1/namespaces/${namespace}/tasks`,
+      url: url,
       data: { limit: 500 },
     }),
   );
@@ -55,10 +59,14 @@ export const updateTask = async (cluster, namespace, name, data) => {
 };
 
 export const getTaskRunList = async (cluster, namespace) => {
+  let url = `/pixiu/proxy/${cluster}/apis/tekton.dev/v1/namespaces/${namespace}/taskruns`;
+  if (namespace === '全部空间') {
+    let url = `/pixiu/proxy/${cluster}/apis/tekton.dev/v1/taskruns`;
+  }
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
-      url: `/pixiu/proxy/${cluster}/apis/tekton.dev/v1/namespaces/${namespace}/taskruns`,
+      url: url,
       data: { limit: 500 },
     }),
   );
