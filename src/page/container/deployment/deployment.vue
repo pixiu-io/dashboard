@@ -573,21 +573,23 @@ const data = reactive({
   },
 });
 
-const handleStorageChange = (e) => {
-  console.log('dddd', e.key);
-  if (e.storageArea === localStorage) {
-    console.log(`Key "${e.key}" in localStorage changed!`);
-    console.log(`New value: ${e.newValue}`);
-    console.log(`Old value: ${e.oldValue}`);
-  }
-};
-
 onMounted(() => {
   window.addEventListener('setItem', handleStorageChange);
-  data.cluster = proxy.$route.query.cluster;
 
+  data.cluster = proxy.$route.query.cluster;
   getDeployments();
 });
+
+const handleStorageChange = (e) => {
+  if (e.storageArea === localStorage) {
+    if (e.key === 'namespace') {
+      if (e.oldValue === e.newValue) {
+        return;
+      }
+      data.namespace = e.newValue;
+    }
+  }
+};
 
 const handleLogDrawer = (row) => {
   data.logData.deployment = row;
