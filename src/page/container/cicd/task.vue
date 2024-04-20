@@ -1,8 +1,10 @@
 <template>
-  <el-card class="title-card-container">
-    <div class="font-container">Tasks</div>
-    <PiXiuYaml :refresh="getTasks"></PiXiuYaml>
-  </el-card>
+  <div class="title-card-container2">
+    <!-- <div class="font-container2">Pod</div> -->
+    <div style="flex-grow: 1">
+      <PiXiuYaml :refresh="getTasks"></PiXiuYaml>
+    </div>
+  </div>
 
   <div style="margin-top: 25px">
     <el-row>
@@ -24,22 +26,6 @@
             </el-icon>
           </template>
         </el-input>
-
-        <el-select
-          v-model="data.namespace"
-          filterable
-          :filter-method="filterMethod"
-          style="width: 200px; float: right; margin-right: 10px"
-          @change="changeNamespace"
-        >
-          <el-option
-            v-for="item in data.filterNamespaces"
-            :key="item"
-            :value="item"
-            :label="item"
-          />
-        </el-select>
-        <!-- <dev class="namespace-container" style="width: 112px; float: right">命名空间</dev> -->
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -63,7 +49,12 @@
         </el-table-column>
         <el-table-column prop="status" label="状态" :formatter="formatStatus"></el-table-column>
 
-        <el-table-column prop="metadata.namespace" label="命名空间" :formatter="formatterNamespace">
+        <el-table-column
+          v-if="data.namespace === '全部空间'"
+          prop="metadata.namespace"
+          label="命名空间"
+          :formatter="formatterNamespace"
+        >
         </el-table-column>
 
         <el-table-column
@@ -148,6 +139,7 @@
 import { useRouter } from 'vue-router';
 import { getCurrentInstance, onMounted, reactive, ref } from 'vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
+import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import {
   formatterIcon,
   formatterImage,
@@ -174,6 +166,8 @@ const router = useRouter();
 
 const data = reactive({
   cluster: '',
+  namespace: 'default',
+
   pageInfo: {
     page: 1,
     limit: 10,
@@ -190,10 +184,6 @@ const data = reactive({
   taskList: [],
   taskRunList: [],
 
-  namespace: 'default',
-  filterNamespaces: [],
-  namespaces: [],
-
   deleteDialog: {
     close: false,
     objectName: 'Task',
@@ -209,29 +199,24 @@ const editYaml = ref();
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
+  data.namespace = getLocalNamespace();
+
+  window.addEventListener('setItem', handleStorageChange);
 
   getTasks();
 });
 
-const filterMethod = (f) => {
-  if (f === undefined || f === '') {
-    data.filterNamespaces = data.namespaces;
-    return;
-  }
-
-  data.filterNamespaces = [];
-  for (let item of data.namespaces) {
-    if (item.includes(f)) {
-      data.filterNamespaces.push(item);
+const handleStorageChange = (e) => {
+  if (e.storageArea === localStorage) {
+    if (e.key === 'namespace') {
+      if (e.oldValue === e.newValue) {
+        return;
+      }
+      data.namespace = e.newValue;
+      // 监控到切换命名空间之后，重新获取 workload 列表
+      getTasks();
     }
   }
-};
-
-const changeNamespace = async (val) => {
-  localStorage.setItem('namespace', val);
-  data.namespace = val;
-
-  await getTasks();
 };
 
 const searchTasks = async () => {
