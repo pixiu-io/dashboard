@@ -487,7 +487,7 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
+import { reactive, getCurrentInstance, onMounted, onUnmounted, ref, watch } from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData, searchData } from '@/utils/utils';
 import PixiuTag from '@/components/pixiuTag/index.vue';
@@ -590,6 +590,10 @@ onMounted(() => {
 
   // 初始化 workload 列表
   getDeployments();
+});
+
+onUnmounted(() => {
+  window.removeEventListener('setItem', handleStorageChange);
 });
 
 const handleStorageChange = (e) => {
