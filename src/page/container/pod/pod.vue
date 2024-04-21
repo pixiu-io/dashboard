@@ -526,7 +526,7 @@ const data = reactive({
   },
 
   logData: {
-    width: '60%',
+    width: '70%',
     drawer: false,
     pod: '',
     namespace: '',
