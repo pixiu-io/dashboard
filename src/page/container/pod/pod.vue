@@ -432,11 +432,11 @@
         </el-form>
       </div>
 
-      <div style="display: flex; margin-top: 25px; margin-left: 8px">
+      <div style="display: flex; margin-top: -20px; margin-left: 8px">
         <button style="width: 70px" class="pixiu-two-button" @click="getPodLogs">查询</button>
       </div>
 
-      <div style="margin-top: 15px; flex: 1">
+      <div style="margin-top: 15px; margin-left: 8px; flex: 1">
         <PixiuLog :yaml-dialog="data.logData.drawer" :log="data.logData.podLogs"></PixiuLog>
       </div>
     </div>
