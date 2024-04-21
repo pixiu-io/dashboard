@@ -357,80 +357,82 @@
     @close="closeLogDrawer"
   >
     <div style="display: flex; flex-direction: column; height: 100%">
-      <div
-        style="
-          text-align: left;
-          font-weight: bold;
-          padding-left: 5px;
-          margin-top: 5px;
-          font-size: 14.5px;
-          color: #191919;
-        "
-      >
-        日志查询
+      <div>
+        <div
+          style="
+            text-align: left;
+            font-weight: bold;
+            padding-left: 5px;
+            margin-top: 5px;
+            font-size: 14.5px;
+            color: #191919;
+          "
+        >
+          日志查询
+        </div>
+
+        <el-card class="app-docs" style="margin-left: 8px; height: 40px">
+          <el-icon
+            style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+            ><WarningFilled
+          /></el-icon>
+          <div style="vertical-align: middle; margin-top: -40px">获取 Pod 的实时日志</div>
+        </el-card>
+
+        <el-form>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 8px; font-size: 13px; color: #191919">容器选项 </span>
+            </template>
+
+            <span style="margin-left: 40px">
+              <el-select
+                v-model="data.logData.selectedContainer"
+                style="width: 260px; float: right; margin-right: 10px"
+              >
+                <el-option
+                  v-for="item in data.logData.containers"
+                  :key="item"
+                  :value="item"
+                  :label="item"
+                />
+              </el-select>
+            </span>
+          </el-form-item>
+
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 8px; font-size: 13px; color: #191919">日志行数 </span>
+            </template>
+
+            <span style="margin-left: 40px">
+              <el-select
+                v-model="data.logData.line"
+                style="width: 80px; float: right; margin-right: 10px"
+              >
+                <el-option
+                  v-for="item in data.logData.lineOptions"
+                  :key="item"
+                  :value="item"
+                  :label="item"
+                />
+              </el-select>
+            </span>
+            行
+          </el-form-item>
+
+          <el-form-item>
+            <div style="margin-left: 110px; margin-top: -12px">
+              <el-switch v-model="data.logData.previous" inline-prompt width="35px" /><span
+                style="font-size: 12px; margin-left: 5px; color: #191919"
+                >查看已退出的容器</span
+              >
+            </div>
+          </el-form-item>
+        </el-form>
       </div>
 
-      <el-card class="app-docs" style="margin-left: 8px; height: 40px">
-        <el-icon
-          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
-          ><WarningFilled
-        /></el-icon>
-        <div style="vertical-align: middle; margin-top: -40px">获取 Pod 的实时日志</div>
-      </el-card>
-
-      <el-form>
-        <el-form-item>
-          <template #label>
-            <span style="margin-left: 8px; font-size: 13px; color: #191919">容器选项 </span>
-          </template>
-
-          <span style="margin-left: 40px">
-            <el-select
-              v-model="data.logData.selectedContainer"
-              style="width: 260px; float: right; margin-right: 10px"
-            >
-              <el-option
-                v-for="item in data.logData.containers"
-                :key="item"
-                :value="item"
-                :label="item"
-              />
-            </el-select>
-          </span>
-        </el-form-item>
-
-        <el-form-item>
-          <template #label>
-            <span style="margin-left: 8px; font-size: 13px; color: #191919">日志行数 </span>
-          </template>
-
-          <span style="margin-left: 40px">
-            <el-select
-              v-model="data.logData.line"
-              style="width: 80px; float: right; margin-right: 10px"
-            >
-              <el-option
-                v-for="item in data.logData.lineOptions"
-                :key="item"
-                :value="item"
-                :label="item"
-              />
-            </el-select>
-          </span>
-          行
-        </el-form-item>
-
-        <el-form-item>
-          <div style="margin-left: 110px; margin-top: -12px">
-            <el-switch v-model="data.logData.previous" inline-prompt width="35px" /><span
-              style="font-size: 12px; margin-left: 5px; color: #191919"
-              >查看已退出的容器</span
-            >
-          </div>
-        </el-form-item>
-      </el-form>
-
-      <div style="display: flex; margin-left: 8px">
+      <div style="display: flex; margin-top: 25px; margin-left: 8px">
         <button style="width: 70px" class="pixiu-two-button" @click="getPodLogs">查询</button>
       </div>
 
