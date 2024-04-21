@@ -1,8 +1,9 @@
 <template>
-  <el-card class="title-card-container">
-    <div class="font-container">Secret</div>
-    <PiXiuYaml :refresh="getSecrets"></PiXiuYaml>
-  </el-card>
+  <div class="title-card-container2">
+    <div style="flex-grow: 1">
+      <PiXiuYaml :refresh="getSecrets"></PiXiuYaml>
+    </div>
+  </div>
 
   <div style="margin-top: 25px">
     <el-row>
@@ -25,14 +26,6 @@
             </el-icon>
           </template>
         </el-input>
-
-        <el-select
-          v-model="data.namespace"
-          style="width: 200px; float: right; margin-right: 10px"
-          @change="changeNamespace"
-        >
-          <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
-        </el-select>
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -63,6 +56,14 @@
         </el-table-column>
 
         <el-table-column label="类型" width="auto" prop="type" :formatter="formatString">
+        </el-table-column>
+
+        <el-table-column
+          v-if="data.namespace === '全部空间'"
+          prop="metadata.namespace"
+          label="命名空间"
+          :formatter="formatterNamespace"
+        >
         </el-table-column>
 
         <el-table-column
@@ -116,29 +117,13 @@
     </el-card>
   </div>
 
-  <el-dialog
-    :model-value="data.editYamlDialog"
-    style="color: #000000; font: 14px; margin-top: 50px"
-    width="800px"
-    center
-    @close="closeYamlDialog"
-  >
-    <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">编辑yaml</div>
-    </template>
-    <div style="margin-top: -18px"></div>
-    <MyCodeMirror ref="editYaml" :yaml="data.yaml" :height="560"></MyCodeMirror>
-
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button class="pixiu-small-cancel-button" @click="closeYamlDialog">取消</el-button>
-        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmEditYaml"
-          >确认</el-button
-        >
-      </span>
-    </template>
-  </el-dialog>
-
+  <PiXiuViewOrEdit
+    :yaml-dialog="data.editYamlDialog"
+    title="编辑Yaml"
+    :yaml="data.yaml"
+    :read-only="false"
+    :refresh="getSecrets"
+  ></PiXiuViewOrEdit>
   <pixiuDialog
     :close-event="data.deleteDialog.close"
     :object-name="data.deleteDialog.objectName"
@@ -153,26 +138,23 @@ import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
-import jsYaml from 'js-yaml';
 import { getTableData, searchData } from '@/utils/utils';
-import { formatterTime, formatString } from '@/utils/formatter';
+import { formatterTime, formatString, formatterNamespace } from '@/utils/formatter';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
-import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
-import MyCodeMirror from '@/components/codemirror/index.vue';
+import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
+import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import Pagination from '@/components/pagination/index.vue';
-import {
-  getSecretList,
-  updateSecret,
-  getSecret,
-  deleteSecret,
-} from '@/services/kubernetes/secretService';
+import { getSecretList, getSecret, deleteSecret } from '@/services/kubernetes/secretService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
+import { updateConfigMap } from '@/services/kubernetes/configmapService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
 const editYaml = ref();
 const data = reactive({
   cluster: '',
+  namespace: 'default',
+
   pageInfo: {
     page: 1,
     limit: 10,
@@ -187,8 +169,7 @@ const data = reactive({
   loading: false,
   yaml: '',
   yamlName: '',
-  namespace: 'default',
-  namespaces: [],
+
   secretList: [],
   editYamlDialog: false,
   isShow: false,
@@ -208,9 +189,25 @@ onMounted(() => {
   data.cloud = proxy.$route.query;
   data.path = proxy.$route.fullPath;
 
-  getNamespaces();
+  data.namespace = getLocalNamespace();
+  // 启动 localstorage 缓存监听，用于检测命名空间是否发生了变化
+  window.addEventListener('setItem', handleStorageChange);
+
   getSecrets();
 });
+
+const handleStorageChange = (e) => {
+  if (e.storageArea === localStorage) {
+    if (e.key === 'namespace') {
+      if (e.oldValue === e.newValue) {
+        return;
+      }
+      data.namespace = e.newValue;
+      // 监控到切换命名空间之后，重新获取 workload 列表
+      getSecrets();
+    }
+  }
+};
 
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
@@ -308,21 +305,6 @@ const searchSecrets = async () => {
   data.tableData = searchData(data.pageInfo, data.secretList);
 };
 
-const changeNamespace = async (val) => {
-  localStorage.setItem('namespace', val);
-  data.namespace = val;
-  getSecrets();
-};
-
-const getNamespaces = async () => {
-  const [result, err] = await getNamespaceNames(data.cluster);
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-  data.namespaces = result;
-};
-
 const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
   const [result, err] = await getSecret(data.cluster, data.namespace, data.yamlName);
@@ -330,25 +312,8 @@ const handleEditYamlDialog = async (row) => {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  data.yaml = jsYaml.dump(result);
+  data.yaml = result;
   data.editYamlDialog = true;
-};
-
-const closeYamlDialog = () => {
-  data.yaml = '';
-  data.yamlName = '';
-  data.editYamlDialog = false;
-};
-
-const confirmEditYaml = async () => {
-  let yamlData = jsYaml.load(editYaml.value.code);
-  const [result, err] = await updateSecret(data.cluster, data.namespace, data.yamlName, yamlData);
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-  closeYamlDialog();
-  proxy.$message.success(`Secret(${data.yamlName}) YAML 更新成功`);
 };
 </script>
 

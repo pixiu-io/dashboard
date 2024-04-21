@@ -511,7 +511,7 @@ const getNodeObject = async () => {
     return;
   }
   data.nodeObject = result;
-  data.yaml = jsYaml.dump(data.nodeObject);
+  data.yaml = jsYaml.dump(data.nodeObject, { quotingType: '"' });
 
   if (data.nodeObject.status.images !== undefined) {
     for (let image of data.nodeObject.status.images) {

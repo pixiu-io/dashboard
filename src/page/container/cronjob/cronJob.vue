@@ -1,14 +1,14 @@
 <template>
-  <el-card class="title-card-container">
-    <div class="font-container">CronJob</div>
-    <PiXiuYaml :refresh="getDeployments"></PiXiuYaml>
-  </el-card>
-
+  <div class="title-card-container2">
+    <div style="flex-grow: 1">
+      <PiXiuYaml :refresh="getCronJobs"></PiXiuYaml>
+    </div>
+  </div>
   <div style="margin-top: 25px">
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createDeployment">新建</button>
-        <button class="pixiu-two-button2" style="margin-left: 10px" @click="getDeployments">
+        <button class="pixiu-two-button2" style="margin-left: 10px" @click="getCronJobs">
           刷新
         </button>
 
@@ -17,7 +17,7 @@
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
-          @clear="getDeployments"
+          @clear="getCronJobs"
         >
           <template #suffix>
             <pixiu-icon
@@ -26,19 +26,10 @@
               size="15px"
               type="iconfont"
               color="#909399"
-              @click="getDeployments"
+              @click="getCronJobs"
             />
           </template>
         </el-input>
-
-        <el-select
-          v-model="data.namespace"
-          style="width: 200px; float: right; margin-right: 10px"
-          @change="changeNamespace"
-        >
-          <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
-        </el-select>
-        <!-- <dev class="namespace-container" style="width: 112px; float: right">命名空间</dev> -->
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -61,6 +52,14 @@
               {{ scope.row.metadata.name }}
             </el-link>
           </template>
+        </el-table-column>
+
+        <el-table-column
+          v-if="data.namespace === '全部空间'"
+          prop="metadata.namespace"
+          label="命名空间"
+          :formatter="formatterNamespace"
+        >
         </el-table-column>
 
         <el-table-column
@@ -174,29 +173,13 @@
     </template>
   </el-dialog>
 
-  <!-- 编辑 yaml 页面 -->
-  <el-dialog
-    :model-value="data.editYamlDialog"
-    style="color: #000000; font: 14px; margin-top: 50px"
-    width="800px"
-    center
-    @close="closeEditYamlDialog"
-  >
-    <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">YAML 设置</div>
-    </template>
-    <div style="margin-top: -18px"></div>
-    <MyCodeMirror ref="editYaml" :yaml="data.yaml" :height="650"></MyCodeMirror>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button class="pixiu-small-cancel-button" @click="closeEditYamlDialog">取消</el-button>
-        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmEditYaml"
-          >确认</el-button
-        >
-      </span>
-    </template>
-  </el-dialog>
-
+  <PiXiuViewOrEdit
+    :yaml-dialog="data.editYamlDialog"
+    title="编辑Yaml"
+    :yaml="data.yaml"
+    :read-only="false"
+    :refresh="getCronJobs"
+  ></PiXiuViewOrEdit>
   <pixiuDialog
     :close-event="data.deleteDialog.close"
     :object-name="data.deleteDialog.objectName"
@@ -212,19 +195,24 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData } from '@/utils/utils';
 import PixiuTag from '@/components/pixiuTag/index.vue';
-import { formatterImage, formatterLabels, formatterPodStatus } from '@/utils/formatter';
+import {
+  formatterImage,
+  formatterLabels,
+  formatterPodStatus,
+  formatterNamespace,
+} from '@/utils/formatter';
 
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
-import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
+import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import {
   getDeploymentList,
   getDeployment,
   updateDeployment,
   deleteDeployment,
 } from '@/services/kubernetes/deploymentService';
-import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
+import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -232,6 +220,8 @@ const editYaml = ref();
 
 const data = reactive({
   cluster: '',
+  namespace: 'default',
+
   pageInfo: {
     page: 1,
     limit: 10,
@@ -241,8 +231,6 @@ const data = reactive({
   tableData: [],
   loading: false,
 
-  namespace: 'default',
-  namespaces: [],
   deploymentList: [],
 
   deploymentReplicasDialog: false,
@@ -267,10 +255,26 @@ const data = reactive({
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
+  data.namespace = getLocalNamespace();
 
-  getDeployments();
-  getNamespaces();
+  // 启动 localstorage 缓存监听，用于检测命名空间是否发生了变化
+  window.addEventListener('setItem', handleStorageChange);
+
+  getCronJobs();
 });
+
+const handleStorageChange = (e) => {
+  if (e.storageArea === localStorage) {
+    if (e.key === 'namespace') {
+      if (e.oldValue === e.newValue) {
+        return;
+      }
+      data.namespace = e.newValue;
+      // 监控到切换命名空间之后，重新获取 workload 列表
+      getCronJobs();
+    }
+  }
+};
 
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
@@ -290,7 +294,7 @@ const confirm = async () => {
   proxy.$message.success(`Deployment(${data.deleteDialog.deleteName}) 删除成功`);
 
   clean();
-  await getDeployments();
+  await getCronJobs();
 };
 
 const cancel = () => {
@@ -316,7 +320,7 @@ const handleEditYamlDialog = async (row) => {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  data.yaml = jsYaml.dump(result);
+  data.yaml = jsYaml.dump(result, { quotingType: '"' });
   data.editYamlDialog = true;
 };
 
@@ -340,7 +344,7 @@ const confirmEditYaml = async () => {
   }
   proxy.$message.success(`Deployment(${data.yamlName}) YAML 更新成功`);
   closeEditYamlDialog();
-  await getDeployments();
+  await getCronJobs();
 };
 
 const createDeployment = () => {
@@ -364,7 +368,7 @@ const jumpRoute = (row) => {
   });
 };
 
-const getDeployments = async () => {
+const getCronJobs = async () => {
   data.loading = true;
   const [result, err] = await getDeploymentList(data.cluster, data.namespace);
   data.loading = false;
@@ -382,7 +386,7 @@ const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
   data.namespace = val;
 
-  getDeployments();
+  getCronJobs();
 };
 
 const getNamespaces = async () => {
@@ -426,7 +430,7 @@ const confirmDeploymentScale = async () => {
       },
     });
 
-    getDeployments();
+    getCronJobs();
     closeDeploymentScaleDialog();
   } catch (error) {}
 };

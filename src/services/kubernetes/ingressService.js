@@ -2,10 +2,14 @@ import http from '@/utils/http';
 import { awaitWrap } from '@/utils/utils';
 
 export const getIngressList = async (cluster, namespace) => {
+  let url = `/pixiu/proxy/${cluster}/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses`;
+  if (namespace === '全部空间') {
+    url = `/pixiu/proxy/${cluster}/apis/networking.k8s.io/v1/ingresses`;
+  }
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
-      url: `/pixiu/proxy/${cluster}/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses`,
+      url: url,
       data: {
         limit: 500,
       },

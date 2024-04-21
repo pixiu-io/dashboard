@@ -1,8 +1,7 @@
 <template>
-  <el-card class="title-card-container">
-    <div class="font-container">Deployment</div>
-    <PiXiuYaml :refresh="getDeployments"></PiXiuYaml>
-  </el-card>
+  <div class="title-card-container2">
+    <PiXiuYaml :refresh="getDeployments" title=""></PiXiuYaml>
+  </div>
 
   <div style="margin-top: 25px">
     <el-row>
@@ -13,6 +12,21 @@
         </button>
 
         <el-input
+          v-model="data.pageInfo.search.searchInfo"
+          placeholder="名称搜索关键字"
+          style="width: 400px; float: right"
+          clearable
+          @clear="getDeployments"
+          @input="searchDeployments"
+        >
+          <template #suffix>
+            <el-icon class="el-input__icon" @click="searchDeployments">
+              <component :is="'Search'" />
+            </el-icon>
+          </template>
+        </el-input>
+
+        <!-- <el-input
           v-model="data.pageInfo.search.searchInfo"
           placeholder="Name: 关键字，Label: key1=value1,key2=value2"
           style="width: 400px; float: right"
@@ -41,23 +55,7 @@
               @click="getDeployments"
             />
           </template>
-        </el-input>
-
-        <el-select
-          v-model="data.namespace"
-          filterable
-          :filter-method="filterMethod"
-          style="width: 200px; float: right; margin-right: 10px"
-          @change="changeNamespace"
-        >
-          <el-option
-            v-for="item in data.filterNamespaces"
-            :key="item"
-            :value="item"
-            :label="item"
-          />
-        </el-select>
-        <!-- <dev class="namespace-container" style="width: 112px; float: right">命名空间</dev> -->
+        </el-input> -->
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -122,9 +120,13 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="metadata.namespace" label="命名空间" :formatter="formatterNamespace">
+        <el-table-column
+          v-if="data.namespace === '全部空间'"
+          prop="metadata.namespace"
+          label="命名空间"
+          :formatter="formatterNamespace"
+        >
         </el-table-column>
-
         <el-table-column
           prop="metadata.creationTimestamp"
           label="创建时间"
@@ -150,7 +152,7 @@
             </el-button>
 
             <el-button type="text" size="small" style="margin-right: -2px; color: #006eff">
-              日志
+              事件
             </el-button>
 
             <el-dropdown>
@@ -165,6 +167,12 @@
                     @click="handleEditYamlDialog(scope.row)"
                   >
                     编辑YAML
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleLogDrawer(scope.row)"
+                  >
+                    日志
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
@@ -237,29 +245,6 @@
           >取消</el-button
         >
         <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmDeploymentScale"
-          >确认</el-button
-        >
-      </span>
-    </template>
-  </el-dialog>
-
-  <!-- 编辑 yaml 页面 -->
-  <el-dialog
-    :model-value="data.editYamlDialog"
-    style="color: #000000; font: 14px; margin-top: 50px"
-    width="800px"
-    center
-    @close="closeEditYamlDialog"
-  >
-    <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">YAML 设置</div>
-    </template>
-    <div style="margin-top: -18px"></div>
-    <MyCodeMirror ref="editYaml" :yaml="data.yaml" :height="650"></MyCodeMirror>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button class="pixiu-small-cancel-button" @click="closeEditYamlDialog">取消</el-button>
-        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmEditYaml"
           >确认</el-button
         >
       </span>
@@ -359,6 +344,13 @@
     </template>
   </el-dialog>
 
+  <PiXiuViewOrEdit
+    :yaml-dialog="data.editYamlDialog"
+    title="编辑Yaml"
+    :yaml="data.yaml"
+    :read-only="false"
+    :refresh="getDeployments"
+  ></PiXiuViewOrEdit>
   <pixiuDialog
     :close-event="data.deleteDialog.close"
     :object-name="data.deleteDialog.objectName"
@@ -366,16 +358,142 @@
     @confirm="confirm"
     @cancel="cancel"
   ></pixiuDialog>
+
+  <el-drawer
+    v-model="data.logData.drawer"
+    :size="data.logData.width"
+    :with-header="false"
+    @open="openLogDrawer"
+    @close="closeLogDrawer"
+  >
+    <div style="display: flex; flex-direction: column; height: 100%">
+      <div>
+        <div
+          style="
+            text-align: left;
+            font-weight: bold;
+            padding-left: 5px;
+            margin-top: 5px;
+            font-size: 14.5px;
+            color: #191919;
+          "
+        >
+          日志查询
+        </div>
+
+        <el-card class="app-docs" style="margin-left: 8px; height: 40px">
+          <el-icon
+            style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+            ><WarningFilled
+          /></el-icon>
+          <div style="vertical-align: middle; margin-top: -40px">获取 Deployment 的实时日志</div>
+        </el-card>
+
+        <el-form>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 8px; font-size: 13px; color: #191919">Pod选项 </span>
+            </template>
+
+            <span style="margin-left: 40px">
+              <el-select
+                v-model="data.logData.selectedPod"
+                style="width: 210px; float: right; margin-right: 10px"
+                @change="changePod"
+              >
+                <el-option
+                  v-for="item in data.logData.selectedPods"
+                  :key="item"
+                  :value="item"
+                  :label="item"
+                />
+              </el-select>
+            </span>
+
+            <span style="margin-left: 10px">
+              <el-select
+                v-model="data.logData.selectedContainer"
+                style="width: 210px; float: right; margin-right: 10px"
+              >
+                <el-option
+                  v-for="item in data.logData.selectedContainers"
+                  :key="item"
+                  :value="item"
+                  :label="item"
+                />
+              </el-select>
+            </span>
+
+            <div style="margin-left: 4px; margin-top: 6px">
+              <pixiu-icon
+                name="icon-icon-refresh"
+                style="cursor: pointer"
+                size="16px"
+                type="iconfont"
+                color="#909399"
+                @click="getDeploymentPods"
+              />
+            </div>
+          </el-form-item>
+
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 8px; font-size: 13px; color: #191919">日志行数 </span>
+            </template>
+
+            <span style="margin-left: 40px">
+              <el-select
+                v-model="data.logData.line"
+                style="width: 80px; float: right; margin-right: 10px"
+              >
+                <el-option
+                  v-for="item in data.logData.lineOptions"
+                  :key="item"
+                  :value="item"
+                  :label="item"
+                />
+              </el-select>
+            </span>
+            行
+          </el-form-item>
+
+          <el-form-item>
+            <div style="margin-left: 110px; margin-top: -12px">
+              <el-switch v-model="data.logData.previous" inline-prompt width="35px" /><span
+                style="font-size: 12px; margin-left: 5px; color: #191919"
+                >查看已退出的容器</span
+              >
+            </div>
+          </el-form-item>
+        </el-form>
+
+        <div style="display: flex; margin-top: 25px; margin-left: 8px">
+          <button style="width: 70px" class="pixiu-two-button" @click="getPodLogs">查询</button>
+          <div style="margin-left: 30px">
+            <el-switch v-model="data.logData.aggLog" inline-prompt width="36px" /><span
+              style="font-size: 13px; margin-left: 5px; margin-right: 10px"
+              >聚合</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top: 15px; flex: 1">
+        <PixiuLog :yaml-dialog="data.logData.drawer" :log="data.logData.podLogs"></PixiuLog>
+      </div>
+    </div>
+  </el-drawer>
 </template>
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import { reactive, getCurrentInstance, onMounted, onUnmounted, ref, watch } from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData, searchData } from '@/utils/utils';
 import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
-import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
+import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
+import { getPodsByLabels, deletePod, getPodLog } from '@/services/kubernetes/podService';
 import {
   getDeploymentList,
   getDeployment,
@@ -390,9 +508,10 @@ import {
   runningFormatter,
   formatterContainerImage,
 } from '@/utils/formatter';
-import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
+import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
+import PixiuLog from '@/components/pixiulog/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -400,6 +519,7 @@ const editYaml = ref();
 
 const data = reactive({
   cluster: '',
+  namespace: 'default',
 
   pageInfo: {
     page: 1,
@@ -413,10 +533,6 @@ const data = reactive({
   },
   tableData: [],
   loading: false,
-
-  namespace: 'default',
-  namespaces: [],
-  filterNamespaces: [],
 
   deploymentList: [],
 
@@ -444,26 +560,154 @@ const data = reactive({
     close: false,
     images: [],
   },
+
+  logData: {
+    width: '70%',
+    drawer: false,
+
+    deployment: '',
+    namespace: '',
+    selectedPodMap: {},
+    selectedPods: [],
+    selectedPod: '',
+    selectedContainers: [],
+    selectedContainer: '',
+
+    previous: false,
+    line: 25,
+    lineOptions: [25, 50, 100, 200, 500],
+    podLogs: '点击查询获取日志',
+    aggLog: false,
+  },
 });
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
+  data.namespace = getLocalNamespace();
 
+  // 启动 localstorage 缓存监听，用于检测命名空间是否发生了变化
+  window.addEventListener('setItem', handleStorageChange);
+
+  // 初始化 workload 列表
   getDeployments();
-  getNamespaces();
 });
 
-const filterMethod = (f) => {
-  if (f === undefined || f === '') {
-    data.filterNamespaces = data.namespaces;
+onUnmounted(() => {
+  window.removeEventListener('setItem', handleStorageChange);
+});
+
+const handleStorageChange = (e) => {
+  if (e.storageArea === localStorage) {
+    if (e.key === 'namespace') {
+      if (e.oldValue === e.newValue) {
+        return;
+      }
+      data.namespace = e.newValue;
+      // 监控到切换命名空间之后，重新获取 workload 列表
+      getDeployments();
+    }
+  }
+};
+
+const handleLogDrawer = (row) => {
+  data.logData.deployment = row;
+  data.logData.namespace = row.metadata.namespace;
+
+  getDeploymentPods();
+  data.logData.drawer = true;
+};
+
+const closeLogDrawer = () => {
+  data.logData.deployment = '';
+  data.logData.namespace = '';
+  data.logData.selectedPodMap = {};
+  data.logData.selectedPods = [];
+  data.logData.selectedPod = '';
+  data.logData.containers = [];
+  data.logData.selectedContainer = '';
+  data.logData.selectedContainers = [];
+  data.logData.previous = false;
+  data.logData.aggLog = false;
+  data.logData.line = 25;
+  data.logData.podLogs = '点击查询获取日志';
+};
+
+const getDeploymentPods = async () => {
+  let matchLabels = data.logData.deployment.spec.selector.matchLabels;
+  let labels = [];
+  for (let key in matchLabels) {
+    labels.push(key + '=' + matchLabels[key]);
+  }
+
+  const [result, err] = await getPodsByLabels(data.cluster, data.namespace, labels.join(','));
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
     return;
   }
 
-  data.filterNamespaces = [];
-  for (let item of data.namespaces) {
-    if (item.includes(f)) {
-      data.filterNamespaces.push(item);
+  data.logData.selectedPodMap = {};
+  data.logData.selectedPods = [];
+  for (let item of result.items) {
+    let cs = [];
+    for (let c of item.spec.containers) {
+      cs.push(c.name);
     }
+
+    data.logData.selectedPods.push(item.metadata.name);
+    data.logData.selectedPodMap[item.metadata.name] = cs;
+  }
+
+  if (data.logData.selectedPods.length > 0) {
+    data.logData.selectedPod = data.logData.selectedPods[0];
+    data.logData.selectedContainers = data.logData.selectedPodMap[data.logData.selectedPod];
+    if (data.logData.selectedContainers.length > 0) {
+      data.logData.selectedContainer = data.logData.selectedContainers[0];
+    }
+  }
+};
+
+const changePod = async (val) => {
+  data.logData.selectedPod = val;
+  data.logData.selectedContainers = data.logData.selectedPodMap[data.logData.selectedPod];
+};
+
+const getPodLogs = async () => {
+  // 在指定 pod 和容器的情况下，才请求log
+  if (data.logData.selectedPod === '' || data.logData.selectedContainer === '') {
+    proxy.$notify.warning('查询日志，pod 和 container 为必选项。');
+    return;
+  }
+
+  if (data.logData.aggLog) {
+    let logs = [];
+    for (let pod of data.logData.selectedPods) {
+      const [result, err] = await getPodLog(
+        data.cluster,
+        data.logData.namespace,
+        pod,
+        data.logData.selectedContainer,
+        data.logData.line,
+      );
+      if (err) {
+        proxy.$notify.error(err.response.data.message);
+        continue;
+      }
+      logs.push('# ' + pod + '\n' + result);
+    }
+    data.logData.podLogs = logs.join('\n');
+  } else {
+    const [result, err] = await getPodLog(
+      data.cluster,
+      data.logData.namespace,
+      data.logData.selectedPod,
+      data.logData.selectedContainer,
+      data.logData.line,
+    );
+    if (err) {
+      proxy.$notify.error(err.response.data.message);
+      return;
+    }
+    data.logData.podLogs = result;
   }
 };
 
@@ -590,31 +834,8 @@ const handleEditYamlDialog = async (row) => {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  data.yaml = jsYaml.dump(result);
+  data.yaml = result;
   data.editYamlDialog = true;
-};
-
-const closeEditYamlDialog = (row) => {
-  data.yaml = '';
-  data.yamlName = '';
-  data.editYamlDialog = false;
-};
-
-const confirmEditYaml = async () => {
-  const yamlData = jsYaml.load(editYaml.value.code);
-  const [result, err] = await updateDeployment(
-    data.cluster,
-    data.namespace,
-    data.yamlName,
-    yamlData,
-  );
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-  proxy.$message.success(`Deployment(${data.yamlName}) YAML 更新成功`);
-  closeEditYamlDialog();
-  await getDeployments();
 };
 
 const createDeployment = () => {
@@ -661,17 +882,6 @@ const changeNamespace = async (val) => {
   data.namespace = val;
 
   getDeployments();
-};
-
-const getNamespaces = async () => {
-  const [result, err] = await getNamespaceNames(data.cluster);
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-
-  data.namespaces = result;
-  data.filterNamespaces = result;
 };
 
 const handleDeploymentScaleDialog = (row) => {

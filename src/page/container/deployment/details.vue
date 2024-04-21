@@ -760,7 +760,7 @@ const getDeploymentObject = async () => {
   }
 
   data.deployment = result;
-  data.yaml = jsYaml.dump(data.deployment);
+  data.yaml = jsYaml.dump(data.deployment, { quotingType: '"' });
 };
 
 const handleDeleteDialog = (row) => {

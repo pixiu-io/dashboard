@@ -5,6 +5,8 @@ import { viteMockServe } from 'vite-plugin-mock';
 import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
 import eslintPlugin from 'vite-plugin-eslint';
+// monaco
+import monacoEditorPlugin from 'vite-plugin-monaco-editor';
 
 // https://vitejs.dev/config/
 export default ({ mode }) =>
@@ -21,6 +23,21 @@ export default ({ mode }) =>
       vueJsx(),
       eslintPlugin({
         include: ['src/**/*.js', 'src/**/*.vue', 'src/*.js', 'src/*.vue', 'mock/**/*.js'],
+      }),
+      monacoEditorPlugin({
+        languages: [
+          'javascript',
+          'typescript',
+          'yaml',
+          'html',
+          'css',
+          'json',
+          'java',
+          'sql',
+          'groovy',
+          'shell',
+          'python',
+        ],
       }),
     ],
     resolve: {

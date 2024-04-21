@@ -186,9 +186,11 @@
   </el-dialog>
 
   <PiXiuViewOrEdit
-    :yaml-dialog="data.yamlDialog"
+    :yaml-dialog="data.editYamlDialog"
+    title="编辑Yaml"
     :yaml="data.yaml"
-    :title="data.yamlTitle"
+    :read-only="false"
+    :confirm="confirmEditYaml"
   ></PiXiuViewOrEdit>
 </template>
 
@@ -208,7 +210,7 @@ import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { formatterTime, formatterIcon, formatterLabelsBackup2 } from '@/utils/formatter';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
-import { getNode } from '@/services/kubernetes/nodeService';
+import { updateSecret } from '@/services/kubernetes/secretService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -226,8 +228,7 @@ const data = reactive({
   },
   tableData: [],
   loading: false,
-  yamlDialog: false,
-  yamlTitle: '编辑Yaml',
+  editYamlDialog: false,
   yaml: '',
   namespaceList: [],
 
@@ -362,8 +363,12 @@ const editYaml = async (row) => {
     proxy.$notify.error(err.response.data.message);
     return;
   }
-  data.yamlDialog = true;
+  data.editYamlDialog = true;
   data.yaml = result;
+};
+
+const confirmEditYaml = async (yamlData) => {
+  //todo
 };
 </script>
 

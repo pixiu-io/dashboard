@@ -1,8 +1,16 @@
 <template>
-  <el-card class="title-card-container">
+  <div class="title-card-container2">
+    <!-- <div class="font-container2">Pod</div> -->
+    <div style="flex-grow: 1">
+      <PiXiuYaml :refresh="getPods"></PiXiuYaml>
+    </div>
+  </div>
+  <!-- <el-card class="title-card-container">
     <div class="font-container">Pod</div>
-    <PiXiuYaml :refresh="getPods"></PiXiuYaml>
-  </el-card>
+    <div>
+      <PiXiuYaml :refresh="getPods"></PiXiuYaml>
+    </div>
+  </el-card> -->
 
   <div style="margin-top: 25px">
     <el-row>
@@ -24,22 +32,6 @@
             </el-icon>
           </template>
         </el-input>
-
-        <el-select
-          v-model="data.namespace"
-          filterable
-          :filter-method="filterMethod"
-          style="width: 200px; float: right; margin-right: 10px"
-          @change="changeNamespace"
-        >
-          <el-option
-            v-for="item in data.filterNamespaces"
-            :key="item"
-            :value="item"
-            :label="item"
-          />
-        </el-select>
-        <!-- <dev class="namespace-container" style="width: 112px; float: right">命名空间</dev> -->
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -64,7 +56,12 @@
 
         <el-table-column prop="status" label="状态" :formatter="formatterPodStatus" />
 
-        <el-table-column prop="metadata.namespace" label="命名空间" :formatter="formatterNamespace">
+        <el-table-column
+          v-if="data.namespace === '全部空间'"
+          prop="metadata.namespace"
+          label="命名空间"
+          :formatter="formatterNamespace"
+        >
         </el-table-column>
 
         <el-table-column prop="status.podIP" label="实例IP"> </el-table-column>
@@ -135,7 +132,9 @@
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
                   <!-- <el-dropdown-item class="dropdown-item-buttons"> 详情 </el-dropdown-item> -->
-                  <el-dropdown-item class="dropdown-item-buttons"> 查看YAML </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons" @click="viewYaml(scope.row)">
+                    查看YAML
+                  </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
                     @click="handleLogDrawer(scope.row)"
@@ -263,7 +262,11 @@
     </template>
   </el-dialog>
 
-  <PiXiuViewOrEdit :yaml-dialog="data.yamlDialog" :yaml="data.yaml"></PiXiuViewOrEdit>
+  <PiXiuViewOrEdit
+    :yaml-dialog="data.yamlDialog"
+    :yaml="data.yaml"
+    title="查看Yaml"
+  ></PiXiuViewOrEdit>
 
   <el-dialog
     :model-value="data.podContainers.close"
@@ -353,100 +356,89 @@
     @open="openLogDrawer"
     @close="closeLogDrawer"
   >
-    <div
-      style="
-        text-align: left;
-        font-weight: bold;
-        padding-left: 5px;
-        margin-top: 5px;
-        font-size: 14.5px;
-        color: #191919;
-      "
-    >
-      日志查询
-    </div>
-
-    <el-card class="app-docs" style="margin-left: 8px; height: 40px">
-      <el-icon
-        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
-        ><WarningFilled
-      /></el-icon>
-      <div style="vertical-align: middle; margin-top: -40px">获取 Pod 的实时日志</div>
-    </el-card>
-
-    <el-form>
-      <el-form-item>
-        <template #label>
-          <span style="margin-left: 8px; font-size: 13px; color: #191919">容器选项 </span>
-        </template>
-
-        <span style="margin-left: 40px">
-          <el-select
-            v-model="data.logData.selectedContainer"
-            style="width: 260px; float: right; margin-right: 10px"
-          >
-            <el-option
-              v-for="item in data.logData.containers"
-              :key="item"
-              :value="item"
-              :label="item"
-            />
-          </el-select>
-        </span>
-      </el-form-item>
-
-      <el-form-item>
-        <template #label>
-          <span style="margin-left: 8px; font-size: 13px; color: #191919">日志行数 </span>
-        </template>
-
-        <span style="margin-left: 40px">
-          <el-select
-            v-model="data.logData.line"
-            style="width: 80px; float: right; margin-right: 10px"
-          >
-            <el-option
-              v-for="item in data.logData.lineOptions"
-              :key="item"
-              :value="item"
-              :label="item"
-            />
-          </el-select>
-        </span>
-        行
-      </el-form-item>
-
-      <el-form-item>
-        <div style="margin-left: 110px; margin-top: -12px">
-          <el-switch v-model="data.logData.previous" inline-prompt width="35px" /><span
-            style="font-size: 12px; margin-left: 5px; color: #191919"
-            >查看已退出的容器</span
-          >
+    <div style="display: flex; flex-direction: column; height: 100%">
+      <div>
+        <div
+          style="
+            text-align: left;
+            font-weight: bold;
+            padding-left: 5px;
+            margin-top: 5px;
+            font-size: 14.5px;
+            color: #191919;
+          "
+        >
+          日志查询
         </div>
-      </el-form-item>
-    </el-form>
 
-    <div style="display: flex; margin-top: 25px; margin-left: 8px">
-      <button style="width: 70px" class="pixiu-two-button" @click="getPodLogs">查询</button>
-    </div>
+        <el-card class="app-docs" style="margin-left: 8px; height: 40px">
+          <el-icon
+            style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+            ><WarningFilled
+          /></el-icon>
+          <div style="vertical-align: middle; margin-top: -40px">获取 Pod 的实时日志</div>
+        </el-card>
 
-    <div style="margin-top: 15px">
-      <el-card class="contend-card-container2">
-        <div style="background-color: #29232b; color: white; min-height: 440px">
-          <div style="margin-left: 20px">
-            <div v-if="data.logData.podLogs.length === 0" style="font-size: 14px">暂无日志</div>
-            <div v-else>
-              <div
-                v-for="(item, index) in data.logData.podLogs"
-                :key="item"
-                style="font-size: 14px"
+        <el-form>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 8px; font-size: 13px; color: #191919">容器选项 </span>
+            </template>
+
+            <span style="margin-left: 40px">
+              <el-select
+                v-model="data.logData.selectedContainer"
+                style="width: 260px; float: right; margin-right: 10px"
               >
-                {{ index + 1 }} <span style="margin-left: 18px"></span> {{ item }}
-              </div>
+                <el-option
+                  v-for="item in data.logData.containers"
+                  :key="item"
+                  :value="item"
+                  :label="item"
+                />
+              </el-select>
+            </span>
+          </el-form-item>
+
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 8px; font-size: 13px; color: #191919">日志行数 </span>
+            </template>
+
+            <span style="margin-left: 40px">
+              <el-select
+                v-model="data.logData.line"
+                style="width: 80px; float: right; margin-right: 10px"
+              >
+                <el-option
+                  v-for="item in data.logData.lineOptions"
+                  :key="item"
+                  :value="item"
+                  :label="item"
+                />
+              </el-select>
+            </span>
+            行
+          </el-form-item>
+
+          <el-form-item>
+            <div style="margin-left: 110px; margin-top: -12px">
+              <el-switch v-model="data.logData.previous" inline-prompt width="35px" /><span
+                style="font-size: 12px; margin-left: 5px; color: #191919"
+                >查看已退出的容器</span
+              >
             </div>
-          </div>
-        </div>
-      </el-card>
+          </el-form-item>
+        </el-form>
+      </div>
+
+      <div style="display: flex; margin-top: -20px; margin-left: 8px">
+        <button style="width: 70px" class="pixiu-two-button" @click="getPodLogs">查询</button>
+      </div>
+
+      <div style="margin-top: 15px; margin-left: 8px; flex: 1">
+        <PixiuLog :yaml-dialog="data.logData.drawer" :log="data.logData.podLogs"></PixiuLog>
+      </div>
     </div>
   </el-drawer>
 </template>
@@ -469,7 +461,7 @@ import {
   formatterContainerImage,
 } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
-import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
+import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import {
   getPodList,
   deletePod,
@@ -480,6 +472,7 @@ import {
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { getNode } from '@/services/kubernetes/nodeService';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
+import PixiuLog from '@/components/pixiulog/index.vue';
 
 const { toClipboard } = useClipboard();
 const { proxy } = getCurrentInstance();
@@ -491,6 +484,8 @@ const selectedPod = ref('');
 
 const data = reactive({
   cluster: '',
+  namespace: 'default',
+
   pageInfo: {
     page: 1,
     limit: 10,
@@ -507,12 +502,7 @@ const data = reactive({
   yamlDialog: false,
   yaml: '',
 
-  namespace: 'default',
-  filterNamespaces: [],
-  namespaces: [],
-
   podList: [],
-
   podReplicasDialog: false,
 
   // 删除对象属性
@@ -536,7 +526,7 @@ const data = reactive({
   },
 
   logData: {
-    width: '45%',
+    width: '70%',
     drawer: false,
     pod: '',
     namespace: '',
@@ -545,7 +535,7 @@ const data = reactive({
     previous: false,
     line: 25,
     lineOptions: [25, 50, 100, 200, 500],
-    podLogs: [],
+    podLogs: '点击查询获取日志',
     aggLog: false,
   },
 });
@@ -562,10 +552,26 @@ const onChange = (v) => {
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
+  data.namespace = getLocalNamespace();
+
+  // 启动 localstorage 缓存监听，用于检测命名空间是否发生了变化
+  window.addEventListener('setItem', handleStorageChange);
 
   getPods();
-  getNamespaces();
 });
+
+const handleStorageChange = (e) => {
+  if (e.storageArea === localStorage) {
+    if (e.key === 'namespace') {
+      if (e.oldValue === e.newValue) {
+        return;
+      }
+      data.namespace = e.newValue;
+      // 监控到切换命名空间之后，重新获取 workload 列表
+      getPods();
+    }
+  }
+};
 
 const createPod = () => {
   const url = `/pods/createPod?cluster=${data.cluster}`;
@@ -653,7 +659,6 @@ const getPodLogs = async () => {
     proxy.$notify.error(err.response.data.message);
     return;
   }
-
   data.logData.podLogs = result;
 };
 
@@ -706,7 +711,7 @@ const closeLogDrawer = () => {
   data.logData.selectedContainer = '';
   data.logData.previous = false;
   data.logData.line = 25;
-  data.logData.podLogs = [];
+  data.logData.podLogs = '点击查询获取日志';
 };
 
 const formatterContainerStartTime = (row, column, cellValue) => {
@@ -756,20 +761,6 @@ const jumpRoute = (row) => {
   });
 };
 
-const filterMethod = (f) => {
-  if (f === undefined || f === '') {
-    data.filterNamespaces = data.namespaces;
-    return;
-  }
-
-  data.filterNamespaces = [];
-  for (let item of data.namespaces) {
-    if (item.includes(f)) {
-      data.filterNamespaces.push(item);
-    }
-  }
-};
-
 const handleSelectionChange = (pods) => {
   data.multipleSelection = [];
   for (let pod of pods) {
@@ -793,23 +784,6 @@ const getPods = async () => {
 
 const searchPods = async () => {
   data.tableData = searchData(data.pageInfo, data.podList);
-};
-
-const changeNamespace = async (val) => {
-  localStorage.setItem('namespace', val);
-  data.namespace = val;
-
-  getPods();
-};
-
-const getNamespaces = async () => {
-  const [result, err] = await getNamespaceNames(data.cluster);
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-  data.namespaces = result;
-  data.filterNamespaces = result;
 };
 
 const copy = async (val) => {
@@ -887,14 +861,4 @@ const viewYaml = async (row) => {
 };
 </script>
 
-<style scoped="scoped">
-.namespace-container {
-  font-size: 14px;
-  margin-top: -2px;
-  /* margin-left: 10px; */
-  margin-right: -60px;
-  color: #4c4e58;
-  height: 20px;
-  padding: 10px;
-}
-</style>
+<style scoped="scoped"></style>

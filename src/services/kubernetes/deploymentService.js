@@ -44,10 +44,14 @@ export const deleteDeployment = async (cluster, namespace, name) => {
 };
 
 export const getDeploymentList = async (cluster, namespace) => {
+  let url = `/pixiu/proxy/${cluster}/apis/apps/v1/namespaces/${namespace}/deployments`;
+  if (namespace === '全部空间') {
+    url = `/pixiu/proxy/${cluster}/apis/apps/v1/deployments`;
+  }
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
-      url: `/pixiu/proxy/${cluster}/apis/apps/v1/namespaces/${namespace}/deployments`,
+      url: url,
       data: {
         limit: 500,
       },
