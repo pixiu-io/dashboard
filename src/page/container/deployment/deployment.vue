@@ -657,13 +657,13 @@ const getDeploymentPods = async () => {
     data.logData.selectedPodMap[item.metadata.name] = cs;
   }
 
-  // if (data.logData.selectedPods.length > 0) {
-  //   data.logData.selectedPod = data.logData.selectedPods[0];
-  //   data.logData.selectedContainers = data.logData.selectedPodMap[data.logData.selectedPod];
-  //   if (data.logData.selectedContainers.length > 0) {
-  //     data.logData.selectedContainer = data.logData.selectedContainers[0];
-  //   }
-  // }
+  if (data.logData.selectedPods.length > 0) {
+    data.logData.selectedPod = data.logData.selectedPods[0];
+    data.logData.selectedContainers = data.logData.selectedPodMap[data.logData.selectedPod];
+    if (data.logData.selectedContainers.length > 0) {
+      data.logData.selectedContainer = data.logData.selectedContainers[0];
+    }
+  }
 };
 
 const changePod = async (val) => {
