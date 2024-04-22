@@ -223,8 +223,6 @@ const handleStorageChange = (e) => {
 const searchTasks = async () => {
   data.tableData = searchData(data.pageInfo, data.taskList);
 };
-
-
 const confirmEditYaml = async () => {
   const yamlData = jsYaml.load(editYaml.value.code);
   const [result, err] = await updateTask(data.cluster, data.namespace, data.yamlName, yamlData);
@@ -242,8 +240,6 @@ const closeEditYamlDialog = (row) => {
   data.yamlName = '';
   data.editYamlDialog = false;
 };
-
-
 const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
   const [result, err] = await getTaskDetail(data.cluster, data.namespace, data.yamlName);

@@ -144,7 +144,7 @@
 </template>
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref, onUnmounted } from "vue";
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import { getTableData, searchData } from '@/utils/utils';
@@ -207,6 +207,10 @@ onMounted(() => {
   window.addEventListener('setItem', handleStorageChange);
 
   getConfigMaps();
+});
+
+onUnmounted(() => {
+  window.removeEventListener('setItem', handleStorageChange);
 });
 
 const handleStorageChange = (e) => {
