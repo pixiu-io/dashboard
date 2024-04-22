@@ -127,7 +127,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, onUnmounted } from "vue";
+import { reactive, getCurrentInstance, onMounted, onUnmounted } from 'vue';
 import { formatTimestamp, getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
