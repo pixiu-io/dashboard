@@ -318,7 +318,7 @@
               />
             </div>
 
-            <div v-if="scope.row.change" style="margin-left: 10px">
+            <div v-if="scope.row.change" style="margin-left: 10px; flex: 1">
               <el-input v-model="scope.row.newImage"></el-input>
               <div style="display: flex">
                 <div style="cursor: pointer" @click="confirmEvent(scope.row)">确认</div>
