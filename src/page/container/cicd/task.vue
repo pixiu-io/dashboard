@@ -137,7 +137,7 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { getCurrentInstance, onMounted, reactive, ref } from 'vue';
+import { getCurrentInstance, onMounted, onUnmounted, reactive, ref } from 'vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import {
@@ -206,7 +206,9 @@ onMounted(() => {
 
   getTasks();
 });
-
+onUnmounted(() => {
+  window.removeEventListener('setItem', handleStorageChange);
+});
 const handleStorageChange = (e) => {
   if (e.storageArea === localStorage) {
     if (e.key === 'namespace') {
