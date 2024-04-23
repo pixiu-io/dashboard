@@ -445,7 +445,7 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref, onUnmounted } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
@@ -558,6 +558,9 @@ onMounted(() => {
   window.addEventListener('setItem', handleStorageChange);
 
   getPods();
+});
+onUnmounted(() => {
+  window.removeEventListener('setItem', handleStorageChange);
 });
 
 const handleStorageChange = (e) => {

@@ -141,7 +141,7 @@ import {
   formatterAddress,
   formatterNamespace,
 } from '@/utils/formatter';
-import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref, onUnmounted } from 'vue';
 import jsYaml from 'js-yaml';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import {
@@ -200,6 +200,9 @@ onMounted(() => {
   window.addEventListener('setItem', handleStorageChange);
 
   getIngresses();
+});
+onUnmounted(() => {
+  window.removeEventListener('setItem', handleStorageChange);
 });
 
 const handleStorageChange = (e) => {

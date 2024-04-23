@@ -131,7 +131,7 @@
 import { useRouter } from 'vue-router';
 import { getTableData, searchData } from '@/utils/utils';
 import { formatterTime, formatterPorts, formatterNamespace } from '@/utils/formatter';
-import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref, onUnmounted } from 'vue';
 import jsYaml from 'js-yaml';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
@@ -190,6 +190,10 @@ onMounted(() => {
   window.addEventListener('setItem', handleStorageChange);
 
   getServices();
+});
+
+onUnmounted(() => {
+  window.removeEventListener('setItem', handleStorageChange);
 });
 
 const handleStorageChange = (e) => {

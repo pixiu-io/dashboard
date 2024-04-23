@@ -112,7 +112,7 @@ import {
 } from '@/services/cicd/tektonService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
-import { getCurrentInstance, onMounted, reactive, ref } from 'vue';
+import { getCurrentInstance, onMounted, onUnmounted, reactive, ref } from 'vue';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import {
   formatterIcon,
@@ -162,6 +162,9 @@ onMounted(() => {
   window.addEventListener('setItem', handleStorageChange);
 
   getTaskRuns();
+});
+onUnmounted(() => {
+  window.removeEventListener('setItem', handleStorageChange);
 });
 
 const handleStorageChange = (e) => {

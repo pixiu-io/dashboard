@@ -89,9 +89,62 @@
               标签键值以字母、数字开头和结尾, 且只能包含字母、数字及分隔符。
             </div>
 
-            <!--            <el-form-item label="参数配置" style="margin-top: 10px; margin-bottom: 10px">-->
-            <!--              <el-button type="text" class="app-action-btn" @click="addStep">增加参数</el-button>-->
-            <!--            </el-form-item>-->
+            <el-form-item label="变量声明" style="margin-top: 10px">
+              <el-button type="text" class="app-action-btn" @click="addParams">新增</el-button>
+            </el-form-item>
+            <div style="margin-top: -15px"></div>
+            <el-form-item
+              v-for="(item, index) in data.form.params"
+              :key="index"
+              class="labels-item-style"
+            >
+              <el-form-item
+                :prop="'params[' + index + '].name'"
+                :rules="[{ required: false, message: '变量名可以为空', trigger: 'blur' }]"
+              >
+                <el-input v-model="item.name" placeholder="变量名" style="width: 280px" />
+              </el-form-item>
+
+              <div style="margin-right: 10px; margin-left: 10px">=</div>
+
+              <!--              <el-form-item-->
+              <!--                :prop="'annotations[' + index + '].value'"-->
+              <!--                :rules="[{ required: false, message: '参数类型可以为空', trigger: 'blur' }]"-->
+              <!--              >-->
+              <!--                <el-input v-model="item.value" placeholder="参数类型" style="width: 280px" />-->
+              <!--              </el-form-item>-->
+
+              <el-form-item
+                :prop="'params[' + index + '].value'"
+                :rules="[{ required: false, message: '变量值可以空', trigger: 'blur' }]"
+              >
+                <el-input v-model="item.default" placeholder="变量值" style="width: 280px" />
+                <!--                <el-select v-model="item.value" placeholder="变量值" style="width: 280px">-->
+                <!--                  <el-option-->
+                <!--                    v-for="(option, optionIndex) in ['string', 'number']"-->
+                <!--                    :key="optionIndex"-->
+                <!--                    :label="option"-->
+                <!--                    :value="option"-->
+                <!--                  ></el-option>-->
+                <!--                </el-select>-->
+              </el-form-item>
+
+              <div
+                style="float: right; cursor: pointer; margin-left: 10px"
+                @click="deleteParams(index)"
+              >
+                <pixiu-icon
+                  name="icon-shanchu"
+                  size="14px"
+                  type="iconfont"
+                  style="margin-top: 10px; margin-left: 4px"
+                  color="#909399"
+                />
+              </div>
+            </el-form-item>
+            <div class="app-pixiu-line-describe" style="margin-top: -5px">
+              参数键值以字母、数字开头和结尾, 且只能包含字母、数字及分隔符。
+            </div>
 
             <el-form-item label="任务配置" style="margin-top: 10px; margin-bottom: 10px">
               <el-button type="text" class="app-action-btn" @click="addStep">增加任务</el-button>
@@ -194,6 +247,7 @@ const data = reactive({
       name: '',
       namespace: 'default',
     },
+    params: [],
     labels: [],
     steps: [],
   },
@@ -206,6 +260,7 @@ const data = reactive({
       namespace: 'default',
     },
     spec: {
+      params: [],
       steps: [],
     },
   },
@@ -249,6 +304,7 @@ const confirm = async () => {
     if (valid) {
       data.objectForm.metadata = data.form.metadata;
       data.objectForm.spec.steps = data.form.steps;
+      data.objectForm.spec.params = data.form.params;
 
       // 追加 labels
       if (data.form.labels.length > 0) {
@@ -257,6 +313,14 @@ const confirm = async () => {
           data.objectForm.metadata['labels'][item.key] = item.value;
         }
       }
+
+      // 追加 annotations
+      // if (data.form.params.length > 0) {
+      //   data.objectForm.spec['annotations'] = {};
+      //   for (let item of data.form.annotations) {
+      //     data.objectForm.metadata['annotations'][item.key] = item.value;
+      //   }
+      // }
 
       const [result, err] = await createTask(data.cluster, data.namespace, data.objectForm);
       if (err) {
@@ -281,8 +345,19 @@ const addLabel = () => {
   });
 };
 
+const addParams = () => {
+  data.form.params.push({
+    name: '',
+    default: '',
+  });
+};
+
 const deleteLabel = (index) => {
   data.form.labels.splice(index, 1);
+};
+
+const deleteParams = (index) => {
+  data.form.params.splice(index, 1);
 };
 
 const addStep = () => {

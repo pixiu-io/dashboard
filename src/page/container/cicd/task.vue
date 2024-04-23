@@ -137,7 +137,7 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { getCurrentInstance, onMounted, reactive, ref } from 'vue';
+import { getCurrentInstance, onMounted, onUnmounted, reactive, ref } from 'vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import {
@@ -162,6 +162,7 @@ import { getTableData, searchData } from '@/utils/utils';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 
 const { proxy } = getCurrentInstance();
+
 const router = useRouter();
 
 const data = reactive({
@@ -205,7 +206,9 @@ onMounted(() => {
 
   getTasks();
 });
-
+onUnmounted(() => {
+  window.removeEventListener('setItem', handleStorageChange);
+});
 const handleStorageChange = (e) => {
   if (e.storageArea === localStorage) {
     if (e.key === 'namespace') {
@@ -222,7 +225,23 @@ const handleStorageChange = (e) => {
 const searchTasks = async () => {
   data.tableData = searchData(data.pageInfo, data.taskList);
 };
+const confirmEditYaml = async () => {
+  const yamlData = jsYaml.load(editYaml.value.code);
+  const [result, err] = await updateTask(data.cluster, data.namespace, data.yamlName, yamlData);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+  proxy.$notify.success(`Task (${data.yamlName}) YAML 更新成功`);
+  closeEditYamlDialog();
+  await getTasks();
+};
 
+const closeEditYamlDialog = (row) => {
+  data.yaml = '';
+  data.yamlName = '';
+  data.editYamlDialog = false;
+};
 const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
   const [result, err] = await getTaskDetail(data.cluster, data.namespace, data.yamlName);
@@ -271,10 +290,12 @@ const confirm = async () => {
 const cancel = () => {
   clean();
 };
+
 const clean = () => {
   data.deleteDialog.close = false;
   data.deleteDialog.deleteName = '';
 };
+
 const getTaskRunStatus = async (name) => {
   const [res, err] = await getTaskRunList(data.cluster, data.namespace);
 
@@ -290,6 +311,7 @@ const getTaskRunStatus = async (name) => {
     data.taskRunList.push(stats);
   }
 };
+
 const getTasks = async () => {
   await getTaskRunStatus();
   data.loading = true;
@@ -330,14 +352,6 @@ const createTask = () => {
 };
 
 const jumpRoute = async (row) => {
-  // router.push({
-  //   name: 'createTaskRun',
-  //   query: {
-  //     cluster: data.cluster,
-  //     namespace: data.namespace,
-  //     taskName: row.metadata.name,
-  //   },
-  // });
   const objectForm = {
     apiVersion: 'tekton.dev/v1',
     kind: 'TaskRun',
@@ -356,23 +370,24 @@ const jumpRoute = async (row) => {
       },
     },
   };
+
   const [result, err] = await createTaskRun(data.cluster, data.namespace, objectForm);
   if (err) {
     proxy.$notify.error(err.response.data.message);
     return;
   }
-  proxy.$notify.success(`Task ${data.form.metadata.name} 创建成功`);
+  proxy.$notify.success(`TaskRun (${result.metadata.name}) 创建成功`);
 };
 
 const formatStatus = (row) => {
   if (row.status === 'Succeeded') {
-    return formatterIcon('#939893', '已完成');
+    return formatterIcon('#28C65A', '已完成');
   }
   if (row.status === 'Running') {
-    return formatterIcon('#28C65A', '在运行中');
+    return formatterIcon('#FFFF00', '在运行中');
   }
   if (row.status === 'notCreated') {
-    return formatterIcon('#FFFFFF', '未创建');
+    return formatterIcon('#727272', '未创建');
   }
   if (row.status === 'Failed') {
     return formatterIcon('rgba(250,56,91,0.8)', '失败');
