@@ -86,6 +86,7 @@ const initTerm = () => {
     const rows = parseInt(document.body.clientHeight / 18);
     data.term.resize(cols, rows);
     fitAddon.fit();
+    data.socket.send('{"operation":"resize", "cols":' + cols + ',"rows":' + rows + '}');
   };
 };
 const initSocket = () => {
@@ -114,6 +115,10 @@ const initSocket = () => {
 
 const socketOnMessage = () => {
   data.socket.onmessage = (msg) => {
+    const cols = parseInt(document.body.clientWidth / 9);
+    const rows = parseInt(document.body.clientHeight / 18);
+    data.socket.send('{"operation":"resize", "cols":' + cols + ',"rows":' + rows + '}');
+
     //接收到消息后将字符串转为对象，输出data内容
     let content = JSON.parse(msg.data);
     data.term.write(content.data);

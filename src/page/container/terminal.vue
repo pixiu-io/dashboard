@@ -20,8 +20,10 @@ const webShellOptions = reactive({
 
 onMounted(() => {
   Object.assign(webShellOptions, route.query);
-  // 设置页面title
-  document.title = `name(${webShellOptions.namespace}) cluster(${webShellOptions.cluster}) pod(${webShellOptions.pod}) container(${webShellOptions.container}`;
+
+  // 设置页面 title
+  const clusterName = localStorage.getItem(webShellOptions.cluster);
+  document.title = `容器集群: ${clusterName} Pod: ${webShellOptions.pod}(${webShellOptions.namespace}) 容器: ${webShellOptions.container}`;
 });
 </script>
 
