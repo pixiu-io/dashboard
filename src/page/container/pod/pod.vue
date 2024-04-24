@@ -16,7 +16,13 @@
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createPod">新建</button>
-        <button class="pixiu-two-button2" style="margin-left: 10px" @click="getPods">刷新</button>
+        <button
+          style="margin-left: 10px; width: 85px"
+          class="pixiu-two-button2"
+          @click="deletePodsInBatch"
+        >
+          批量删除
+        </button>
 
         <el-input
           v-model="data.pageInfo.search.searchInfo"
@@ -45,13 +51,10 @@
           'font-size': '12px',
           color: '#191919',
         }"
-        @selection-change="handleSelectionChange"
+        @selection-change="handlePodSelectionChange"
       >
         <el-table-column type="selection" width="30" />
-        <el-table-column prop="metadata.name" sortable label="实例名称" min-width="100px">
-          <template #default="scope">
-            {{ scope.row.metadata.name }}
-          </template>
+        <el-table-column prop="metadata.name" sortable label="实例名称" :formatter="formatString">
         </el-table-column>
 
         <el-table-column prop="status" label="状态" :formatter="formatterPodStatus" />
@@ -85,8 +88,6 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="status" label="重启次数" :formatter="formatterRestartCount" />
-
         <!-- <el-table-column label="镜像" prop="spec.containers" :formatter="formatterImage" /> -->
 
         <!-- <el-table-column
@@ -107,6 +108,13 @@
         />
 
         <el-table-column
+          prop="status"
+          label="重启次数"
+          :formatter="formatterRestartCount"
+          width="90px"
+        />
+
+        <el-table-column
           prop="metadata.creationTimestamp"
           label="创建时间"
           :formatter="formatterTime"
@@ -118,11 +126,19 @@
               size="small"
               type="text"
               style="margin-right: -25px; margin-left: -10px; color: #006eff"
+              @click="handleMonitorDrawer(scope.row)"
             >
               监控
             </el-button>
 
-            <el-button type="text" size="small" style="color: #006eff"> 事件 </el-button>
+            <el-button
+              type="text"
+              size="small"
+              style="color: #006eff"
+              @click="handleEventDrawer(scope.row)"
+            >
+              事件
+            </el-button>
 
             <el-dropdown>
               <span class="el-dropdown-link">
@@ -441,6 +457,122 @@
       </div>
     </div>
   </el-drawer>
+
+  <el-drawer
+    v-model="data.monitorData.drawer"
+    :size="data.drawerWidth"
+    :with-header="false"
+    @open="openMonitorDrawer"
+    @close="closeMonitorDrawer"
+  >
+    <div style="display: flex; flex-direction: column; height: 100%">
+      <div>
+        <div
+          style="
+            text-align: left;
+            font-weight: bold;
+            padding-left: 5px;
+            margin-top: 5px;
+            font-size: 14.5px;
+            color: #191919;
+          "
+        >
+          资源监控
+        </div>
+        <el-card class="app-docs" style="margin-left: 8px; height: 40px">
+          <el-icon
+            style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+            ><WarningFilled
+          /></el-icon>
+          <div style="vertical-align: middle; margin-top: -40px">查看 Pod 的资源状态</div>
+        </el-card>
+      </div>
+    </div>
+  </el-drawer>
+
+  <el-drawer
+    v-model="data.eventData.drawer"
+    :size="data.eventData.width"
+    :with-header="false"
+    @close="closeEventDrawer"
+  >
+    <div style="display: flex; flex-direction: column; height: 100%">
+      <div>
+        <div
+          style="
+            text-align: left;
+            font-weight: bold;
+            padding-left: 5px;
+            margin-top: 5px;
+            font-size: 14.5px;
+            color: #191919;
+          "
+        >
+          事件查询
+        </div>
+
+        <el-card class="app-docs" style="margin-left: 8px; height: 40px">
+          <el-icon
+            style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+            ><WarningFilled
+          /></el-icon>
+          <div style="vertical-align: middle; margin-top: -40px">获取 Pod 的事件</div>
+        </el-card>
+
+        <el-row>
+          <el-col>
+            <div style="margin-left: 8px">
+              <button class="pixiu-two-button" @click="getPodEvents">查询</button>
+              <button
+                style="margin-left: 10px; width: 85px"
+                class="pixiu-two-button2"
+                @click="deleteEventsInBatch"
+              >
+                批量删除
+              </button>
+            </div>
+          </el-col>
+        </el-row>
+
+        <div style="margin-top: 25px">
+          <el-table
+            v-loading="data.eventData.loading"
+            :data="data.eventData.eventTableData"
+            stripe
+            style="margin-top: 6px"
+            header-row-class-name="pixiu-table-header"
+            :cell-style="{
+              'font-size': '12px',
+              color: '#191919',
+            }"
+            @selection-change="handleEventSelectionChange"
+          >
+            <el-table-column type="selection" width="30" />
+            <el-table-column
+              prop="lastTimestamp"
+              label="最后出现时间"
+              sortable
+              :formatter="formatterTime"
+            />
+            <el-table-column prop="type" label="级别" />
+            <el-table-column prop="involvedObject.kind" label="资源类型"> </el-table-column>
+            <el-table-column prop="involvedObject.name" label="资源名称" :formatter="formatString">
+            </el-table-column>
+            <el-table-column prop="count" label="出现次数" width="80px"> </el-table-column>
+            <el-table-column prop="message" label="内容" min-width="250px" />
+
+            <template #empty>
+              <div class="table-inline-word">暂无事件</div>
+            </template>
+          </el-table>
+          <pagination
+            :total="data.eventData.pageEventInfo.total"
+            @on-change="onEventChange"
+          ></pagination>
+        </div>
+      </div>
+    </div>
+  </el-drawer>
 </template>
 
 <script setup lang="jsx">
@@ -455,6 +587,7 @@ import {
   formatterPodStatus,
   formatterRestartCount,
   formatterNamespace,
+  formatString,
   formatterContainersCPU,
   formatterContainersMem,
   formatterContainersResource,
@@ -485,6 +618,8 @@ const selectedPod = ref('');
 const data = reactive({
   cluster: '',
   namespace: 'default',
+
+  drawerWidth: '70%',
 
   pageInfo: {
     page: 1,
@@ -538,6 +673,31 @@ const data = reactive({
     podLogs: '点击查询获取日志',
     aggLog: false,
   },
+
+  eventData: {
+    drawer: false,
+    loading: false,
+    width: '80%',
+
+    pod: '',
+    eventTableData: [],
+    events: [],
+    multipleEventSelection: [],
+
+    pageEventInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      search: {
+        field: 'name',
+        searchInfo: '',
+      },
+    },
+  },
+
+  monitorData: {
+    drawer: false,
+  },
 });
 
 const onChange = (v) => {
@@ -574,6 +734,40 @@ const handleStorageChange = (e) => {
       getPods();
     }
   }
+};
+
+const handleMonitorDrawer = (row) => {
+  data.monitorData.drawer = true;
+};
+
+const handleEventDrawer = (row) => {
+  data.eventData.pod = row;
+  data.eventData.drawer = true;
+};
+
+const getPodEvents = async () => {
+  console.log('ddd');
+};
+
+const closeEventDrawer = () => {
+  data.eventData = {
+    drawer: false,
+    loading: false,
+    width: '80%',
+    pod: '',
+    eventTableData: [],
+    events: [],
+    multipleEventSelection: [],
+    pageEventInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      search: {
+        field: 'name',
+        searchInfo: '',
+      },
+    },
+  };
 };
 
 const createPod = () => {
@@ -764,11 +958,28 @@ const jumpRoute = (row) => {
   });
 };
 
-const handleSelectionChange = (pods) => {
+const handlePodSelectionChange = (pods) => {
   data.multipleSelection = [];
   for (let pod of pods) {
     data.multipleSelection.push(pod.metadata.name);
   }
+};
+
+const deletePodsInBatch = async () => {
+  if (data.multipleSelection.length === 0) {
+    proxy.$notify.warning('未选择待删除Pod');
+    return;
+  }
+
+  for (let pod of data.multipleSelection) {
+    const [result, err] = await deletePod(data.cluster, data.namespace, pod);
+    if (err) {
+      proxy.$notify.error(err.response.data.message);
+      return;
+    }
+  }
+  proxy.$notify.success('批量删除Pods成功');
+  getPods();
 };
 
 const getPods = async () => {
