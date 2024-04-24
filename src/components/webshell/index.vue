@@ -19,10 +19,15 @@ import 'xterm/lib/xterm.js';
 
 const { proxy } = getCurrentInstance();
 
+//终端适应父元素大小
+const fitAddon = new FitAddon();
+
 const data = reactive({
   //terminal
   term: null,
   socket: null,
+  rows: 20,
+  cols: 80,
 });
 
 const props = defineProps({
@@ -35,6 +40,8 @@ const props = defineProps({
 });
 
 onMounted(() => {
+  data.rows = parseInt(document.body.clientHeight / 18);
+  data.cols = parseInt(document.body.clientWidth / 9);
   // 优化体验
   initTerm();
   initSocket();
@@ -48,23 +55,22 @@ const initTerm = () => {
   //初始化xterm实例
   data.term = new Terminal({
     rendererType: 'canvas', //渲染类型
-    rows: parseInt(document.body.clientHeight / 18), //行数
-    cols: parseInt(document.body.clientWidth / 9),
+    rows: data.rows, //行数
+    cols: data.cols,
     convertEol: false, //启用时，光标将设置为下一行的开头
     scrollback: 10, //终端中的回滚量
     disableStdin: false, //是否应禁用输入
     cursorStyle: 'underline', //光标样式
     cursorBlink: true, //光标闪烁
     theme: {
-      foreground: 'green', //字体
+      foreground: 'white', //字体
       background: '#060101', //背景色
       cursor: 'help', //设置光标
     },
   });
   //绑定dom
   data.term.open(document.getElementById('xterm'));
-  //终端适应父元素大小
-  const fitAddon = new FitAddon();
+
   data.term.loadAddon(fitAddon);
   fitAddon.fit();
   //获取终端的焦点
@@ -81,14 +87,26 @@ const initTerm = () => {
     _data.socket.send(JSON.stringify(msgOrder));
   });
 
-  window.onresize = () => {
-    const cols = parseInt(document.body.clientWidth / 9);
-    const rows = parseInt(document.body.clientHeight / 18);
-    data.term.resize(cols, rows);
+  window.onresize = debounce(() => {
+    data.cols = parseInt(document.body.clientWidth / 9);
+    data.rows = parseInt(document.body.clientHeight / 18);
+    data.term.resize(data.cols, data.rows);
     fitAddon.fit();
-    data.socket.send('{"operation":"resize", "cols":' + cols + ',"rows":' + rows + '}');
+    data.socket.send('{"operation":"resize", "cols":' + data.cols + ',"rows":' + data.rows + '}');
+  }, 300);
+};
+
+// 添加防抖函数
+const debounce = (func, wait) => {
+  let timeout;
+  return function () {
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      func.apply(this, arguments);
+    }, wait);
   };
 };
+
 const initSocket = () => {
   if (data.socket !== null) {
     return;
@@ -105,6 +123,8 @@ const initSocket = () => {
   //实例化
   data.socket = new WebSocket(terminalWsUrl, [localStorage.getItem('token')]);
 
+  //连接成功时的方法
+  socketOnOpen();
   //关闭连接时的方法
   socketOnClose();
   //接收消息的方法
@@ -113,12 +133,14 @@ const initSocket = () => {
   socketOnError();
 };
 
+const socketOnOpen = () => {
+  data.socket.onopen = () => {
+    data.socket.send('{"operation":"resize", "cols":' + data.cols + ',"rows":' + data.rows + '}');
+  };
+};
+
 const socketOnMessage = () => {
   data.socket.onmessage = (msg) => {
-    const cols = parseInt(document.body.clientWidth / 9);
-    const rows = parseInt(document.body.clientHeight / 18);
-    data.socket.send('{"operation":"resize", "cols":' + cols + ',"rows":' + rows + '}');
-
     //接收到消息后将字符串转为对象，输出data内容
     let content = JSON.parse(msg.data);
     data.term.write(content.data);
