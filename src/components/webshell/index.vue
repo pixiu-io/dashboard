@@ -63,7 +63,7 @@ const initTerm = () => {
     cursorStyle: 'underline', //光标样式
     cursorBlink: true, //光标闪烁
     theme: {
-      foreground: 'white', //字体
+      foreground: 'green', //字体
       background: '#060101', //背景色
       cursor: 'help', //设置光标
     },
