@@ -1,13 +1,14 @@
 <template>
-  <el-card class="title-card-container">
-    <div class="font-container">节点管理</div>
-    <PiXiuYaml :refresh="getNodes"></PiXiuYaml>
-  </el-card>
+  <div class="title-card-container2">
+    <div style="flex-grow: 1">
+      <PiXiuYaml :refresh="getNodes" title="节点管理" displayNamespace="false"></PiXiuYaml>
+    </div>
+  </div>
 
   <div style="margin-top: 25px">
     <el-row>
       <el-col>
-        <button class="pixiu-two-button" @click="createStorageClass">新建</button>
+        <button class="pixiu-two-button">新建</button>
         <button class="pixiu-two-button2" style="margin-left: 10px" @click="getNodes">刷新</button>
 
         <div style="margin-left: 8px; float: right; margin-top: 6px">

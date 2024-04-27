@@ -12,10 +12,14 @@
       <el-option v-for="item in data.clusters" :key="item" :value="item" :label="item" />
     </el-select> -->
 
-    <div style="margin-left: 20px; font-size: 13px; color: #29292b; font-weight: bold">
+    <div
+      v-if="displayNamespace === 'true'"
+      style="margin-left: 20px; font-size: 13px; color: #29292b; font-weight: bold"
+    >
       命名空间
     </div>
     <el-select
+      v-if="displayNamespace === 'true'"
       v-model="data.nsData.namespace"
       filterable
       style="width: 150px; margin-left: 8px"
@@ -39,8 +43,10 @@
         @click="getNamespaces"
       />
     </div> -->
-
-    <div style="margin-left: 6px; font-size: 14px; color: #29292b; font-weight: bold">
+    <div
+      v-if="displayNamespace === 'false'"
+      style="margin-left: 20px; font-size: 16px; color: #29292b; font-weight: bold"
+    >
       {{ title }}
     </div>
 
@@ -165,6 +171,10 @@ const props = defineProps({
   title: {
     type: String,
     default: '',
+  },
+  displayNamespace: {
+    type: String,
+    default: 'true',
   },
 });
 
