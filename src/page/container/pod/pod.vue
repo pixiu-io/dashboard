@@ -606,6 +606,7 @@ import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { getNode } from '@/services/kubernetes/nodeService';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import PixiuLog from '@/components/pixiulog/index.vue';
+import { getRawEventList, deleteEvent } from '@/services/kubernetes/eventService';
 
 const { toClipboard } = useClipboard();
 const { proxy } = getCurrentInstance();
@@ -746,7 +747,24 @@ const handleEventDrawer = (row) => {
 };
 
 const getPodEvents = async () => {
-  console.log('ddd');
+  data.eventData.loading = true;
+  const [result, err] = await getRawEventList(
+    data.cluster,
+    data.eventData.pod.metadata.uid,
+    data.eventData.pod.metadata.namespace,
+    data.eventData.pod.metadata.name,
+    '',
+    false,
+  );
+  data.eventData.loading = false;
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.eventData.events = result;
+  data.eventData.pageEventInfo.total = result.length;
+  data.eventData.eventTableData = getTableData(data.eventData.pageEventInfo, data.eventData.events);
 };
 
 const closeEventDrawer = () => {
