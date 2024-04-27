@@ -12,9 +12,13 @@
       <el-option v-for="item in data.clusters" :key="item" :value="item" :label="item" />
     </el-select> -->
 
+    <div style="margin-left: 20px; font-size: 14px; color: #29292b; font-weight: bold">
+      {{ data.clusterName }}
+    </div>
+
     <div
       v-if="displayNamespace === 'true'"
-      style="margin-left: 20px; font-size: 13px; color: #29292b"
+      style="margin-left: 10px; font-size: 13px; color: #29292b"
     >
       |
     </div>
@@ -147,6 +151,7 @@ const editYaml = ref();
 
 const data = reactive({
   cluster: '',
+  clusterName: '',
   clusters: [],
   yamlDialog: false,
   yaml: '',
@@ -189,8 +194,13 @@ onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
   data.nsData.namespace = getLocalNamespace();
 
+  getLocalClusterName();
   getNamespaces();
 });
+
+const getLocalClusterName = () => {
+  data.clusterName = localStorage.getItem(data.cluster);
+};
 
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
@@ -209,6 +219,8 @@ const getNamespaces = async () => {
     data.nsData.namespaceList.push(ns.metadata.name);
   }
 };
+
+const getClusters = async () => {};
 
 watch(() => {
   if (data.fromSize === 'small') {
