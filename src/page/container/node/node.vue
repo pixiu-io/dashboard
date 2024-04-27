@@ -600,6 +600,27 @@ const getNodeEvents = async () => {
   data.eventData.eventTableData = getTableData(data.eventData.pageEventInfo, data.eventData.events);
 };
 
+const closeEventDrawer = () => {
+  data.eventData = {
+    drawer: false,
+    loading: false,
+    width: '80%',
+    node: '',
+    eventTableData: [],
+    events: [],
+    multipleEventSelection: [],
+    pageEventInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      search: {
+        field: 'name',
+        searchInfo: '',
+      },
+    },
+  };
+};
+
 const cordon = (row) => {
   if (row.spec.unschedulable === true) {
     return;
