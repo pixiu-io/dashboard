@@ -1,7 +1,9 @@
 <template>
-  <el-card class="title-card-container">
-    <div class="font-container">基本信息</div>
-  </el-card>
+  <div class="title-card-container2">
+    <div style="flex-grow: 1">
+      <PiXiuYaml title="基本信息" displayNamespace="false"></PiXiuYaml>
+    </div>
+  </div>
 
   <dev class="one-line-style">
     <el-card class="content1-card-container">
