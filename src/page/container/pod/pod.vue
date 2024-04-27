@@ -754,7 +754,7 @@ const getPodEvents = async () => {
     data.eventData.pod.metadata.namespace,
     data.eventData.pod.metadata.name,
     '',
-    false,
+    true,
   );
   data.eventData.loading = false;
   if (err) {

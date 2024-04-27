@@ -322,7 +322,7 @@
             style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
             ><WarningFilled
           /></el-icon>
-          <div style="vertical-align: middle; margin-top: -40px">查看 Pod 的资源状态</div>
+          <div style="vertical-align: middle; margin-top: -40px">查看 Node 的资源状态</div>
         </el-card>
       </div>
     </div>
@@ -429,6 +429,7 @@ import {
   formatNodeRole,
   formatNodeIp,
 } from '@/utils/formatter';
+import { getRawEventList, deleteEvent } from '@/services/kubernetes/eventService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -574,8 +575,29 @@ const onEventChange = (v) => {
 };
 
 const handleEventDrawer = (row) => {
-  data.eventData.pod = row;
+  data.eventData.node = row;
   data.eventData.drawer = true;
+};
+
+const getNodeEvents = async () => {
+  data.eventData.loading = true;
+  const [result, err] = await getRawEventList(
+    data.cluster,
+    data.eventData.node.metadata.name,
+    '',
+    data.eventData.node.metadata.name,
+    'Node',
+    false,
+  );
+  data.eventData.loading = false;
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.eventData.events = result;
+  data.eventData.pageEventInfo.total = result.length;
+  data.eventData.eventTableData = getTableData(data.eventData.pageEventInfo, data.eventData.events);
 };
 
 const cordon = (row) => {
