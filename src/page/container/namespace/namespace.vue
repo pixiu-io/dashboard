@@ -1,8 +1,9 @@
 <template>
-  <el-card class="title-card-container">
-    <div class="font-container">命名空间</div>
-    <PiXiuYaml :refresh="getNamespaces"></PiXiuYaml>
-  </el-card>
+  <div class="title-card-container2">
+    <div style="flex-grow: 1">
+      <PiXiuYaml :refresh="getNamespaces" title="命名空间" displayNamespace="false"></PiXiuYaml>
+    </div>
+  </div>
 
   <div style="margin-top: 25px">
     <el-row>

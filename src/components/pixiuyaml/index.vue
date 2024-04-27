@@ -43,7 +43,10 @@
         @click="getNamespaces"
       />
     </div> -->
-    <div style="margin-left: 6px; font-size: 14px; color: #29292b; font-weight: bold">
+    <div
+      v-if="displayNamespace === 'false'"
+      style="margin-left: 20px; font-size: 16px; color: #29292b; font-weight: bold"
+    >
       {{ title }}
     </div>
 
