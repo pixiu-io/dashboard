@@ -621,6 +621,24 @@ const closeEventDrawer = () => {
     },
   };
 };
+
+const deleteEventsInBatch = async () => {
+  if (data.eventData.multipleEventSelection.length === 0) {
+    proxy.$notify.warning('未选择待删除事件');
+    return;
+  }
+
+  for (let event of data.eventData.multipleEventSelection) {
+    const [result, err] = await deleteEvent(data.cluster, 'default', event);
+    if (err) {
+      proxy.$notify.error(err.response.data.message);
+      return;
+    }
+  }
+  proxy.$notify.success('批量删除事件成功');
+  getNodeEvents();
+};
+
 // 事件函数结束
 
 const cordon = (row) => {

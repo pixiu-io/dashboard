@@ -767,6 +767,30 @@ const getPodEvents = async () => {
   data.eventData.eventTableData = getTableData(data.eventData.pageEventInfo, data.eventData.events);
 };
 
+const handleEventSelectionChange = (events) => {
+  data.eventData.multipleEventSelection = [];
+  for (let event of events) {
+    data.eventData.multipleEventSelection.push(event.metadata.name);
+  }
+};
+
+const deleteEventsInBatch = async () => {
+  if (data.eventData.multipleEventSelection.length === 0) {
+    proxy.$notify.warning('未选择待删除事件');
+    return;
+  }
+
+  for (let event of data.eventData.multipleEventSelection) {
+    const [result, err] = await deleteEvent(data.cluster, data.namespace, event);
+    if (err) {
+      proxy.$notify.error(err.response.data.message);
+      return;
+    }
+  }
+  proxy.$notify.success('批量删除事件成功');
+  getPodEvents();
+};
+
 const closeEventDrawer = () => {
   data.eventData = {
     drawer: false,
