@@ -14,9 +14,16 @@
 
     <div
       v-if="displayNamespace === 'true'"
-      style="margin-left: 20px; font-size: 13px; color: #29292b; font-weight: bold"
+      style="margin-left: 20px; font-size: 13px; color: #29292b"
     >
-      命名空间
+      |
+    </div>
+
+    <div
+      v-if="displayNamespace === 'true'"
+      style="margin-left: 10px; font-size: 13px; color: #29292b"
+    >
+      命名空间:
     </div>
     <el-select
       v-if="displayNamespace === 'true'"
