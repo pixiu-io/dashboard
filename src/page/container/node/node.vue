@@ -120,12 +120,19 @@
               size="small"
               type="text"
               style="margin-right: -26px; margin-left: -10px; color: #006eff"
-              @click="editDeployment(scope.row)"
+              @click="handleMonitorDrawer(scope.row)"
             >
               监控
             </el-button>
 
-            <el-button type="text" size="small" style="color: #006eff"> 事件 </el-button>
+            <el-button
+              type="text"
+              size="small"
+              style="color: #006eff"
+              @click="handleEventDrawer(scope.row)"
+            >
+              事件
+            </el-button>
             <el-dropdown>
               <span class="cluster-dropdown">
                 更多
@@ -288,6 +295,122 @@
   </el-dialog>
 
   <PiXiuViewOrEdit :yaml-dialog="data.yamlDialog" :yaml="data.yaml"></PiXiuViewOrEdit>
+
+  <el-drawer
+    v-model="data.monitorData.drawer"
+    :size="data.drawerWidth"
+    :with-header="false"
+    @open="openMonitorDrawer"
+    @close="closeMonitorDrawer"
+  >
+    <div style="display: flex; flex-direction: column; height: 100%">
+      <div>
+        <div
+          style="
+            text-align: left;
+            font-weight: bold;
+            padding-left: 5px;
+            margin-top: 5px;
+            font-size: 14.5px;
+            color: #191919;
+          "
+        >
+          资源监控
+        </div>
+        <el-card class="app-docs" style="margin-left: 8px; height: 40px">
+          <el-icon
+            style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+            ><WarningFilled
+          /></el-icon>
+          <div style="vertical-align: middle; margin-top: -40px">查看 Node 的资源状态</div>
+        </el-card>
+      </div>
+    </div>
+  </el-drawer>
+
+  <el-drawer
+    v-model="data.eventData.drawer"
+    :size="data.eventData.width"
+    :with-header="false"
+    @close="closeEventDrawer"
+  >
+    <div style="display: flex; flex-direction: column; height: 100%">
+      <div>
+        <div
+          style="
+            text-align: left;
+            font-weight: bold;
+            padding-left: 5px;
+            margin-top: 5px;
+            font-size: 14.5px;
+            color: #191919;
+          "
+        >
+          事件查询
+        </div>
+
+        <el-card class="app-docs" style="margin-left: 8px; height: 40px">
+          <el-icon
+            style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+            ><WarningFilled
+          /></el-icon>
+          <div style="vertical-align: middle; margin-top: -40px">获取 Node 的事件</div>
+        </el-card>
+
+        <el-row>
+          <el-col>
+            <div style="margin-left: 8px">
+              <button class="pixiu-two-button" @click="getNodeEvents">查询</button>
+              <button
+                style="margin-left: 10px; width: 85px"
+                class="pixiu-two-button2"
+                @click="deleteEventsInBatch"
+              >
+                批量删除
+              </button>
+            </div>
+          </el-col>
+        </el-row>
+
+        <div style="margin-top: 25px">
+          <el-table
+            v-loading="data.eventData.loading"
+            :data="data.eventData.eventTableData"
+            stripe
+            style="margin-top: 6px"
+            header-row-class-name="pixiu-table-header"
+            :cell-style="{
+              'font-size': '12px',
+              color: '#191919',
+            }"
+            @selection-change="handleEventSelectionChange"
+          >
+            <el-table-column type="selection" width="30" />
+            <el-table-column
+              prop="lastTimestamp"
+              label="最后出现时间"
+              sortable
+              :formatter="formatterTime"
+            />
+            <el-table-column prop="type" label="级别" />
+            <el-table-column prop="involvedObject.kind" label="资源类型"> </el-table-column>
+            <el-table-column prop="involvedObject.name" label="资源名称" :formatter="formatString">
+            </el-table-column>
+            <el-table-column prop="count" label="出现次数" width="80px"> </el-table-column>
+            <el-table-column prop="message" label="内容" min-width="250px" />
+
+            <template #empty>
+              <div class="table-inline-word">暂无事件</div>
+            </template>
+          </el-table>
+          <pagination
+            :total="data.eventData.pageEventInfo.total"
+            @on-change="onEventChange"
+          ></pagination>
+        </div>
+      </div>
+    </div>
+  </el-drawer>
 </template>
 
 <script setup lang="jsx">
@@ -306,12 +429,16 @@ import {
   formatNodeRole,
   formatNodeIp,
 } from '@/utils/formatter';
+import { getRawEventList, deleteEvent } from '@/services/kubernetes/eventService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
 
 const data = reactive({
   cluster: '',
+
+  drawerWidth: '70%',
+
   pageInfo: {
     page: 1,
     query: '',
@@ -337,6 +464,41 @@ const data = reactive({
   drainData: {
     close: false,
     name: '',
+  },
+
+  pageEventInfo: {
+    page: 1,
+    limit: 10,
+    total: 0,
+    search: {
+      field: 'name',
+      searchInfo: '',
+    },
+  },
+
+  eventData: {
+    drawer: false,
+    loading: false,
+    width: '80%',
+
+    node: '',
+    eventTableData: [],
+    events: [],
+    multipleEventSelection: [],
+
+    pageEventInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      search: {
+        field: 'name',
+        searchInfo: '',
+      },
+    },
+  },
+
+  monitorData: {
+    drawer: false,
   },
 });
 
@@ -394,6 +556,90 @@ const changeScheduleStatus = async (row) => {
     return;
   }
 };
+
+const handleMonitorDrawer = (row) => {
+  data.monitorData.drawer = true;
+};
+
+// 事件函数开始
+const handleEventSelectionChange = (events) => {
+  data.eventData.multipleEventSelection = [];
+  for (let event of events) {
+    data.eventData.multipleEventSelection.push(event.metadata.name);
+  }
+};
+
+const onEventChange = (v) => {
+  data.eventData.pageEventInfo.limit = v.limit;
+  data.eventData.pageEventInfo.page = v.page;
+  data.eventData.eventTableData = getTableData(data.eventData.pageEventInfo, data.eventData.events);
+};
+
+const handleEventDrawer = (row) => {
+  data.eventData.node = row;
+  data.eventData.drawer = true;
+};
+
+const getNodeEvents = async () => {
+  data.eventData.loading = true;
+  const [result, err] = await getRawEventList(
+    data.cluster,
+    data.eventData.node.metadata.name,
+    '',
+    data.eventData.node.metadata.name,
+    'Node',
+    false,
+  );
+  data.eventData.loading = false;
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.eventData.events = result;
+  data.eventData.pageEventInfo.total = result.length;
+  data.eventData.eventTableData = getTableData(data.eventData.pageEventInfo, data.eventData.events);
+};
+
+const closeEventDrawer = () => {
+  data.eventData = {
+    drawer: false,
+    loading: false,
+    width: '80%',
+    node: '',
+    eventTableData: [],
+    events: [],
+    multipleEventSelection: [],
+    pageEventInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      search: {
+        field: 'name',
+        searchInfo: '',
+      },
+    },
+  };
+};
+
+const deleteEventsInBatch = async () => {
+  if (data.eventData.multipleEventSelection.length === 0) {
+    proxy.$notify.warning('未选择待删除事件');
+    return;
+  }
+
+  for (let event of data.eventData.multipleEventSelection) {
+    const [result, err] = await deleteEvent(data.cluster, 'default', event);
+    if (err) {
+      proxy.$notify.error(err.response.data.message);
+      return;
+    }
+  }
+  proxy.$notify.success('批量删除事件成功');
+  getNodeEvents();
+};
+
+// 事件函数结束
 
 const cordon = (row) => {
   if (row.spec.unschedulable === true) {
