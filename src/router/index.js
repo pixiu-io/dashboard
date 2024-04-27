@@ -167,6 +167,7 @@ const routes = [
             name: 'Deployment',
             meta: {
               title: 'deployment',
+              func: 'getDeployments',
             },
             component: Deployment,
           },
@@ -207,6 +208,7 @@ const routes = [
             name: 'Pod',
             meta: {
               title: 'pod',
+              func: 'getPods',
             },
             component: Pod,
           },

@@ -1,7 +1,7 @@
 <template>
-  <div class="title-card-container2">
+  <!-- <div class="title-card-container2">
     <PiXiuYaml :refresh="getDeployments" title=""></PiXiuYaml>
-  </div>
+  </div> -->
 
   <div style="margin-top: 25px">
     <el-row>
@@ -610,7 +610,7 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, onUnmounted, ref, watch } from 'vue';
+import { reactive, getCurrentInstance, onMounted, onUnmounted, ref, watch, provide } from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData, searchData } from '@/utils/utils';
 import PixiuTag from '@/components/pixiuTag/index.vue';
@@ -1100,6 +1100,8 @@ const getDeployments = async () => {
   data.pageInfo.total = data.deploymentList.length;
   data.tableData = getTableData(data.pageInfo, data.deploymentList);
 };
+
+provide('getDeployments', getDeployments);
 
 const searchDeployments = async () => {
   data.tableData = searchData(data.pageInfo, data.deploymentList);

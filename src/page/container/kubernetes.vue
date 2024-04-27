@@ -2,7 +2,7 @@
   <el-container>
     <el-header style="background-color: white">
       <PiXiuYaml
-        :refresh="getNodes"
+        :refresh="inject(route.meta.func)"
         :title="route.meta.title"
         :display-namespace="route.meta.displayNamespace"
       ></PiXiuYaml>
@@ -66,7 +66,7 @@
 </template>
 
 <script setup>
-import { getCurrentInstance, onMounted, reactive, watch } from 'vue';
+import { getCurrentInstance, onMounted, reactive, watch, inject } from 'vue';
 import PixiuMenu from '@/components/menu/index.vue';
 import { useRouter, useRoute } from 'vue-router';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';

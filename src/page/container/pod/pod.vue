@@ -1,10 +1,10 @@
 <template>
-  <div class="title-card-container2">
-    <!-- <div class="font-container2">Pod</div> -->
-    <div style="flex-grow: 1">
+  <!-- <div class="title-card-container2"> -->
+  <!-- <div class="font-container2">Pod</div> -->
+  <!-- <div style="flex-grow: 1">
       <PiXiuYaml :refresh="getPods"></PiXiuYaml>
     </div>
-  </div>
+  </div> -->
   <!-- <el-card class="title-card-container">
     <div class="font-container">Pod</div>
     <div>
@@ -577,7 +577,7 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref, onUnmounted } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref, onUnmounted, provide } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
@@ -1037,6 +1037,8 @@ const getPods = async () => {
   data.pageInfo.total = data.podList.length;
   data.tableData = getTableData(data.pageInfo, data.podList);
 };
+
+provide('getPods', getPods);
 
 const searchPods = async () => {
   data.tableData = searchData(data.pageInfo, data.podList);

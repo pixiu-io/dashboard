@@ -1,9 +1,9 @@
 <template>
-  <div class="title-card-container2">
+  <!-- <div class="title-card-container2">
     <div style="flex-grow: 1">
       <PiXiuYaml :refresh="getNodes" title="节点管理" :display-namespace="false"></PiXiuYaml>
     </div>
-  </div>
+  </div> -->
 
   <div style="margin-top: 25px">
     <el-row>
@@ -416,7 +416,7 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted } from 'vue';
+import { reactive, getCurrentInstance, onMounted, provide } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
@@ -434,6 +434,8 @@ import { getRawEventList, deleteEvent } from '@/services/kubernetes/eventService
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
+
+provide('getNodes', getNodes);
 
 const data = reactive({
   cluster: '',
