@@ -1,7 +1,7 @@
 <template>
   <div class="title-card-container2">
     <div style="flex-grow: 1">
-      <PiXiuYaml :refresh="getNamespaces" title="命名空间" displayNamespace="false"></PiXiuYaml>
+      <PiXiuYaml :refresh="getNamespaces" title="命名空间" :display-namespace="false"></PiXiuYaml>
     </div>
   </div>
 

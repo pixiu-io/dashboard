@@ -1,65 +1,79 @@
 <template>
-  <el-aside style="overflow-x: hidden">
-    <div class="namespace-title-container" style="display: flex">
-      <pixiu-icon
-        name="icon-back"
-        style="cursor: pointer"
-        size="16px"
-        type="iconfont"
-        color="#006eff"
-        @click="goToCluster"
-      />
-      <div
-        style="
-          margin-left: 10px;
-          margin-top: -2px;
-          color: black;
-          font-size: 14px;
-          font-weight: bold;
-        "
-      >
-        <el-tooltip effect="light" placement="bottom" :content="data.clusterContent">
-          <div class="pixiu-ellipsis-style" style="font-size: 14px">{{ data.aliasName }}</div>
-        </el-tooltip>
-      </div>
-    </div>
-    <div style="font-size: 13px; margin-left: 45px; margin-top: 5px; color: #909399">
-      集群({{ data.cluster }})
-    </div>
+  <el-container>
+    <el-header style="background-color: white">
+      <PiXiuYaml
+        :refresh="getNodes"
+        :title="route.meta.title"
+        :display-namespace="route.meta.displayNamespace"
+      ></PiXiuYaml>
+    </el-header>
+    <el-container>
+      <el-aside style="overflow-x: hidden">
+        <div class="namespace-title-container" style="display: flex">
+          <pixiu-icon
+            name="icon-back"
+            style="cursor: pointer"
+            size="16px"
+            type="iconfont"
+            color="#006eff"
+            @click="goToCluster"
+          />
+          <div
+            style="
+              margin-left: 10px;
+              margin-top: -2px;
+              color: black;
+              font-size: 14px;
+              font-weight: bold;
+            "
+          >
+            <el-tooltip effect="light" placement="bottom" :content="data.clusterContent">
+              <div class="pixiu-ellipsis-style" style="font-size: 14px">{{ data.aliasName }}</div>
+            </el-tooltip>
+          </div>
+        </div>
+        <div style="font-size: 13px; margin-left: 45px; margin-top: 5px; color: #909399">
+          集群({{ data.cluster }})
+        </div>
 
-    <!-- <div class="cloud-select-container">
+        <!-- <div class="cloud-select-container">
       <el-select v-model="data.cloud.cluster" style="width: 80%" @change="changeClouds">
         <el-option v-for="item in data.clouds" :key="item.id" :value="item.id" :label="item.id" />
       </el-select>
     </div> -->
 
-    <div style="margin-top: 15px"></div>
-    <el-menu
-      :default-active="data.path"
-      :default-openeds="data.openedMenu"
-      :unique-opened="true"
-      background-color="#f6f7fb"
-      text-color="#000"
-      router
-      class="deployment-container"
-      @open="handleOpen"
-    >
-      <pixiu-menu :items="data.clusterItems" />
-    </el-menu>
-  </el-aside>
+        <div style="margin-top: 15px"></div>
+        <el-menu
+          :default-active="data.path"
+          :default-openeds="data.openedMenu"
+          :unique-opened="true"
+          background-color="#f6f7fb"
+          text-color="#000"
+          router
+          class="deployment-container"
+          @open="handleOpen"
+        >
+          <pixiu-menu :items="data.clusterItems" />
+        </el-menu>
+      </el-aside>
 
-  <!-- 主体 -->
-  <el-main :class="{ 'no-padding': $route.meta.noPadding }">
-    <router-view :key="$route.fullPath" />
-  </el-main>
+      <!-- 主体 -->
+      <el-main :class="{ 'no-padding': $route.meta.noPadding }">
+        <router-view :key="$route.fullPath" />
+      </el-main>
+    </el-container>
+  </el-container>
 </template>
 
 <script setup>
-import { getCurrentInstance, onMounted, reactive } from 'vue';
+import { getCurrentInstance, onMounted, reactive, watch } from 'vue';
 import PixiuMenu from '@/components/menu/index.vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
+import PiXiuYaml from '@/components/pixiuyaml/index.vue';
+import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 
 const router = useRouter();
+const route = useRoute();
 const { proxy } = getCurrentInstance();
 
 const handleOpen = (key, keyPath) => {

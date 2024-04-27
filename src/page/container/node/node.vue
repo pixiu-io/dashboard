@@ -1,7 +1,7 @@
 <template>
   <div class="title-card-container2">
     <div style="flex-grow: 1">
-      <PiXiuYaml :refresh="getNodes" title="节点管理" displayNamespace="false"></PiXiuYaml>
+      <PiXiuYaml :refresh="getNodes" title="节点管理" :display-namespace="false"></PiXiuYaml>
     </div>
   </div>
 
