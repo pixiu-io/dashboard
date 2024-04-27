@@ -15,9 +15,9 @@
     <div style="margin-left: 20px; font-size: 14px; color: #29292b; font-weight: bold">
       {{ data.clusterName }}
     </div>
-    <div style="margin-left: 8px; font-size: 14px; color: #29292b; margin-top: 5px">
+    <!-- <div style="margin-left: 8px; font-size: 14px; color: #29292b; margin-top: 5px">
       <el-icon><ArrowDown /></el-icon>
-    </div>
+    </div> -->
 
     <div
       v-if="displayNamespace === 'true'"
