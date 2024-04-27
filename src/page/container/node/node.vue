@@ -561,6 +561,7 @@ const handleMonitorDrawer = (row) => {
   data.monitorData.drawer = true;
 };
 
+// 事件函数开始
 const handleEventSelectionChange = (events) => {
   data.eventData.multipleEventSelection = [];
   for (let event of events) {
@@ -620,6 +621,7 @@ const closeEventDrawer = () => {
     },
   };
 };
+// 事件函数结束
 
 const cordon = (row) => {
   if (row.spec.unschedulable === true) {
