@@ -1,11 +1,10 @@
 <template>
-  <div class="title-card-container2">
-    <!-- <div class="font-container2">Pod</div> -->
+  <!-- <div class="title-card-container2">
     <div style="flex-grow: 1">
       <PiXiuYaml :refresh="getTaskRuns"></PiXiuYaml>
     </div>
-  </div>
-  <div style="margin-top: 25px">
+  </div> -->
+  <div style="margin-top: 5px">
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createTaskRunPage">新建</button>

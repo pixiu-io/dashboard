@@ -3,7 +3,7 @@
     <PiXiuYaml :refresh="getDeployments" title=""></PiXiuYaml>
   </div> -->
 
-  <div style="margin-top: 25px">
+  <div style="margin-top: 5px">
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createDeployment">新建</button>

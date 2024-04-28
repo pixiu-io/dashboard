@@ -5,7 +5,7 @@
     </div>
   </div> -->
 
-  <div style="margin-top: 25px">
+  <div style="margin-top: 5px">
     <el-row>
       <el-col>
         <button class="pixiu-two-button">新建</button>
@@ -435,8 +435,6 @@ import { getRawEventList, deleteEvent } from '@/services/kubernetes/eventService
 const { proxy } = getCurrentInstance();
 const router = useRouter();
 
-provide('getNodes', getNodes);
-
 const data = reactive({
   cluster: '',
 
@@ -531,6 +529,7 @@ const getNodes = async () => {
   data.pageInfo.total = data.nodeList.length;
   data.tableData = getTableData(data.pageInfo, data.nodeList);
 };
+provide('getNodes', getNodes);
 
 const searchNodes = async () => {
   data.tableData = searchData(data.pageInfo, data.nodeList);

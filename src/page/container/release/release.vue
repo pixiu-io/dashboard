@@ -1,11 +1,11 @@
 <template>
-  <div class="title-card-container2">
+  <!-- <div class="title-card-container2">
     <div style="flex-grow: 1">
       <PiXiuYaml :refresh="getReleases"></PiXiuYaml>
     </div>
-  </div>
+  </div> -->
 
-  <div style="margin-top: 25px">
+  <div style="margin-top: 5px">
     <el-row>
       <el-col>
         <button class="pixiu-two-button">新建</button>
