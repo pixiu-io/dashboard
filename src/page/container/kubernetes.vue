@@ -1,6 +1,8 @@
 <template>
   <el-container>
-    <el-header style="background-color: white">
+    <el-header
+      style="background-color: white; z-index: 1000; box-shadow: var(--el-box-shadow-light)"
+    >
       <PiXiuYaml
         :refresh="inject(route.meta.func)"
         :title="route.meta.title"
