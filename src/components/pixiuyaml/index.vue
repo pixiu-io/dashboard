@@ -1,66 +1,29 @@
 <template>
   <div style="display: flex; width: 100%; align-items: center">
-    <!-- <div style="margin-left: 20px; font-size: 13px; color: #29292b; font-weight: bold">
-      容器集群
-    </div>
-    <el-select
-      v-model="data.cluster"
-      filterable
-      style="width: 150px; margin-left: 8px"
-      @change="changeCluster"
-    >
-      <el-option v-for="item in data.clusters" :key="item" :value="item" :label="item" />
-    </el-select> -->
-
     <div style="margin-left: 20px; font-size: 14px; color: #29292b; font-weight: bold">
       {{ data.clusterName }}
     </div>
-    <!-- <div style="margin-left: 8px; font-size: 14px; color: #29292b; margin-top: 5px">
-      <el-icon><ArrowDown /></el-icon>
-    </div> -->
 
-    <div
-      v-if="displayNamespace === 'true'"
-      style="margin-left: 10px; font-size: 13px; color: #29292b"
-    >
-      |
+    <div v-if="displayNamespace" style="display: flex; align-items: center">
+      <div style="margin-left: 10px; font-size: 13px; color: #29292b">|</div>
+
+      <div style="margin-left: 10px; font-size: 13px; color: #29292b">命名空间:</div>
+      <el-select
+        v-model="data.nsData.namespace"
+        filterable
+        style="width: 150px; margin-left: 8px"
+        @change="changeNamespace"
+      >
+        <el-option
+          v-for="item in data.nsData.namespaceList"
+          :key="item"
+          :value="item"
+          :label="item"
+        />
+      </el-select>
     </div>
 
-    <div
-      v-if="displayNamespace === 'true'"
-      style="margin-left: 10px; font-size: 13px; color: #29292b"
-    >
-      命名空间:
-    </div>
-    <el-select
-      v-if="displayNamespace === 'true'"
-      v-model="data.nsData.namespace"
-      filterable
-      style="width: 150px; margin-left: 8px"
-      @change="changeNamespace"
-    >
-      <el-option
-        v-for="item in data.nsData.namespaceList"
-        :key="item"
-        :value="item"
-        :label="item"
-      />
-    </el-select>
-
-    <!-- <div style="margin-left: 4px; margin-top: 5px">
-      <pixiu-icon
-        name="icon-icon-refresh"
-        style="cursor: pointer"
-        size="14px"
-        type="iconfont"
-        color="#909399"
-        @click="getNamespaces"
-      />
-    </div> -->
-    <div
-      v-if="displayNamespace === 'false'"
-      style="margin-left: 20px; font-size: 14px; color: #29292b; font-weight: bold"
-    >
+    <div v-else style="margin-left: 20px; font-size: 14px; color: #29292b; font-weight: bold">
       {{ title }}
     </div>
 
@@ -107,25 +70,6 @@
         "
       >
         <span> YAML创建资源 </span>
-        <!--
-        <span style="display: flex; align-items: center">
-          <pixiu-icon
-            name="icon-zuixiaohua-01"
-            size="15px"
-            type="iconfont"
-            style="vertical-align: middle; padding-right: 10px; cursor: pointer"
-            color="#909399"
-            @click="exitFullScreen"
-          />
-          <pixiu-icon
-            name="icon-quanpingzuidahua"
-            size="15px"
-            type="iconfont"
-            style="vertical-align: middle; padding-right: 10px; cursor: pointer"
-            color="#909399"
-            @click="fullScreen"
-          />
-        </span> -->
       </div>
     </template>
     <div style="margin-top: -18px"></div>
@@ -188,8 +132,8 @@ const props = defineProps({
     default: '',
   },
   displayNamespace: {
-    type: String,
-    default: 'true',
+    type: Boolean,
+    default: true,
   },
 });
 

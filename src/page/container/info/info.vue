@@ -1,9 +1,9 @@
 <template>
-  <div class="title-card-container2">
+  <!-- <div class="title-card-container2">
     <div style="flex-grow: 1">
-      <PiXiuYaml title="基本信息" displayNamespace="false"></PiXiuYaml>
+      <PiXiuYaml title="基本信息" :display-namespace="false"></PiXiuYaml>
     </div>
-  </div>
+  </div> -->
 
   <dev class="one-line-style">
     <el-card class="content1-card-container">

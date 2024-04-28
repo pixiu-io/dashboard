@@ -123,7 +123,8 @@ const routes = [
             path: 'info',
             name: 'Info',
             meta: {
-              title: 'info',
+              title: '基本信息',
+              displayNamespace: false,
             },
             component: Info,
           },
@@ -131,7 +132,8 @@ const routes = [
             path: 'nodes',
             name: 'Node',
             meta: {
-              title: 'node',
+              title: '节点管理',
+              displayNamespace: false,
             },
             component: Node,
           },
@@ -147,7 +149,8 @@ const routes = [
             path: 'namespaces',
             name: 'Namespace',
             meta: {
-              title: 'namespace',
+              title: '命名空间',
+              displayNamespace: false,
             },
             component: Namespace,
           },
@@ -164,6 +167,7 @@ const routes = [
             name: 'Deployment',
             meta: {
               title: 'deployment',
+              func: 'getDeployments',
             },
             component: Deployment,
           },
@@ -204,6 +208,7 @@ const routes = [
             name: 'Pod',
             meta: {
               title: 'pod',
+              func: 'getPods',
             },
             component: Pod,
           },

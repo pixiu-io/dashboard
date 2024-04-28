@@ -1,11 +1,11 @@
 <template>
-  <div class="title-card-container2">
+  <!-- <div class="title-card-container2">
     <div style="flex-grow: 1">
-      <PiXiuYaml :refresh="getNodes" title="节点管理" displayNamespace="false"></PiXiuYaml>
+      <PiXiuYaml :refresh="getNodes" title="节点管理" :display-namespace="false"></PiXiuYaml>
     </div>
-  </div>
+  </div> -->
 
-  <div style="margin-top: 25px">
+  <div style="margin-top: 5px">
     <el-row>
       <el-col>
         <button class="pixiu-two-button">新建</button>
@@ -416,7 +416,7 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted } from 'vue';
+import { reactive, getCurrentInstance, onMounted, provide } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
@@ -529,6 +529,7 @@ const getNodes = async () => {
   data.pageInfo.total = data.nodeList.length;
   data.tableData = getTableData(data.pageInfo, data.nodeList);
 };
+provide('getNodes', getNodes);
 
 const searchNodes = async () => {
   data.tableData = searchData(data.pageInfo, data.nodeList);

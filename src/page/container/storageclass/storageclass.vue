@@ -1,10 +1,10 @@
 <template>
-  <el-card class="title-card-container">
+  <!-- <el-card class="title-card-container">
     <div class="font-container">StorageClass</div>
     <PiXiuYaml :refresh="syncStorageClasses"></PiXiuYaml>
-  </el-card>
+  </el-card> -->
 
-  <div style="margin-top: 25px">
+  <div style="margin-top: 5px">
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createStorageClass">新建</button>
