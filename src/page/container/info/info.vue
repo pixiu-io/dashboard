@@ -96,7 +96,7 @@
             <span style="margin-left: 6px; font-size: 13px; color: #606266">名称 </span>
           </template>
           <span class="detail-card-style-form2" style="margin-left: 65px">
-            {{ data.clusterForm.name }}
+            {{ data.clusterForm.alias_name }}
           </span>
         </el-form-item>
 
@@ -115,7 +115,9 @@
           <template #label>
             <span style="margin-left: 6px; font-size: 13px; color: #606266">类型 </span>
           </template>
-          <span class="detail-card-style-form2" style="margin-left: 67px"> 标准集群 </span>
+          <span class="detail-card-style-form2" style="margin-left: 67px">
+            <el-tag type="primary">标准集群</el-tag>
+          </span>
         </el-form-item>
 
         <div style="margin-top: -12px"></div>
@@ -133,7 +135,13 @@
           <template #label>
             <span style="margin-left: 6px; font-size: 13px; color: #606266">集群状态 </span>
           </template>
-          <span class="detail-card-style-form2" style="margin-left: 44px"> 运行中 </span>
+          <span class="detail-card-style-form2" style="margin-left: 44px">
+            <div class="pixiu-table-formatter">
+              <el-space>
+                <div class="color-green-word">运行中</div>
+              </el-space>
+            </div>
+          </span>
         </el-form-item>
 
         <div style="margin-top: -12px"></div>
@@ -152,6 +160,7 @@
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 import PixiuCard from '@/components/card/index.vue';
 import { getClustersById } from '@/services/cloudService';
+import { runningFormatter } from '@/utils/formatter';
 
 const { proxy } = getCurrentInstance();
 const ruleFormRef = ref();
