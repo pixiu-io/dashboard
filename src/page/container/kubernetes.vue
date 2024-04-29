@@ -9,7 +9,7 @@
         :display-namespace="route.meta.displayNamespace"
       ></PiXiuYaml>
     </el-header>
-    <el-container>
+    <el-container style="overflow: auto">
       <el-aside style="overflow-x: hidden">
         <!-- <div class="namespace-title-container" style="display: flex">
           <pixiu-icon
