@@ -456,6 +456,11 @@ onMounted(() => {
     data.openedMenu = openMenu;
   }
 });
+
+const goToCluster = () => {
+  const queryParams = { cluster: data.cluster };
+  router.push({ path: '/clusters' });
+};
 </script>
 
 <style scoped="scoped">
