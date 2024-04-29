@@ -1,13 +1,19 @@
 <template>
-  <!-- <div class="title-card-container2">
-    <div style="flex-grow: 1">
-      <PiXiuYaml title="基本信息" :display-namespace="false"></PiXiuYaml>
-    </div>
-  </div> -->
-
   <dev class="one-line-style">
     <el-card class="content1-card-container">
-      <div>集群信息</div>
+      <div
+        style="
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+          margin-top: 2px;
+          font-size: 14.5px;
+          color: #191919;
+        "
+      >
+        集群概览
+      </div>
+
       <div style="margin-top: 8px; width: 100%; border-radius: 0px">
         <el-form-item label="集群名称" class="detail-card-style-form">
           <span class="detail-card-style-form2" style="margin-left: 90px">
@@ -16,7 +22,7 @@
         </el-form-item>
 
         <el-form-item label="集群ID" class="detail-card-style-form">
-          <span class="detail-card-style-form2" style="margin-left: 90px">
+          <span class="detail-card-style-form2" style="margin-left: 60px; margin-top: 10px">
             {{ data.clusterForm.name }}
           </span>
         </el-form-item>
@@ -70,9 +76,76 @@
         </el-form-item>
       </div>
     </el-card>
-    <el-card class="content2-card-container"> 集群资源使用情况</el-card>
+    <el-card class="content2-card-container">
+      <div
+        style="
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+          margin-top: 2px;
+          font-size: 14.5px;
+          color: #191919;
+        "
+      >
+        基本信息
+      </div>
+
+      <div style="margin-top: 8px; width: 100%; border-radius: 0px">
+        <el-form-item>
+          <template #label>
+            <span style="margin-left: 6px; font-size: 13px; color: #606266">名称 </span>
+          </template>
+          <span class="detail-card-style-form2" style="margin-left: 65px">
+            {{ data.clusterForm.name }}
+          </span>
+        </el-form-item>
+
+        <div style="margin-top: -12px"></div>
+
+        <el-form-item>
+          <template #label>
+            <span style="margin-left: 6px; font-size: 13px; color: #606266">集群ID </span>
+          </template>
+          <span class="detail-card-style-form2" style="margin-left: 54px">
+            {{ data.clusterForm.name }}
+          </span>
+        </el-form-item>
+        <div style="margin-top: -12px"></div>
+        <el-form-item>
+          <template #label>
+            <span style="margin-left: 6px; font-size: 13px; color: #606266">类型 </span>
+          </template>
+          <span class="detail-card-style-form2" style="margin-left: 67px"> 标准集群 </span>
+        </el-form-item>
+
+        <div style="margin-top: -12px"></div>
+        <el-form-item>
+          <template #label>
+            <span style="margin-left: 6px; font-size: 13px; color: #606266">
+              <le-tag>集群版本</le-tag>
+            </span>
+          </template>
+          <span class="detail-card-style-form2" style="margin-left: 44px"> v1.28.0 </span>
+        </el-form-item>
+
+        <div style="margin-top: -12px"></div>
+        <el-form-item>
+          <template #label>
+            <span style="margin-left: 6px; font-size: 13px; color: #606266">集群状态 </span>
+          </template>
+          <span class="detail-card-style-form2" style="margin-left: 44px"> 运行中 </span>
+        </el-form-item>
+
+        <div style="margin-top: -12px"></div>
+        <el-form-item>
+          <template #label>
+            <span style="margin-left: 6px; font-size: 13px; color: #606266">集群规模 </span>
+          </template>
+          <span class="detail-card-style-form2" style="margin-left: 44px"> 10 节点 </span>
+        </el-form-item>
+      </div>
+    </el-card>
   </dev>
-  <div><el-card class="content3-card-container"> 核心组件状态</el-card></div>
 </template>
 
 <script setup>
@@ -113,18 +186,18 @@ const getCluster = async () => {
 
 <style>
 .content1-card-container {
-  height: 780px;
-  width: 45%;
-  margin-top: 25px;
-  margin-left: 10px;
+  height: 600px;
+  width: 60%;
+  margin-top: 5px;
+  margin-left: 5px;
   border-radius: 0px;
 }
 
 .content2-card-container {
-  height: 750px;
-  width: 50%;
-  margin-top: 25px;
-  margin-left: 25px;
+  height: 300px;
+  width: 40%;
+  margin-top: 5px;
+  margin-left: 10px;
   margin-right: 10px;
   border-radius: 0px;
 }
