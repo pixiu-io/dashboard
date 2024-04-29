@@ -96,11 +96,12 @@
         >
         </el-table-column>
 
-        <el-table-column label="不可调度">
+        <el-table-column label="可调度">
           <template #default="scope">
             <el-switch
               v-model="scope.row.spec.unschedulable"
               inline-prompt
+              style="--el-switch-on-color: #ff4949; --el-switch-off-color: #13ce66"
               size="small"
               @change="changeScheduleStatus(scope.row)"
             >
