@@ -1,6 +1,15 @@
 <template>
   <div style="display: flex; width: 100%; align-items: center">
-    <div style="margin-left: 20px; font-size: 14px; color: #29292b; font-weight: bold">
+    <pixiu-icon
+      name="icon-back"
+      style="cursor: pointer"
+      size="16px"
+      type="iconfont"
+      color="#006eff"
+      @click="goToCluster"
+    />
+
+    <div style="margin-left: 10px; font-size: 14px; color: #29292b; font-weight: bold">
       {{ data.clusterName }}
     </div>
 
@@ -92,6 +101,8 @@ import MyMonaco from '@/components/monaco/index.vue';
 import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
 import { ElMessage } from 'element-plus';
 import { getNamespaceList, getLocalNamespace } from '@/services/kubernetes/namespaceService';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
 const { proxy } = getCurrentInstance();
 const editYaml = ref();
@@ -144,6 +155,11 @@ onMounted(() => {
   getLocalClusterName();
   getNamespaces();
 });
+
+const goToCluster = () => {
+  const queryParams = { cluster: data.cluster };
+  router.push({ path: '/clusters' });
+};
 
 const getLocalClusterName = () => {
   data.clusterName = localStorage.getItem(data.cluster);

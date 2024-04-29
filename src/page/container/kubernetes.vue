@@ -11,7 +11,7 @@
     </el-header>
     <el-container>
       <el-aside style="overflow-x: hidden">
-        <div class="namespace-title-container" style="display: flex">
+        <!-- <div class="namespace-title-container" style="display: flex">
           <pixiu-icon
             name="icon-back"
             style="cursor: pointer"
@@ -36,7 +36,7 @@
         </div>
         <div style="font-size: 13px; margin-left: 45px; margin-top: 5px; color: #909399">
           集群({{ data.cluster }})
-        </div>
+        </div> -->
 
         <!-- <div class="cloud-select-container">
       <el-select v-model="data.cloud.cluster" style="width: 80%" @change="changeClouds">
