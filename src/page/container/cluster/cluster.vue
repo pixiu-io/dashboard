@@ -159,7 +159,7 @@
                     size="12px"
                     type="iconfont"
                     color="#909399"
-                    @click="copy(scope.row)"
+                    @click="copy(scope.row.name)"
                   />
                 </el-tooltip>
               </div>
@@ -402,29 +402,12 @@ import PixiuRadioCard from '@/components/radioCard/index.vue';
 import Icon from '@/components/pixiuTooltip/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import useCloudStore from '@/stores/useCloud';
-import useClipboard from 'vue-clipboard3';
-import { ElMessage } from 'element-plus';
 import { formatterTime } from '@/utils/formatter';
 import { changeClusterProtected } from '@/services/cloudService';
+import { copy } from '@/utils/utils';
 
 const cloudStore = useCloudStore();
-const { toClipboard } = useClipboard();
 const { proxy } = getCurrentInstance();
-
-const copy = async (val) => {
-  try {
-    await toClipboard(val.name);
-    ElMessage({
-      type: 'success',
-      message: '已复制',
-    });
-  } catch (e) {
-    ElMessage({
-      type: 'error',
-      message: e.valueOf().toString(),
-    });
-  }
-};
 
 onMounted(() => {
   cloudStore.getCloudList();
