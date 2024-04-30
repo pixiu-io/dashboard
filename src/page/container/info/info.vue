@@ -14,67 +14,7 @@
         集群概览
       </div>
 
-      <div style="margin-top: 8px; width: 100%; border-radius: 0px">
-        <el-form-item label="集群名称" class="detail-card-style-form">
-          <span class="detail-card-style-form2" style="margin-left: 90px">
-            {{ data.clusterForm.alias_name }}
-          </span>
-        </el-form-item>
-
-        <el-form-item label="集群ID" class="detail-card-style-form">
-          <span class="detail-card-style-form2" style="margin-left: 60px; margin-top: 10px">
-            {{ data.clusterForm.name }}
-          </span>
-        </el-form-item>
-
-        <el-form-item label="部署类型" class="detail-card-style-form">
-          <span class="detail-card-style-form2" style="margin-left: 90px"> 标准集群 </span>
-        </el-form-item>
-        <el-form-item label="状态" class="detail-card-style-form">
-          <span class="detail-card-style-form2" style="margin-left: 90px">
-            <div class="pixiu-table-formatter">
-              <el-space>
-                <div class="color-green-word">运行中</div>
-              </el-space>
-            </div>
-          </span>
-        </el-form-item>
-        <el-form-item label="所在地域" class="detail-card-style-form">
-          <span class="detail-card-style-form2" style="margin-left: 90px"> 0000 </span>
-        </el-form-item>
-        <el-form-item label="新增资源所属项目" class="detail-card-style-form">
-          <span class="detail-card-style-form2" style="margin-left: 90px"> 0000 </span>
-        </el-form-item>
-        <el-form-item label="集群规格" class="detail-card-style-form">
-          <span class="detail-card-style-form2" style="margin-left: 90px"> 0000 </span>
-        </el-form-item>
-        <el-form-item label="Kubernetes版本" class="detail-card-style-form">
-          <span class="detail-card-style-form2" style="margin-left: 90px">
-            {{ data.clusterForm.kubernetes_version }}
-          </span>
-        </el-form-item>
-        <el-form-item label="运行时组件" class="detail-card-style-form">
-          <span class="detail-card-style-form2" style="margin-left: 90px"> 0000 </span>
-        </el-form-item>
-        <el-form-item label="集群描述" class="detail-card-style-form">
-          <span class="detail-card-style-form2" style="margin-left: 90px"> 0000 </span>
-        </el-form-item>
-        <el-form-item label="貔貅云标签" class="detail-card-style-form">
-          <span class="detail-card-style-form2" style="margin-left: 90px"> 0000 </span>
-        </el-form-item>
-        <el-form-item label="删除保护" class="detail-card-style-form">
-          <span class="detail-card-style-form2" style="margin-left: 90px"> 0000 </span>
-        </el-form-item>
-        <el-form-item label="数据加密" class="detail-card-style-form">
-          <span class="detail-card-style-form2" style="margin-left: 90px"> 0000 </span>
-        </el-form-item>
-        <el-form-item label="ServiceAccountlssuerDiscovery" class="detail-card-style-form">
-          <span class="detail-card-style-form2" style="margin-left: 90px"> 0000 </span>
-        </el-form-item>
-        <el-form-item label="创建时间" class="detail-card-style-form">
-          <span class="detail-card-style-form2" style="margin-left: 90px"> 0000 </span>
-        </el-form-item>
-      </div>
+      <div style="margin-top: 8px; width: 100%; border-radius: 0px"></div>
     </el-card>
     <el-card class="content2-card-container">
       <div
@@ -101,7 +41,6 @@
         </el-form-item>
 
         <div style="margin-top: -12px"></div>
-
         <el-form-item>
           <template #label>
             <span style="margin-left: 6px; font-size: 13px; color: #606266">集群ID </span>
