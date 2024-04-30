@@ -122,7 +122,7 @@
   </dev>
 </template>
 
-<script setup lang="jsx">
+<script setup>
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 import PixiuCard from '@/components/card/index.vue';
 import { getClustersById } from '@/services/cloudService';
