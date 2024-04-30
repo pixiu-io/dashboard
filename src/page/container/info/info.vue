@@ -14,8 +14,12 @@
         集群概览
       </div>
 
+      <!-- <el-card> </el-card>
+      <el-card> </el-card> -->
+
       <div style="margin-top: 8px; width: 100%; border-radius: 0px"></div>
     </el-card>
+
     <el-card class="content2-card-container">
       <div
         style="
