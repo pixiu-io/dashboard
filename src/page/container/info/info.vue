@@ -42,6 +42,9 @@
           <span class="detail-card-style-form2" style="margin-left: 65px">
             {{ data.clusterForm.alias_name }}
           </span>
+          <div style="margin-left: 8px; cursor: pointer">
+            <pixiu-icon name="icon-edit" size="12px" type="iconfont" color="#909399" />
+          </div>
         </el-form-item>
 
         <div style="margin-top: -12px"></div>
@@ -52,6 +55,9 @@
           <span class="detail-card-style-form2" style="margin-left: 54px">
             {{ data.clusterForm.name }}
           </span>
+          <div style="margin-left: 8px; cursor: pointer">
+            <pixiu-icon name="icon-copy" size="12px" type="iconfont" color="#909399" />
+          </div>
         </el-form-item>
 
         <div style="margin-top: -12px"></div>
@@ -62,6 +68,9 @@
           <span class="detail-card-style-form2" style="margin-left: 47px">
             {{ data.apiServer }}
           </span>
+          <div style="margin-left: 8px; cursor: pointer">
+            <pixiu-icon name="icon-copy" size="12px" type="iconfont" color="#909399" />
+          </div>
         </el-form-item>
 
         <div style="margin-top: -12px"></div>
@@ -91,9 +100,12 @@
           </template>
           <span class="detail-card-style-form2" style="margin-left: 44px">
             <div class="pixiu-table-formatter">
-              <el-space>
-                <div class="color-green-word">运行中</div>
-              </el-space>
+              <div style="display: flex">
+                <div>
+                  <pixiu-icon name="icon-circle-dot" size="12px" type="iconfont" color="#28C65A" />
+                </div>
+                <div style="margin-left: 6px">运行中</div>
+              </div>
             </div>
           </span>
         </el-form-item>
@@ -110,7 +122,7 @@
   </dev>
 </template>
 
-<script setup>
+<script setup lang="jsx">
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 import PixiuCard from '@/components/card/index.vue';
 import { getClustersById } from '@/services/cloudService';
