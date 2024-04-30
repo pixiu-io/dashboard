@@ -1,3 +1,8 @@
+import { ElMessage } from 'element-plus';
+import useClipboard from 'vue-clipboard3';
+
+const { toClipboard } = useClipboard();
+
 const awaitWrap = (promise) => {
   return promise.then((data) => [null, data]).catch((err) => [err, null]);
 };
@@ -37,3 +42,19 @@ const searchData = (pageInfo, sourceData) => {
 };
 
 export { searchData };
+
+const copy = async (val) => {
+  try {
+    await toClipboard(val);
+    ElMessage({
+      type: 'success',
+      message: '已复制',
+    });
+  } catch (e) {
+    ElMessage({
+      type: 'error',
+      message: e.valueOf().toString(),
+    });
+  }
+};
+export { copy };

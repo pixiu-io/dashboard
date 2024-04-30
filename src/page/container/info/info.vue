@@ -56,7 +56,13 @@
             {{ data.clusterForm.name }}
           </span>
           <div style="margin-left: 8px; cursor: pointer">
-            <pixiu-icon name="icon-copy" size="12px" type="iconfont" color="#909399" />
+            <pixiu-icon
+              name="icon-copy"
+              size="12px"
+              type="iconfont"
+              color="#909399"
+              @click="copy(data.clusterForm.name)"
+            />
           </div>
         </el-form-item>
 
@@ -69,7 +75,13 @@
             {{ data.apiServer }}
           </span>
           <div style="margin-left: 8px; cursor: pointer">
-            <pixiu-icon name="icon-copy" size="12px" type="iconfont" color="#909399" />
+            <pixiu-icon
+              name="icon-copy"
+              size="12px"
+              type="iconfont"
+              color="#909399"
+              @click="copy(data.apiServer)"
+            />
           </div>
         </el-form-item>
 
@@ -128,6 +140,7 @@ import PixiuCard from '@/components/card/index.vue';
 import { getClustersById } from '@/services/cloudService';
 import { runningFormatter } from '@/utils/formatter';
 import { getConfigMap } from '@/services/kubernetes/configmapService';
+import { copy } from '@/utils/utils';
 
 const { proxy } = getCurrentInstance();
 const ruleFormRef = ref();
