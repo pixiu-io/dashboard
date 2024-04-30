@@ -110,6 +110,17 @@
             {{ data.clusterForm.name }}
           </span>
         </el-form-item>
+
+        <div style="margin-top: -12px"></div>
+        <el-form-item>
+          <template #label>
+            <span style="margin-left: 6px; font-size: 13px; color: #606266">API地址 </span>
+          </template>
+          <span class="detail-card-style-form2" style="margin-left: 47px">
+            {{ data.apiServer }}
+          </span>
+        </el-form-item>
+
         <div style="margin-top: -12px"></div>
         <el-form-item>
           <template #label>
@@ -123,11 +134,11 @@
         <div style="margin-top: -12px"></div>
         <el-form-item>
           <template #label>
-            <span style="margin-left: 6px; font-size: 13px; color: #606266">
-              <le-tag>集群版本</le-tag>
-            </span>
+            <span style="margin-left: 6px; font-size: 13px; color: #606266"> 集群版本 </span>
           </template>
-          <span class="detail-card-style-form2" style="margin-left: 44px"> v1.28.0 </span>
+          <span class="detail-card-style-form2" style="margin-left: 44px">
+            {{ data.clusterForm.kubernetes_version }}
+          </span>
         </el-form-item>
 
         <div style="margin-top: -12px"></div>
@@ -161,6 +172,7 @@ import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 import PixiuCard from '@/components/card/index.vue';
 import { getClustersById } from '@/services/cloudService';
 import { runningFormatter } from '@/utils/formatter';
+import { getConfigMap } from '@/services/kubernetes/configmapService';
 
 const { proxy } = getCurrentInstance();
 const ruleFormRef = ref();
@@ -176,12 +188,16 @@ const data = reactive({
     kubernetes_version: '',
     gmt_create: '',
   },
+
+  apiServer: '',
 });
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
   data.clusterId = localStorage.getItem('clusterId');
+
   getCluster();
+  GetConfigMap();
 });
 
 const getCluster = async () => {
@@ -190,6 +206,31 @@ const getCluster = async () => {
     return;
   }
   data.clusterForm = result;
+};
+
+const GetConfigMap = async () => {
+  const [result, err] = await getConfigMap(data.cluster, 'kube-system', 'kubeadm-config');
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  let s = [];
+  data.configData = result.data.ClusterConfiguration;
+  for (let p of data.configData.split('\n')) {
+    if (p === '') {
+      continue;
+    }
+    if (p.includes('controlPlaneEndpoint')) {
+      const endpoints = p.split('controlPlaneEndpoint: ');
+      if (endpoints.length === 2) {
+        data.apiServer = 'https://' + endpoints[1];
+      }
+    } else {
+      s.push(p);
+    }
+  }
+  const d = s.join('\n');
 };
 </script>
 
@@ -203,7 +244,7 @@ const getCluster = async () => {
 }
 
 .content2-card-container {
-  height: 300px;
+  height: 329px;
   width: 40%;
   margin-top: 5px;
   margin-left: 10px;
