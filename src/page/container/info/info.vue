@@ -390,16 +390,6 @@ const GetNodesAndMetrics = async () => {
 
   console.log('nodeMap', nodeMap);
 };
-
-const GetNodeMetrics = async () => {
-  const [result, err] = await getNodeMetrics(data.cluster);
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-
-  console.log('getNodeMetrics', result);
-};
 </script>
 
 <style>
