@@ -154,7 +154,9 @@
           <template #label>
             <span style="margin-left: 6px; font-size: 13px; color: #606266">集群规模 </span>
           </template>
-          <span class="detail-card-style-form2" style="margin-left: 44px"> 10 节点 </span>
+          <span class="detail-card-style-form2" style="margin-left: 44px">
+            {{ data.nodeData.count }} 节点
+          </span>
         </el-form-item>
       </div>
     </el-card>
@@ -243,9 +245,9 @@ import { getClustersById } from '@/services/cloudService';
 import { runningFormatter } from '@/utils/formatter';
 import { getConfigMapContent } from '@/services/kubernetes/configmapService';
 import { copy } from '@/utils/utils';
+import { getNodeList } from '@/services/kubernetes/nodeService';
 
 const { proxy } = getCurrentInstance();
-const ruleFormRef = ref();
 
 const data = reactive({
   cluster: '',
@@ -264,6 +266,10 @@ const data = reactive({
     networking: {},
     mode: 'iptables',
   },
+
+  nodeData: {
+    count: 0,
+  },
 });
 
 onMounted(() => {
@@ -273,6 +279,7 @@ onMounted(() => {
   getCluster();
   GetConfigMap();
   GetProxyConfig();
+  GetNodes();
 });
 
 const getCluster = async () => {
@@ -310,8 +317,17 @@ const GetProxyConfig = async () => {
     return;
   }
   if (cfg.mode !== 'iptables' && cfg.mode !== '') {
-    ata.configData.mode = cfg.mode;
+    data.configData.mode = cfg.mode;
   }
+};
+
+const GetNodes = async () => {
+  const [result, err] = await getNodeList(data.cluster);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  data.nodeData.count = result.items.length;
 };
 </script>
 
