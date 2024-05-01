@@ -21,7 +21,7 @@
             font-weight: bold;
             padding-left: 5px;
             margin-top: 2px;
-            font-size: 13px;
+            font-size: 14px;
             color: #191919;
           "
         >
@@ -37,7 +37,7 @@
             font-weight: bold;
             padding-left: 5px;
             margin-top: 2px;
-            font-size: 13px;
+            font-size: 14px;
             color: #191919;
           "
         >
