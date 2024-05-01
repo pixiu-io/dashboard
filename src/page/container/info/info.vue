@@ -72,7 +72,7 @@
             <span style="margin-left: 6px; font-size: 13px; color: #606266">API地址 </span>
           </template>
           <span class="detail-card-style-form2" style="margin-left: 47px">
-            {{ data.apiServer }}
+            {{ data.configData.controlPlaneEndpoint }}
           </span>
           <div style="margin-left: 8px; cursor: pointer">
             <pixiu-icon
@@ -80,7 +80,7 @@
               size="12px"
               type="iconfont"
               color="#909399"
-              @click="copy(data.apiServer)"
+              @click="copy(data.configData.controlPlaneEndpoint)"
             />
           </div>
         </el-form-item>
@@ -141,6 +141,7 @@ import { getClustersById } from '@/services/cloudService';
 import { runningFormatter } from '@/utils/formatter';
 import { getConfigMap } from '@/services/kubernetes/configmapService';
 import { copy } from '@/utils/utils';
+import jsYaml from 'js-yaml';
 
 const { proxy } = getCurrentInstance();
 const ruleFormRef = ref();
@@ -157,7 +158,10 @@ const data = reactive({
     gmt_create: '',
   },
 
-  apiServer: '',
+  configData: {
+    controlPlaneEndpoint: '',
+    networking: {},
+  },
 });
 
 onMounted(() => {
@@ -183,22 +187,11 @@ const GetConfigMap = async () => {
     return;
   }
 
-  let s = [];
-  data.configData = result.data.ClusterConfiguration;
-  for (let p of data.configData.split('\n')) {
-    if (p === '') {
-      continue;
-    }
-    if (p.includes('controlPlaneEndpoint')) {
-      const endpoints = p.split('controlPlaneEndpoint: ');
-      if (endpoints.length === 2) {
-        data.apiServer = 'https://' + endpoints[1];
-      }
-    } else {
-      s.push(p);
-    }
-  }
-  const d = s.join('\n');
+  const cd = result.data.ClusterConfiguration;
+  const jsData = jsYaml.load(cd);
+
+  data.configData.controlPlaneEndpoint = 'https://' + jsData.controlPlaneEndpoint;
+  data.configData.networking = jsData.networking;
 };
 </script>
 
