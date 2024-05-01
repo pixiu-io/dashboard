@@ -25,13 +25,7 @@
             color: #191919;
           "
         >
-          <pixiu-icon
-            name="icon-copy"
-            size="18px"
-            type="iconfont"
-            color="#909399"
-            @click="copy(data.configData.networking.dnsDomain)"
-          />
+          <pixiu-icon name="icon-xingzhuang" size="26px" type="iconfont" color="#191919" />
           CPU状态
         </div>
       </el-card>
@@ -47,11 +41,10 @@
             color: #191919;
           "
         >
+          <pixiu-icon name="icon-memory-card-one" size="26px" type="iconfont" color="#191919" />
           内存状态
         </div>
       </el-card>
-
-      <div style="margin-top: 8px; width: 100%; border-radius: 0px"></div>
     </el-card>
 
     <el-card class="content2-card-container">
