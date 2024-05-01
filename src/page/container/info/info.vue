@@ -269,6 +269,16 @@ const data = reactive({
 
   nodeData: {
     count: 0,
+    resources: {
+      cpu: {
+        use: '',
+        total: '',
+      },
+      memory: {
+        use: '',
+        total: '',
+      },
+    },
   },
 });
 
@@ -279,8 +289,7 @@ onMounted(() => {
   getCluster();
   GetConfigMap();
   GetProxyConfig();
-  GetNodes();
-  GetNodeMetrics();
+  GetNodesAndMetrics();
 });
 
 const getCluster = async () => {
@@ -322,13 +331,26 @@ const GetProxyConfig = async () => {
   }
 };
 
-const GetNodes = async () => {
-  const [result, err] = await getNodeList(data.cluster);
-  if (err) {
+const GetNodesAndMetrics = async () => {
+  const [nodes, err1] = await getNodeList(data.cluster);
+  if (err1) {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  data.nodeData.count = result.items.length;
+  data.nodeData.count = nodes.items.length;
+
+  const [metrics, err2] = await getNodeMetrics(data.cluster);
+  if (err2) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+
+  let nodeMap = {};
+  for (let no of nodes.items) {
+    nodeMap[no.metadata.name] = no.status.capacity;
+  }
+
+  console.log('nodeMap', nodeMap);
 };
 
 const GetNodeMetrics = async () => {
