@@ -14,8 +14,9 @@
         集群概览
       </div>
 
-      <!-- <el-card> </el-card>
-      <el-card> </el-card> -->
+      <el-card class="content4-card-container"> </el-card>
+
+      <el-card class="content4-card-container"> </el-card>
 
       <div style="margin-top: 8px; width: 100%; border-radius: 0px"></div>
     </el-card>
@@ -309,6 +310,14 @@ const GetProxyConfig = async () => {
 .content3-card-container {
   height: 380px;
   width: 98.5%;
+  margin-top: 25px;
+  margin-left: 10px;
+  border-radius: 0px;
+}
+
+.content4-card-container {
+  height: 220px;
+  width: 96%;
   margin-top: 25px;
   margin-left: 10px;
   border-radius: 0px;
