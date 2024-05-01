@@ -14,9 +14,35 @@
         集群概览
       </div>
 
-      <el-card class="content4-card-container"> </el-card>
+      <el-card class="content4-card-container" style="margin-top: 20px">
+        <div
+          style="
+            text-align: left;
+            font-weight: bold;
+            padding-left: 5px;
+            margin-top: 2px;
+            font-size: 13px;
+            color: #191919;
+          "
+        >
+          CPU状态
+        </div>
+      </el-card>
 
-      <el-card class="content4-card-container"> </el-card>
+      <el-card class="content4-card-container">
+        <div
+          style="
+            text-align: left;
+            font-weight: bold;
+            padding-left: 5px;
+            margin-top: 2px;
+            font-size: 13px;
+            color: #191919;
+          "
+        >
+          内存状态
+        </div>
+      </el-card>
 
       <div style="margin-top: 8px; width: 100%; border-radius: 0px"></div>
     </el-card>
@@ -291,7 +317,7 @@ const GetProxyConfig = async () => {
 
 <style>
 .content1-card-container {
-  height: 600px;
+  height: 560px;
   width: 60%;
   margin-top: 5px;
   margin-left: 5px;
