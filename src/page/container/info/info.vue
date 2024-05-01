@@ -47,194 +47,216 @@
       </el-card>
     </el-card>
 
-    <el-card class="content2-card-container">
-      <div
-        style="
-          text-align: left;
-          font-weight: bold;
-          padding-left: 5px;
-          margin-top: 2px;
-          font-size: 14.5px;
-          color: #191919;
-        "
-      >
-        基本信息
-      </div>
+    <div style="display: flex; flex-direction: column; width: 40%">
+      <el-card class="content2-card-container">
+        <div
+          style="
+            text-align: left;
+            font-weight: bold;
+            padding-left: 5px;
+            margin-top: 2px;
+            font-size: 14.5px;
+            color: #191919;
+          "
+        >
+          基本信息
+        </div>
 
-      <div style="margin-top: 8px; width: 100%; border-radius: 0px">
-        <el-form-item>
-          <template #label>
-            <span style="margin-left: 6px; font-size: 13px; color: #606266">名称 </span>
-          </template>
-          <span class="detail-card-style-form2" style="margin-left: 65px">
-            {{ data.clusterForm.alias_name }}
-          </span>
-          <div style="margin-left: 8px; cursor: pointer">
-            <pixiu-icon name="icon-edit" size="12px" type="iconfont" color="#909399" />
-          </div>
-        </el-form-item>
+        <div style="margin-top: 8px; width: 100%; border-radius: 0px">
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 6px; font-size: 13px; color: #606266">名称 </span>
+            </template>
+            <span class="detail-card-style-form2" style="margin-left: 65px">
+              {{ data.clusterForm.alias_name }}
+            </span>
+            <div style="margin-left: 8px; cursor: pointer">
+              <pixiu-icon name="icon-edit" size="12px" type="iconfont" color="#909399" />
+            </div>
+          </el-form-item>
+
+          <div style="margin-top: -12px"></div>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 6px; font-size: 13px; color: #606266">集群ID </span>
+            </template>
+            <span class="detail-card-style-form2" style="margin-left: 54px">
+              {{ data.clusterForm.name }}
+            </span>
+            <div style="margin-left: 8px; cursor: pointer">
+              <pixiu-icon
+                name="icon-copy"
+                size="12px"
+                type="iconfont"
+                color="#909399"
+                @click="copy(data.clusterForm.name)"
+              />
+            </div>
+          </el-form-item>
+
+          <div style="margin-top: -12px"></div>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 6px; font-size: 13px; color: #606266">API地址 </span>
+            </template>
+            <span class="detail-card-style-form2" style="margin-left: 47px">
+              {{ data.configData.controlPlaneEndpoint }}
+            </span>
+            <div style="margin-left: 8px; cursor: pointer">
+              <pixiu-icon
+                name="icon-copy"
+                size="12px"
+                type="iconfont"
+                color="#909399"
+                @click="copy(data.configData.controlPlaneEndpoint)"
+              />
+            </div>
+          </el-form-item>
+
+          <div style="margin-top: -12px"></div>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 6px; font-size: 13px; color: #606266">类型 </span>
+            </template>
+            <span class="detail-card-style-form2" style="margin-left: 67px">
+              <el-tag type="primary">标准集群</el-tag>
+            </span>
+          </el-form-item>
+
+          <div style="margin-top: -12px"></div>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 6px; font-size: 13px; color: #606266"> 集群版本 </span>
+            </template>
+            <span class="detail-card-style-form2" style="margin-left: 44px">
+              {{ data.clusterForm.kubernetes_version }}
+            </span>
+          </el-form-item>
+
+          <div style="margin-top: -12px"></div>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 6px; font-size: 13px; color: #606266">集群状态 </span>
+            </template>
+            <span class="detail-card-style-form2" style="margin-left: 44px">
+              <div class="pixiu-table-formatter">
+                <div style="display: flex">
+                  <div>
+                    <pixiu-icon
+                      name="icon-circle-dot"
+                      size="12px"
+                      type="iconfont"
+                      color="#28C65A"
+                    />
+                  </div>
+                  <div style="margin-left: 6px">运行中</div>
+                </div>
+              </div>
+            </span>
+          </el-form-item>
+
+          <div style="margin-top: -12px"></div>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 6px; font-size: 13px; color: #606266">集群规模 </span>
+            </template>
+            <span class="detail-card-style-form2" style="margin-left: 44px">
+              {{ data.nodeData.count }} 节点
+            </span>
+          </el-form-item>
+        </div>
+      </el-card>
+
+      <el-card class="content2-card-container" style="height: 250px">
+        <div
+          style="
+            text-align: left;
+            font-weight: bold;
+            padding-left: 5px;
+            margin-top: 2px;
+            font-size: 14.5px;
+            color: #191919;
+          "
+        >
+          网络信息
+        </div>
+
+        <div style="margin-top: 8px; width: 100%; border-radius: 0px">
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 6px; font-size: 13px; color: #606266">CNI</span>
+            </template>
+            <span class="detail-card-style-form2" style="margin-left: 96px">
+              <el-tag type="primary">flannel</el-tag>
+            </span>
+          </el-form-item>
+        </div>
 
         <div style="margin-top: -12px"></div>
         <el-form-item>
           <template #label>
-            <span style="margin-left: 6px; font-size: 13px; color: #606266">集群ID </span>
-          </template>
-          <span class="detail-card-style-form2" style="margin-left: 54px">
-            {{ data.clusterForm.name }}
-          </span>
-          <div style="margin-left: 8px; cursor: pointer">
-            <pixiu-icon
-              name="icon-copy"
-              size="12px"
-              type="iconfont"
-              color="#909399"
-              @click="copy(data.clusterForm.name)"
-            />
-          </div>
-        </el-form-item>
-
-        <div style="margin-top: -12px"></div>
-        <el-form-item>
-          <template #label>
-            <span style="margin-left: 6px; font-size: 13px; color: #606266">API地址 </span>
-          </template>
-          <span class="detail-card-style-form2" style="margin-left: 47px">
-            {{ data.configData.controlPlaneEndpoint }}
-          </span>
-          <div style="margin-left: 8px; cursor: pointer">
-            <pixiu-icon
-              name="icon-copy"
-              size="12px"
-              type="iconfont"
-              color="#909399"
-              @click="copy(data.configData.controlPlaneEndpoint)"
-            />
-          </div>
-        </el-form-item>
-
-        <div style="margin-top: -12px"></div>
-        <el-form-item>
-          <template #label>
-            <span style="margin-left: 6px; font-size: 13px; color: #606266">类型 </span>
+            <span style="margin-left: 6px; font-size: 13px; color: #606266">服务网络</span>
           </template>
           <span class="detail-card-style-form2" style="margin-left: 67px">
-            <el-tag type="primary">标准集群</el-tag>
+            {{ data.configData.networking.serviceSubnet }}
           </span>
         </el-form-item>
 
         <div style="margin-top: -12px"></div>
         <el-form-item>
           <template #label>
-            <span style="margin-left: 6px; font-size: 13px; color: #606266"> 集群版本 </span>
+            <span style="margin-left: 6px; font-size: 13px; color: #606266">容器网络</span>
           </template>
-          <span class="detail-card-style-form2" style="margin-left: 44px">
-            {{ data.clusterForm.kubernetes_version }}
+          <span class="detail-card-style-form2" style="margin-left: 67px">
+            {{ data.configData.networking.podSubnet }}
           </span>
         </el-form-item>
 
         <div style="margin-top: -12px"></div>
         <el-form-item>
           <template #label>
-            <span style="margin-left: 6px; font-size: 13px; color: #606266">集群状态 </span>
+            <span style="margin-left: 6px; font-size: 13px; color: #606266">DNS域</span>
           </template>
-          <span class="detail-card-style-form2" style="margin-left: 44px">
-            <div class="pixiu-table-formatter">
-              <div style="display: flex">
-                <div>
-                  <pixiu-icon name="icon-circle-dot" size="12px" type="iconfont" color="#28C65A" />
-                </div>
-                <div style="margin-left: 6px">运行中</div>
-              </div>
-            </div>
+          <span class="detail-card-style-form2" style="margin-left: 80px">
+            {{ data.configData.networking.dnsDomain }}
           </span>
+          <div style="margin-left: 8px; cursor: pointer">
+            <pixiu-icon
+              name="icon-copy"
+              size="12px"
+              type="iconfont"
+              color="#909399"
+              @click="copy(data.configData.networking.dnsDomain)"
+            />
+          </div>
         </el-form-item>
 
         <div style="margin-top: -12px"></div>
         <el-form-item>
           <template #label>
-            <span style="margin-left: 6px; font-size: 13px; color: #606266">集群规模 </span>
+            <span style="margin-left: 6px; font-size: 13px; color: #606266">转发模式</span>
           </template>
-          <span class="detail-card-style-form2" style="margin-left: 44px">
-            {{ data.nodeData.count }} 节点
+          <span class="detail-card-style-form2" style="margin-left: 68px">
+            {{ data.configData.mode }}
           </span>
         </el-form-item>
-      </div>
-    </el-card>
+      </el-card>
 
-    <el-card class="content2-card-container" style="height: 250px">
-      <div
-        style="
-          text-align: left;
-          font-weight: bold;
-          padding-left: 5px;
-          margin-top: 2px;
-          font-size: 14.5px;
-          color: #191919;
-        "
-      >
-        网络信息
-      </div>
-
-      <div style="margin-top: 8px; width: 100%; border-radius: 0px">
-        <el-form-item>
-          <template #label>
-            <span style="margin-left: 6px; font-size: 13px; color: #606266">CNI</span>
-          </template>
-          <span class="detail-card-style-form2" style="margin-left: 96px">
-            <el-tag type="primary">flannel</el-tag>
-          </span>
-        </el-form-item>
-      </div>
-
-      <div style="margin-top: -12px"></div>
-      <el-form-item>
-        <template #label>
-          <span style="margin-left: 6px; font-size: 13px; color: #606266">服务网络</span>
-        </template>
-        <span class="detail-card-style-form2" style="margin-left: 67px">
-          {{ data.configData.networking.serviceSubnet }}
-        </span>
-      </el-form-item>
-
-      <div style="margin-top: -12px"></div>
-      <el-form-item>
-        <template #label>
-          <span style="margin-left: 6px; font-size: 13px; color: #606266">容器网络</span>
-        </template>
-        <span class="detail-card-style-form2" style="margin-left: 67px">
-          {{ data.configData.networking.podSubnet }}
-        </span>
-      </el-form-item>
-
-      <div style="margin-top: -12px"></div>
-      <el-form-item>
-        <template #label>
-          <span style="margin-left: 6px; font-size: 13px; color: #606266">DNS域</span>
-        </template>
-        <span class="detail-card-style-form2" style="margin-left: 80px">
-          {{ data.configData.networking.dnsDomain }}
-        </span>
-        <div style="margin-left: 8px; cursor: pointer">
-          <pixiu-icon
-            name="icon-copy"
-            size="12px"
-            type="iconfont"
-            color="#909399"
-            @click="copy(data.configData.networking.dnsDomain)"
-          />
+      <el-card class="content2-card-container" style="height: 200px">
+        <div
+          style="
+            text-align: left;
+            font-weight: bold;
+            padding-left: 5px;
+            margin-top: 2px;
+            font-size: 14.5px;
+            color: #191919;
+          "
+        >
+          连接信息
         </div>
-      </el-form-item>
-
-      <div style="margin-top: -12px"></div>
-      <el-form-item>
-        <template #label>
-          <span style="margin-left: 6px; font-size: 13px; color: #606266">转发模式</span>
-        </template>
-        <span class="detail-card-style-form2" style="margin-left: 68px">
-          {{ data.configData.mode }}
-        </span>
-      </el-form-item>
-    </el-card>
+      </el-card>
+    </div>
   </dev>
 </template>
 
@@ -366,7 +388,7 @@ const GetNodeMetrics = async () => {
 
 <style>
 .content1-card-container {
-  height: 560px;
+  height: 480px;
   width: 60%;
   margin-top: 5px;
   margin-left: 5px;
@@ -375,7 +397,6 @@ const GetNodeMetrics = async () => {
 
 .content2-card-container {
   height: 329px;
-  width: 40%;
   margin-top: 5px;
   margin-left: 10px;
   margin-right: 10px;
@@ -391,7 +412,7 @@ const GetNodeMetrics = async () => {
 }
 
 .content4-card-container {
-  height: 220px;
+  height: 180px;
   width: 96%;
   margin-top: 25px;
   margin-left: 10px;
