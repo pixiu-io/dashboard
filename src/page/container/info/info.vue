@@ -25,6 +25,13 @@
             color: #191919;
           "
         >
+          <pixiu-icon
+            name="icon-copy"
+            size="18px"
+            type="iconfont"
+            color="#909399"
+            @click="copy(data.configData.networking.dnsDomain)"
+          />
           CPU状态
         </div>
       </el-card>
