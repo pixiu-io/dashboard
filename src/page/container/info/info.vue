@@ -245,7 +245,7 @@ import { getClustersById } from '@/services/cloudService';
 import { runningFormatter } from '@/utils/formatter';
 import { getConfigMapContent } from '@/services/kubernetes/configmapService';
 import { copy } from '@/utils/utils';
-import { getNodeList } from '@/services/kubernetes/nodeService';
+import { getNodeList, getNodeMetrics } from '@/services/kubernetes/nodeService';
 
 const { proxy } = getCurrentInstance();
 
@@ -280,6 +280,7 @@ onMounted(() => {
   GetConfigMap();
   GetProxyConfig();
   GetNodes();
+  GetNodeMetrics();
 });
 
 const getCluster = async () => {
@@ -328,6 +329,16 @@ const GetNodes = async () => {
     return;
   }
   data.nodeData.count = result.items.length;
+};
+
+const GetNodeMetrics = async () => {
+  const [result, err] = await getNodeMetrics(data.cluster);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+
+  console.log('getNodeMetrics', result);
 };
 </script>
 

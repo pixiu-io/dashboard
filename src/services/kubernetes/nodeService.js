@@ -50,3 +50,13 @@ export const patchNode = async (cluster, name, data) => {
 
   return [result, err];
 };
+
+export const getNodeMetrics = async (cluster) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: `/pixiu/proxy/${cluster}/apis/metrics.k8s.io/v1beta1/nodes`,
+    }),
+  );
+  return [result, err];
+};
