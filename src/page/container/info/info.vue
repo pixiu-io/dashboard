@@ -1,52 +1,68 @@
 <template>
   <dev class="one-line-style">
-    <el-card class="content1-card-container">
-      <div
-        style="
-          text-align: left;
-          font-weight: bold;
-          padding-left: 5px;
-          margin-top: 2px;
-          font-size: 14.5px;
-          color: #191919;
-        "
-      >
-        集群概览
-      </div>
-
-      <el-card class="content4-card-container" style="margin-top: 20px">
+    <div style="display: flex; flex-direction: column; width: 60%">
+      <el-card class="content1-card-container">
         <div
           style="
             text-align: left;
             font-weight: bold;
             padding-left: 5px;
             margin-top: 2px;
-            font-size: 14px;
+            font-size: 14.5px;
             color: #191919;
           "
         >
-          <pixiu-icon name="icon-xingzhuang" size="26px" type="iconfont" color="#191919" />
-          CPU状态
+          集群概览
         </div>
+
+        <el-card class="content4-card-container" style="margin-top: 20px">
+          <div
+            style="
+              text-align: left;
+              font-weight: bold;
+              padding-left: 5px;
+              margin-top: 2px;
+              font-size: 14px;
+              color: #191919;
+            "
+          >
+            <pixiu-icon name="icon-xingzhuang" size="26px" type="iconfont" color="#191919" />
+            CPU状态
+          </div>
+        </el-card>
+
+        <el-card class="content4-card-container">
+          <div
+            style="
+              text-align: left;
+              font-weight: bold;
+              padding-left: 5px;
+              margin-top: 2px;
+              font-size: 14px;
+              color: #191919;
+            "
+          >
+            <pixiu-icon name="icon-memory-card-one" size="26px" type="iconfont" color="#191919" />
+            内存状态
+          </div>
+        </el-card>
       </el-card>
 
-      <el-card class="content4-card-container">
+      <el-card class="content1-card-container" style="height: 306px">
         <div
           style="
             text-align: left;
             font-weight: bold;
             padding-left: 5px;
             margin-top: 2px;
-            font-size: 14px;
+            font-size: 14.5px;
             color: #191919;
           "
         >
-          <pixiu-icon name="icon-memory-card-one" size="26px" type="iconfont" color="#191919" />
-          内存状态
+          监控分析
         </div>
       </el-card>
-    </el-card>
-
+    </div>
     <div style="display: flex; flex-direction: column; width: 40%">
       <el-card class="content2-card-container">
         <div
@@ -389,7 +405,7 @@ const GetNodeMetrics = async () => {
 <style>
 .content1-card-container {
   height: 480px;
-  width: 60%;
+  /* width: 60%; */
   margin-top: 5px;
   margin-left: 5px;
   border-radius: 0px;
