@@ -60,7 +60,7 @@
                 type="iconfont"
                 class-name="icon-box"
                 color="#909399"
-                @click="copy(scope.row)"
+                @click="copy(scope.row.metadata.name)"
               />
             </el-tooltip>
           </template>
@@ -145,9 +145,7 @@
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref, onUnmounted } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
-import useClipboard from 'vue-clipboard3';
-import { getTableData, searchData } from '@/utils/utils';
+import { getTableData, searchData, copy } from '@/utils/utils';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
@@ -286,21 +284,6 @@ const jumpRoute = (row) => {
       name: row.metadata.name,
     },
   });
-};
-const { toClipboard } = useClipboard();
-const copy = async (val) => {
-  try {
-    await toClipboard(val.metadata.name);
-    ElMessage({
-      type: 'success',
-      message: '已复制',
-    });
-  } catch (e) {
-    ElMessage({
-      type: 'error',
-      message: e.valueOf().toString(),
-    });
-  }
 };
 
 const getConfigMaps = async () => {
