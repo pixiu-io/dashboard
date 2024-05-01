@@ -1,5 +1,6 @@
 import http from '@/utils/http';
 import { awaitWrap } from '@/utils/utils';
+import jsYaml from 'js-yaml';
 
 export const getConfigmapList = async (cluster, namespace) => {
   let url = `/pixiu/proxy/${cluster}/api/v1/namespaces/${namespace}/configmaps`;
@@ -59,4 +60,19 @@ export const createConfigMap = async (cluster, namespace, data) => {
     }),
   );
   return [result, err];
+};
+
+// 获取 cm 的配置内容，并直接转成成 object 返回
+export const getConfigMapContent = async (cluster, namespace, name, key) => {
+  const [result, err] = await getConfigMap(cluster, namespace, name);
+  if (err) {
+    return [result, err.response.data.message];
+  }
+  try {
+    const config = result.data[key];
+    const jsData = jsYaml.load(config);
+    return [jsData, null];
+  } catch (e) {
+    return ['', e];
+  }
 };

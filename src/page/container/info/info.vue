@@ -214,9 +214,8 @@ import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 import PixiuCard from '@/components/card/index.vue';
 import { getClustersById } from '@/services/cloudService';
 import { runningFormatter } from '@/utils/formatter';
-import { getConfigMap } from '@/services/kubernetes/configmapService';
+import { getConfigMapContent } from '@/services/kubernetes/configmapService';
 import { copy } from '@/utils/utils';
-import jsYaml from 'js-yaml';
 
 const { proxy } = getCurrentInstance();
 const ruleFormRef = ref();
@@ -258,30 +257,33 @@ const getCluster = async () => {
 };
 
 const GetConfigMap = async () => {
-  const [result, err] = await getConfigMap(data.cluster, 'kube-system', 'kubeadm-config');
+  const [cfg, err] = await getConfigMapContent(
+    data.cluster,
+    'kube-system',
+    'kubeadm-config',
+    'ClusterConfiguration',
+  );
   if (err) {
-    proxy.$notify.error(err.response.data.message);
+    proxy.$notify.error(err);
     return;
   }
-
-  const cd = result.data.ClusterConfiguration;
-  const jsData = jsYaml.load(cd);
-
-  data.configData.controlPlaneEndpoint = 'https://' + jsData.controlPlaneEndpoint;
-  data.configData.networking = jsData.networking;
+  data.configData.controlPlaneEndpoint = 'https://' + cfg.controlPlaneEndpoint;
+  data.configData.networking = cfg.networking;
 };
 
 const GetProxyConfig = async () => {
-  const [result, err] = await getConfigMap(data.cluster, 'kube-system', 'kube-proxy');
+  const [cfg, err] = await getConfigMapContent(
+    data.cluster,
+    'kube-system',
+    'kube-proxy',
+    'config.conf',
+  );
   if (err) {
-    proxy.$notify.error(err.response.data.message);
+    proxy.$notify.error(err);
     return;
   }
-
-  const config = result.data['config.conf'];
-  const jsData = jsYaml.load(config);
-  if (jsData.mode === 'ipvs') {
-    data.configData.mode = jsData.mode;
+  if (cfg.mode !== 'iptables' && cfg.mode !== '') {
+    ata.configData.mode = cfg.mode;
   }
 };
 </script>
