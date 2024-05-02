@@ -450,8 +450,6 @@ const getClusterServices = async () => {
     proxy.$message.error(err.response.data.message);
     return;
   }
-
-  console.log(service);
 };
 
 const GetNodesAndMetrics = async () => {
