@@ -26,7 +26,7 @@
               color: #191919;
             "
           >
-            <pixiu-icon name="icon-xingzhuang" size="26px" type="iconfont" color="#191919" />
+            <pixiu-icon name="icon-xingzhuang" size="26px" type="iconfont" color="#006eff" />
             CPU状态
           </div>
 
@@ -39,7 +39,7 @@
               <div>{{ data.nodeData.resources.used.cpu }}</div>
               <div style="font-size: 13px; color: #29232b">已使用</div>
             </div>
-            <div style="margin-left: 30%; font-size: 15px; color: #191919">
+            <div style="margin-left: 30%; font-size: 15px; color: #28c65a">
               <div>{{ data.nodeData.resources.usage.cpu }}</div>
               <div style="font-size: 13px; color: #29232b">使用率</div>
             </div>
@@ -57,7 +57,7 @@
               color: #191919;
             "
           >
-            <pixiu-icon name="icon-memory-card-one" size="26px" type="iconfont" color="#191919" />
+            <pixiu-icon name="icon-memory-card-one" size="26px" type="iconfont" color="#006eff" />
             内存状态
           </div>
 
@@ -70,7 +70,7 @@
               <div>{{ data.nodeData.resources.used.memory }}</div>
               <div style="font-size: 13px; color: #29232b">已使用</div>
             </div>
-            <div style="margin-left: 30%; font-size: 15px; color: #191919">
+            <div style="margin-left: 30%; font-size: 15px; color: #28c65a">
               <div>{{ data.nodeData.resources.usage.memory }}</div>
               <div style="font-size: 13px; color: #29232b">使用率</div>
             </div>
@@ -300,8 +300,38 @@
             color: #191919;
           "
         >
-          连接信息
+          集群服务
         </div>
+
+        <div style="margin-top: 8px; width: 100%; border-radius: 0px">
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 6px; font-size: 13px; color: #22ad44; font-weight: bold"
+                >Kubernetes control plane</span
+              >
+            </template>
+            is running
+          </el-form-item>
+          <div style="margin-top: -20px"></div>
+
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 6px; font-size: 13px; color: #22ad44; font-weight: bold"
+                >CoreDNS</span
+              >
+            </template>
+            is running
+          </el-form-item>
+        </div>
+        <div style="margin-top: -20px"></div>
+        <el-form-item>
+          <template #label>
+            <span style="margin-left: 6px; font-size: 13px; color: #22ad44; font-weight: bold"
+              >MetricsServer</span
+            >
+          </template>
+          is running
+        </el-form-item>
       </el-card>
     </div>
   </dev>
@@ -315,6 +345,7 @@ import { runningFormatter } from '@/utils/formatter';
 import { getConfigMapContent } from '@/services/kubernetes/configmapService';
 import { copy } from '@/utils/utils';
 import { getNodeList, getNodeMetrics } from '@/services/kubernetes/nodeService';
+import { getServicesByLabels } from '@/services/kubernetes/serviceService';
 
 const { proxy } = getCurrentInstance();
 
@@ -334,6 +365,12 @@ const data = reactive({
     controlPlaneEndpoint: '',
     networking: {},
     mode: 'iptables',
+  },
+
+  clusterService: {
+    kubernetes: true,
+    coredns: true,
+    metricsServer: true,
   },
 
   nodeData: {
@@ -363,6 +400,7 @@ onMounted(() => {
   GetConfigMap();
   GetProxyConfig();
   GetNodesAndMetrics();
+  getClusterServices();
 });
 
 const getCluster = async () => {
@@ -402,6 +440,18 @@ const GetProxyConfig = async () => {
   if (cfg.mode !== 'iptables' && cfg.mode !== '') {
     data.configData.mode = cfg.mode;
   }
+};
+
+const getClusterServices = async () => {
+  const [service, err] = await getServicesByLabels(data.cluster, [
+    'kubernetes.io/cluster-service=true',
+  ]);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+
+  console.log(service);
 };
 
 const GetNodesAndMetrics = async () => {
