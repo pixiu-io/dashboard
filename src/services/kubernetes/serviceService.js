@@ -56,3 +56,17 @@ export const createService = async (cluster, namespace, data) => {
   );
   return [result, err];
 };
+
+export const getServicesByLabels = async (cluster, labels) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: `/pixiu/proxy/${cluster}/api/v1/services`,
+      data: {
+        labelSelector: labels.join(','),
+        limit: 500,
+      },
+    }),
+  );
+  return [result, err];
+};

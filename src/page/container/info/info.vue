@@ -26,8 +26,23 @@
               color: #191919;
             "
           >
-            <pixiu-icon name="icon-xingzhuang" size="26px" type="iconfont" color="#191919" />
+            <pixiu-icon name="icon-xingzhuang" size="26px" type="iconfont" color="#006eff" />
             CPU状态
+          </div>
+
+          <div style="display: flex; flex-direction: row; margin-top: 15px; margin-left: 15px">
+            <div style="font-size: 16px; color: #191919">
+              <div>{{ data.nodeData.resources.capacity.cpu }}</div>
+              <div style="font-size: 13px; color: #29232b">总计</div>
+            </div>
+            <div style="margin-left: 30%; font-size: 15px; color: #191919">
+              <div>{{ data.nodeData.resources.used.cpu }}</div>
+              <div style="font-size: 13px; color: #29232b">已使用</div>
+            </div>
+            <div style="margin-left: 30%; font-size: 15px; color: #28c65a">
+              <div>{{ data.nodeData.resources.usage.cpu }}</div>
+              <div style="font-size: 13px; color: #29232b">使用率</div>
+            </div>
           </div>
         </el-card>
 
@@ -42,13 +57,28 @@
               color: #191919;
             "
           >
-            <pixiu-icon name="icon-memory-card-one" size="26px" type="iconfont" color="#191919" />
+            <pixiu-icon name="icon-memory-card-one" size="26px" type="iconfont" color="#006eff" />
             内存状态
+          </div>
+
+          <div style="display: flex; flex-direction: row; margin-top: 15px; margin-left: 15px">
+            <div style="font-size: 16px; color: #191919">
+              <div>{{ data.nodeData.resources.capacity.memory }}</div>
+              <div style="font-size: 13px; color: #29232b">总计</div>
+            </div>
+            <div style="margin-left: 30%; font-size: 15px; color: #191919">
+              <div>{{ data.nodeData.resources.used.memory }}</div>
+              <div style="font-size: 13px; color: #29232b">已使用</div>
+            </div>
+            <div style="margin-left: 30%; font-size: 15px; color: #28c65a">
+              <div>{{ data.nodeData.resources.usage.memory }}</div>
+              <div style="font-size: 13px; color: #29232b">使用率</div>
+            </div>
           </div>
         </el-card>
       </el-card>
 
-      <el-card class="content1-card-container" style="height: 306px">
+      <el-card class="content1-card-container" style="height: 385px">
         <div
           style="
             text-align: left;
@@ -270,8 +300,38 @@
             color: #191919;
           "
         >
-          连接信息
+          集群服务
         </div>
+
+        <div style="margin-top: 8px; width: 100%; border-radius: 0px">
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 6px; font-size: 13px; color: #22ad44; font-weight: bold"
+                >Kubernetes control plane</span
+              >
+            </template>
+            is running
+          </el-form-item>
+          <div style="margin-top: -20px"></div>
+
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 6px; font-size: 13px; color: #22ad44; font-weight: bold"
+                >CoreDNS</span
+              >
+            </template>
+            is running
+          </el-form-item>
+        </div>
+        <div style="margin-top: -20px"></div>
+        <el-form-item>
+          <template #label>
+            <span style="margin-left: 6px; font-size: 13px; color: #22ad44; font-weight: bold"
+              >MetricsServer</span
+            >
+          </template>
+          is running
+        </el-form-item>
       </el-card>
     </div>
   </dev>
@@ -285,6 +345,7 @@ import { runningFormatter } from '@/utils/formatter';
 import { getConfigMapContent } from '@/services/kubernetes/configmapService';
 import { copy } from '@/utils/utils';
 import { getNodeList, getNodeMetrics } from '@/services/kubernetes/nodeService';
+import { getServicesByLabels } from '@/services/kubernetes/serviceService';
 
 const { proxy } = getCurrentInstance();
 
@@ -306,16 +367,26 @@ const data = reactive({
     mode: 'iptables',
   },
 
+  clusterService: {
+    kubernetes: true,
+    coredns: true,
+    metricsServer: true,
+  },
+
   nodeData: {
     count: 0,
     resources: {
-      cpu: {
-        use: '',
-        total: '',
+      capacity: {
+        cpu: '',
+        memory: '',
       },
-      memory: {
-        use: '',
-        total: '',
+      usage: {
+        cpu: '',
+        memory: '',
+      },
+      used: {
+        cpu: '',
+        memory: '',
       },
     },
   },
@@ -329,6 +400,7 @@ onMounted(() => {
   GetConfigMap();
   GetProxyConfig();
   GetNodesAndMetrics();
+  getClusterServices();
 });
 
 const getCluster = async () => {
@@ -370,6 +442,16 @@ const GetProxyConfig = async () => {
   }
 };
 
+const getClusterServices = async () => {
+  const [service, err] = await getServicesByLabels(data.cluster, [
+    'kubernetes.io/cluster-service=true',
+  ]);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+};
+
 const GetNodesAndMetrics = async () => {
   const [nodes, err1] = await getNodeList(data.cluster);
   if (err1) {
@@ -378,24 +460,58 @@ const GetNodesAndMetrics = async () => {
   }
   data.nodeData.count = nodes.items.length;
 
+  let cpuTotal = 0;
+  let memoryTotal = 0;
+  for (let node of nodes.items) {
+    const cap = node.status.capacity;
+    // cpu 累加，单位为核
+    cpuTotal += parseInt(cap.cpu);
+    // 内存累加，单位为 Ki
+    const parts = cap.memory.split('Ki');
+    if (parts.length === 2) {
+      memoryTotal += parseFloat(parts[0]);
+    }
+  }
+
   const [metrics, err2] = await getNodeMetrics(data.cluster);
   if (err2) {
     proxy.$message.error(err.response.data.message);
-    return;
   }
 
-  let nodeMap = {};
-  for (let no of nodes.items) {
-    nodeMap[no.metadata.name] = no.status.capacity;
+  let cpuUsage = 0;
+  let memoryUsage = 0;
+  for (let no of metrics.items) {
+    const usage = no.usage;
+    const cpuP = usage.cpu.split('n');
+    if (cpuP.length === 2) {
+      cpuUsage += parseFloat(cpuP[0]);
+    }
+    const memP = usage.memory.split('Ki');
+    if (memP.length === 2) {
+      memoryUsage += parseFloat(memP[0]);
+    }
   }
 
-  console.log('nodeMap', nodeMap);
+  data.nodeData.resources = {
+    capacity: {
+      cpu: cpuTotal + ' Cores',
+      memory: Math.round((memoryTotal / 1024 / 1024) * 100) / 100 + ' GiB',
+    },
+    used: {
+      cpu: Math.round((cpuUsage / 1000 / 1000 / 1000) * 100) / 100 + ' Cores',
+      memory: Math.round((memoryUsage / 1024 / 1024) * 100) / 100 + ' GiB',
+    },
+    usage: {
+      cpu: Math.round((cpuUsage / (cpuTotal * 1000000000)) * 10000) / 100 + '%',
+      memory: Math.round((memoryUsage / memoryTotal) * 10000) / 100 + '%',
+    },
+  };
 };
 </script>
 
 <style>
 .content1-card-container {
-  height: 480px;
+  height: 400px;
   /* width: 60%; */
   margin-top: 5px;
   margin-left: 5px;
@@ -419,7 +535,7 @@ const GetNodesAndMetrics = async () => {
 }
 
 .content4-card-container {
-  height: 180px;
+  height: 140px;
   width: 96%;
   margin-top: 25px;
   margin-left: 10px;
