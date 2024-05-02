@@ -29,6 +29,20 @@
             <pixiu-icon name="icon-xingzhuang" size="26px" type="iconfont" color="#191919" />
             CPU状态
           </div>
+
+          <div>
+            <div>{{ data.nodeData.resources.capacity.cpu }}</div>
+            <div>总计</div>
+          </div>
+          <div>
+            <div>{{ data.nodeData.resources.used.cpu }}</div>
+            <div>已使用</div>
+          </div>
+
+          <div>
+            <div>{{ data.nodeData.resources.usage.cpu }}</div>
+            <div>使用率</div>
+          </div>
         </el-card>
 
         <el-card class="content4-card-container">
