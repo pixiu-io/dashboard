@@ -123,7 +123,7 @@ const routes = [
             path: 'info',
             name: 'Info',
             meta: {
-              title: '基本信息',
+              title: '',
               displayNamespace: false,
             },
             component: Info,
@@ -132,7 +132,7 @@ const routes = [
             path: 'nodes',
             name: 'Node',
             meta: {
-              title: '节点管理',
+              title: '',
               displayNamespace: false,
             },
             component: Node,
@@ -149,7 +149,7 @@ const routes = [
             path: 'namespaces',
             name: 'Namespace',
             meta: {
-              title: '命名空间',
+              title: '',
               displayNamespace: false,
             },
             component: Namespace,
