@@ -61,6 +61,7 @@
         >
           监控分析
         </div>
+        <el-empty description="" />
       </el-card>
     </div>
     <div style="display: flex; flex-direction: column; width: 40%">
