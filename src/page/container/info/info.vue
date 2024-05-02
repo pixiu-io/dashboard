@@ -30,18 +30,19 @@
             CPU状态
           </div>
 
-          <div>
-            <div>{{ data.nodeData.resources.capacity.cpu }}</div>
-            <div>总计</div>
-          </div>
-          <div>
-            <div>{{ data.nodeData.resources.used.cpu }}</div>
-            <div>已使用</div>
-          </div>
-
-          <div>
-            <div>{{ data.nodeData.resources.usage.cpu }}</div>
-            <div>使用率</div>
+          <div style="display: flex; flex-direction: row; margin-top: 15px; margin-left: 15px">
+            <div style="font-size: 16px; color: #191919">
+              <div>{{ data.nodeData.resources.capacity.cpu }}</div>
+              <div style="font-size: 13px; color: #29232b">总计</div>
+            </div>
+            <div style="margin-left: 30%; font-size: 15px; color: #191919">
+              <div>{{ data.nodeData.resources.used.cpu }}</div>
+              <div style="font-size: 13px; color: #29232b">已使用</div>
+            </div>
+            <div style="margin-left: 30%; font-size: 15px; color: #191919">
+              <div>{{ data.nodeData.resources.usage.cpu }}</div>
+              <div style="font-size: 13px; color: #29232b">使用率</div>
+            </div>
           </div>
         </el-card>
 
@@ -59,10 +60,25 @@
             <pixiu-icon name="icon-memory-card-one" size="26px" type="iconfont" color="#191919" />
             内存状态
           </div>
+
+          <div style="display: flex; flex-direction: row; margin-top: 15px; margin-left: 15px">
+            <div style="font-size: 16px; color: #191919">
+              <div>{{ data.nodeData.resources.capacity.memory }}</div>
+              <div style="font-size: 13px; color: #29232b">总计</div>
+            </div>
+            <div style="margin-left: 30%; font-size: 15px; color: #191919">
+              <div>{{ data.nodeData.resources.used.memory }}</div>
+              <div style="font-size: 13px; color: #29232b">已使用</div>
+            </div>
+            <div style="margin-left: 30%; font-size: 15px; color: #191919">
+              <div>{{ data.nodeData.resources.usage.memory }}</div>
+              <div style="font-size: 13px; color: #29232b">使用率</div>
+            </div>
+          </div>
         </el-card>
       </el-card>
 
-      <el-card class="content1-card-container" style="height: 306px">
+      <el-card class="content1-card-container" style="height: 385px">
         <div
           style="
             text-align: left;
@@ -431,7 +447,7 @@ const GetNodesAndMetrics = async () => {
   data.nodeData.resources = {
     capacity: {
       cpu: cpuTotal + ' Cores',
-      memory: Math.round((memoryTotal / 1024 / 1024) * 100) / 100 + ' Gis',
+      memory: Math.round((memoryTotal / 1024 / 1024) * 100) / 100 + ' GiB',
     },
     used: {
       cpu: Math.round((cpuUsage / 1000 / 1000 / 1000) * 100) / 100 + ' Cores',
@@ -447,7 +463,7 @@ const GetNodesAndMetrics = async () => {
 
 <style>
 .content1-card-container {
-  height: 480px;
+  height: 400px;
   /* width: 60%; */
   margin-top: 5px;
   margin-left: 5px;
@@ -471,7 +487,7 @@ const GetNodesAndMetrics = async () => {
 }
 
 .content4-card-container {
-  height: 180px;
+  height: 140px;
   width: 96%;
   margin-top: 25px;
   margin-left: 10px;
