@@ -309,13 +309,13 @@ const data = reactive({
   nodeData: {
     count: 0,
     resources: {
-      cpu: {
-        use: '',
-        total: '',
+      capacity: {
+        cpu: '',
+        memory: '',
       },
-      memory: {
-        use: '',
-        total: '',
+      usage: {
+        cpu: '',
+        memory: '',
       },
     },
   },
@@ -378,18 +378,52 @@ const GetNodesAndMetrics = async () => {
   }
   data.nodeData.count = nodes.items.length;
 
+  let cpuTotal = 0;
+  let memoryTotal = 0;
+  for (let node of nodes.items) {
+    const cap = node.status.capacity;
+    // cpu 累加，单位为核
+    cpuTotal += parseInt(cap.cpu);
+    // 内存累加，单位为 Ki
+    const parts = cap.memory.split('Ki');
+    if (parts.length === 2) {
+      memoryTotal += parseFloat(parts[0]);
+    }
+  }
+
   const [metrics, err2] = await getNodeMetrics(data.cluster);
   if (err2) {
     proxy.$message.error(err.response.data.message);
-    return;
   }
 
-  let nodeMap = {};
-  for (let no of nodes.items) {
-    nodeMap[no.metadata.name] = no.status.capacity;
+  let cpuUsage = 0;
+  let memoryUsage = 0;
+  for (let no of metrics.items) {
+    const usage = no.usage;
+    const cpuP = usage.cpu.split('n');
+    if (cpuP.length === 2) {
+      cpuUsage += parseFloat(cpuP[0]);
+    }
+    const memP = usage.memory.split('Ki');
+    if (memP.length === 2) {
+      memoryUsage += parseFloat(memP[0]);
+    }
   }
 
-  console.log('nodeMap', nodeMap);
+  data.nodeData.resources = {
+    capacity: {
+      cpu: cpuTotal + ' Core',
+      memory: Math.round((memoryTotal / 1024 / 1024) * 100) / 100 + ' Gi',
+    },
+    used: {
+      cpu: Math.round((cpuUsage / 1000 / 1000 / 1000) * 100) / 100 + ' Core',
+      memory: Math.round((memoryUsage / 1024 / 1024) * 100) / 100 + ' Gi',
+    },
+    usage: {
+      cpu: Math.round((cpuUsage / (cpuTotal * 1000000000)) * 10000) / 100 + '%',
+      memory: Math.round((memoryUsage / memoryTotal) * 10000) / 100 + '%',
+    },
+  };
 };
 </script>
 
