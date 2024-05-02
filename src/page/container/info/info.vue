@@ -317,6 +317,10 @@ const data = reactive({
         cpu: '',
         memory: '',
       },
+      used: {
+        cpu: '',
+        memory: '',
+      },
     },
   },
 });
