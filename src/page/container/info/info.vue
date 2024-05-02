@@ -416,12 +416,12 @@ const GetNodesAndMetrics = async () => {
 
   data.nodeData.resources = {
     capacity: {
-      cpu: cpuTotal + ' Core',
-      memory: Math.round((memoryTotal / 1024 / 1024) * 100) / 100 + ' Gi',
+      cpu: cpuTotal + ' Cores',
+      memory: Math.round((memoryTotal / 1024 / 1024) * 100) / 100 + ' Gis',
     },
     used: {
-      cpu: Math.round((cpuUsage / 1000 / 1000 / 1000) * 100) / 100 + ' Core',
-      memory: Math.round((memoryUsage / 1024 / 1024) * 100) / 100 + ' Gi',
+      cpu: Math.round((cpuUsage / 1000 / 1000 / 1000) * 100) / 100 + ' Cores',
+      memory: Math.round((memoryUsage / 1024 / 1024) * 100) / 100 + ' GiB',
     },
     usage: {
       cpu: Math.round((cpuUsage / (cpuTotal * 1000000000)) * 10000) / 100 + '%',
