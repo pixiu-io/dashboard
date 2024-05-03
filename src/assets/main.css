@@ -250,6 +250,11 @@
   box-shadow: var(--el-box-shadow-light);
 }
 
+.detail-card-container {
+  margin-top: 2px;
+  height: 98%;
+}
+
 .contend-card-container {
   margin-top: -20px;
   margin-left: -20px;
