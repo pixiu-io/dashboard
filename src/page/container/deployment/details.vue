@@ -1,6 +1,6 @@
 <template>
   <el-card class="detail-card-container">
-    <div style="display: flex; margin-left: 20px; margin-top: 20px">
+    <div style="display: flex; margin-left: 20px; margin-top: 15px">
       <pixiu-icon name="icon-deploymentunitbeifen" size="40px" type="iconfont" color="#006eff" />
       <div
         class="breadcrumb-create-style"
@@ -15,6 +15,92 @@
           color="#909399"
           @click="copy(data.name)"
         />
+      </div>
+    </div>
+
+    <div style="margin-top: 25px; display: flex">
+      <div style="width: 50%">
+        <el-form>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 20px; font-size: 13px; color: #191919">负载名称 </span>
+            </template>
+            <span class="detail-card-style-form2" style="margin-left: 40px">
+              {{ data.name }}
+            </span>
+          </el-form-item>
+
+          <div style="margin-top: -12px"></div>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 20px; font-size: 13px; color: #191919">状态 </span>
+            </template>
+            <span class="detail-card-style-form2" style="margin-left: 40px">
+              {{ data.name }}
+            </span>
+          </el-form-item>
+
+          <div style="margin-top: -12px"></div>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 20px; font-size: 13px; color: #191919"
+                >实例个数(正常/全部)</span
+              >
+            </template>
+            <span class="detail-card-style-form2" style="margin-left: 40px">
+              {{ data.name }}
+            </span>
+          </el-form-item>
+
+          <div style="margin-top: -12px"></div>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 20px; font-size: 13px; color: #191919">运行时</span>
+            </template>
+            <span class="detail-card-style-form2" style="margin-left: 40px"> 普通运行时 </span>
+          </el-form-item>
+        </el-form>
+      </div>
+
+      <div style="width: 50%">
+        <el-form>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 20px; font-size: 13px; color: #191919">命名空间</span>
+            </template>
+            <span class="detail-card-style-form2" style="margin-left: 40px">
+              {{ data.name }}
+            </span>
+          </el-form-item>
+
+          <div style="margin-top: -12px"></div>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 20px; font-size: 13px; color: #191919">创建时间</span>
+            </template>
+            <span class="detail-card-style-form2" style="margin-left: 40px">
+              {{ data.name }}
+            </span>
+          </el-form-item>
+
+          <div style="margin-top: -12px"></div>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 20px; font-size: 13px; color: #191919">升级策略</span>
+            </template>
+            <span class="detail-card-style-form2" style="margin-left: 40px">
+              {{ data.name }}
+            </span>
+          </el-form-item>
+
+          <div style="margin-top: -12px"></div>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 20px; font-size: 13px; color: #191919">描述</span>
+            </template>
+            <span class="detail-card-style-form2" style="margin-left: 40px"> - </span>
+          </el-form-item>
+        </el-form>
       </div>
     </div>
   </el-card>
