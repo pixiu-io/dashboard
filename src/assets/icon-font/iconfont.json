@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "4766849",
+      "name": "deployment unit",
+      "font_class": "deploymentunit",
+      "unicode": "e7d2",
+      "unicode_decimal": 59346
+    },
+    {
       "icon_id": "7983612",
       "name": "CPU",
       "font_class": "xingzhuang",
@@ -39,13 +46,6 @@
       "font_class": "storage",
       "unicode": "e806",
       "unicode_decimal": 59398
-    },
-    {
-      "icon_id": "27078912",
-      "name": "folder-kubernetes",
-      "font_class": "folder-kubernetes",
-      "unicode": "e637",
-      "unicode_decimal": 58935
     },
     {
       "icon_id": "4765891",
