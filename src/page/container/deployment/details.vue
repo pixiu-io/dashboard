@@ -1,9 +1,21 @@
 <template>
   <el-card class="detail-card-container">
-    <div style="display: flex">
-      <pixiu-icon name="icon-Clouddeployment" size="38px" type="iconfont" color="#006eff" />
-
-      <div>xxx</div>
+    <div style="display: flex; margin-left: 20px; margin-top: 20px">
+      <pixiu-icon name="icon-deploymentunitbeifen" size="40px" type="iconfont" color="#006eff" />
+      <div
+        class="breadcrumb-create-style"
+        style="margin-left: 10px; margin-top: 10px; font-size: 15px"
+      >
+        {{ data.name }}
+        <pixiu-icon
+          name="icon-copy"
+          size="12px"
+          style="cursor: pointer; margin-left: 2px"
+          type="iconfont"
+          color="#909399"
+          @click="copy(data.name)"
+        />
+      </div>
     </div>
   </el-card>
 </template>
@@ -14,7 +26,7 @@ import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
 import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
 import jsYaml from 'js-yaml';
-import { getTableData } from '@/utils/utils';
+import { getTableData, copy } from '@/utils/utils';
 import { formatterTime } from '@/utils/formatter';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
@@ -132,37 +144,6 @@ watch(
     // }
   },
 );
-
-const { toClipboard } = useClipboard();
-const copy = async (val) => {
-  try {
-    await toClipboard(val.metadata.name);
-    ElMessage({
-      type: 'success',
-      message: '已复制',
-    });
-  } catch (e) {
-    ElMessage({
-      type: 'error',
-      message: e.valueOf().toString(),
-    });
-  }
-};
-
-const copyYmal = async () => {
-  try {
-    await toClipboard(data.yaml);
-    ElMessage({
-      type: 'success',
-      message: '已复制',
-    });
-  } catch (e) {
-    ElMessage({
-      type: 'error',
-      message: e.valueOf().toString(),
-    });
-  }
-};
 
 const openShell = (val) => {
   selectedPod.value = val.metadata.name;
