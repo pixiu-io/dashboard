@@ -36,7 +36,12 @@
               <span style="margin-left: 20px; font-size: 13px; color: #191919">状态 </span>
             </template>
             <span class="detail-card-style-form2" style="margin-left: 40px">
-              {{ data.name }}
+              <div style="display: flex">
+                <div>
+                  <pixiu-icon name="icon-circle-dot" size="12px" type="iconfont" color="#28C65A" />
+                </div>
+                <div style="margin-left: 6px">运行中</div>
+              </div>
             </span>
           </el-form-item>
 
@@ -68,8 +73,12 @@
             <template #label>
               <span style="margin-left: 20px; font-size: 13px; color: #191919">命名空间</span>
             </template>
-            <span class="detail-card-style-form2" style="margin-left: 40px">
-              {{ data.name }}
+            <span
+              v-if="data.deployment.metadata && data.deployment.metadata.namespace"
+              class="detail-card-style-form2"
+              style="margin-left: 40px"
+            >
+              {{ data.deployment.metadata.namespace }}
             </span>
           </el-form-item>
 
@@ -78,18 +87,30 @@
             <template #label>
               <span style="margin-left: 20px; font-size: 13px; color: #191919">创建时间</span>
             </template>
-            <span class="detail-card-style-form2" style="margin-left: 40px">
-              {{ data.name }}
+            <span
+              v-if="data.deployment.metadata && data.deployment.metadata.creationTimestamp"
+              class="detail-card-style-form2"
+              style="margin-left: 40px"
+            >
+              {{ data.deployment.metadata.creationTimestamp }}
             </span>
           </el-form-item>
 
           <div style="margin-top: -12px"></div>
           <el-form-item>
             <template #label>
-              <span style="margin-left: 20px; font-size: 13px; color: #191919">升级策略</span>
+              <span style="margin-left: 20px; font-size: 13px; color: #191919">更新策略</span>
             </template>
-            <span class="detail-card-style-form2" style="margin-left: 40px">
-              {{ data.name }}
+            <span
+              v-if="
+                data.deployment.spec &&
+                data.deployment.spec.strategy &&
+                data.deployment.spec.strategy.type
+              "
+              class="detail-card-style-form2"
+              style="margin-left: 40px"
+            >
+              {{ data.deployment.spec.strategy.type }}
             </span>
           </el-form-item>
 
@@ -98,7 +119,7 @@
             <template #label>
               <span style="margin-left: 20px; font-size: 13px; color: #191919">描述</span>
             </template>
-            <span class="detail-card-style-form2" style="margin-left: 40px"> - </span>
+            <span class="detail-card-style-form2" style="margin-left: 68px"> - </span>
           </el-form-item>
         </el-form>
       </div>
@@ -313,7 +334,6 @@ const getDeploymentObject = async () => {
     proxy.$notify.error(err.response.data.message);
     return;
   }
-
   data.deployment = result;
   data.yaml = jsYaml.dump(data.deployment, { quotingType: '"' });
 };
