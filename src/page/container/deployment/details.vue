@@ -1,5 +1,11 @@
 <template>
-  <el-card class="detail-card-container"> </el-card>
+  <el-card class="detail-card-container">
+    <div style="display: flex">
+      <pixiu-icon name="icon-Clouddeployment" size="38px" type="iconfont" color="#006eff" />
+
+      <div>xxx</div>
+    </div>
+  </el-card>
 </template>
 
 <script setup lang="jsx">
