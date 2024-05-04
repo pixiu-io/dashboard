@@ -143,10 +143,10 @@
       @tab-change="handleChange"
     >
       <el-tab-pane label="实例列表" name="first"> </el-tab-pane>
-      <el-tab-pane label="日志" name="second"> </el-tab-pane>
+      <el-tab-pane label="标签信息" name="second"> </el-tab-pane>
       <el-tab-pane label="事件列表" name="third"></el-tab-pane>
       <el-tab-pane label="版本记录" name="four"> </el-tab-pane>
-      <el-tab-pane label="YAML" name="five"></el-tab-pane>
+      <el-tab-pane label="弹性伸缩" name="five"></el-tab-pane>
     </el-tabs>
 
     <div v-if="data.activeName === 'first'" style="margin-left: 12px">
@@ -815,18 +815,9 @@ const getPodRestartCount = (row, column, cellValue) => {
   return <div>{count} 次</div>;
 };
 
-const padZero = (number) => {
-  return number.toString().padStart(2, '0');
-};
-
 const handleClick = (tab, event) => {};
 
 const handleChange = (name) => {};
-
-const goToDeployment = () => {
-  const queryParams = { cluster: data.cluster, namespace: data.namespace };
-  router.push({ path: '/kubernetes/deployments', query: queryParams });
-};
 
 const confirm = () => {
   data.readOnly = true;
