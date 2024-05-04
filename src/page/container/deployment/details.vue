@@ -148,6 +148,85 @@
       <el-tab-pane label="版本记录" name="four"> </el-tab-pane>
       <el-tab-pane label="YAML" name="five"></el-tab-pane>
     </el-tabs>
+
+    <div v-if="data.activeName === 'third'" style="margin-left: 12px">
+      <div>
+        <el-row>
+          <el-col>
+            <div>
+              <!-- <button class="pixiu-two-button" @click="getDeploymentEvents">刷新</button> -->
+              <button
+                style="margin-left: 10px; width: 85px"
+                class="pixiu-two-button2"
+                @click="deleteEventsInBatch"
+              >
+                批量删除
+              </button>
+
+              <div style="margin-left: 8px; float: right; margin-left: 12px">
+                <button class="pixiu-two-button" @click="getDeploymentEvents">搜索</button>
+              </div>
+
+              <el-input
+                v-model="data.pageInfo.search.searchInfo"
+                placeholder="名称搜索关键字"
+                style="width: 480px; float: right"
+                clearable
+                @clear="getDeploymentEvents"
+                @input="getDeploymentEvents"
+              >
+                <template #suffix>
+                  <pixiu-icon
+                    name="icon-search"
+                    style="cursor: pointer"
+                    size="15px"
+                    type="iconfont"
+                    color="#909399"
+                    @click="getDeploymentEvents"
+                  />
+                </template>
+              </el-input>
+              <div style="float: right">
+                <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
+                  style="font-size: 13px; margin-left: 5px; margin-right: 10px"
+                  >自动刷新</span
+                >
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
+      <el-table
+        v-loading="data.loading"
+        :data="data.eventTableData"
+        stripe
+        style="margin-top: 6px"
+        header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#191919',
+        }"
+        @selection-change="handleEventSelectionChange"
+      >
+        <el-table-column type="selection" width="30" />
+        <el-table-column
+          prop="lastTimestamp"
+          label="最后出现时间"
+          sortable
+          :formatter="formatterTime"
+        />
+        <el-table-column prop="type" label="级别" />
+        <el-table-column prop="involvedObject.kind" label="资源类型"> </el-table-column>
+        <el-table-column prop="involvedObject.name" label="资源名称" :formatter="formatterName">
+        </el-table-column>
+        <el-table-column prop="count" label="出现次数"> </el-table-column>
+        <el-table-column prop="message" label="内容" min-width="250px" />
+        <template #empty>
+          <div class="table-inline-word">该 workload 的事件列表为空</div>
+        </template>
+      </el-table>
+      <pagination :total="data.pageEventInfo.total" @on-change="onEventChange"></pagination>
+    </div>
   </el-card>
 </template>
 
