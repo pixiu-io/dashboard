@@ -152,6 +152,16 @@
     <div v-if="data.activeName === 'first'" style="margin-left: 12px">
       <div>
         <el-row>
+          <el-card class="detail-docs">
+            <el-icon
+              style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+              ><WarningFilled
+            /></el-icon>
+            <div style="vertical-align: middle; margin-top: -40px">
+              获取 Deployment 的实时实例列表
+            </div>
+          </el-card>
+
           <el-col>
             <button
               class="pixiu-two-button2"
@@ -283,6 +293,16 @@
 
     <div v-if="data.activeName === 'third'" style="margin-left: 12px">
       <div>
+        <el-card class="detail-docs">
+          <el-icon
+            style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+            ><WarningFilled
+          /></el-icon>
+          <div style="vertical-align: middle; margin-top: -40px">
+            获取 Deployment 的事件列表。事件保存事件为1小时，1小时后自动清理。
+          </div>
+        </el-card>
+
         <el-row>
           <el-col>
             <div>
