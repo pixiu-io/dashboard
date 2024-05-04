@@ -149,6 +149,138 @@
       <el-tab-pane label="YAML" name="five"></el-tab-pane>
     </el-tabs>
 
+    <div v-if="data.activeName === 'first'" style="margin-left: 12px">
+      <div>
+        <el-row>
+          <el-col>
+            <button
+              class="pixiu-two-button2"
+              style="margin-left: 10px; width: 85px"
+              @click="handleBatchDeleteDialog"
+            >
+              批量删除
+            </button>
+
+            <div style="margin-left: 8px; float: right; margin-left: 12px">
+              <button class="pixiu-two-button" @click="searchDeploymentPods">搜索</button>
+            </div>
+
+            <el-input
+              v-model="data.pageInfo.search.searchInfo"
+              placeholder="名称搜索关键字"
+              style="width: 480px; float: right"
+              clearable
+              @clear="getDeploymentPods"
+              @input="searchDeploymentPods"
+            >
+              <template #suffix>
+                <pixiu-icon
+                  name="icon-search"
+                  style="cursor: pointer"
+                  size="15px"
+                  type="iconfont"
+                  color="#909399"
+                  @click="getDeploymentPods"
+                />
+              </template>
+            </el-input>
+            <div style="float: right">
+              <el-switch v-model="data.autoSyncPods" inline-prompt width="36px" /><span
+                style="font-size: 13px; margin-left: 5px; margin-right: 10px"
+                >自动刷新</span
+              >
+            </div>
+          </el-col>
+        </el-row>
+      </div>
+      <el-table
+        v-loading="data.loading"
+        :data="data.tableData"
+        stripe
+        style="margin-top: 6px"
+        header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#191919',
+        }"
+        @selection-change="handlePodSelectionChange"
+      >
+        <el-table-column type="selection" width="30px" />
+        <el-table-column prop="metadata.name" label="实例名称" min-width="70px">
+          <template #default="scope">
+            {{ scope.row.metadata.name }}
+            <el-tooltip content="复制">
+              <pixiu-icon
+                name="icon-copy"
+                size="11px"
+                type="iconfont"
+                class-name="icon-box"
+                color="#909399"
+                @click="copy(scope.row)"
+              />
+            </el-tooltip>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="status" label="状态" :formatter="formatterStatus" />
+        <el-table-column prop="status.hostIP" label="所在节点" />
+
+        <el-table-column prop="status.podIP" label="实例IP">
+          <template #default="scope">
+            {{ scope.row.status.podIP }}
+            <el-tooltip content="复制">
+              <pixiu-icon
+                name="icon-copy"
+                size="11px"
+                type="iconfont"
+                class-name="icon-box"
+                color="#909399"
+                @click="copyIP(scope.row)"
+              />
+            </el-tooltip>
+          </template>
+        </el-table-column>
+
+        <el-table-column
+          prop="status.containerStatuses"
+          label="重启次数"
+          :formatter="getPodRestartCount"
+        />
+
+        <el-table-column
+          prop="metadata.creationTimestamp"
+          label="创建时间"
+          :formatter="formatterTime"
+        />
+        <el-table-column fixed="right" label="操作" width="160px">
+          <template #default="scope">
+            <el-button
+              size="small"
+              type="text"
+              style="margin-right: -25px; margin-left: -10px; color: #006eff"
+              @click="handleDeleteDialog(scope.row)"
+            >
+              删除
+            </el-button>
+
+            <el-button
+              type="text"
+              size="small"
+              style="margin-right: 1px; color: #006eff"
+              @click="openShell(scope.row)"
+            >
+              远程登陆
+            </el-button>
+          </template>
+        </el-table-column>
+        <template #empty>
+          <div class="table-inline-word">该 workload 的实例列表为空</div>
+        </template>
+      </el-table>
+
+      <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
+    </div>
+
     <div v-if="data.activeName === 'third'" style="margin-left: 12px">
       <div>
         <el-row>
