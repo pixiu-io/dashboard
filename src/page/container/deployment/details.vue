@@ -219,35 +219,32 @@
         <el-table-column prop="metadata.name" label="实例名称" min-width="70px">
           <template #default="scope">
             {{ scope.row.metadata.name }}
-            <el-tooltip content="复制">
-              <pixiu-icon
-                name="icon-copy"
-                size="11px"
-                type="iconfont"
-                class-name="icon-box"
-                color="#909399"
-                @click="copy(scope.row)"
-              />
-            </el-tooltip>
+            <pixiu-icon
+              name="icon-copy"
+              size="11px"
+              type="iconfont"
+              class-name="icon-box"
+              color="#909399"
+              style="cursor: pointer"
+              @click="copy(scope.row.metadata.name)"
+            />
           </template>
         </el-table-column>
 
         <el-table-column prop="status" label="状态" :formatter="formatterStatus" />
         <el-table-column prop="status.hostIP" label="所在节点" />
-
         <el-table-column prop="status.podIP" label="实例IP">
           <template #default="scope">
             {{ scope.row.status.podIP }}
-            <el-tooltip content="复制">
-              <pixiu-icon
-                name="icon-copy"
-                size="11px"
-                type="iconfont"
-                class-name="icon-box"
-                color="#909399"
-                @click="copyIP(scope.row)"
-              />
-            </el-tooltip>
+            <pixiu-icon
+              name="icon-copy"
+              size="11px"
+              type="iconfont"
+              class-name="icon-box"
+              style="cursor: pointer"
+              color="#909399"
+              @click="copy(scope.row.status.podIP)"
+            />
           </template>
         </el-table-column>
 
@@ -299,7 +296,7 @@
             ><WarningFilled
           /></el-icon>
           <div style="vertical-align: middle; margin-top: -40px">
-            获取 Deployment 的事件列表。事件保存事件为1小时，1小时后自动清理。
+            事件保存事件为1小时，1小时后自动清理。
           </div>
         </el-card>
 
