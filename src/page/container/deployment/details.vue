@@ -25,7 +25,7 @@
             <template #label>
               <span style="margin-left: 20px; font-size: 13px; color: #191919">负载名称 </span>
             </template>
-            <span class="detail-card-style-form2" style="margin-left: 40px">
+            <span class="detail-card-style-form2" style="margin-left: 106px">
               {{ data.name }}
             </span>
           </el-form-item>
@@ -35,7 +35,7 @@
             <template #label>
               <span style="margin-left: 20px; font-size: 13px; color: #191919">状态 </span>
             </template>
-            <span class="detail-card-style-form2" style="margin-left: 40px">
+            <span class="detail-card-style-form2" style="margin-left: 132px">
               <div style="display: flex">
                 <div>
                   <pixiu-icon name="icon-circle-dot" size="12px" type="iconfont" color="#28C65A" />
@@ -62,7 +62,7 @@
             <template #label>
               <span style="margin-left: 20px; font-size: 13px; color: #191919">运行时</span>
             </template>
-            <span class="detail-card-style-form2" style="margin-left: 40px"> 普通运行时 </span>
+            <span class="detail-card-style-form2" style="margin-left: 120px"> 普通运行时 </span>
           </el-form-item>
         </el-form>
       </div>
@@ -76,7 +76,7 @@
             <span
               v-if="data.deployment.metadata && data.deployment.metadata.namespace"
               class="detail-card-style-form2"
-              style="margin-left: 40px"
+              style="margin-left: 106px"
             >
               {{ data.deployment.metadata.namespace }}
             </span>
@@ -90,7 +90,7 @@
             <span
               v-if="data.deployment.metadata && data.deployment.metadata.creationTimestamp"
               class="detail-card-style-form2"
-              style="margin-left: 40px"
+              style="margin-left: 106px"
             >
               {{ data.deployment.metadata.creationTimestamp }}
             </span>
@@ -108,7 +108,7 @@
                 data.deployment.spec.strategy.type
               "
               class="detail-card-style-form2"
-              style="margin-left: 40px"
+              style="margin-left: 106px"
             >
               {{ data.deployment.spec.strategy.type }}
             </span>
@@ -119,7 +119,7 @@
             <template #label>
               <span style="margin-left: 20px; font-size: 13px; color: #191919">描述</span>
             </template>
-            <span class="detail-card-style-form2" style="margin-left: 68px"> - </span>
+            <span class="detail-card-style-form2" style="margin-left: 132px"> - </span>
           </el-form-item>
         </el-form>
       </div>
