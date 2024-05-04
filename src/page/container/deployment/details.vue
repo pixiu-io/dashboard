@@ -146,7 +146,8 @@
       <el-tab-pane label="标签信息" name="second"> </el-tab-pane>
       <el-tab-pane label="事件列表" name="third"></el-tab-pane>
       <el-tab-pane label="版本记录" name="four"> </el-tab-pane>
-      <el-tab-pane label="弹性伸缩" name="five"></el-tab-pane>
+      <el-tab-pane label="日志查询" name="five"></el-tab-pane>
+      <el-tab-pane label="弹性伸缩" name="six"></el-tab-pane>
     </el-tabs>
 
     <div v-if="data.activeName === 'first'" style="margin-left: 12px">
