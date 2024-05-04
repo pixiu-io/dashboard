@@ -76,3 +76,12 @@ export const patchDeployment = async (cluster, namespace, name, data) => {
 
   return [result, err];
 };
+
+export const getDeployReady = (deploy) => {
+  let availableReplicas = deploy.status.availableReplicas;
+  if (availableReplicas === undefined) {
+    availableReplicas = 0;
+  }
+
+  return availableReplicas + '/' + deploy.spec.replicas;
+};

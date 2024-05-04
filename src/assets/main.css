@@ -250,6 +250,11 @@
   box-shadow: var(--el-box-shadow-light);
 }
 
+.detail-card-container {
+  margin-top: 2px;
+  height: 98%;
+}
+
 .contend-card-container {
   margin-top: -20px;
   margin-left: -20px;
@@ -500,4 +505,25 @@
 
 .select-no-arrow .el-input__wrapper.is-hovering:not(.is-focused) {
   box-shadow: 0 0 0 1px #fff inset !important;
+}
+
+.detail-docs {
+  height: 40px;
+  width: 100%;
+  font-size: 12px;
+  line-height: inherit;
+  padding: 14px 20px;
+  vertical-align: middle;
+  color: #002da0;
+  border: 1px solid #d5e7ff;
+  border-radius: 0;
+  background: #d5e7ff;
+  position: relative;
+  box-sizing: border-box;
+  margin-left: 8px;
+  margin-right: auto;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
 }
