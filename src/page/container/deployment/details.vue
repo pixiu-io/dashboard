@@ -135,13 +135,25 @@
         </el-form>
       </div>
     </div>
+
+    <el-tabs
+      v-model="data.activeName"
+      style="margin-left: 20px"
+      @tab-click="handleClick"
+      @tab-change="handleChange"
+    >
+      <el-tab-pane label="实例列表" name="first"> </el-tab-pane>
+      <el-tab-pane label="日志" name="second"> </el-tab-pane>
+      <el-tab-pane label="事件列表" name="third"></el-tab-pane>
+      <el-tab-pane label="版本记录" name="four"> </el-tab-pane>
+      <el-tab-pane label="YAML" name="five"></el-tab-pane>
+    </el-tabs>
   </el-card>
 </template>
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
-import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
 import jsYaml from 'js-yaml';
 import { getTableData, copy } from '@/utils/utils';
@@ -166,6 +178,7 @@ const data = reactive({
   clusterName: '',
   name: '',
   namespace: '',
+  activeName: 'first',
 
   workloadType: 'Deployment',
 
@@ -197,8 +210,6 @@ const data = reactive({
   deploymentPods: [],
 
   deploymentEvents: [],
-
-  activeName: 'second',
 
   selectedPods: [],
   selectedPod: '',
@@ -313,29 +324,6 @@ const changeLogLine = async (val) => {
   }
   if (val === '500行日志') {
     data.selectedLog = 500;
-  }
-};
-
-const copyIP = async (val) => {
-  try {
-    if (val.status.podIP === undefined) {
-      ElMessage({
-        type: 'warning',
-        message: '数据为空，无法复制',
-      });
-      return;
-    }
-
-    await toClipboard(val.status.podIP);
-    ElMessage({
-      type: 'success',
-      message: '已复制',
-    });
-  } catch (e) {
-    ElMessage({
-      type: 'error',
-      message: e.valueOf().toString(),
-    });
   }
 };
 
