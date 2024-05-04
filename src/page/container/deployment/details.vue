@@ -52,9 +52,20 @@
                 >实例个数(正常/全部)</span
               >
             </template>
-            <span class="detail-card-style-form2" style="margin-left: 40px">
-              {{ data.name }}
+            <span
+              v-if="data.deployment && data.deployment.status"
+              class="detail-card-style-form2"
+              style="margin-left: 40px"
+            >
+              {{ getDeployReady(data.deployment) }}
             </span>
+            <pixiu-icon
+              name="icon-edit"
+              size="12px"
+              style="margin-left: 8px; cursor: pointer"
+              type="iconfont"
+              color="#909399"
+            />
           </el-form-item>
 
           <div style="margin-top: -12px"></div>
@@ -138,7 +149,7 @@ import { formatterTime } from '@/utils/formatter';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getPodsByLabels, deletePod, getPodLog } from '@/services/kubernetes/podService';
-import { getDeployment } from '@/services/kubernetes/deploymentService';
+import { getDeployment, getDeployReady } from '@/services/kubernetes/deploymentService';
 import { getEventList, deleteEvent } from '@/services/kubernetes/eventService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
