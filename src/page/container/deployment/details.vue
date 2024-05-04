@@ -1,5 +1,10 @@
 <template>
   <el-card class="detail-card-container">
+    <div style="margin-top: 10px; float: right">
+      <button class="pixiu-two-button2" style="width: 60px; margin-right: 6px">日志</button>
+      <button class="pixiu-two-button2" style="width: 60px">刷新</button>
+    </div>
+
     <div style="display: flex; margin-left: 20px; margin-top: 15px">
       <pixiu-icon name="icon-deploymentunitbeifen" size="40px" type="iconfont" color="#006eff" />
       <div
