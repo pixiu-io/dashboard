@@ -84,6 +84,10 @@
         </el-form>
       </div>
     </div>
+
+    <div style="margin-left: 20px">
+      <PixiuData :data="data.secret.data"></PixiuData>
+    </div>
   </el-card>
 </template>
 
@@ -94,6 +98,7 @@ import { formatTimestamp, copy } from '@/utils/utils';
 import { updateSecret, getSecret } from '@/services/kubernetes/secretService';
 import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
+import PixiuData from '@/components/pixiuData/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
