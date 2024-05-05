@@ -322,27 +322,6 @@ const handleEditYamlDialog = async (row) => {
 </script>
 
 <style scoped="scoped">
-/*.font-container {*/
-/*  margin-top: -5px;*/
-/*  font-weight: bold;*/
-/*  font-size: 16px;*/
-/*  vertical-align: middle;*/
-/*}*/
-
-/*.namespace-container {*/
-/*  font-size: 14px;*/
-/*  margin-top: -2px;*/
-/*  margin-right: -60px;*/
-/*  color: #4c4e58;*/
-/*  height: 20px;*/
-/*  padding: 10px;*/
-/*}*/
-/*.tooltip-copy {*/
-/*  overflow: hidden;*/
-/*  white-space: nowrap;*/
-/*  text-overflow: ellipsis;*/
-/*}*/
-
 .icon-box {
   padding: 3px;
   margin-top: -1px;

@@ -388,7 +388,6 @@
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
-import { ElMessage } from 'element-plus';
 import jsYaml from 'js-yaml';
 import { getTableData, copy } from '@/utils/utils';
 import { formatterTime } from '@/utils/formatter';

@@ -304,6 +304,14 @@ const routes = [
             component: Secret,
           },
           {
+            path: 'secrets/secretDetail',
+            name: 'SecretDetail',
+            meta: {
+              title: 'secretDetail',
+            },
+            component: SecretDetail,
+          },
+          {
             path: 'storageclass',
             name: 'StorageClass',
             meta: {
@@ -440,14 +448,7 @@ const routes = [
         },
         component: CreateSecret,
       },
-      {
-        path: 'secrets/secretDetail',
-        name: 'SecretDetail',
-        meta: {
-          title: 'secretDetail',
-        },
-        component: SecretDetail,
-      },
+
       // job 路由
       {
         path: 'job/createJob',

@@ -1,111 +1,104 @@
 <template>
-  <el-card class="contend-card-container">
-    <div class="font-container" style="display: flex">
-      <pixiu-icon
-        name="icon-back"
-        style="cursor: pointer"
-        size="16px"
-        type="iconfont"
-        color="#006eff"
-        @click="goToSecret"
-      />
-
-      <el-breadcrumb separator="/" style="margin-left: 10px">
-        <el-breadcrumb-item
-          ><span class="breadcrumb-create-style"> {{ data.clusterName }} </span>
-        </el-breadcrumb-item>
-        <el-breadcrumb-item
-          ><span class="breadcrumb-create-style"> Namespace: {{ data.name }} </span>
-        </el-breadcrumb-item>
-        <el-breadcrumb-item
-          ><span class="breadcrumb-create-style"> Secret详情 </span>
-        </el-breadcrumb-item>
-      </el-breadcrumb>
+  <el-card class="detail-card-container">
+    <div style="margin-top: 10px; float: right">
+      <button class="pixiu-two-button2" style="width: 60px">刷新</button>
     </div>
 
-    <div style="margin-top: 28px"></div>
+    <div style="display: flex; margin-left: 20px; margin-top: 15px">
+      <pixiu-icon name="icon-config" size="40px" type="iconfont" color="#006eff" />
+      <div
+        class="breadcrumb-create-style"
+        style="margin-left: 10px; margin-top: 10px; font-size: 15px"
+      >
+        {{ data.name }}
+        <pixiu-icon
+          name="icon-copy"
+          size="12px"
+          style="cursor: pointer; margin-left: 2px"
+          type="iconfont"
+          color="#909399"
+          @click="copy(data.name)"
+        />
+      </div>
+    </div>
 
-    <el-tabs
-      v-model="data.activeName"
-      class="detail-card-new-style"
-      @tab-click="handleClick"
-      @tab-change="handleChange"
-    >
-      <el-tab-pane label="基本信息" name="first"> </el-tab-pane>
-      <el-tab-pane label="YAML" name="second"></el-tab-pane>
-    </el-tabs>
+    <div style="margin-top: 25px; display: flex">
+      <div style="width: 50%">
+        <el-form>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 20px; font-size: 13px; color: #191919">Secret名称</span>
+            </template>
+            <span class="detail-card-style-form2" style="margin-left: 94px">
+              {{ data.name }}
+            </span>
+          </el-form-item>
+
+          <div style="margin-top: -12px"></div>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 20px; font-size: 13px; color: #191919">类型</span>
+            </template>
+            <span class="detail-card-style-form2" style="margin-left: 132px">
+              <el-tag>{{ data.secret.type }} </el-tag>
+            </span>
+          </el-form-item>
+
+          <div style="margin-top: -12px"></div>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 20px; font-size: 13px; color: #191919">Data</span>
+            </template>
+          </el-form-item>
+        </el-form>
+      </div>
+
+      <div style="width: 50%">
+        <el-form>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 20px; font-size: 13px; color: #191919">命名空间</span>
+            </template>
+            <span class="detail-card-style-form2" style="margin-left: 106px">
+              {{ data.namespace }}
+            </span>
+          </el-form-item>
+
+          <div style="margin-top: -12px"></div>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 20px; font-size: 13px; color: #191919">创建时间</span>
+            </template>
+            <span class="detail-card-style-form2" style="margin-left: 106px">
+              {{ data.time }}
+            </span>
+          </el-form-item>
+
+          <div style="margin-top: -12px"></div>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 20px; font-size: 13px; color: #191919">描述</span>
+            </template>
+            <span class="detail-card-style-form2" style="margin-left: 132px"> - </span>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
+
+    <div style="margin-left: 20px">
+      <PixiuData :data="data.secret.data"></PixiuData>
+    </div>
   </el-card>
-
-  <div v-if="data.activeName === 'first'">
-    <el-card class="contend-card-container2" style="width: 70%">
-      <div class="big-world-style" style="margin-bottom: 20px">基本信息</div>
-      <div v-if="data.namespace.metadata" style="margin-top: 8px; width: 100%; border-radius: 0px">
-        <el-form-item label="名称" class="secret-info">
-          <span class="secret-detail-info" style="margin-left: 90px">
-            {{ data.secret.metadata.name }}
-          </span>
-        </el-form-item>
-        <el-form-item label="状态" class="secret-info">
-          <span class="secret-detail-info" style="margin-left: 90px">
-            <div v-if="data.namespace.status.phase === 'Active'" class="color-green-word">
-              {{ data.namespace.status.phase }}
-            </div>
-            <div v-else class="color-red-word">{{ data.namespace.status.phase }}</div>
-          </span>
-        </el-form-item>
-        <el-form-item label="描述" class="secret-info">
-          <span class="secret-detail-info" style="margin-left: 90px"> - </span>
-        </el-form-item>
-        <el-form-item label="创建时间" class="secret-info">
-          <span class="secret-detail-info" style="margin-left: 65px">
-            {{ data.time }}
-          </span>
-        </el-form-item>
-        <el-form-item label="Labels" class="secret-info">
-          <span class="secret-detail-info" style="margin-left: 65px"> - </span>
-        </el-form-item>
-      </div>
-    </el-card>
-  </div>
-
-  <div v-if="data.activeName === 'second'">
-    <div style="margin-top: 20px">
-      <el-col>
-        <button class="pixiu-two-button" style="width: 85px" @click="editYaml">编辑YAML</button>
-        <button class="pixiu-two-button" style="margin-left: 10px" @click="copyYmal">复制</button>
-
-        <div style="margin-left: 8px; float: right; margin-top: 6px">
-          <pixiu-icon
-            name="icon-icon-refresh"
-            style="cursor: pointer"
-            size="14px"
-            type="iconfont"
-            color="#909399"
-            @click="getSecretByName"
-          />
-        </div>
-      </el-col>
-    </div>
-    <div style="margin-top: 15px"></div>
-    <div>
-      <MyCodeMirror :yaml="data.yaml" :read-only="data.readOnly"></MyCodeMirror>
-      <div v-if="!data.readOnly" style="margin-top: 10px">
-        <el-button class="pixiu-cancel-button" @click="cancel()">取消</el-button>
-        <el-button class="pixiu-confirm-button" type="primary" @click="confirm()">确定</el-button>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
-import useClipboard from 'vue-clipboard3';
-import { formatTimestamp } from '@/utils/utils';
-import { ElMessage } from 'element-plus';
+import { formatTimestamp, copy } from '@/utils/utils';
 import { updateSecret, getSecret } from '@/services/kubernetes/secretService';
 import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
+import PixiuData from '@/components/pixiuData/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -128,29 +121,14 @@ const data = reactive({
 onMounted(async () => {
   data.cluster = proxy.$route.query.cluster;
   data.namespace = proxy.$route.query.namespace;
+
   data.yamlName = proxy.$route.query.name;
   data.clusterName = localStorage.getItem(data.cluster);
 
   data.name = proxy.$route.query.name;
 
-  await getSecretByName();
+  getSecretByName();
 });
-
-const { toClipboard } = useClipboard();
-const copyYmal = async () => {
-  try {
-    await toClipboard(data.yaml);
-    ElMessage({
-      type: 'success',
-      message: '已复制',
-    });
-  } catch (e) {
-    ElMessage({
-      type: 'error',
-      message: e.valueOf().toString(),
-    });
-  }
-};
 
 const getSecretByName = async () => {
   const [result, err] = await getSecret(data.cluster, data.namespace, data.yamlName);
@@ -158,6 +136,9 @@ const getSecretByName = async () => {
     proxy.$message.error(err.response.data.message);
     return;
   }
+
+  data.secret = result;
+
   data.time = formatTimestamp(result.metadata.creationTimestamp);
   data.yaml = jsYaml.dump(result, { quotingType: '"' });
 };
