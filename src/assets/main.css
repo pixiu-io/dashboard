@@ -252,7 +252,7 @@
 
 .detail-card-container {
   margin-top: 2px;
-  height: 98%;
+  min-height: 98%;
 }
 
 .contend-card-container {
