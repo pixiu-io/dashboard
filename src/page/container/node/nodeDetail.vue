@@ -1,11 +1,11 @@
 <template>
   <el-card class="detail-card-container">
     <div style="margin-top: 10px; float: right">
-      <button class="pixiu-two-button2" style="width: 60px">刷新</button>
+      <button class="pixiu-two-button2" style="width: 60px" @click="getNodeObject">刷新</button>
     </div>
 
     <div style="display: flex; margin-left: 20px; margin-top: 15px">
-      <pixiu-icon name="icon-deploymentunitbeifen" size="40px" type="iconfont" color="#006eff" />
+      <pixiu-icon name="icon-jiedian" size="40px" type="iconfont" color="#006eff" />
       <div
         class="breadcrumb-create-style"
         style="margin-left: 10px; margin-top: 10px; font-size: 15px"
@@ -195,7 +195,7 @@
               ><WarningFilled
             /></el-icon>
             <div style="vertical-align: middle; margin-top: -40px">
-              展示 kubelet node 的 pod 实例列表
+              运行在 node 上的 pod 实例列表
             </div>
           </el-card>
 
@@ -209,7 +209,7 @@
             </button>
 
             <div style="margin-left: 8px; float: right; margin-left: 12px">
-              <button class="pixiu-two-button" @click="searchDeploymentPods">搜索</button>
+              <button class="pixiu-two-button" @click="getNodePods">搜索</button>
             </div>
 
             <el-input
@@ -217,8 +217,8 @@
               placeholder="名称搜索关键字"
               style="width: 480px; float: right"
               clearable
-              @clear="getDeploymentPods"
-              @input="searchDeploymentPods"
+              @clear="getNodePods"
+              @input="getNodePods"
             >
               <template #suffix>
                 <pixiu-icon
@@ -227,7 +227,7 @@
                   size="15px"
                   type="iconfont"
                   color="#909399"
-                  @click="getDeploymentPods"
+                  @click="getNodePods"
                 />
               </template>
             </el-input>
@@ -241,7 +241,7 @@
         </el-row>
       </div>
       <el-table
-        v-loading="data.loading"
+        v-loading="data.podData.loading"
         :data="data.tableData"
         stripe
         style="margin-top: 6px"
@@ -340,7 +340,6 @@
         <el-row>
           <el-col>
             <div>
-              <!-- <button class="pixiu-two-button" @click="getDeploymentEvents">刷新</button> -->
               <button
                 style="margin-left: 10px; width: 85px"
                 class="pixiu-two-button2"
@@ -350,7 +349,7 @@
               </button>
 
               <div style="margin-left: 8px; float: right; margin-left: 12px">
-                <button class="pixiu-two-button" @click="getDeploymentEvents">搜索</button>
+                <button class="pixiu-two-button" @click="getNodeEvents">搜索</button>
               </div>
 
               <el-input
@@ -358,8 +357,8 @@
                 placeholder="名称搜索关键字"
                 style="width: 480px; float: right"
                 clearable
-                @clear="getDeploymentEvents"
-                @input="getDeploymentEvents"
+                @clear="getNodeEvents"
+                @input="getNodeEvents"
               >
                 <template #suffix>
                   <pixiu-icon
@@ -368,7 +367,7 @@
                     size="15px"
                     type="iconfont"
                     color="#909399"
-                    @click="getDeploymentEvents"
+                    @click="getNodeEvents"
                   />
                 </template>
               </el-input>
@@ -383,7 +382,7 @@
         </el-row>
       </div>
       <el-table
-        v-loading="data.loading"
+        v-loading="data.eventData.loading"
         :data="data.eventTableData"
         stripe
         style="margin-top: 6px"
@@ -403,7 +402,7 @@
         />
         <el-table-column prop="type" label="级别" />
         <el-table-column prop="involvedObject.kind" label="资源类型"> </el-table-column>
-        <el-table-column prop="involvedObject.name" label="资源名称" :formatter="formatterName">
+        <el-table-column prop="involvedObject.name" label="资源名称" :formatter="formatString">
         </el-table-column>
         <el-table-column prop="count" label="出现次数"> </el-table-column>
         <el-table-column prop="message" label="内容" min-width="250px" />
@@ -422,16 +421,14 @@ import jsYaml from 'js-yaml';
 import { getNode } from '@/services/kubernetes/nodeService';
 import { getPodsByNode } from '@/services/kubernetes/podService';
 import { getTableData, copy } from '@/utils/utils';
-import { formatterTime } from '@/utils/formatter';
+import { formatterTime, formatString } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
-import MyCodeMirror from '@/components/codemirror/index.vue';
 import { getRawEventList, deleteEvent } from '@/services/kubernetes/eventService';
 
 const { proxy } = getCurrentInstance();
 
 const data = reactive({
   loading: false,
-
   name: '',
   clusterName: '',
   cluster: '',
@@ -439,16 +436,22 @@ const data = reactive({
   pageInfo: {
     page: 1,
     total: 0,
-    limit: 10,
+    limit: 5,
     search: {
       field: 'name',
       searchInfo: '',
     },
   },
+  podData: {
+    loading: false,
+  },
 
+  eventData: {
+    loading: false,
+  },
   pageEventInfo: {
     page: 1,
-    limit: 10,
+    limit: 5,
     total: 0,
     search: {
       field: 'name',
@@ -467,7 +470,7 @@ const data = reactive({
   tableData: [],
   eventTableData: [],
 
-  activeName: 'second',
+  activeName: 'first',
 
   yaml: '',
   yamlName: '',
@@ -479,16 +482,13 @@ onMounted(async () => {
   data.clusterName = localStorage.getItem(data.cluster);
   data.name = proxy.$route.query.name;
 
-  await getNodeObject();
-
+  getNodeObject();
   getNodePods();
   getNodeEvents();
 });
 
 const getNodeObject = async () => {
-  data.loading = true;
   const [result, err] = await getNode(data.cluster, data.name);
-  data.loading = false;
   if (err) {
     proxy.$notify.error({ title: 'Node', message: err.response.data.message });
     return;
@@ -502,16 +502,10 @@ const getNodeObject = async () => {
   }
 };
 
-const formatterName = (row, column, cellValue) => {
-  return (
-    <el-tooltip effect="light" placement="top" content={cellValue}>
-      <div class="pixiu-ellipsis-style">{cellValue}</div>
-    </el-tooltip>
-  );
-};
-
 const getNodePods = async () => {
+  data.podData.loading = true;
   const [result, err] = await getPodsByNode(data.cluster, data.name);
+  data.podData.loading = false;
   if (err) {
     proxy.$notify.error({ title: 'Node', message: err.response.data.message });
     return;
@@ -536,7 +530,6 @@ const searchPods = async () => {
 };
 
 const getNodeEvents = async () => {
-  data.loading = true;
   const [result, err] = await getRawEventList(
     data.cluster,
     data.nodeObject.metadata.name,
@@ -545,7 +538,6 @@ const getNodeEvents = async () => {
     'Node',
     false,
   );
-  data.loading = false;
   if (err) {
     proxy.$notify.error({ title: 'Event', message: err.response.data.message });
     return;
