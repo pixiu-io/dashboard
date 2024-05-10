@@ -9,7 +9,11 @@
       bottom: 20px;
     "
   >
-    <MyMonaco :yaml="data.data" :height="data.dialogHeight" :read-only="readOnly"></MyMonaco>
+    <MyMonaco
+      :yaml="monacoData.data"
+      :height="monacoData.dialogHeight"
+      :read-only="readOnly"
+    ></MyMonaco>
   </div>
 </template>
 
@@ -17,7 +21,7 @@
 import MyMonaco from '@/components/monaco/index.vue';
 import { reactive } from 'vue';
 
-const data = reactive({
+const monacoData = reactive({
   data: '',
   dialogWidth: 300,
   dialogHeight: 400,
