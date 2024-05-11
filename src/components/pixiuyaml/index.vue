@@ -78,7 +78,7 @@
           padding-left: 5px;
         "
       >
-        <span> YAML创建资源 </span>
+        <span style="height: 15px; font-size: 15px; margin-bottom: 20px"> YAML创建资源 </span>
       </div>
     </template>
     <div style="margin-top: -18px"></div>
