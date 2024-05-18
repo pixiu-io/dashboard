@@ -243,15 +243,6 @@ const data = reactive({
     },
   },
 
-  userForm: {
-    description: '',
-    email: '',
-    name: '',
-    password: '',
-    status: 1,
-    confirmPassword: '',
-  },
-
   updateForm: {},
   autosize: {
     minRows: 8,
@@ -267,6 +258,14 @@ const data = reactive({
   // 创建属性
   createDialog: {
     close: false,
+  },
+  userForm: {
+    description: '',
+    email: '',
+    name: '',
+    password: '',
+    status: 1,
+    confirmPassword: '',
   },
 });
 
