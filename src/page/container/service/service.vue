@@ -238,7 +238,9 @@ const cancel = () => {
 
 const clean = () => {
   data.deleteDialog.close = false;
-  data.deleteDialog.deleteName = '';
+  setTimeout(() => {
+    data.deleteDialog.deleteName = '';
+  }, 1000);
 };
 
 const onChange = (v) => {

@@ -779,7 +779,9 @@ const handleBatchDeleteDialog = (row) => {
 
 const cancelDeletePod = () => {
   data.deleteDialog.close = false;
-  data.deleteDialog.deleteName = '';
+  setTimeout(() => {
+    data.deleteDialog.deleteName = '';
+  }, 1000);
 };
 
 const deleteDeploymentPod = async () => {
