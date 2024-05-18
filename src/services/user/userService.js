@@ -36,3 +36,13 @@ export const GetUserList = async () => {
   );
   return [result, err];
 };
+
+export const deleteUser = async (uid) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'delete',
+      url: `/pixiu/users/${uid}`,
+    }),
+  );
+  return [result, err];
+};

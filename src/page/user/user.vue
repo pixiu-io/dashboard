@@ -72,7 +72,7 @@
                 text
                 size="small"
                 style="margin-right: -2px; color: #006eff"
-                @click="deleteUser(scope.row)"
+                @click="handleDeleteDialog(scope.row)"
               >
                 删除
               </el-button>
@@ -176,6 +176,14 @@
       </span>
     </template>
   </el-dialog>
+
+  <pixiuDialog
+    :close-event="data.deleteDialog.close"
+    :object-name="data.deleteDialog.objectName"
+    :delete-name="data.deleteDialog.deleteName"
+    @confirm="confirm"
+    @cancel="cancel"
+  ></pixiuDialog>
 </template>
 
 <script setup>
@@ -185,7 +193,8 @@ import { formatterTime } from '@/utils/formatter';
 import UserEdit from './userEdit.vue';
 import UserSetRole from './userSetRole.vue';
 import Pagination from '@/components/pagination/index.vue';
-import { GetUserList } from '@/services/user/userService';
+import { GetUserList, deleteUser } from '@/services/user/userService';
+import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const loading = ref(false);
 const userFormRef = ref(null);
@@ -235,6 +244,13 @@ const data = reactive({
   updateForm: {},
   autosize: {
     minRows: 8,
+  },
+
+  // 删除对象属性
+  deleteDialog: {
+    close: false,
+    objectName: '用户',
+    deleteName: '',
   },
 });
 
@@ -291,6 +307,28 @@ const onChange = (v) => {
   getUserList();
 };
 
+const handleDeleteDialog = (row) => {
+  data.deleteDialog.close = true;
+  data.deleteDialog.deleteName = row.id;
+};
+
+const confirm = async () => {
+  const [result, err] = await deleteUser(data.deleteDialog.deleteName);
+  if (err) {
+    proxy.$message.error(err);
+    return;
+  }
+  proxy.$message.success(`User(${data.deleteDialog.deleteName}) 删除成功`);
+
+  clean();
+  getUserList();
+};
+
+const cancel = () => {
+  data.deleteDialog.close = false;
+  data.deleteDialog.deleteName = '';
+};
+
 const changeStatus = async (user) => {
   const res = await proxy.$http({
     method: 'put',
@@ -322,36 +360,6 @@ const getUserList = async () => {
 
   data.userList = result;
   data.pageInfo.total = result.length;
-};
-
-const deleteUser = async (row) => {
-  ElMessageBox.confirm(`此操作将删除 ${row.name}用户 . 是否继续?`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-    draggable: true,
-  })
-    .then(() => {
-      proxy
-        .$http({
-          method: 'delete',
-          url: `/users/${row.id}`,
-        })
-        .then(() => {
-          getUserList();
-          ElMessage({
-            type: 'success',
-            message: '删除成功',
-          });
-        })
-        .catch((err) => {
-          ElMessage({
-            type: 'error',
-            message: err,
-          });
-        });
-    })
-    .catch(() => {}); // 取消
 };
 
 const createUser = () => {
