@@ -1,21 +1,23 @@
 <template>
   <el-main>
-    <el-card style="margin-top: -20px; margin-left: -20px; margin-right: -20px">
+    <el-card style="margin-top: -20px; margin-left: -20px; margin-right: -20px; border-radius: 0px">
       <span style="font-weight: bold; font-size: 18px; vertical-align: middle"> 用户列表 </span>
     </el-card>
+
     <div style="margin-top: 20px">
       <el-row>
         <el-col>
           <el-button
             v-permissions="'cloud:user:add'"
             type="primary"
+            class="pixiu-button"
             style="margin-left: 1px"
             @click="createUser"
           >
             <el-icon style="vertical-align: middle; margin-right: 4px">
               <component :is="'Plus'" />
             </el-icon>
-            添加用户
+            新建用户
           </el-button>
         </el-col>
       </el-row>
@@ -26,29 +28,14 @@
           :data="data.userList"
           stripe
           style="margin-top: 2px; width: 100%"
+          header-row-class-name="pixiu-table-header"
+          @selection-change="handleSelectionChange"
         >
-          <el-table-column prop="id" label="用户ID" width="200" />
-          <el-table-column prop="name" label="用户名" width="180" />
-          <el-table-column prop="description" label="描述" width="180" />
-          <el-table-column prop="gmt_create" label="创建时间" width="200" />
-          <el-table-column prop="email" label="Email" width="160" />
-          <el-table-column prop="status" label="状态" width="160">
-            <template #default="scope">
-              <el-switch
-                v-model="scope.row.status"
-                class="ml-2"
-                style="--el-switch-on-color: #409eff; --el-switch-off-color: #ff4949"
-                :active-value="1"
-                :inactive-value="0"
-                size="small"
-                inline-prompt
-                active-text="启用"
-                inactive-text="禁用"
-                width="45px"
-                @change="changeStatus(scope.row)"
-              />
-            </template>
-          </el-table-column>
+          <el-table-column prop="name" label="用户名称" />
+          <el-table-column prop="gmt_create" label="创建时间" />
+          <el-table-column prop="email" label="Email" />
+          <el-table-column prop="description" label="描述" />
+
           <el-table-column fixed="right" label="操作" width="250">
             <template #default="scope">
               <el-button
@@ -82,6 +69,9 @@
               </el-button>
             </template>
           </el-table-column>
+          <template #empty>
+            <div class="table-inline-word">暂无用户</div>
+          </template>
         </el-table>
         <!-- 分页区域 -->
         <pagination :total="data.total" @on-change="onChange"></pagination>
