@@ -51,42 +51,48 @@
           header-row-class-name="pixiu-table-header"
           @selection-change="handleSelectionChange"
         >
-          <el-table-column prop="name" label="用户名称" />
-          <el-table-column prop="gmt_create" label="创建时间" />
+          <el-table-column prop="name" label="用户名称" sortable />
+          <el-table-column prop="gmt_create" label="创建时间" sortable :formatter="formatterTime" />
           <el-table-column prop="email" label="Email" />
           <el-table-column prop="description" label="描述" />
 
-          <el-table-column fixed="right" label="操作" width="250">
+          <el-table-column fixed="right" label="操作" width="150px">
             <template #default="scope">
               <el-button
-                v-permissions="'cloud:role:set'"
-                size="small"
+                v-permissions="'cloud:user:edit'"
                 text
-                style="color: #006eff"
-                @click="handleSetRole(scope.row)"
+                size="small"
+                style="margin-right: -25px; margin-left: -10px; color: #006eff"
+                @click="handleDialogValue(scope.row)"
               >
-                分配角色
+                修改
               </el-button>
-
               <el-button
                 v-permissions="'cloud:user:delete'"
                 text
                 size="small"
-                style="margin-right: 10px; color: #006eff"
+                style="margin-right: -2px; color: #006eff"
                 @click="deleteUser(scope.row)"
               >
                 删除
               </el-button>
 
-              <el-button
-                v-permissions="'cloud:user:edit'"
-                text
-                size="small"
-                style="margin-right: 10px; color: #006eff"
-                @click="handleDialogValue(scope.row)"
-              >
-                修改
-              </el-button>
+              <el-dropdown>
+                <span class="el-dropdown-link">
+                  更多
+                  <pixiu-icon name="icon-xiala" size="12px" type="iconfont" color="#006eff" />
+                </span>
+                <template #dropdown>
+                  <el-dropdown-menu class="dropdown-buttons">
+                    <el-dropdown-item
+                      class="dropdown-item-buttons"
+                      @click="handleEditYamlDialog(scope.row)"
+                    >
+                      更新密码
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
             </template>
           </el-table-column>
           <template #empty>
@@ -175,6 +181,7 @@
 <script setup>
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { formatterTime } from '@/utils/formatter';
 import UserEdit from './userEdit.vue';
 import UserSetRole from './userSetRole.vue';
 import Pagination from '@/components/pagination/index.vue';
