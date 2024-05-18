@@ -100,7 +100,7 @@
           </template>
         </el-table>
         <!-- 分页区域 -->
-        <pagination :total="data.total" @on-change="onChange"></pagination>
+        <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
       </el-card>
     </div>
   </el-main>
@@ -302,8 +302,9 @@ const userFormRules = reactive({
 
 // 分页
 const onChange = (v) => {
-  data.pageInfo.limit = 10;
+  data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
+
   getUserList();
 };
 
