@@ -19,6 +19,26 @@
             </el-icon>
             新建用户
           </el-button>
+          <el-input
+            v-model="data.pageInfo.query"
+            placeholder="多个过滤标签用回车分隔"
+            style="width: 560px; float: right"
+            clearable
+          >
+            <template #suffix>
+              <pixiu-icon
+                name="icon-search"
+                style="cursor: pointer"
+                size="15px"
+                type="iconfont"
+                color="#909399"
+              />
+
+              <!-- <el-icon class="el-input__icon" @click="cloudStore.getCloudList">
+                <component :is="'Search'" />
+              </el-icon> -->
+            </template>
+          </el-input>
         </el-col>
       </el-row>
 
@@ -380,62 +400,4 @@ const handleSetRole = async (user) => {
 };
 </script>
 
-<style>
-.box-card {
-  margin-top: 20px;
-  /* width: 480px; */
-}
-
-.el-main {
-  background-color: #f3f4f7;
-}
-
-.app-docs {
-  margin-top: 20px;
-  height: 60px;
-  font-size: 12px;
-  line-height: inherit;
-  padding: 14px 20px;
-  vertical-align: middle;
-  color: #002da0;
-  border: 1px solid #d5e7ff;
-  border-radius: 0;
-  background: #d5e7ff;
-  position: relative;
-  box-sizing: border-box;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-}
-
-.example-showcase .el-dropdown + .el-dropdown {
-  margin-left: 15px;
-}
-
-.dropdown-buttons {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.dialog-footer button:first-child {
-  margin-right: 10px;
-}
-
-.app-pixiu-btn--link {
-  text-align: center;
-  height: auto;
-  padding: 0;
-  vertical-align: middle;
-  line-height: 1.5;
-  border: none;
-  color: #006eff;
-  margin-left: 2px;
-  background-color: #fff;
-  cursor: pointer;
-}
-</style>
+<style></style>
