@@ -12,7 +12,7 @@
             type="primary"
             class="pixiu-button"
             style="margin-left: 1px"
-            @click="createUser"
+            @click="handleCreateDialog"
           >
             <el-icon style="vertical-align: middle; margin-right: 4px">
               <component :is="'Plus'" />
@@ -130,14 +130,15 @@
 
   <!-- 添加用户信息 -->
   <el-dialog
-    v-model="data.createUserVisible"
+    v-model="data.createDialog.close"
     style="color: #000000; font: 14px"
     width="390px"
+    draggable
     center
-    @close="data.createUserVisible = false"
+    @close="handleCreateCloseDialog"
   >
     <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">添加用户</div>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">新建用户</div>
     </template>
     <el-form
       ref="userFormRef"
@@ -179,11 +180,11 @@
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button class="pixiu-small-cancel-button" @click="data.createUserVisible = false"
+        <el-button class="pixiu-small-cancel-button" @click="handleCreateCloseDialog"
           >取消</el-button
         >
         <el-button class="pixiu-small-confirm-button" type="primary" @click="confirmCreateUser"
-          >创建</el-button
+          >确定</el-button
         >
       </span>
     </template>
@@ -263,6 +264,11 @@ const data = reactive({
     close: false,
     objectName: '用户',
     deleteName: '',
+  },
+
+  // 创建属性
+  createDialog: {
+    close: false,
   },
 });
 
@@ -380,6 +386,14 @@ const getUserList = async () => {
 
 const createUser = () => {
   data.createUserVisible = true;
+};
+
+const handleCreateDialog = () => {
+  data.createDialog.close = true;
+};
+
+const handleCreateCloseDialog = () => {
+  data.createDialog.close = false;
 };
 
 const handleDialogValue = (user) => {
