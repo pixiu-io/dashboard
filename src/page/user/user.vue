@@ -153,7 +153,7 @@
         <el-input v-model="data.userForm.name" />
       </el-form-item>
       <el-form-item label="描述:" prop="description">
-        <el-input v-model="data.userForm.description" required="" />
+        <el-input v-model="data.userForm.description" />
       </el-form-item>
       <el-form-item label="邮箱" prop="email">
         <el-input v-model="data.userForm.email" />
@@ -303,6 +303,8 @@ const validateEmail = (rule, value, callback) => {
       return callback();
     }
     callback(new Error('请输入正确的邮箱'));
+  } else {
+    callback();
   }
 };
 
