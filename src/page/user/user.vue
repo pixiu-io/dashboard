@@ -172,8 +172,12 @@
 
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="data.createUserVisible = false">取消</el-button>
-        <el-button type="primary" @click="confirmCreateUser">创建</el-button>
+        <el-button class="pixiu-small-cancel-button" @click="data.createUserVisible = false"
+          >取消</el-button
+        >
+        <el-button class="pixiu-small-confirm-button" type="primary" @click="confirmCreateUser"
+          >创建</el-button
+        >
       </span>
     </template>
   </el-dialog>
