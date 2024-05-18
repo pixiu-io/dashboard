@@ -32,6 +32,7 @@
                 size="15px"
                 type="iconfont"
                 color="#909399"
+                @click="getUserList"
               />
 
               <!-- <el-icon class="el-input__icon" @click="cloudStore.getCloudList">
@@ -323,6 +324,7 @@ const onChange = (v) => {
   getUserList();
 };
 
+// 删除 开始
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.id;
@@ -331,12 +333,12 @@ const handleDeleteDialog = (row) => {
 const confirm = async () => {
   const [result, err] = await deleteUser(data.deleteDialog.deleteName);
   if (err) {
-    proxy.$message.error(err);
+    proxy.$notify.error(err);
     return;
   }
-  proxy.$message.success(`User(${data.deleteDialog.deleteName}) 删除成功`);
+  proxy.$notify.success(`User(${data.deleteDialog.deleteName}) 删除成功`);
 
-  clean();
+  cancel();
   getUserList();
 };
 
@@ -347,6 +349,7 @@ const cancel = () => {
     data.deleteDialog.deleteName = '';
   }, 1000);
 };
+// 删除 结束
 
 const changeStatus = async (user) => {
   const res = await proxy.$http({
@@ -403,12 +406,9 @@ const handleCreateCloseDialog = () => {
 };
 
 const confirmCreateUser = () => {
-  console.log('1111');
-
   userFormRef.value.validate(async (valid) => {
     if (valid) {
       const [result, err] = await createUser(data.userForm, false);
-      console.log('dddd');
       if (err) {
         proxy.$notify.error({ message: err });
         return;
