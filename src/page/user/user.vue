@@ -148,7 +148,7 @@
       :model="data.userForm"
       style="max-width: 290px"
     >
-      <el-form-item label="名字:" required prop="name">
+      <el-form-item label="用户名:" required prop="name">
         <el-input v-model="data.userForm.name" />
       </el-form-item>
       <el-form-item label="描述:" prop="description">
@@ -210,7 +210,7 @@ import { GetUserList, deleteUser, createUser } from '@/services/user/userService
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const loading = ref(false);
-const userFormRef = ref(null);
+const userFormRef = ref();
 const userEdit = reactive({
   dialogVisble: false,
   dialogTableValue: {},
@@ -306,10 +306,10 @@ const validateEmail = (rule, value, callback) => {
 };
 
 const userFormRules = reactive({
-  name: [{ required: true, message: '请输入名字', trigger: 'blur' }],
+  name: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [
     { required: true, validator: validatePass, trigger: 'blur' },
-    { min: 6, max: 12, message: '密码长度在6到12位之间', trigger: 'blur' },
+    { min: 6, max: 20, message: '密码长度在6到12位之间', trigger: 'blur' },
   ],
   confirmPassword: [{ required: true, validator: validatePass2, trigger: 'blur' }],
   email: [{ validator: validateEmail, trigger: 'blur' }],
@@ -403,9 +403,12 @@ const handleCreateCloseDialog = () => {
 };
 
 const confirmCreateUser = () => {
+  console.log('1111');
+
   userFormRef.value.validate(async (valid) => {
     if (valid) {
       const [result, err] = await createUser(data.userForm, false);
+      console.log('dddd');
       if (err) {
         proxy.$notify.error({ message: err });
         return;
