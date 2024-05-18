@@ -120,6 +120,7 @@
     :dialog-table-value="userEdit.dialogTableValue"
     @value-change="getUserList"
   />
+
   <!-- 添加用户信息 -->
   <el-dialog
     v-model="data.createUserVisible"
@@ -327,7 +328,10 @@ const confirm = async () => {
 
 const cancel = () => {
   data.deleteDialog.close = false;
-  data.deleteDialog.deleteName = '';
+  // 延迟 1 秒重置数据，否则页面上会显的很怪
+  setTimeout(() => {
+    data.deleteDialog.deleteName = '';
+  }, 1000);
 };
 
 const changeStatus = async (user) => {
