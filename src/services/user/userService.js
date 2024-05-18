@@ -26,3 +26,13 @@ export const getUserCount = async () => {
 
   return [result, err];
 };
+
+export const GetUserList = async () => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: '/pixiu/users',
+    }),
+  );
+  return [result, err];
+};

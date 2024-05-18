@@ -20,7 +20,7 @@
             新建用户
           </el-button>
           <el-input
-            v-model="data.pageInfo.query"
+            v-model="data.pageInfo.search.searchInfo"
             placeholder="多个过滤标签用回车分隔"
             style="width: 560px; float: right"
             clearable
@@ -178,6 +178,7 @@ import { ElMessage, ElMessageBox } from 'element-plus';
 import UserEdit from './userEdit.vue';
 import UserSetRole from './userSetRole.vue';
 import Pagination from '@/components/pagination/index.vue';
+import { GetUserList } from '@/services/user/userService';
 
 const loading = ref(false);
 const userFormRef = ref(null);
@@ -185,6 +186,7 @@ const userEdit = reactive({
   dialogVisble: false,
   dialogTableValue: {},
 });
+
 const userSetRole = reactive({
   dialogVisble: false,
   dialogTableValue: {},
@@ -193,6 +195,46 @@ const userSetRole = reactive({
   roleList: [],
   user: {},
 });
+
+const { proxy } = getCurrentInstance();
+
+const data = reactive({
+  loading: false,
+
+  tableData: [],
+  userList: [],
+
+  pageInfo: {
+    page: 1,
+    limit: 10,
+    total: 0,
+    search: {
+      field: 'name',
+      searchInfo: '',
+    },
+  },
+
+  createUserVisible: false,
+
+  userForm: {
+    description: '',
+    email: '',
+    name: '',
+    password: '',
+    status: 1,
+    confirmPassword: '',
+  },
+
+  updateForm: {},
+  autosize: {
+    minRows: 8,
+  },
+});
+
+onMounted(() => {
+  getUserList();
+});
+
 const validatePass = (rule, value, callback) => {
   if (value === '') {
     callback(new Error('请输入密码'));
@@ -235,37 +277,6 @@ const userFormRules = reactive({
   email: [{ validator: validateEmail, trigger: 'blur' }],
 });
 
-const { proxy } = getCurrentInstance();
-const data = reactive({
-  pageInfo: {
-    query: '',
-    page: 1,
-    limit: 10, // 默认值需要是分页定义的值
-  },
-
-  loading: false,
-  // 触发创建页面
-  createUserVisible: false,
-  userForm: {
-    description: '',
-    email: '',
-    name: '',
-    password: '',
-    status: 1,
-    confirmPassword: '',
-  },
-  updateForm: {},
-  userList: [],
-  autosize: {
-    minRows: 8,
-  },
-});
-
-onMounted(() => {
-  getUserList();
-  getRoles();
-});
-
 // 分页
 const onChange = (v) => {
   data.pageInfo.limit = 10;
@@ -294,14 +305,16 @@ const changeStatus = async (user) => {
 };
 
 const getUserList = async () => {
-  const res = await proxy.$http({
-    method: 'get',
-    url: '/users',
-    data: data.pageInfo,
-  });
+  data.loading = true;
+  const [result, err] = await GetUserList();
+  if (err) {
+    proxy.$message.error(err);
+    return;
+  }
+  data.loading = false;
 
-  data.userList = res.users;
-  data.total = res.total;
+  data.userList = result;
+  data.pageInfo.total = result.length;
 };
 
 const deleteUser = async (row) => {
