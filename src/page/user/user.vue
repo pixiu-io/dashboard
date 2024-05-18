@@ -206,7 +206,7 @@ import { formatterTime } from '@/utils/formatter';
 import UserEdit from './userEdit.vue';
 import UserSetRole from './userSetRole.vue';
 import Pagination from '@/components/pagination/index.vue';
-import { GetUserList, deleteUser } from '@/services/user/userService';
+import { GetUserList, deleteUser, createUser } from '@/services/user/userService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const loading = ref(false);
@@ -242,8 +242,6 @@ const data = reactive({
       searchInfo: '',
     },
   },
-
-  createUserVisible: false,
 
   userForm: {
     description: '',
@@ -384,46 +382,45 @@ const getUserList = async () => {
   data.pageInfo.total = result.length;
 };
 
-const createUser = () => {
-  data.createUserVisible = true;
-};
-
+// 开始 创建用户
 const handleCreateDialog = () => {
   data.createDialog.close = true;
 };
 
 const handleCreateCloseDialog = () => {
   data.createDialog.close = false;
+
+  // 初始化创建form
+  setTimeout(() => {
+    data.userForm = {
+      description: '',
+      email: '',
+      name: '',
+      password: '',
+      status: 1,
+      confirmPassword: '',
+    };
+  }, 1000);
 };
+
+const confirmCreateUser = () => {
+  userFormRef.value.validate(async (valid) => {
+    if (valid) {
+      const [result, err] = await createUser(data.userForm, false);
+      if (err) {
+        proxy.$notify.error({ message: err });
+        return;
+      }
+      proxy.$notify.success({ message: `用户(${data.userForm.name})创建成功` });
+      handleCreateCloseDialog();
+    }
+  });
+};
+// 结束 创建用户
 
 const handleDialogValue = (user) => {
   userEdit.dialogTableValue = JSON.parse(JSON.stringify(user));
   userEdit.dialogVisble = true;
-};
-
-const confirmCreateUser = async () => {
-  userFormRef.value.validate((valid) => {
-    if (valid) {
-      try {
-        proxy
-          .$http({
-            method: 'post',
-            url: '/users',
-            data: data.userForm,
-          })
-          .then(() => {
-            data.createUserVisible = false;
-            getUserList();
-            ElMessage({
-              type: 'success',
-              message: '添加成功',
-            });
-          });
-      } catch (err) {}
-    } else {
-      ElMessage.error('请正确填写');
-    }
-  });
 };
 
 const getRoles = async () => {
