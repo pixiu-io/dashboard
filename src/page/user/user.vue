@@ -51,7 +51,14 @@
           header-row-class-name="pixiu-table-header"
           @selection-change="handleSelectionChange"
         >
-          <el-table-column prop="name" label="用户名称" sortable />
+          <el-table-column prop="name" label="用户名称" sortable>
+            <template #default="scope">
+              <el-link class="global-table-world" type="primary" :underline="false">
+                {{ scope.row.name }}
+              </el-link>
+            </template>
+          </el-table-column>
+          />
           <el-table-column prop="gmt_create" label="创建时间" sortable :formatter="formatterTime" />
           <el-table-column prop="email" label="Email" />
           <el-table-column prop="description" label="描述" />
