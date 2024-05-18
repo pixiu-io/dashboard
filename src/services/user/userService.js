@@ -26,3 +26,23 @@ export const getUserCount = async () => {
 
   return [result, err];
 };
+
+export const GetUserList = async () => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: '/pixiu/users',
+    }),
+  );
+  return [result, err];
+};
+
+export const deleteUser = async (uid) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'delete',
+      url: `/pixiu/users/${uid}`,
+    }),
+  );
+  return [result, err];
+};

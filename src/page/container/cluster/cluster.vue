@@ -32,6 +32,7 @@
               color: rgba(0, 0, 0, 0.9);
               vertical-align: middle;
               margin-left: 5px;
+              margin-top: 8px;
             "
           >
             管理指南
@@ -61,6 +62,7 @@
         </div>
       </div>
     </el-card>
+
     <div style="margin-top: 20px">
       <el-row>
         <el-col>

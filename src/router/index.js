@@ -507,7 +507,7 @@ const routes = [
         component: EditStatefulSet,
       },
       {
-        path: 'user',
+        path: 'users',
         name: 'User',
         meta: {
           title: '用户',

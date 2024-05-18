@@ -103,7 +103,7 @@ onMounted(() => {
     // },
     {
       name: '用户管理',
-      url: '/user',
+      url: '/users',
       icon: 'UserFilled',
       iconType: 'el',
     },
