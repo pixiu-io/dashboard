@@ -136,7 +136,11 @@
   <el-dialog
     v-model="data.createDialog.close"
     style="color: #000000; font: 14px"
+<<<<<<< HEAD
     width="550px"
+=======
+    width="40%"
+>>>>>>> 482b74941ce6cb73f99d80308ba950da61b9dc6f
     draggable
     center
     @close="handleCreateCloseDialog"
@@ -246,7 +250,11 @@
       </div>
     </template>
 
+<<<<<<< HEAD
     <el-form label-width="80px" style="max-width: 90%">
+=======
+    <el-form label-width="80px" style="max-width: 400px">
+>>>>>>> 482b74941ce6cb73f99d80308ba950da61b9dc6f
       <el-form-item>
         <template #label>
           <span style="font-size: 13px; color: #191919">用户名称</span>
