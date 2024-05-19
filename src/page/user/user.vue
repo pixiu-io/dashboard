@@ -136,7 +136,7 @@
   <el-dialog
     v-model="data.createDialog.close"
     style="color: #000000; font: 14px"
-    width="390px"
+    width="40%"
     draggable
     center
     @close="handleCreateCloseDialog"
@@ -148,40 +148,62 @@
       ref="userFormRef"
       :label-position="labelPosition"
       :rules="userFormRules"
-      label-width="110px"
+      label-width="80px"
       :model="data.userForm"
-      style="max-width: 290px"
+      style="max-width: 90%"
     >
-      <el-form-item label="用户名:" required prop="name">
+      <el-form-item required prop="name">
+        <template #label>
+          <span style="font-size: 13px; color: #191919">用户名称</span>
+        </template>
         <el-input v-model="data.userForm.name" />
       </el-form-item>
-      <el-form-item label="描述:" prop="description">
-        <el-input v-model="data.userForm.description" />
+
+      <el-form-item required prop="password">
+        <template #label>
+          <span style="font-size: 13px; color: #191919">密码</span>
+        </template>
+        <el-input v-model="data.userForm.password" type="password" show-password />
       </el-form-item>
-      <el-form-item label="邮箱" prop="email">
-        <el-input v-model="data.userForm.email" />
+
+      <el-form-item required prop="confirmPassword">
+        <template #label>
+          <span style="font-size: 13px; color: #191919">密码确认</span>
+        </template>
+        <el-input v-model="data.userForm.confirmPassword" type="password" show-password />
       </el-form-item>
-      <el-form-item label="状态">
+
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">状态</span>
+        </template>
         <el-switch
           v-model="data.userForm.status"
-          class="ml-2"
           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
           :active-value="1"
           :inactive-value="0"
-          size="large"
           inline-prompt
           active-text="启用"
           inactive-text="禁用"
         />
       </el-form-item>
-      <el-form-item label="密码" required prop="password">
-        <el-input v-model="data.userForm.password" type="password" show-password />
+
+      <el-form-item prop="email">
+        <template #label>
+          <span style="font-size: 13px; color: #191919">邮箱</span>
+        </template>
+        <el-input v-model="data.userForm.email" />
       </el-form-item>
-      <el-form-item label="再次输入密码" prop="confirmPassword">
-        <el-input v-model="data.userForm.confirmPassword" type="password" show-password />
+
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">描述</span>
+        </template>
+        <el-input v-model="data.userForm.description" type="textarea" :autosize="data.autosize" />
       </el-form-item>
     </el-form>
 
+    <div style="margin-top: -20px"></div>
     <template #footer>
       <span class="dialog-footer">
         <el-button class="pixiu-small-cancel-button" @click="handleCreateCloseDialog"
@@ -235,19 +257,31 @@
         <template #label>
           <span style="font-size: 13px; color: #191919">旧密码</span>
         </template>
-        <el-input v-model="data.passwordData.newObject.old" placeholder="请输入旧密码" />
+        <el-input
+          v-model="data.passwordData.newObject.old"
+          show-password
+          placeholder="请输入旧密码"
+        />
       </el-form-item>
       <el-form-item required>
         <template #label>
           <span style="font-size: 13px; color: #191919">新密码</span>
         </template>
-        <el-input v-model="data.passwordData.newObject.new" placeholder="请输入新密码" />
+        <el-input
+          v-model="data.passwordData.newObject.new"
+          show-password
+          placeholder="请输入新密码"
+        />
       </el-form-item>
       <el-form-item required>
         <template #label>
-          <span style="font-size: 13px; color: #191919">密码确认</span>
+          <span style="font-size: 13px; color: #191919" show-password>密码确认</span>
         </template>
-        <el-input v-model="data.passwordData.newObject.new2" placeholder="再次输入新密码" />
+        <el-input
+          v-model="data.passwordData.newObject.new2"
+          show-password
+          placeholder="再次输入新密码"
+        />
       </el-form-item>
     </el-form>
 
@@ -309,7 +343,7 @@ const data = reactive({
 
   updateForm: {},
   autosize: {
-    minRows: 8,
+    minRows: 6,
   },
 
   // 删除对象属性

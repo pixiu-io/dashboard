@@ -19,10 +19,17 @@
         <el-input v-model="userForm.value.name" disabled />
       </el-form-item>
 
-      <el-form-item label="邮箱">
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">邮箱</span>
+        </template>
         <el-input v-model="userForm.value.email" />
       </el-form-item>
-      <el-form-item label="描述">
+
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">描述</span>
+        </template>
         <el-input v-model="userForm.value.description" type="textarea" :autosize="data.autosize" />
       </el-form-item>
 
