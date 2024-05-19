@@ -64,19 +64,17 @@
           <el-table-column prop="email" label="Email" />
           <el-table-column prop="description" label="描述" />
 
-          <el-table-column fixed="right" label="操作" width="150px">
+          <el-table-column fixed="right" label="操作" width="160px">
             <template #default="scope">
               <el-button
-                v-permissions="'cloud:user:edit'"
                 text
                 size="small"
-                style="margin-right: -25px; margin-left: -10px; color: #006eff"
+                style="margin-right: -24px; margin-left: -10px; color: #006eff"
                 @click="handleDialogValue(scope.row)"
               >
                 更新
               </el-button>
               <el-button
-                v-permissions="'cloud:user:delete'"
                 text
                 size="small"
                 style="margin-right: -2px; color: #006eff"

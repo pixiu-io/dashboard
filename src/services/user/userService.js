@@ -46,3 +46,14 @@ export const deleteUser = async (uid) => {
   );
   return [result, err];
 };
+
+export const updateUser = async (uid, data) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'put',
+      url: `/pixiu/users/${uid}`,
+      data: data,
+    }),
+  );
+  return [result, err];
+};
