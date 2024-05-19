@@ -54,7 +54,12 @@
         >
           <el-table-column prop="name" label="用户名称" sortable>
             <template #default="scope">
-              <el-link class="global-table-world" type="primary" :underline="false">
+              <el-link
+                class="global-table-world"
+                style="font-size: 14px"
+                type="primary"
+                :underline="false"
+              >
                 {{ scope.row.name }}
               </el-link>
             </template>
@@ -92,7 +97,7 @@
                   <el-dropdown-menu class="dropdown-buttons">
                     <el-dropdown-item
                       class="dropdown-item-buttons"
-                      @click="handleEditYamlDialog(scope.row)"
+                      @click="handlePwdDialog(scope.row)"
                     >
                       更新密码
                     </el-dropdown-item>
@@ -196,6 +201,60 @@
     @confirm="confirm"
     @cancel="cancel"
   ></pixiuDialog>
+
+  <el-dialog
+    :model-value="data.passwordData.close"
+    style="color: #000000; font: 14px"
+    width="480px"
+    center
+    @close="closePwdDialog"
+  >
+    <template #header>
+      <div
+        style="
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+          margin-top: 5px;
+          font-size: 14.5px;
+          color: #191919;
+        "
+      >
+        修改密码
+      </div>
+    </template>
+
+    <el-form label-width="80px" style="max-width: 360px">
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">旧密码</span>
+        </template>
+        <el-input v-model="data.passwordData.old" placeholder="请输入旧密码" />
+      </el-form-item>
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">新密码</span>
+        </template>
+        <el-input v-model="data.passwordData.new" placeholder="请输入新密码" />
+      </el-form-item>
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">新密码确认</span>
+        </template>
+        <el-input v-model="data.passwordData.new2" placeholder="再次输入新密码" />
+      </el-form-item>
+    </el-form>
+
+    <div style="margin-top: -25px"></div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-small-cancel-button" @click="closePwdDialog">取消</el-button>
+        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmPwdDialog"
+          >确认</el-button
+        >
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup>
@@ -265,6 +324,14 @@ const data = reactive({
     password: '',
     status: 1,
     confirmPassword: '',
+  },
+
+  // 修改密码属性
+  passwordData: {
+    close: false,
+    old: '',
+    new: '',
+    new2: '',
   },
 });
 
@@ -456,6 +523,16 @@ const handleSetRole = async (user) => {
   }
   userSetRole.dialogVisble = true;
 };
+
+// 开始修改用户密码
+const handlePwdDialog = (row) => {
+  data.passwordData.close = true;
+};
+
+const closePwdDialog = (row) => {};
+
+const confirmPwdDialog = (row) => {};
+// 结束修改用户密码
 </script>
 
 <style></style>
