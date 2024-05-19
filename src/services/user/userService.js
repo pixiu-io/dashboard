@@ -57,3 +57,14 @@ export const updateUser = async (uid, data) => {
   );
   return [result, err];
 };
+
+export const updatePassword = async (uid, data) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'put',
+      url: `/pixiu/users/${uid}/password`,
+      data: data,
+    }),
+  );
+  return [result, err];
+};

@@ -205,7 +205,7 @@
   <el-dialog
     :model-value="data.passwordData.close"
     style="color: #000000; font: 14px"
-    width="480px"
+    width="500px"
     center
     @close="closePwdDialog"
   >
@@ -224,24 +224,30 @@
       </div>
     </template>
 
-    <el-form label-width="80px" style="max-width: 360px">
+    <el-form label-width="80px" style="max-width: 400px">
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">用户名称</span>
+        </template>
+        <el-input v-model="data.passwordData.object.name" disabled />
+      </el-form-item>
       <el-form-item>
         <template #label>
           <span style="font-size: 13px; color: #191919">旧密码</span>
         </template>
-        <el-input v-model="data.passwordData.old" placeholder="请输入旧密码" />
+        <el-input v-model="data.passwordData.newObject.old" placeholder="请输入旧密码" />
       </el-form-item>
       <el-form-item>
         <template #label>
           <span style="font-size: 13px; color: #191919">新密码</span>
         </template>
-        <el-input v-model="data.passwordData.new" placeholder="请输入新密码" />
+        <el-input v-model="data.passwordData.newObject.new" placeholder="请输入新密码" />
       </el-form-item>
       <el-form-item>
         <template #label>
           <span style="font-size: 13px; color: #191919">新密码确认</span>
         </template>
-        <el-input v-model="data.passwordData.new2" placeholder="再次输入新密码" />
+        <el-input v-model="data.passwordData.newObject.new2" placeholder="再次输入新密码" />
       </el-form-item>
     </el-form>
 
@@ -264,7 +270,7 @@ import { formatterTime } from '@/utils/formatter';
 import UserEdit from './userEdit.vue';
 import UserSetRole from './userSetRole.vue';
 import Pagination from '@/components/pagination/index.vue';
-import { GetUserList, deleteUser, createUser } from '@/services/user/userService';
+import { GetUserList, deleteUser, createUser, updatePassword } from '@/services/user/userService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const loading = ref(false);
@@ -329,9 +335,13 @@ const data = reactive({
   // 修改密码属性
   passwordData: {
     close: false,
-    old: '',
-    new: '',
-    new2: '',
+    object: '',
+    newObject: {
+      resource_version: 0,
+      old: '',
+      new: '',
+      new2: '',
+    },
   },
 });
 
@@ -527,11 +537,39 @@ const handleSetRole = async (user) => {
 // 开始修改用户密码
 const handlePwdDialog = (row) => {
   data.passwordData.close = true;
+  data.passwordData.object = row;
+  data.passwordData.newObject.resource_version = row.resource_version;
+  console.log('data.passwordData', data.passwordData);
 };
 
-const closePwdDialog = (row) => {};
+const closePwdDialog = () => {
+  data.passwordData.close = false;
+  setTimeout(() => {
+    data.passwordData = {
+      close: false,
+      object: '',
+      newObject: {
+        resource_version: 0,
+        old: '',
+        new: '',
+        new2: '',
+      },
+    };
+  }, 100);
+};
 
-const confirmPwdDialog = (row) => {};
+const confirmPwdDialog = async (row) => {
+  const [result, err] = await updatePassword(
+    data.passwordData.object.id,
+    data.passwordData.newObject,
+  );
+  if (err) {
+    proxy.$notify.error({ message: err });
+    return;
+  }
+  proxy.$notify.success({ message: `用户(${data.passwordData.object.name})密码修改成功` });
+  closePwdDialog();
+};
 // 结束修改用户密码
 </script>
 
