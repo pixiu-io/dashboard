@@ -179,6 +179,7 @@
         </template>
         <el-switch
           v-model="data.userForm.status"
+          width="50px"
           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
           :active-value="1"
           :inactive-value="0"
@@ -246,14 +247,20 @@
       </div>
     </template>
 
-    <el-form label-width="80px" style="max-width: 90%">
+    <el-form
+      ref="passwordDataRef"
+      :rules="changePasswordRules"
+      :model="data.passwordData.newObject"
+      label-width="80px"
+      style="max-width: 90%"
+    >
       <el-form-item>
         <template #label>
           <span style="font-size: 13px; color: #191919">用户名称</span>
         </template>
         <el-input v-model="data.passwordData.object.name" disabled />
       </el-form-item>
-      <el-form-item required>
+      <el-form-item required prop="old">
         <template #label>
           <span style="font-size: 13px; color: #191919">旧密码</span>
         </template>
@@ -263,7 +270,7 @@
           placeholder="请输入旧密码"
         />
       </el-form-item>
-      <el-form-item required>
+      <el-form-item required prop="new">
         <template #label>
           <span style="font-size: 13px; color: #191919">新密码</span>
         </template>
@@ -273,7 +280,7 @@
           placeholder="请输入新密码"
         />
       </el-form-item>
-      <el-form-item required>
+      <el-form-item required prop="new2">
         <template #label>
           <span style="font-size: 13px; color: #191919" show-password>密码确认</span>
         </template>
@@ -309,6 +316,7 @@ import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const loading = ref(false);
 const userFormRef = ref();
+const passwordDataRef = ref();
 const userEdit = reactive({
   dialogVisble: false,
   dialogTableValue: {},
@@ -405,6 +413,36 @@ const validatePass2 = (rule, value, callback) => {
   }
 };
 
+const validatePassOld = (rule, value, callback) => {
+  if (value === '') {
+    callback(new Error('请输入密码'));
+  } else {
+    callback();
+  }
+};
+
+const validatePassOldNew = (rule, value, callback) => {
+  if (value === '') {
+    callback(new Error('请输入新密码'));
+  } else {
+    if (data.passwordData.newObject.new === data.passwordData.newObject.old) {
+      callback(new Error('新密码不可与旧密码一致'));
+    }
+    callback();
+  }
+};
+
+const validatePassOldNew2 = (rule, value, callback) => {
+  if (value === '') {
+    callback(new Error('请再次输入密码'));
+  } else {
+    if (data.passwordData.newObject.new !== data.passwordData.newObject.new2) {
+      callback(new Error('两次密码不匹配'));
+    }
+    callback();
+  }
+};
+
 const validateEmail = (rule, value, callback) => {
   const regEmail =
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -426,6 +464,21 @@ const userFormRules = reactive({
   ],
   confirmPassword: [{ required: true, validator: validatePass2, trigger: 'blur' }],
   email: [{ validator: validateEmail, trigger: 'blur' }],
+});
+
+const changePasswordRules = reactive({
+  old: [
+    { required: true, validator: validatePassOld, trigger: 'blur' },
+    { min: 6, max: 20, message: '密码长度在6到20位之间', trigger: 'blur' },
+  ],
+  new: [
+    { required: true, validator: validatePassOldNew, trigger: 'blur' },
+    { min: 6, max: 20, message: '密码长度在6到20位之间', trigger: 'blur' },
+  ],
+  new2: [
+    { required: true, validator: validatePassOldNew2, trigger: 'blur' },
+    { min: 6, max: 20, message: '密码长度在6到20位之间', trigger: 'blur' },
+  ],
 });
 
 // 分页
@@ -593,16 +646,20 @@ const closePwdDialog = () => {
 };
 
 const confirmPwdDialog = async (row) => {
-  const [result, err] = await updatePassword(
-    data.passwordData.object.id,
-    data.passwordData.newObject,
-  );
-  if (err) {
-    proxy.$notify.error({ message: err });
-    return;
-  }
-  proxy.$notify.success({ message: `用户(${data.passwordData.object.name})密码修改成功` });
-  closePwdDialog();
+  passwordDataRef.value.validate(async (valid) => {
+    if (valid) {
+      const [result, err] = await updatePassword(
+        data.passwordData.object.id,
+        data.passwordData.newObject,
+      );
+      if (err) {
+        proxy.$notify.error({ message: err });
+        return;
+      }
+      proxy.$notify.success({ message: `用户(${data.passwordData.object.name})密码修改成功` });
+      closePwdDialog();
+    }
+  });
 };
 // 结束修改用户密码
 </script>
