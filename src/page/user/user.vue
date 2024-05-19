@@ -394,6 +394,7 @@ const validatePass = (rule, value, callback) => {
     callback();
   }
 };
+
 const validatePass2 = (rule, value, callback) => {
   if (value === '') {
     callback(new Error('请再次输入密码'));
@@ -421,7 +422,7 @@ const userFormRules = reactive({
   name: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [
     { required: true, validator: validatePass, trigger: 'blur' },
-    { min: 6, max: 20, message: '密码长度在6到12位之间', trigger: 'blur' },
+    { min: 6, max: 20, message: '密码长度在6到20位之间', trigger: 'blur' },
   ],
   confirmPassword: [{ required: true, validator: validatePass2, trigger: 'blur' }],
   email: [{ validator: validateEmail, trigger: 'blur' }],
@@ -573,7 +574,6 @@ const handlePwdDialog = (row) => {
   data.passwordData.close = true;
   data.passwordData.object = row;
   data.passwordData.newObject.resource_version = row.resource_version;
-  console.log('data.passwordData', data.passwordData);
 };
 
 const closePwdDialog = () => {
