@@ -54,7 +54,12 @@
         >
           <el-table-column prop="name" label="用户名称" sortable>
             <template #default="scope">
-              <el-link class="global-table-world" type="primary" :underline="false">
+              <el-link
+                class="global-table-world"
+                style="font-size: 14px"
+                type="primary"
+                :underline="false"
+              >
                 {{ scope.row.name }}
               </el-link>
             </template>
@@ -64,19 +69,17 @@
           <el-table-column prop="email" label="Email" />
           <el-table-column prop="description" label="描述" />
 
-          <el-table-column fixed="right" label="操作" width="150px">
+          <el-table-column fixed="right" label="操作" width="160px">
             <template #default="scope">
               <el-button
-                v-permissions="'cloud:user:edit'"
                 text
                 size="small"
-                style="margin-right: -25px; margin-left: -10px; color: #006eff"
+                style="margin-right: -24px; margin-left: -10px; color: #006eff"
                 @click="handleDialogValue(scope.row)"
               >
-                修改
+                更新
               </el-button>
               <el-button
-                v-permissions="'cloud:user:delete'"
                 text
                 size="small"
                 style="margin-right: -2px; color: #006eff"
@@ -94,7 +97,7 @@
                   <el-dropdown-menu class="dropdown-buttons">
                     <el-dropdown-item
                       class="dropdown-item-buttons"
-                      @click="handleEditYamlDialog(scope.row)"
+                      @click="handlePwdDialog(scope.row)"
                     >
                       更新密码
                     </el-dropdown-item>
@@ -133,7 +136,7 @@
   <el-dialog
     v-model="data.createDialog.close"
     style="color: #000000; font: 14px"
-    width="390px"
+    width="40%"
     draggable
     center
     @close="handleCreateCloseDialog"
@@ -145,40 +148,62 @@
       ref="userFormRef"
       :label-position="labelPosition"
       :rules="userFormRules"
-      label-width="110px"
+      label-width="80px"
       :model="data.userForm"
-      style="max-width: 290px"
+      style="max-width: 90%"
     >
-      <el-form-item label="用户名:" required prop="name">
+      <el-form-item required prop="name">
+        <template #label>
+          <span style="font-size: 13px; color: #191919">用户名称</span>
+        </template>
         <el-input v-model="data.userForm.name" />
       </el-form-item>
-      <el-form-item label="描述:" prop="description">
-        <el-input v-model="data.userForm.description" />
+
+      <el-form-item required prop="password">
+        <template #label>
+          <span style="font-size: 13px; color: #191919">密码</span>
+        </template>
+        <el-input v-model="data.userForm.password" type="password" show-password />
       </el-form-item>
-      <el-form-item label="邮箱" prop="email">
-        <el-input v-model="data.userForm.email" />
+
+      <el-form-item required prop="confirmPassword">
+        <template #label>
+          <span style="font-size: 13px; color: #191919">密码确认</span>
+        </template>
+        <el-input v-model="data.userForm.confirmPassword" type="password" show-password />
       </el-form-item>
-      <el-form-item label="状态">
+
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">状态</span>
+        </template>
         <el-switch
           v-model="data.userForm.status"
-          class="ml-2"
           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
           :active-value="1"
           :inactive-value="0"
-          size="large"
           inline-prompt
           active-text="启用"
           inactive-text="禁用"
         />
       </el-form-item>
-      <el-form-item label="密码" required prop="password">
-        <el-input v-model="data.userForm.password" type="password" show-password />
+
+      <el-form-item prop="email">
+        <template #label>
+          <span style="font-size: 13px; color: #191919">邮箱</span>
+        </template>
+        <el-input v-model="data.userForm.email" />
       </el-form-item>
-      <el-form-item label="再次输入密码" prop="confirmPassword">
-        <el-input v-model="data.userForm.confirmPassword" type="password" show-password />
+
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">描述</span>
+        </template>
+        <el-input v-model="data.userForm.description" type="textarea" :autosize="data.autosize" />
       </el-form-item>
     </el-form>
 
+    <div style="margin-top: -20px"></div>
     <template #footer>
       <span class="dialog-footer">
         <el-button class="pixiu-small-cancel-button" @click="handleCreateCloseDialog"
@@ -198,6 +223,78 @@
     @confirm="confirm"
     @cancel="cancel"
   ></pixiuDialog>
+
+  <el-dialog
+    :model-value="data.passwordData.close"
+    style="color: #000000; font: 14px"
+    width="500px"
+    center
+    @close="closePwdDialog"
+  >
+    <template #header>
+      <div
+        style="
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+          margin-top: 5px;
+          font-size: 14.5px;
+          color: #191919;
+        "
+      >
+        修改密码
+      </div>
+    </template>
+
+    <el-form label-width="80px" style="max-width: 400px">
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">用户名称</span>
+        </template>
+        <el-input v-model="data.passwordData.object.name" disabled />
+      </el-form-item>
+      <el-form-item required>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">旧密码</span>
+        </template>
+        <el-input
+          v-model="data.passwordData.newObject.old"
+          show-password
+          placeholder="请输入旧密码"
+        />
+      </el-form-item>
+      <el-form-item required>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">新密码</span>
+        </template>
+        <el-input
+          v-model="data.passwordData.newObject.new"
+          show-password
+          placeholder="请输入新密码"
+        />
+      </el-form-item>
+      <el-form-item required>
+        <template #label>
+          <span style="font-size: 13px; color: #191919" show-password>密码确认</span>
+        </template>
+        <el-input
+          v-model="data.passwordData.newObject.new2"
+          show-password
+          placeholder="再次输入新密码"
+        />
+      </el-form-item>
+    </el-form>
+
+    <div style="margin-top: -20px"></div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-small-cancel-button" @click="closePwdDialog">取消</el-button>
+        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmPwdDialog"
+          >确认</el-button
+        >
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup>
@@ -207,7 +304,7 @@ import { formatterTime } from '@/utils/formatter';
 import UserEdit from './userEdit.vue';
 import UserSetRole from './userSetRole.vue';
 import Pagination from '@/components/pagination/index.vue';
-import { GetUserList, deleteUser, createUser } from '@/services/user/userService';
+import { GetUserList, deleteUser, createUser, updatePassword } from '@/services/user/userService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const loading = ref(false);
@@ -246,7 +343,7 @@ const data = reactive({
 
   updateForm: {},
   autosize: {
-    minRows: 8,
+    minRows: 6,
   },
 
   // 删除对象属性
@@ -268,6 +365,18 @@ const data = reactive({
     status: 1,
     confirmPassword: '',
   },
+
+  // 修改密码属性
+  passwordData: {
+    close: false,
+    object: '',
+    newObject: {
+      resource_version: 0,
+      old: '',
+      new: '',
+      new2: '',
+    },
+  },
 });
 
 onMounted(() => {
@@ -285,6 +394,7 @@ const validatePass = (rule, value, callback) => {
     callback();
   }
 };
+
 const validatePass2 = (rule, value, callback) => {
   if (value === '') {
     callback(new Error('请再次输入密码'));
@@ -312,7 +422,7 @@ const userFormRules = reactive({
   name: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [
     { required: true, validator: validatePass, trigger: 'blur' },
-    { min: 6, max: 20, message: '密码长度在6到12位之间', trigger: 'blur' },
+    { min: 6, max: 20, message: '密码长度在6到20位之间', trigger: 'blur' },
   ],
   confirmPassword: [{ required: true, validator: validatePass2, trigger: 'blur' }],
   email: [{ validator: validateEmail, trigger: 'blur' }],
@@ -340,8 +450,8 @@ const confirm = async () => {
   }
   proxy.$notify.success(`User(${data.deleteDialog.deleteName}) 删除成功`);
 
-  cancel();
   getUserList();
+  cancel();
 };
 
 const cancel = () => {
@@ -416,6 +526,7 @@ const confirmCreateUser = () => {
         return;
       }
       proxy.$notify.success({ message: `用户(${data.userForm.name})创建成功` });
+      getUserList();
       handleCreateCloseDialog();
     }
   });
@@ -457,6 +568,43 @@ const handleSetRole = async (user) => {
   }
   userSetRole.dialogVisble = true;
 };
+
+// 开始修改用户密码
+const handlePwdDialog = (row) => {
+  data.passwordData.close = true;
+  data.passwordData.object = row;
+  data.passwordData.newObject.resource_version = row.resource_version;
+};
+
+const closePwdDialog = () => {
+  data.passwordData.close = false;
+  setTimeout(() => {
+    data.passwordData = {
+      close: false,
+      object: '',
+      newObject: {
+        resource_version: 0,
+        old: '',
+        new: '',
+        new2: '',
+      },
+    };
+  }, 100);
+};
+
+const confirmPwdDialog = async (row) => {
+  const [result, err] = await updatePassword(
+    data.passwordData.object.id,
+    data.passwordData.newObject,
+  );
+  if (err) {
+    proxy.$notify.error({ message: err });
+    return;
+  }
+  proxy.$notify.success({ message: `用户(${data.passwordData.object.name})密码修改成功` });
+  closePwdDialog();
+};
+// 结束修改用户密码
 </script>
 
 <style></style>
