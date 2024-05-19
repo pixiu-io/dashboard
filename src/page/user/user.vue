@@ -231,27 +231,27 @@
         </template>
         <el-input v-model="data.passwordData.object.name" disabled />
       </el-form-item>
-      <el-form-item>
+      <el-form-item required>
         <template #label>
           <span style="font-size: 13px; color: #191919">旧密码</span>
         </template>
         <el-input v-model="data.passwordData.newObject.old" placeholder="请输入旧密码" />
       </el-form-item>
-      <el-form-item>
+      <el-form-item required>
         <template #label>
           <span style="font-size: 13px; color: #191919">新密码</span>
         </template>
         <el-input v-model="data.passwordData.newObject.new" placeholder="请输入新密码" />
       </el-form-item>
-      <el-form-item>
+      <el-form-item required>
         <template #label>
-          <span style="font-size: 13px; color: #191919">新密码确认</span>
+          <span style="font-size: 13px; color: #191919">密码确认</span>
         </template>
         <el-input v-model="data.passwordData.newObject.new2" placeholder="再次输入新密码" />
       </el-form-item>
     </el-form>
 
-    <div style="margin-top: -25px"></div>
+    <div style="margin-top: -20px"></div>
     <template #footer>
       <span class="dialog-footer">
         <el-button class="pixiu-small-cancel-button" @click="closePwdDialog">取消</el-button>
