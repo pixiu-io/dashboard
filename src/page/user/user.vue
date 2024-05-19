@@ -349,7 +349,7 @@ const cancel = () => {
   // 延迟 1 秒重置数据，否则页面上会显的很怪
   setTimeout(() => {
     data.deleteDialog.deleteName = '';
-  }, 1000);
+  }, 100);
 };
 // 删除 结束
 
@@ -404,7 +404,7 @@ const handleCreateCloseDialog = () => {
       status: 1,
       confirmPassword: '',
     };
-  }, 1000);
+  }, 100);
 };
 
 const confirmCreateUser = () => {

@@ -221,7 +221,7 @@ const clean = () => {
   data.deleteDialog.close = false;
   setTimeout(() => {
     data.deleteDialog.deleteName = '';
-  }, 1000);
+  }, 100);
 };
 const cancel = () => {
   clean();
