@@ -73,7 +73,7 @@
                 style="margin-right: -25px; margin-left: -10px; color: #006eff"
                 @click="handleDialogValue(scope.row)"
               >
-                修改
+                更新
               </el-button>
               <el-button
                 v-permissions="'cloud:user:delete'"
@@ -340,8 +340,8 @@ const confirm = async () => {
   }
   proxy.$notify.success(`User(${data.deleteDialog.deleteName}) 删除成功`);
 
-  cancel();
   getUserList();
+  cancel();
 };
 
 const cancel = () => {
@@ -416,6 +416,7 @@ const confirmCreateUser = () => {
         return;
       }
       proxy.$notify.success({ message: `用户(${data.userForm.name})创建成功` });
+      getUserList();
       handleCreateCloseDialog();
     }
   });
