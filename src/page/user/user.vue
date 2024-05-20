@@ -179,9 +179,9 @@
         </template>
 
         <el-radio-group v-model="data.userForm.status">
-          <el-radio style="margin-right: 16px" value="0">标准</el-radio>
-          <el-radio style="margin-right: 16px" value="1">只读</el-radio>
-          <el-radio value="2">禁用</el-radio>
+          <el-radio style="margin-right: 16px" :value="0">标准</el-radio>
+          <el-radio style="margin-right: 16px" :value="1">只读</el-radio>
+          <el-radio :value="2">禁用</el-radio>
         </el-radio-group>
       </el-form-item>
 
