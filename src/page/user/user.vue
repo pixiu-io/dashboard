@@ -177,16 +177,12 @@
         <template #label>
           <span style="font-size: 13px; color: #191919">状态</span>
         </template>
-        <el-switch
-          v-model="data.userForm.status"
-          width="50px"
-          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
-          :active-value="1"
-          :inactive-value="0"
-          inline-prompt
-          active-text="启用"
-          inactive-text="禁用"
-        />
+
+        <el-radio-group v-model="data.userForm.status">
+          <el-radio style="margin-right: 16px" :value="0">标准</el-radio>
+          <el-radio style="margin-right: 16px" :value="1">只读</el-radio>
+          <el-radio :value="2">禁用</el-radio>
+        </el-radio-group>
       </el-form-item>
 
       <el-form-item prop="email">
@@ -370,7 +366,7 @@ const data = reactive({
     email: '',
     name: '',
     password: '',
-    status: 1,
+    status: '0',
     confirmPassword: '',
   },
 
@@ -564,7 +560,7 @@ const handleCreateCloseDialog = () => {
       email: '',
       name: '',
       password: '',
-      status: 1,
+      status: '0',
       confirmPassword: '',
     };
   }, 100);
