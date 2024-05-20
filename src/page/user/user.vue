@@ -366,7 +366,7 @@ const data = reactive({
     email: '',
     name: '',
     password: '',
-    status: '1',
+    status: '0',
     confirmPassword: '',
   },
 
