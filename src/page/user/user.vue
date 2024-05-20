@@ -181,8 +181,8 @@
           v-model="data.userForm.status"
           width="50px"
           style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
-          :active-value="1"
-          :inactive-value="0"
+          :active-value="0"
+          :inactive-value="1"
           inline-prompt
           active-text="启用"
           inactive-text="禁用"
@@ -370,7 +370,7 @@ const data = reactive({
     email: '',
     name: '',
     password: '',
-    status: 1,
+    status: 0,
     confirmPassword: '',
   },
 
@@ -564,7 +564,7 @@ const handleCreateCloseDialog = () => {
       email: '',
       name: '',
       password: '',
-      status: 1,
+      status: 0,
       confirmPassword: '',
     };
   }, 100);
