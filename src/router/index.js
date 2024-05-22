@@ -512,6 +512,7 @@ const routes = [
         name: 'User',
         meta: {
           title: '用户',
+          permission: 2,
         },
         component: User,
       },
@@ -525,6 +526,7 @@ const routes = [
         name: 'Role',
         meta: {
           title: '角色',
+          permission: 2,
         },
         component: Role,
       },
@@ -533,6 +535,7 @@ const routes = [
         name: 'Menu',
         meta: {
           title: '权限',
+          permission: 2,
         },
         component: Menu,
       },
@@ -587,6 +590,18 @@ router.beforeEach((to, from) => {
       return { name: 'Login' };
     }
     if (token && to.fullPath === '/login') {
+      return { name: 'Index' };
+    }
+  }
+
+  // 根据localStorage中的role来判断是否有访问权限
+  const role = localStorage.getItem('role');
+  if (to.meta.permission === undefined || to.meta.permission === null) {
+    return;
+  } else {
+    if (role && role >= to.meta.permission) {
+      return;
+    } else {
       return { name: 'Index' };
     }
   }
