@@ -23,6 +23,7 @@ const useLoginStore = defineStore('login', () => {
         }
         localStorage.setItem('token', result);
         localStorage.setItem('account', loginInfo.value.name);
+        localStorage.setItem('role', result.role);
         router.push('/index');
         ElMessage({
           message: '登录成功',
