@@ -118,7 +118,7 @@
           <div style="margin-left: 20px; margin-top: 10px">账号ID: {{ data.userId }}</div>
 
           <el-dropdown-menu>
-            <el-dropdown-item divided>
+            <el-dropdown-item divided @click="goToUserInfo">
               <el-icon>
                 <component :is="'UserFilled'"></component>
               </el-icon>
@@ -153,11 +153,12 @@ const data = reactive({
   showMessage: false,
 
   loginUser: '',
-  userId: '123456789',
+  userId: '',
 });
 
 onMounted(() => {
   data.loginUser = localStorage.getItem('account');
+  data.userId = localStorage.getItem('userId');
 });
 
 const headInput = ref('');
@@ -170,6 +171,10 @@ const logout = () => {
   localStorage.clear();
   // 跳转到登陆页面
   proxy.$router.push('/login');
+};
+
+const goToUserInfo = () => {
+  proxy.$router.push('/user');
 };
 </script>
 

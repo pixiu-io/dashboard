@@ -6,6 +6,7 @@ import {
   Login,
   Role,
   User,
+  UserDetail,
   RegisterUser,
   Menu,
   Cluster,
@@ -513,6 +514,11 @@ const routes = [
           title: '用户',
         },
         component: User,
+      },
+      {
+        path: 'user',
+        name: 'UserDetail',
+        component: UserDetail,
       },
       {
         path: 'role',
