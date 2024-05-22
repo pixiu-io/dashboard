@@ -21,7 +21,8 @@ const useLoginStore = defineStore('login', () => {
         if (err !== null) {
           return;
         }
-        localStorage.setItem('token', result);
+        localStorage.setItem('token', result.token);
+        localStorage.setItem('userId', result.user_id);
         localStorage.setItem('account', loginInfo.value.name);
         router.push('/index');
         ElMessage({
