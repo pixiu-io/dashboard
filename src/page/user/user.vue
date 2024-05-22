@@ -366,7 +366,7 @@ const data = reactive({
     email: '',
     name: '',
     password: '',
-    status: '0',
+    status: 0,
     confirmPassword: '',
   },
 
@@ -560,7 +560,7 @@ const handleCreateCloseDialog = () => {
       email: '',
       name: '',
       password: '',
-      status: '0',
+      status: 0,
       confirmPassword: '',
     };
   }, 100);
