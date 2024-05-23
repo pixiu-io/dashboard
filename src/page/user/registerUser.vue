@@ -66,7 +66,7 @@ const data = reactive({
   userForm: {
     name: '',
     password: '',
-    status: 2,
+    role: 2,
     confirmPassword: '',
   },
 });
