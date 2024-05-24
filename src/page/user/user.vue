@@ -535,11 +535,11 @@ const changeStatus = async (user) => {
 const getUserList = async () => {
   data.loading = true;
   const [result, err] = await GetUserList();
+  data.loading = false;
   if (err) {
     proxy.$message.error(err);
     return;
   }
-  data.loading = false;
 
   data.userList = result;
   data.pageInfo.total = result.length;
