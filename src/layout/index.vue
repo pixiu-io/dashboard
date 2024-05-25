@@ -91,7 +91,7 @@ onMounted(() => {
     },
     {
       name: '部署计划',
-      url: '/deployments',
+      url: '/plans',
       icon: 'SetUp',
       iconType: 'el',
     },
