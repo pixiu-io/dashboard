@@ -64,6 +64,7 @@ import {
   PipelineRun,
   CreateTask,
   CreateTaskRun,
+  Plan,
 } from '@/page';
 
 const routes = [
@@ -520,6 +521,11 @@ const routes = [
         path: 'user',
         name: 'UserDetail',
         component: UserDetail,
+      },
+      {
+        path: 'plans',
+        name: 'Plan',
+        component: Plan,
       },
       {
         path: 'role',

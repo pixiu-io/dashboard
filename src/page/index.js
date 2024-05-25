@@ -61,6 +61,7 @@ import Pipeline from './container/cicd/pipeline.vue';
 import PipelineRun from './container/cicd/pipelinerun.vue';
 import CreateTask from './container/cicd/createtask.vue';
 import CreateTaskRun from './container/cicd/createtaskrun.vue';
+import Plan from './plan/plan.vue';
 export {
   Home,
   Login,
@@ -125,4 +126,5 @@ export {
   PipelineRun,
   CreateTask,
   CreateTaskRun,
+  Plan,
 };

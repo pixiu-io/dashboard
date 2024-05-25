@@ -90,6 +90,12 @@ onMounted(() => {
       iconType: 'el',
     },
     {
+      name: '部署计划',
+      url: '/plans',
+      icon: 'SetUp',
+      iconType: 'el',
+    },
+    {
       name: '容器服务',
       url: '/clusters',
       icon: 'icon-acrrongqijingxiangfuwu',
