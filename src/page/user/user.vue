@@ -54,20 +54,28 @@
         >
           <el-table-column prop="name" label="用户名称" sortable>
             <template #default="scope">
-              <el-link
-                class="global-table-world"
-                style="font-size: 14px"
-                type="primary"
-                :underline="false"
-              >
+              <dev style="font-size: 14px; color: #29292b" type="primary" :underline="false">
                 {{ scope.row.name }}
-              </el-link>
+              </dev>
             </template>
           </el-table-column>
-          />
+
           <el-table-column prop="gmt_create" label="创建时间" sortable :formatter="formatterTime" />
-          <el-table-column prop="email" label="Email" />
-          <el-table-column prop="description" label="描述" />
+          <el-table-column prop="email" label="Email">
+            <template #default="scope">
+              <dev style="font-size: 14px; color: #29292b" type="primary" :underline="false">
+                {{ scope.row.email }}
+              </dev>
+            </template>
+          </el-table-column>
+
+          <el-table-column prop="description" label="描述">
+            <template #default="scope">
+              <dev style="font-size: 14px; color: #29292b" type="primary" :underline="false">
+                {{ scope.row.description }}
+              </dev>
+            </template>
+          </el-table-column>
 
           <el-table-column fixed="right" label="操作" width="160px">
             <template #default="scope">
@@ -179,7 +187,7 @@
         </template>
 
         <el-radio-group v-model="data.userForm.status">
-          <el-radio style="margin-right: 16px" :value="0">标准</el-radio>
+          <el-radio-bu style="margin-right: 16px" :value="0">标准</el-radio-bu>
           <el-radio style="margin-right: 16px" :value="1">只读</el-radio>
           <el-radio :value="2">禁用</el-radio>
         </el-radio-group>
@@ -310,6 +318,8 @@ import Pagination from '@/components/pagination/index.vue';
 import { GetUserList, deleteUser, createUser, updatePassword } from '@/services/user/userService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
+const { proxy } = getCurrentInstance();
+
 const loading = ref(false);
 const userFormRef = ref();
 const passwordDataRef = ref();
@@ -326,8 +336,6 @@ const userSetRole = reactive({
   roleList: [],
   user: {},
 });
-
-const { proxy } = getCurrentInstance();
 
 const data = reactive({
   loading: false,
