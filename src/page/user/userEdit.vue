@@ -28,24 +28,21 @@
 
       <el-form-item>
         <template #label>
+          <span style="font-size: 13px; color: #191919">状态</span>
+        </template>
+        <el-radio-group v-model="userForm.value.status">
+          <el-radio style="margin-right: 16px" :value="0">标准</el-radio>
+          <el-radio style="margin-right: 16px" :value="1">只读</el-radio>
+          <el-radio :value="2">禁用</el-radio>
+        </el-radio-group>
+      </el-form-item>
+
+      <el-form-item>
+        <template #label>
           <span style="font-size: 13px; color: #191919">描述</span>
         </template>
         <el-input v-model="userForm.value.description" type="textarea" :autosize="data.autosize" />
       </el-form-item>
-
-      <!-- <el-form-item label="状态:">
-        <el-switch
-          v-model="userForm.value.status"
-          class="ml-2"
-          style="--el-switch-on-color: #409eff; --el-switch-off-color: #ff4949"
-          :active-value="1"
-          :inactive-value="0"
-          size="large"
-          inline-prompt
-          active-text="启用"
-          inactive-text="禁用"
-        />
-      </el-form-item> -->
     </el-form>
 
     <div style="margin-top: -20px"></div>
@@ -74,7 +71,7 @@ const userForm = reactive({
   email: '',
   name: '',
   password: '',
-  status: 1,
+  status: 0,
 });
 
 const data = reactive({
