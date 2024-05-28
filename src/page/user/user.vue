@@ -54,20 +54,42 @@
         >
           <el-table-column prop="name" label="用户名称" sortable>
             <template #default="scope">
-              <el-link
-                class="global-table-world"
-                style="font-size: 14px"
-                type="primary"
-                :underline="false"
-              >
-                {{ scope.row.name }}
-              </el-link>
+              <div style="display: flex">
+                <span style="font-size: 13.5px; color: #29292b">
+                  {{ scope.row.name }}
+                </span>
+                <div style="margin-left: 4px; cursor: pointer">
+                  <pixiu-icon
+                    name="icon-copy"
+                    size="12px"
+                    type="iconfont"
+                    color="#909399"
+                    @click="copy(scope.row.name)"
+                  />
+                </div>
+              </div>
             </template>
           </el-table-column>
-          />
+
+          <el-table-column prop="status" label="状态" :formatter="statusFormatter" />
+
           <el-table-column prop="gmt_create" label="创建时间" sortable :formatter="formatterTime" />
-          <el-table-column prop="email" label="Email" />
-          <el-table-column prop="description" label="描述" />
+
+          <el-table-column prop="email" label="Email">
+            <template #default="scope">
+              <dev style="font-size: 12px; color: #29292b" type="primary" :underline="false">
+                {{ scope.row.email }}
+              </dev>
+            </template>
+          </el-table-column>
+
+          <el-table-column prop="description" label="描述">
+            <template #default="scope">
+              <dev style="font-size: 12px; color: #29292b" type="primary" :underline="false">
+                {{ scope.row.description }}
+              </dev>
+            </template>
+          </el-table-column>
 
           <el-table-column fixed="right" label="操作" width="160px">
             <template #default="scope">
@@ -300,7 +322,7 @@
   </el-dialog>
 </template>
 
-<script setup>
+<script setup lang="jsx">
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { formatterTime } from '@/utils/formatter';
@@ -309,6 +331,9 @@ import UserSetRole from './userSetRole.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { GetUserList, deleteUser, createUser, updatePassword } from '@/services/user/userService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
+import { copy } from '@/utils/utils';
+
+const { proxy } = getCurrentInstance();
 
 const loading = ref(false);
 const userFormRef = ref();
@@ -326,8 +351,6 @@ const userSetRole = reactive({
   roleList: [],
   user: {},
 });
-
-const { proxy } = getCurrentInstance();
 
 const data = reactive({
   loading: false,
@@ -582,9 +605,20 @@ const confirmCreateUser = () => {
 };
 // 结束 创建用户
 
+// 开始编辑用户
 const handleDialogValue = (user) => {
   userEdit.dialogTableValue = JSON.parse(JSON.stringify(user));
   userEdit.dialogVisble = true;
+};
+// 结束编辑用户
+
+const statusMap = {
+  0: '普通',
+  1: '只读',
+  2: '禁用',
+};
+const statusFormatter = (row, column, cellValue) => {
+  return <div style="font-size: 12px; color: #29292b">{statusMap[cellValue]}</div>;
 };
 
 const getRoles = async () => {
