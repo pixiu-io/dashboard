@@ -54,9 +54,20 @@
         >
           <el-table-column prop="name" label="用户名称" sortable>
             <template #default="scope">
-              <dev style="font-size: 14px; color: #29292b" type="primary" :underline="false">
-                {{ scope.row.name }}
-              </dev>
+              <div style="display: flex">
+                <span style="font-size: 13.5px; color: #29292b">
+                  {{ scope.row.name }}
+                </span>
+                <div style="margin-left: 4px; cursor: pointer">
+                  <pixiu-icon
+                    name="icon-copy"
+                    size="12px"
+                    type="iconfont"
+                    color="#909399"
+                    @click="copy(scope.row.name)"
+                  />
+                </div>
+              </div>
             </template>
           </el-table-column>
 
@@ -320,6 +331,7 @@ import UserSetRole from './userSetRole.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { GetUserList, deleteUser, createUser, updatePassword } from '@/services/user/userService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
+import { copy } from '@/utils/utils';
 
 const { proxy } = getCurrentInstance();
 
