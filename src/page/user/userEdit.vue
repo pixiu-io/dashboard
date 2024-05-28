@@ -98,7 +98,7 @@ const confirmUpdateUser = async () => {
     return;
   }
 
-  proxy.$notify.success(`User(${userForm.value.name} 删除成功`);
+  proxy.$notify.success(`用户(${userForm.value.name}) 更新成功`);
   handleClose();
 };
 
