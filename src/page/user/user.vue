@@ -60,10 +60,13 @@
             </template>
           </el-table-column>
 
+          <el-table-column prop="status" label="状态" :formatter="statusFormatter" />
+
           <el-table-column prop="gmt_create" label="创建时间" sortable :formatter="formatterTime" />
+
           <el-table-column prop="email" label="Email">
             <template #default="scope">
-              <dev style="font-size: 14px; color: #29292b" type="primary" :underline="false">
+              <dev style="font-size: 12px; color: #29292b" type="primary" :underline="false">
                 {{ scope.row.email }}
               </dev>
             </template>
@@ -71,7 +74,7 @@
 
           <el-table-column prop="description" label="描述">
             <template #default="scope">
-              <dev style="font-size: 14px; color: #29292b" type="primary" :underline="false">
+              <dev style="font-size: 12px; color: #29292b" type="primary" :underline="false">
                 {{ scope.row.description }}
               </dev>
             </template>
@@ -308,7 +311,7 @@
   </el-dialog>
 </template>
 
-<script setup>
+<script setup lang="jsx">
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { formatterTime } from '@/utils/formatter';
@@ -590,9 +593,20 @@ const confirmCreateUser = () => {
 };
 // 结束 创建用户
 
+// 开始编辑用户
 const handleDialogValue = (user) => {
   userEdit.dialogTableValue = JSON.parse(JSON.stringify(user));
   userEdit.dialogVisble = true;
+};
+// 结束编辑用户
+
+const statusMap = {
+  0: '普通',
+  1: '只读',
+  2: '禁用',
+};
+const statusFormatter = (row, column, cellValue) => {
+  return <div style="font-size: 12px; color: #29292b">{statusMap[cellValue]}</div>;
 };
 
 const getRoles = async () => {
