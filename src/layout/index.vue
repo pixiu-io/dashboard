@@ -114,20 +114,20 @@ onMounted(() => {
       iconType: 'el',
       permission: 2,
     },
-    {
-      name: '角色管理',
-      url: '/role',
-      icon: 'Guide',
-      iconType: 'el',
-      permission: 2,
-    },
-    {
-      name: '菜单管理',
-      url: '/menu',
-      icon: 'Grid',
-      iconType: 'el',
-      permission: 2,
-    },
+    // {
+    //   name: '角色管理',
+    //   url: '/role',
+    //   icon: 'Guide',
+    //   iconType: 'el',
+    //   permission: 2,
+    // },
+    // {
+    //   name: '菜单管理',
+    //   url: '/menu',
+    //   icon: 'Grid',
+    //   iconType: 'el',
+    //   permission: 2,
+    // },
   ];
   data.activeIndex = getActive();
 });
