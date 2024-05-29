@@ -1,7 +1,7 @@
 <template>
   <!-- 修改用户信息 -->
   <el-dialog
-    :model-value="dialogVisble"
+    :model-value="visible"
     style="color: #000000; font: 14px"
     width="580px"
     center
@@ -58,12 +58,23 @@
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance, watch } from 'vue';
+import { reactive, ref, getCurrentInstance, watch, onMounted, toRefs } from 'vue';
 import { ElMessage } from 'element-plus';
 import { updateUser } from '@/services/user/userService';
 
 const { proxy } = getCurrentInstance();
-const emits = defineEmits(['update:modelValue', 'valueChange']);
+const emits = defineEmits(['value-change', 'close']);
+
+const props = defineProps({
+  dialogTableValue: {
+    type: Object,
+    default: () => {},
+  },
+  visible: {
+    type: Boolean,
+    default: false,
+  },
+});
 
 const userForm = reactive({
   id: 0,
@@ -80,15 +91,9 @@ const data = reactive({
   },
 });
 
-const props = defineProps({
-  dialogTableValue: {
-    type: Object,
-    default: () => {},
-  },
-});
-
 const handleClose = () => {
-  emits('update:modelValue', false);
+  emits('value-change');
+  emits('close');
 };
 
 const confirmUpdateUser = async () => {

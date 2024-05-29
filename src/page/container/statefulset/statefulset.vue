@@ -38,7 +38,7 @@
         >
           <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
         </el-select>
-        <!-- <dev class="namespace-container" style="width: 112px; float: right">命名空间</dev> -->
+        <!-- <div class="namespace-container" style="width: 112px; float: right">命名空间</div> -->
       </el-col>
     </el-row>
     <el-card class="box-card">

@@ -77,17 +77,17 @@
 
           <el-table-column prop="email" label="Email">
             <template #default="scope">
-              <dev style="font-size: 12px; color: #29292b" type="primary" :underline="false">
+              <div style="font-size: 12px; color: #29292b" type="primary" :underline="false">
                 {{ scope.row.email }}
-              </dev>
+              </div>
             </template>
           </el-table-column>
 
           <el-table-column prop="description" label="描述">
             <template #default="scope">
-              <dev style="font-size: 12px; color: #29292b" type="primary" :underline="false">
+              <div style="font-size: 12px; color: #29292b" type="primary" :underline="false">
                 {{ scope.row.description }}
-              </dev>
+              </div>
             </template>
           </el-table-column>
 
@@ -148,9 +148,9 @@
   />
 
   <UserEdit
-    v-if="userEdit.dialogVisble"
-    v-model="userEdit.dialogVisble"
+    :visible="userEdit.dialogVisble"
     :dialog-table-value="userEdit.dialogTableValue"
+    @close="closeUserEditDialog"
     @value-change="getUserList"
   />
 
@@ -404,6 +404,8 @@ onMounted(() => {
   getUserList();
 });
 
+const handleSelectionChange = (e) => {};
+
 const validatePass = (rule, value, callback) => {
   if (value === '') {
     callback(new Error('请输入密码'));
@@ -606,6 +608,10 @@ const handleDialogValue = (user) => {
   userEdit.dialogVisble = true;
 };
 // 结束编辑用户
+
+const closeUserEditDialog = () => {
+  userEdit.dialogVisble = false;
+};
 
 const statusMap = {
   0: '普通',
