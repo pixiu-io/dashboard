@@ -1,5 +1,5 @@
 <template>
-  <dev class="one-line-style">
+  <div class="one-line-style">
     <div style="display: flex; flex-direction: column; width: 60%">
       <el-card class="content1-card-container">
         <div
@@ -334,7 +334,7 @@
         </el-form-item>
       </el-card>
     </div>
-  </dev>
+  </div>
 </template>
 
 <script setup>
