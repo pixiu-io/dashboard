@@ -121,7 +121,7 @@
                       class="dropdown-item-buttons"
                       @click="handlePwdDialog(scope.row)"
                     >
-                      更新密码
+                      重置密码
                     </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
@@ -239,6 +239,7 @@
     :close-event="data.deleteDialog.close"
     :object-name="data.deleteDialog.objectName"
     :delete-name="data.deleteDialog.deleteName"
+    :alias-name="data.deleteDialog.aliasName"
     @confirm="confirm"
     @cancel="cancel"
   ></pixiuDialog>
@@ -261,7 +262,7 @@
           color: #191919;
         "
       >
-        修改密码
+        重置密码
       </div>
     </template>
 
@@ -278,16 +279,7 @@
         </template>
         <el-input v-model="data.passwordData.object.name" disabled />
       </el-form-item>
-      <el-form-item required prop="old">
-        <template #label>
-          <span style="font-size: 13px; color: #191919">旧密码</span>
-        </template>
-        <el-input
-          v-model="data.passwordData.newObject.old"
-          show-password
-          placeholder="请输入旧密码"
-        />
-      </el-form-item>
+
       <el-form-item required prop="new">
         <template #label>
           <span style="font-size: 13px; color: #191919">新密码</span>
@@ -378,6 +370,7 @@ const data = reactive({
     close: false,
     objectName: '用户',
     deleteName: '',
+    aliasName: '',
   },
 
   // 创建属性
@@ -393,13 +386,14 @@ const data = reactive({
     confirmPassword: '',
   },
 
-  // 修改密码属性
+  // 重置密码属性
   passwordData: {
     close: false,
     object: '',
     newObject: {
       resource_version: 0,
-      old: '',
+      reset: true,
+      old: 'Fake123456!',
       new: '',
       new2: '',
     },
@@ -512,6 +506,7 @@ const onChange = (v) => {
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.id;
+  data.deleteDialog.aliasName = row.name;
 };
 
 const confirm = async () => {
@@ -520,7 +515,7 @@ const confirm = async () => {
     proxy.$notify.error(err);
     return;
   }
-  proxy.$notify.success(`User(${data.deleteDialog.deleteName}) 删除成功`);
+  proxy.$notify.success(`User(${data.deleteDialog.aliasName}) 删除成功`);
 
   getUserList();
   cancel();
@@ -667,7 +662,8 @@ const closePwdDialog = () => {
       object: '',
       newObject: {
         resource_version: 0,
-        old: '',
+        reset: true,
+        old: 'Fake123456!',
         new: '',
         new2: '',
       },
@@ -686,7 +682,7 @@ const confirmPwdDialog = async (row) => {
         proxy.$notify.error({ message: err });
         return;
       }
-      proxy.$notify.success({ message: `用户(${data.passwordData.object.name})密码修改成功` });
+      proxy.$notify.success({ message: `用户(${data.passwordData.object.name})密码重置成功` });
       closePwdDialog();
     }
   });
