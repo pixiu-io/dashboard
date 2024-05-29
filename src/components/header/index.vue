@@ -144,6 +144,7 @@
 
 <script setup>
 import { reactive, ref, getCurrentInstance, onMounted } from 'vue';
+import { logoutMethod } from '@/services/loginService';
 
 const { proxy } = getCurrentInstance();
 const data = reactive({
@@ -169,6 +170,9 @@ const handleMessage = () => {
 const logout = () => {
   // 清除本地缓存的 token 和 account
   localStorage.clear();
+  // 直接发送退出请求，忽略是否真的已退出
+  logoutMethod(data.userId);
+
   // 跳转到登陆页面
   proxy.$router.push('/login');
 };
