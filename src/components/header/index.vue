@@ -173,6 +173,9 @@ const logout = async () => {
 
   // 清除本地缓存的 token 和 account
   localStorage.clear();
+  // 直接发送退出请求，忽略是否真的已退出
+  logoutMethod(data.userId);
+
   // 跳转到登陆页面
   proxy.$router.push('/login');
 };
