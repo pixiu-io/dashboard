@@ -11,3 +11,13 @@ export const loginMethod = async (data) => {
   );
   return [err, result];
 };
+
+export const logoutMethod = async (uid) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'post',
+      url: `/pixiu/users/${uid}/logout`,
+    }),
+  );
+  return [err, result];
+};
