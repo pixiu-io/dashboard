@@ -79,12 +79,12 @@
               </el-link>
             </template>
           </el-table-column>
-          />
-          <el-table-column prop="gmt_create" label="创建时间" sortable :formatter="formatterTime" />
 
           <el-table-column prop="status" label="状态" />
 
           <el-table-column prop="description" label="描述" />
+
+          <el-table-column prop="gmt_create" label="创建时间" sortable :formatter="formatterTime" />
 
           <el-table-column fixed="right" label="操作" width="160px">
             <template #default="scope">
@@ -197,6 +197,7 @@
     :close-event="data.deleteDialog.close"
     :object-name="data.deleteDialog.objectName"
     :delete-name="data.deleteDialog.deleteName"
+    :alias-name="data.deleteDialog.aliasName"
     @confirm="confirm"
     @cancel="cancel"
   ></pixiuDialog>
@@ -206,7 +207,13 @@
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { formatterTime } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
-import { GetUserList, deleteUser, createUser, updatePassword } from '@/services/user/userService';
+import {
+  createPlan,
+  getPlan,
+  GetPlanList,
+  deletePlan,
+  updatePlan,
+} from '@/services/plan/planService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { proxy } = getCurrentInstance();
@@ -235,8 +242,9 @@ const data = reactive({
   // 删除对象属性
   deleteDialog: {
     close: false,
-    objectName: '用户',
+    objectName: '部署计划',
     deleteName: '',
+    aliasName: '',
   },
 
   // 创建属性
@@ -279,26 +287,35 @@ const handleCreateCloseDialog = () => {
   }, 100);
 };
 
-const confirmCreate = () => {
-  console.log('data.createForm', data.createForm);
+const confirmCreate = async () => {
+  const [result, err] = await createPlan(data.createForm);
+  if (err) {
+    proxy.$notify.error({ message: err });
+    return;
+  }
+  proxy.$notify.success({ message: `部署计划(${data.createForm.name})创建成功` });
+  getPlanList();
+  handleCreateCloseDialog();
 };
+
 // 结束创建
 
 // 删除 开始
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.id;
+  data.deleteDialog.aliasName = row.name;
 };
 
 const confirm = async () => {
-  const [result, err] = await deleteUser(data.deleteDialog.deleteName);
+  const [result, err] = await deletePlan(data.deleteDialog.deleteName);
   if (err) {
     proxy.$notify.error(err);
     return;
   }
-  proxy.$notify.success(`User(${data.deleteDialog.deleteName}) 删除成功`);
+  proxy.$notify.success(`部署计划(${data.deleteDialog.aliasName}) 删除成功`);
 
-  getUserList();
+  getPlanList();
   cancel();
 };
 
@@ -313,7 +330,7 @@ const cancel = () => {
 
 const getPlanList = async () => {
   data.loading = true;
-
+  const [result, err] = await GetPlanList();
   data.loading = false;
   if (err) {
     proxy.$message.error(err);
