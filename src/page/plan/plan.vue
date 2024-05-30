@@ -81,6 +81,9 @@
           </el-table-column>
           />
           <el-table-column prop="gmt_create" label="创建时间" sortable :formatter="formatterTime" />
+
+          <el-table-column prop="status" label="状态" />
+
           <el-table-column prop="description" label="描述" />
 
           <el-table-column fixed="right" label="操作" width="160px">
@@ -122,6 +125,54 @@
       </el-card>
     </div>
   </el-main>
+
+  <!-- 添加用户信息 -->
+  <el-dialog
+    v-model="data.createDialog.close"
+    style="color: #000000; font: 14px"
+    width="560px"
+    draggable
+    center
+    @close="handleCreateCloseDialog"
+  >
+    <template #header>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">新建计划</div>
+    </template>
+    <el-form
+      ref="createFormRef"
+      :label-position="labelPosition"
+      :rules="createFormRules"
+      label-width="80px"
+      :model="data.createForm"
+      style="max-width: 90%"
+    >
+      <el-form-item required prop="name">
+        <template #label>
+          <span style="font-size: 13px; color: #191919">计划名称</span>
+        </template>
+        <el-input v-model="data.createForm.name" />
+      </el-form-item>
+
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">描述</span>
+        </template>
+        <el-input v-model="data.createForm.description" type="textarea" :autosize="data.autosize" />
+      </el-form-item>
+    </el-form>
+
+    <div style="margin-top: -20px"></div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-small-cancel-button" @click="handleCreateCloseDialog"
+          >取消</el-button
+        >
+        <el-button class="pixiu-small-confirm-button" type="primary" @click="confirmCreate"
+          >确定</el-button
+        >
+      </span>
+    </template>
+  </el-dialog>
 
   <pixiuDialog
     :close-event="data.deleteDialog.close"
@@ -173,7 +224,11 @@ const data = reactive({
   createDialog: {
     close: false,
   },
-  objectForm: {},
+  createForm: {
+    name: '',
+    status: 0,
+    description: '',
+  },
 });
 
 onMounted(() => {
@@ -187,6 +242,28 @@ const onChange = (v) => {
 
   getPlanList();
 };
+
+// 开始 创建用户
+const handleCreateDialog = () => {
+  data.createDialog.close = true;
+};
+
+const handleCreateCloseDialog = () => {
+  data.createDialog.close = false;
+
+  setTimeout(() => {
+    data.createForm = {
+      name: '',
+      status: 0,
+      description: '',
+    };
+  }, 100);
+};
+
+const confirmCreate = () => {
+  console.log('data.createForm', data.createForm);
+};
+// 结束创建
 
 // 删除 开始
 const handleDeleteDialog = (row) => {

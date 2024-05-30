@@ -614,7 +614,7 @@ const closeUserEditDialog = () => {
 };
 
 const statusMap = {
-  0: '普通',
+  0: '标准',
   1: '只读',
   2: '禁用',
 };
