@@ -138,6 +138,25 @@
     <template #header>
       <div style="text-align: left; font-weight: bold; padding-left: 5px">新建计划</div>
     </template>
+    <el-card class="app-docs" style="height: 40px; margin-top: -2px; margin-left: 6px">
+      <div style="margin-top: -12px">
+        <el-icon
+          style="
+            vertical-align: middle;
+            font-size: 18px;
+            margin-left: -20px;
+            margin-right: 8px;
+            margin-top: -25px;
+          "
+          ><WarningFilled
+        /></el-icon>
+
+        <div style="vertical-align: middle; margin-top: -27px; margin-left: 10px">
+          新建部署计划以自建 kubernetes 集群.
+        </div>
+      </div>
+    </el-card>
+
     <el-form
       ref="createFormRef"
       :label-position="labelPosition"
@@ -210,7 +229,7 @@ const data = reactive({
 
   updateForm: {},
   autosize: {
-    minRows: 6,
+    minRows: 5,
   },
 
   // 删除对象属性
