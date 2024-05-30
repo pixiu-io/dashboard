@@ -79,9 +79,12 @@
               </el-link>
             </template>
           </el-table-column>
-          />
-          <el-table-column prop="gmt_create" label="创建时间" sortable :formatter="formatterTime" />
+
+          <el-table-column prop="status" label="状态" />
+
           <el-table-column prop="description" label="描述" />
+
+          <el-table-column prop="gmt_create" label="创建时间" sortable :formatter="formatterTime" />
 
           <el-table-column fixed="right" label="操作" width="160px">
             <template #default="scope">
@@ -123,10 +126,78 @@
     </div>
   </el-main>
 
+  <!-- 添加用户信息 -->
+  <el-dialog
+    v-model="data.createDialog.close"
+    style="color: #000000; font: 14px"
+    width="560px"
+    draggable
+    center
+    @close="handleCreateCloseDialog"
+  >
+    <template #header>
+      <div style="text-align: left; font-weight: bold; padding-left: 5px">新建计划</div>
+    </template>
+    <el-card class="app-docs" style="height: 40px; margin-top: -2px; margin-left: 6px">
+      <div style="margin-top: -12px">
+        <el-icon
+          style="
+            vertical-align: middle;
+            font-size: 18px;
+            margin-left: -20px;
+            margin-right: 8px;
+            margin-top: -25px;
+          "
+          ><WarningFilled
+        /></el-icon>
+
+        <div style="vertical-align: middle; margin-top: -27px; margin-left: 10px">
+          新建部署计划以自建 kubernetes 集群.
+        </div>
+      </div>
+    </el-card>
+
+    <el-form
+      ref="createFormRef"
+      :label-position="labelPosition"
+      :rules="createFormRules"
+      label-width="80px"
+      :model="data.createForm"
+      style="max-width: 90%"
+    >
+      <el-form-item required prop="name">
+        <template #label>
+          <span style="font-size: 13px; color: #191919">计划名称</span>
+        </template>
+        <el-input v-model="data.createForm.name" />
+      </el-form-item>
+
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">描述</span>
+        </template>
+        <el-input v-model="data.createForm.description" type="textarea" :autosize="data.autosize" />
+      </el-form-item>
+    </el-form>
+
+    <div style="margin-top: -20px"></div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-small-cancel-button" @click="handleCreateCloseDialog"
+          >取消</el-button
+        >
+        <el-button class="pixiu-small-confirm-button" type="primary" @click="confirmCreate"
+          >确定</el-button
+        >
+      </span>
+    </template>
+  </el-dialog>
+
   <pixiuDialog
     :close-event="data.deleteDialog.close"
     :object-name="data.deleteDialog.objectName"
     :delete-name="data.deleteDialog.deleteName"
+    :alias-name="data.deleteDialog.aliasName"
     @confirm="confirm"
     @cancel="cancel"
   ></pixiuDialog>
@@ -136,7 +207,13 @@
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { formatterTime } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
-import { GetUserList, deleteUser, createUser, updatePassword } from '@/services/user/userService';
+import {
+  createPlan,
+  getPlan,
+  GetPlanList,
+  deletePlan,
+  updatePlan,
+} from '@/services/plan/planService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { proxy } = getCurrentInstance();
@@ -159,21 +236,26 @@ const data = reactive({
 
   updateForm: {},
   autosize: {
-    minRows: 6,
+    minRows: 5,
   },
 
   // 删除对象属性
   deleteDialog: {
     close: false,
-    objectName: '用户',
+    objectName: '部署计划',
     deleteName: '',
+    aliasName: '',
   },
 
   // 创建属性
   createDialog: {
     close: false,
   },
-  objectForm: {},
+  createForm: {
+    name: '',
+    status: 0,
+    description: '',
+  },
 });
 
 onMounted(() => {
@@ -188,21 +270,52 @@ const onChange = (v) => {
   getPlanList();
 };
 
+// 开始 创建用户
+const handleCreateDialog = () => {
+  data.createDialog.close = true;
+};
+
+const handleCreateCloseDialog = () => {
+  data.createDialog.close = false;
+
+  setTimeout(() => {
+    data.createForm = {
+      name: '',
+      status: 0,
+      description: '',
+    };
+  }, 100);
+};
+
+const confirmCreate = async () => {
+  const [result, err] = await createPlan(data.createForm);
+  if (err) {
+    proxy.$notify.error({ message: err });
+    return;
+  }
+  proxy.$notify.success({ message: `部署计划(${data.createForm.name})创建成功` });
+  getPlanList();
+  handleCreateCloseDialog();
+};
+
+// 结束创建
+
 // 删除 开始
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.id;
+  data.deleteDialog.aliasName = row.name;
 };
 
 const confirm = async () => {
-  const [result, err] = await deleteUser(data.deleteDialog.deleteName);
+  const [result, err] = await deletePlan(data.deleteDialog.deleteName);
   if (err) {
     proxy.$notify.error(err);
     return;
   }
-  proxy.$notify.success(`User(${data.deleteDialog.deleteName}) 删除成功`);
+  proxy.$notify.success(`部署计划(${data.deleteDialog.aliasName}) 删除成功`);
 
-  getUserList();
+  getPlanList();
   cancel();
 };
 
@@ -217,7 +330,7 @@ const cancel = () => {
 
 const getPlanList = async () => {
   data.loading = true;
-
+  const [result, err] = await GetPlanList();
   data.loading = false;
   if (err) {
     proxy.$message.error(err);
