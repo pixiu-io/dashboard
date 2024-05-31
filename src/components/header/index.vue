@@ -170,12 +170,8 @@ const handleMessage = () => {
 const logout = async () => {
   // 直接发送退出请求，忽略是否真的已退出
   await logoutMethod(data.userId);
-
   // 清除本地缓存的 token 和 account
   localStorage.clear();
-  // 直接发送退出请求，忽略是否真的已退出
-  logoutMethod(data.userId);
-
   // 跳转到登陆页面
   proxy.$router.push('/login');
 };

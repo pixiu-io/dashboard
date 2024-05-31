@@ -1,7 +1,7 @@
 import { ElMessage } from 'element-plus';
 import axios from 'axios';
 import $ from 'jquery';
-// import { router } from '@/router/index';
+import { router } from '@/router/index';
 
 let baseUrl = '';
 $.ajax({
@@ -60,7 +60,8 @@ instance.interceptors.response.use(
 
       if (data.code === 401) {
         localStorage.clear();
-        location.href('/login');
+        router.replace('/login');
+        return;
       }
 
       return Promise.reject(data);
