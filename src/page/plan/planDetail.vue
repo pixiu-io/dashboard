@@ -163,6 +163,15 @@
       </span>
     </template>
   </el-dialog>
+
+  <pixiuDialog
+    :close-event="data.deleteDialog.close"
+    :object-name="data.deleteDialog.objectName"
+    :delete-name="data.deleteDialog.deleteName"
+    :alias-name="data.deleteDialog.aliasName"
+    @confirm="confirm"
+    @cancel="cancel"
+  ></pixiuDialog>
 </template>
 
 <script setup lang="jsx">
@@ -173,7 +182,7 @@ import { formatterTime, formatterNodeAuthType, formatterNodeRole } from '@/utils
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
-import { getPlanNodes, createPlanNode } from '@/services/plan/planService';
+import { getPlanNodes, createPlanNode, deletePlanNode } from '@/services/plan/planService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -283,7 +292,36 @@ const confirmCreate = async () => {
   GetPlanNodes();
   handleCreateCloseDialog();
 };
-// 结束 创建用户
+// 结束新增节点
+
+// 删除 开始
+const handleDeleteDialog = (row) => {
+  data.deleteDialog.close = true;
+  data.deleteDialog.deleteName = row.id;
+  data.deleteDialog.aliasName = row.name;
+};
+
+const confirm = async () => {
+  const [result, err] = await deletePlanNode(data.planId, data.deleteDialog.deleteName);
+  if (err) {
+    proxy.$notify.error(err);
+    return;
+  }
+  proxy.$notify.success(`节点(${data.deleteDialog.aliasName}) 删除成功`);
+
+  GetPlanNodes();
+  cancel();
+};
+
+const cancel = () => {
+  data.deleteDialog.close = false;
+  // 延迟 1 秒重置数据，否则页面上会显的很怪
+  setTimeout(() => {
+    data.deleteDialog.deleteName = '';
+    data.deleteDialog.aliasName = '';
+  }, 100);
+};
+// 删除 结束
 </script>
 
 <style scoped="scoped"></style>
