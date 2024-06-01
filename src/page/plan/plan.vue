@@ -71,9 +71,9 @@
             <template #default="scope">
               <el-link
                 class="global-table-world"
-                style="font-size: 14px"
                 type="primary"
                 :underline="false"
+                @click="jumpRoute(scope.row)"
               >
                 {{ scope.row.name }}
               </el-link>
@@ -204,6 +204,7 @@
 </template>
 
 <script setup>
+import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { formatterTime } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
@@ -216,6 +217,7 @@ import {
 } from '@/services/plan/planService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
+const router = useRouter();
 const { proxy } = getCurrentInstance();
 
 const data = reactive({
@@ -339,6 +341,16 @@ const getPlanList = async () => {
 
   data.planList = result;
   data.pageInfo.total = result.length;
+};
+
+const jumpRoute = (row) => {
+  router.push({
+    name: 'PlanDetail',
+    query: {
+      name: row.name,
+      planId: row.id,
+    },
+  });
 };
 </script>
 

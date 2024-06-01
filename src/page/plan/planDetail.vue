@@ -1,0 +1,1 @@
+<template>plan detail</template>
