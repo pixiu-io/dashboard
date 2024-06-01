@@ -52,3 +52,34 @@ export const updatePlan = async (pid, data) => {
   );
   return [result, err];
 };
+
+export const createPlanNode = async (pid, data) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'post',
+      url: `/pixiu/plans/${pid}/nodes`,
+      data: data,
+    }),
+  );
+  return [result, err];
+};
+
+export const getPlanNodes = async (pid) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: `/pixiu/plans/${pid}/nodes`,
+    }),
+  );
+  return [result, err];
+};
+
+export const deletePlanNode = async (pid, nodeId) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'delete',
+      url: `/pixiu/plans/${pid}/nodes/${nodeId}`,
+    }),
+  );
+  return [result, err];
+};
