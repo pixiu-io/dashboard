@@ -82,7 +82,13 @@
 
           <el-table-column prop="status" label="状态" />
 
-          <el-table-column prop="description" label="描述" />
+          <el-table-column prop="description" label="描述">
+            <template #default="scope">
+              <div style="font-size: 12px; color: #29292b" type="primary" :underline="false">
+                {{ scope.row.description }}
+              </div>
+            </template>
+          </el-table-column>
 
           <el-table-column prop="gmt_create" label="创建时间" sortable :formatter="formatterTime" />
 
