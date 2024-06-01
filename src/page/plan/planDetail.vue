@@ -30,12 +30,12 @@
             <div style="margin-top: 20px" />
             <div v-if="data.active == 0">
               <el-form-item label="集群名称" style="width: 50%">
-                <el-input v-model="data.clusterForm.name" placeholder="请输入集群名称" />
+                <el-input v-model="data.PlanConfig.name" placeholder="请输入集群名称" />
               </el-form-item>
 
               <div style="margin-top: 25px" />
               <el-form-item label="Kubernetes 版本">
-                <el-select v-model="data.clusterForm.kubernetes.version">
+                <el-select v-model="data.PlanConfig.kubernetes.kubernetes_version">
                   <el-option
                     v-for="item in data.kubernetes_version_options"
                     :key="item.value"
@@ -50,7 +50,7 @@
 
               <div style="margin-top: 25px" />
               <el-form-item label="所在地域" style="width: 100%">
-                <el-radio-group v-model="data.clusterForm.region">
+                <el-radio-group v-model="data.PlanConfig.region">
                   <el-radio-button
                     v-for="(item, index) in data.regionOptions"
                     :key="index"
@@ -64,7 +64,7 @@
 
               <div style="margin-top: 25px" />
               <el-form-item label="容器运行时">
-                <el-radio-group v-model="data.clusterForm.kubernetes.runtime">
+                <el-radio-group v-model="data.PlanConfig.runtime.runtime">
                   <el-radio-button label="docker">docker</el-radio-button>
                   <el-radio-button label="containerd">containerd</el-radio-button>
                   <el-radio-button label="cri-O" disabled>cri-O</el-radio-button>
@@ -76,7 +76,7 @@
 
               <div style="margin-top: 25px" />
               <el-form-item label="容器网络插件">
-                <el-radio-group v-model="data.clusterForm.kubernetes.cni">
+                <el-radio-group v-model="data.PlanConfig.network.cni">
                   <el-radio-button label="calico">calico</el-radio-button>
                   <el-radio-button label="flannel">flannel</el-radio-button>
                 </el-radio-group>
@@ -190,7 +190,7 @@
               <div style="margin-top: 25px" />
               <el-form-item label="集群描述" style="width: 60%">
                 <el-input
-                  v-model="data.clusterForm.description"
+                  v-model="data.PlanConfig.description"
                   placeholder="请输入 Kubernentes 集群描述"
                   type="textarea"
                   :autosize="data.autosize"
@@ -202,7 +202,7 @@
               <div style="margin-top: 20px" />
               <el-form-item label="高可用 kubernetes">
                 <el-switch
-                  v-model="data.clusterForm.enable_ha_kubernetes"
+                  v-model="data.PlanConfig.kubernetes.enable_ha"
                   active-text="启用"
                   inactive-text="关闭"
                 />
@@ -212,12 +212,12 @@
               </div>
 
               <el-form-item label="ApiServer 地址">
-                <el-switch v-model="data.clusterForm.enable_public_ip" />
+                <el-switch v-model="data.PlanConfig.kubernetes.api_server" />
               </el-form-item>
-              <div v-if="data.clusterForm.enable_public_ip">
+              <div v-if="data.PlanConfig.kubernetes.enable_ha">
                 <el-form-item style="width: 30%">
                   <el-input
-                    v-model="data.clusterForm.kubernetes.api_server"
+                    v-model="data.PlanConfig.kubernetes.api_server"
                     style="margin-top: -10px"
                     placeholder="请输入 kubernetes apiserver 地址"
                   />
@@ -231,7 +231,7 @@
 
               <div style="margin-top: 25px" />
               <el-form-item label="Kube-proxy 模式">
-                <el-radio-group v-model="data.clusterForm.kubernetes.proxy_mode">
+                <el-radio-group v-model="data.PlanConfig.network.kube_proxy">
                   <el-radio-button label="iptables">iptables</el-radio-button>
                   <el-radio-button disabled label="ipvs">ipvs</el-radio-button>
                 </el-radio-group>
