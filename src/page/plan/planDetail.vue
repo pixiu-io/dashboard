@@ -688,33 +688,14 @@ const availableComponents = [
   'Operator 生命周期管理组件',
 ];
 
-const nodeTableData = ref([
-  {
-    name: 'kube-master',
-    address: '192.168.0.1',
-    user: 'root',
-    password: 'root123456',
-  },
-]);
-
-const deleteNode = (index) => {
-  nodeTableData.value.splice(index, 1);
-};
-
-const onAddNode = () => {
-  nodeTableData.value.push({
-    name: 'node1',
-    address: '192.168.0.1',
-    user: 'root',
-    password: 'root123456',
-  });
-};
-
 onMounted(async () => {
   data.name = proxy.$route.query.name;
   data.planId = proxy.$route.query.planId;
 
   GetPlanNodes();
+
+  newServiceNetwork(data.serviceNetworkForm);
+  newPodNetwork(data.podNetworkForm);
 });
 
 const onChange = (v) => {
@@ -805,13 +786,33 @@ const cancel = () => {
 
 // ========
 
-const confirmCreateConfig = async () => {};
+const confirmCreateConfig = async () => {
+  console.log('PlanConfig', data.PlanConfig);
+};
+// 监听整个 serviceNetworkForm
+watch(data.serviceNetworkForm, (serviceNetwork, oldServiceNetwork) => {
+  newServiceNetwork(serviceNetwork);
+});
+
+// 监听整个 podNetworkForm
+watch(data.podNetworkForm, (podNetwork, oldPodNetwork) => {
+  newPodNetwork(podNetwork);
+});
+// TODO: 字符串拼接优化
+const newServiceNetwork = (serviceNetwork) => {
+  data.PlanConfig.network.service_network = `${serviceNetwork.a_cidr}.${serviceNetwork.b_cidr}.${serviceNetwork.c_cidr}.${serviceNetwork.d_cidr}/${serviceNetwork.service_mask}`;
+};
+// TODO: 字符串拼接优化
+const newPodNetwork = (podNetwork) => {
+  data.PlanConfig.network.pod_network = `${podNetwork.a_cidr}.${podNetwork.b_cidr}.${podNetwork.c_cidr}.${podNetwork.d_cidr}/${podNetwork.pod_mask}`;
+};
+
 const pre = () => {
   if (data.active-- <= 0) data.active = 0;
 };
 
 const next = () => {
-  if (data.active++ >= 4) data.active = 4;
+  if (data.active++ >= 3) data.active = 3;
 };
 </script>
 
