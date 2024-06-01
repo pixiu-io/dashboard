@@ -526,3 +526,24 @@ const runningStatus = {
     color: '#FFFF00', // 黄色
   },
 };
+
+const formatterNodeAuthType = (row, column, cellValue) => {
+  let p = '免密';
+  if (cellValue.type === 'key') {
+    p = '密钥';
+  }
+  if (cellValue.type === 'password') {
+    p = '密码';
+  }
+  return p;
+};
+export { formatterNodeAuthType };
+
+const formatterNodeRole = (row, column, cellValue) => {
+  let role = 'node';
+  if (cellValue === 1) {
+    role = 'master';
+  }
+  return role;
+};
+export { formatterNodeRole };

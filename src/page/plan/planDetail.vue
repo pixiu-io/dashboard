@@ -79,9 +79,10 @@
         </template>
       </el-table-column>
 
-      <el-table-column prop="role" label="角色" />
+      <el-table-column prop="role" label="角色" :formatter="formatterNodeRole" />
       <el-table-column prop="ip" label="IP地址" />
-      <el-table-column prop="auth" label="认证方式"> </el-table-column>
+      <el-table-column prop="auth" label="认证方式" :formatter="formatterNodeAuthType">
+      </el-table-column>
 
       <el-table-column prop="gmt_create" label="创建时间" :formatter="formatterTime" />
       <el-table-column fixed="right" label="操作" width="160px">
@@ -168,7 +169,7 @@
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
 import { getTableData, copy } from '@/utils/utils';
-import { formatterTime } from '@/utils/formatter';
+import { formatterTime, formatterNodeAuthType, formatterNodeRole } from '@/utils/formatter';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
