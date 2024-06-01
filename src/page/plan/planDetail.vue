@@ -19,7 +19,6 @@
       style="margin-top: 15px; margin-left: -70px"
     >
       <el-step title="集群信息" />
-      <el-step title="新增节点" />
       <el-step title="集群配置" />
       <el-step title="组件选项" />
       <el-step title="确认" />
@@ -88,7 +87,7 @@
 
               <div style="margin-top: 25px" />
               <el-form-item label="容器网络">
-                <el-card style="width: 90%; height: 100px; background-color: #f2f2f2">
+                <el-card style="width: 90%; background-color: #f2f2f2">
                   <el-col
                     >CIDR
                     <el-select
@@ -200,16 +199,6 @@
             </div>
 
             <div v-if="data.active == 1">
-              <el-form-item label="集群类型">
-                <el-radio-group v-model="data.clusterForm.cluster_type">
-                  <el-radio-button label="1">自建集群</el-radio-button>
-                  <el-radio-button disabled label="0">标准集群</el-radio-button>
-                </el-radio-group>
-              </el-form-item>
-              <div class="app-pixiu-describe" style="margin-top: -5px">
-                集群的 Master， Etcd 和 Node 均由 Pixiu 进行创建和管理。
-              </div>
-
               <div style="margin-top: 20px" />
               <el-form-item label="高可用 kubernetes">
                 <el-switch
@@ -222,122 +211,6 @@
                 启用高可用 Kubernetes 集群时，推荐 master 节点数为 3
               </div>
 
-              <div style="margin-top: 25px" />
-              <el-form-item label="Master&Etcd 配置">
-                <el-table
-                  :data="nodeTableData"
-                  style="width: 100%; background-color: #f3f4f7; margin-top: 2px"
-                  max-height="400"
-                  :header-cell-style="{
-                    background: '#f4f3f9',
-                    color: '#606266',
-                    height: '35px',
-                  }"
-                >
-                  <el-table-column prop="name" label="主机名" width="160px" />
-                  <el-table-column prop="address" label="地址" width="120px" />
-                  <el-table-column prop="user" label="用户名" width="180px" />
-                  <el-table-column prop="password" label="密码" />
-                  <el-table-column fixed="right" label="操作" width="120px">
-                    <template #default="scope">
-                      <el-button type="text" size="small" @click.prevent="deleteNode(scope.$index)">
-                        删除
-                      </el-button>
-                    </template>
-                  </el-table-column>
-                </el-table>
-                <el-button
-                  type="text"
-                  class="app-node-add-class"
-                  style="width: 100%"
-                  @click="onAddNode"
-                  >添加 Master 节点</el-button
-                >
-              </el-form-item>
-
-              <div style="margin-top: 25px" />
-              <el-form-item label="Node 节点配置">
-                <el-table
-                  :data="nodeTableData"
-                  style="width: 100%; background-color: #f3f4f7; margin-top: 2px"
-                  max-height="400"
-                  :header-cell-style="{
-                    background: '#f4f3f9',
-                    color: '#606266',
-                    height: '35px',
-                  }"
-                >
-                  <el-table-column prop="name" label="主机名" width="160px" />
-                  <el-table-column prop="address" label="地址" width="120px" />
-                  <el-table-column prop="user" label="用户名" width="180px" />
-                  <el-table-column prop="password" label="密码" />
-                  <el-table-column fixed="right" label="操作" width="120px">
-                    <template #default="scope">
-                      <el-button type="text" size="small" @click.prevent="deleteNode(scope.$index)">
-                        删除
-                      </el-button>
-                    </template>
-                  </el-table-column>
-                </el-table>
-                <el-button
-                  type="text"
-                  class="app-node-add-class"
-                  style="width: 100%"
-                  @click="onAddNode"
-                  >添加 Node</el-button
-                >
-              </el-form-item>
-
-              <el-form-item label="登陆方式">
-                <el-radio-group v-model="data.clusterForm.login_type">
-                  <el-radio-button label="no_password">免密登陆</el-radio-button>
-                  <el-radio-button label="password">密码登陆</el-radio-button>
-                  <el-radio-button disabled label="key">密钥登陆</el-radio-button>
-                </el-radio-group>
-              </el-form-item>
-
-              <div class="app-pixiu-describe" style="margin-top: -12px">
-                <div v-if="data.clusterForm.login_type === 'no_password'">
-                  pixiu 节点和待部署节点已经手动开通免密码登陆
-                </div>
-              </div>
-
-              <div v-if="data.clusterForm.login_type === 'password'">
-                <div style="margin-top: 25px" />
-                <el-form-item label="用户名"> root </el-form-item>
-                <el-form-item label="密码">
-                  <el-input
-                    v-model="data.clusterForm.ssh_password"
-                    show-password
-                    clearable
-                    style="width: 280px"
-                  />
-                </el-form-item>
-              </div>
-
-              <el-card class="app-docs" style="margin-left: 140px">
-                <div>
-                  <el-icon
-                    style="
-                      vertical-align: middle;
-                      font-size: 18px;
-                      margin-left: -20px;
-                      margin-right: 8px;
-                      margin-top: -25px;
-                    "
-                    ><WarningFilled
-                  /></el-icon>
-                  <div style="vertical-align: middle; margin-top: -27px; margin-left: 10px">
-                    Kubernetes
-                    的节点选择，根据实际需要添加节点名，地址，用户名称，和对应密码。选择之后，可以根据实际情况调整。
-                  </div>
-                </div>
-              </el-card>
-
-              <div style="margin-top: 25px" />
-            </div>
-
-            <div v-if="data.active == 2">
               <el-form-item label="ApiServer 地址">
                 <el-switch v-model="data.clusterForm.enable_public_ip" />
               </el-form-item>
@@ -399,9 +272,9 @@
               <div style="margin-top: 25px" />
             </div>
 
-            <div v-if="data.active == 3">Continue 下一步</div>
+            <div v-if="data.active == 2">Continue 下一步</div>
 
-            <div v-if="data.active == 4">DONE</div>
+            <div v-if="data.active == 3">DONE</div>
 
             <div style="display: flex; justify-content: center">
               <el-space>
@@ -411,11 +284,11 @@
                 <div v-if="data.active > 0">
                   <el-button @click="pre">上一步</el-button>
                 </div>
-                <div v-if="data.active < 4">
+                <div v-if="data.active < 3">
                   <el-button type="primary" @click="next">下一步</el-button>
                 </div>
-                <div v-if="data.active == 4">
-                  <el-button type="primary" @click="confirmCreate">完成</el-button>
+                <div v-if="data.active == 3">
+                  <el-button type="primary" @click="confirmCreateConfig">完成</el-button>
                 </div>
               </el-space>
             </div>
@@ -664,7 +537,6 @@ const data = reactive({
   },
 
   active: 0, // 步骤条展示
-
   clusterForm: {
     name: '',
     alias_name: '',
@@ -930,6 +802,17 @@ const cancel = () => {
   }, 100);
 };
 // 删除 结束
+
+// ========
+
+const confirmCreateConfig = async () => {};
+const pre = () => {
+  if (data.active-- <= 0) data.active = 0;
+};
+
+const next = () => {
+  if (data.active++ >= 4) data.active = 4;
+};
 </script>
 
 <style scoped="scoped"></style>
