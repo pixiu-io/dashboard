@@ -65,6 +65,7 @@ import {
   CreateTask,
   CreateTaskRun,
   Plan,
+  PlanDetail,
 } from '@/page';
 
 const routes = [
@@ -526,6 +527,11 @@ const routes = [
         path: 'plans',
         name: 'Plan',
         component: Plan,
+      },
+      {
+        path: 'plans/details',
+        name: 'PlanDetail',
+        component: PlanDetail,
       },
       {
         path: 'role',
