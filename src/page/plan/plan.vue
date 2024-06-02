@@ -80,7 +80,7 @@
             </template>
           </el-table-column>
 
-          <el-table-column prop="status" label="状态" :formatter="formatterPlanStatus" />
+          <el-table-column prop="step" label="状态" :formatter="formatterPlanStatus" />
 
           <el-table-column prop="description" label="描述">
             <template #default="scope">
