@@ -515,18 +515,19 @@ const data = reactive({
     },
   },
 
+  active: 0, // 步骤条展示
   PlanConfig: {
     plan_id: 0,
     name: '',
-    region: '',
+    region: '无锡',
     description: '',
     kubernetes: {
       api_server: '',
       kubernetes_version: '',
-      enable_ha: '',
+      enable_ha: false,
     },
     network: {
-      cni: '',
+      cni: 'flannel',
       pod_network: '',
       service_network: '',
       kube_proxy: 'iptables',
@@ -536,7 +537,6 @@ const data = reactive({
     },
   },
 
-  active: 0, // 步骤条展示
   clusterForm: {
     name: '',
     alias_name: '',
@@ -563,11 +563,6 @@ const data = reactive({
       masters: [],
       nodes: [],
     },
-
-    // 部署时，登录方式
-    login_type: 'no_password',
-    ssh_user: 'root',
-    ssh_password: '',
 
     // 安装组件
     install_components: ['Prometheus 监控服务', 'Nginx Ingress'],
