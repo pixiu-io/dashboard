@@ -80,7 +80,7 @@
             </template>
           </el-table-column>
 
-          <el-table-column prop="status" label="状态" />
+          <el-table-column prop="status" label="状态" :formatter="formatterPlanStatus" />
 
           <el-table-column prop="description" label="描述">
             <template #default="scope">
@@ -117,7 +117,11 @@
                   <pixiu-icon name="icon-xiala" size="12px" type="iconfont" color="#006eff" />
                 </span>
                 <template #dropdown>
-                  <el-dropdown-menu class="dropdown-buttons"> </el-dropdown-menu>
+                  <el-dropdown-menu class="dropdown-buttons">
+                    <el-dropdown-item class="dropdown-item-buttons" @click="startTask(scope.row)">
+                      启动部署
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
                 </template>
               </el-dropdown>
             </template>
@@ -212,7 +216,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
-import { formatterTime } from '@/utils/formatter';
+import { formatterTime, formatterPlanStatus } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import {
   createPlan,
@@ -220,6 +224,7 @@ import {
   GetPlanList,
   deletePlan,
   updatePlan,
+  startPlanTask,
 } from '@/services/plan/planService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
@@ -334,6 +339,17 @@ const cancel = () => {
   }, 100);
 };
 // 删除 结束
+
+// startTask
+const startTask = async (row) => {
+  const [result, err] = await startPlanTask(row.id);
+  if (err) {
+    proxy.$notify.error(err);
+    return;
+  }
+  proxy.$notify.success(`部署计划(${row.name}) 启动成功`);
+};
+// 结束startTask
 
 const getPlanList = async () => {
   data.loading = true;

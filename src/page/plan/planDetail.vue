@@ -468,7 +468,13 @@ import { formatterTime, formatterNodeAuthType, formatterNodeRole } from '@/utils
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
-import { getPlanNodes, createPlanNode, deletePlanNode } from '@/services/plan/planService';
+import {
+  getPlanNodes,
+  createPlanNode,
+  deletePlanNode,
+  createPlanConfig,
+  startPlanTask,
+} from '@/services/plan/planService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -515,6 +521,9 @@ const data = reactive({
     },
   },
 
+  autosize: {
+    minRows: 5,
+  },
   enablePublicIp: false,
   active: 0, // 步骤条展示
   PlanConfig: {
@@ -764,10 +773,14 @@ const cancel = () => {
 };
 // 删除 结束
 
-// ========
-
+// 开始创建配置 ========
 const confirmCreateConfig = async () => {
-  console.log('PlanConfig', data.PlanConfig);
+  const [result, err] = await createPlanConfig(data.planId, data.PlanConfig);
+  if (err) {
+    proxy.$notify.error({ message: err });
+    return;
+  }
+  proxy.$notify.success({ message: `配置(${data.PlanConfig.name})添加成功` });
 };
 // 监听整个 serviceNetworkForm
 watch(data.serviceNetworkForm, (serviceNetwork, oldServiceNetwork) => {
