@@ -212,10 +212,10 @@
               </div>
 
               <el-form-item label="ApiServer 地址">
-                <el-switch v-model="data.PlanConfig.kubernetes.api_server" />
+                <el-switch v-model="data.PlanConfig.enablePublicIp" />
               </el-form-item>
-              <div v-if="data.PlanConfig.kubernetes.enable_ha">
-                <el-form-item style="width: 30%">
+              <div v-if="data.PlanConfig.enablePublicIp">
+                <el-form-item style="width: 40%">
                   <el-input
                     v-model="data.PlanConfig.kubernetes.api_server"
                     style="margin-top: -10px"
@@ -515,6 +515,7 @@ const data = reactive({
     },
   },
 
+  enablePublicIp: false,
   active: 0, // 步骤条展示
   PlanConfig: {
     plan_id: 0,
@@ -653,22 +654,6 @@ const data = reactive({
     {
       value: '泗阳',
       label: '泗阳',
-    },
-    {
-      value: '苏州',
-      label: '苏州',
-    },
-    {
-      value: '南京',
-      label: '南京',
-    },
-    {
-      value: '上海',
-      label: '上海',
-    },
-    {
-      value: '北京',
-      label: '北京',
     },
   ],
 });
