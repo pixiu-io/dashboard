@@ -557,7 +557,7 @@ const getUserList = async () => {
   const [result, err] = await GetUserList();
   data.loading = false;
   if (err) {
-    proxy.$message.error(err);
+    // proxy.$message.error(123);
     return;
   }
 
