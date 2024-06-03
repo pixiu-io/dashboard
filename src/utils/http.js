@@ -10,7 +10,7 @@ fetch('./config.json')
     baseUrl = cfg.url;
   })
   .catch((err) => {
-    console.log(err);
+    // console.log(err);
   });
 
 const instance = axios.create({
