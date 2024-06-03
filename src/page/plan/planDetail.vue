@@ -1,29 +1,26 @@
 <template>
-  <el-tabs
-    v-model="data.activeName"
-    style="margin-left: 20px"
-    @tab-click="handleClick"
-    @tab-change="handleChange"
-  >
-    <el-tab-pane label="配置信息" name="first"> </el-tab-pane>
-    <el-tab-pane label="节点列表" name="second"> </el-tab-pane>
-    <el-tab-pane label="组件管理" name="third"></el-tab-pane>
-  </el-tabs>
-
-  <div v-if="data.activeName === 'first'" style="margin-left: 12px">
-    <el-steps
-      :active="data.active"
-      finish-status="success"
-      simple
-      align-center
-      style="margin-top: 15px; margin-left: -70px"
+  <el-main style="padding: 0; margin: 0">
+    <el-tabs
+      v-model="data.activeName"
+      style="margin-left: 20px"
+      @tab-click="handleClick"
+      @tab-change="handleChange"
     >
-      <el-step title="集群信息" />
-      <el-step title="集群配置" />
-      <el-step title="组件选项" />
-      <el-step title="确认" />
-    </el-steps>
-    <el-main>
+      <el-tab-pane label="配置信息" name="first"> </el-tab-pane>
+      <el-tab-pane label="节点列表" name="second"> </el-tab-pane>
+      <el-tab-pane label="组件管理" name="third"></el-tab-pane>
+    </el-tabs>
+
+    <div
+      v-if="data.activeName === 'first'"
+      style="margin-left: 12px; background-color: var(--el-fill-color-light)"
+    >
+      <el-steps :active="data.active" finish-status="success" simple>
+        <el-step title="集群信息" />
+        <el-step title="集群配置" />
+        <el-step title="组件选项" />
+        <el-step title="确认" />
+      </el-steps>
       <div class="app-pixiu-content-card">
         <el-card style="width: 97%">
           <el-form :label-position="labelPosition" label-width="140px" :model="data.clusterForm">
@@ -87,9 +84,9 @@
 
               <div style="margin-top: 25px" />
               <el-form-item label="容器网络">
-                <el-card style="width: 90%; background-color: #f2f2f2">
-                  <el-col
-                    >CIDR
+                <el-card style="width: 90%; background-color: #f2f2f2"
+                  >CIDR
+                  <el-space>
                     <el-select
                       v-model="data.podNetworkForm.a_cidr"
                       style="width: 70px; margin-left: 15px"
@@ -110,15 +107,13 @@
                     <el-input
                       v-model="data.podNetworkForm.c_cidr"
                       class="pod-pixiu-mask"
-                      disabled
-                    />
+                      disabled />
 
                     <span style="margin-left: 4px">.</span>
                     <el-input
                       v-model="data.podNetworkForm.d_cidr"
                       class="pod-pixiu-mask"
-                      disabled
-                    />
+                      disabled />
 
                     <span style="margin-left: 4px">/</span>
                     <el-select
@@ -130,9 +125,8 @@
                         :key="item.value"
                         :label="item.label"
                         :value="item.value"
-                      />
-                    </el-select>
-                  </el-col>
+                      /> </el-select
+                  ></el-space>
                   <div class="app-pixiu-describe" style="margin-top: 10px; margin-left: 55px">
                     创建后无法更改
                   </div>
@@ -141,7 +135,7 @@
 
               <div style="margin-top: 25px" />
               <el-form-item label="Service CIDR">
-                <div>
+                <el-space>
                   <el-select v-model="data.serviceNetworkForm.a_cidr" style="width: 70px">
                     <el-option
                       v-for="item in data.serviceCidrOptions"
@@ -180,7 +174,7 @@
                       :value="item.value"
                     />
                   </el-select>
-                </div>
+                </el-space>
               </el-form-item>
 
               <div class="app-pixiu-describe" style="margin-top: -12px">
@@ -295,169 +289,170 @@
           </el-form>
         </el-card>
       </div>
-    </el-main>
-  </div>
-
-  <div v-if="data.activeName === 'second'" style="margin-left: 12px">
-    <div>
-      <el-row>
-        <el-card class="detail-docs">
-          <el-icon
-            style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
-            ><WarningFilled
-          /></el-icon>
-          <div style="vertical-align: middle; margin-top: -40px">获取部署计划的 nodes 列表</div>
-        </el-card>
-
-        <el-col>
-          <button style="width: 85px" class="pixiu-two-button" @click="handleCreateDialog">
-            新增节点
-          </button>
-
-          <div style="margin-left: 8px; float: right; margin-left: 12px">
-            <button class="pixiu-two-button" @click="GetPlanNodes">搜索</button>
-          </div>
-
-          <el-input
-            v-model="data.pageInfo.search.searchInfo"
-            placeholder="名称搜索关键字"
-            style="width: 480px; float: right"
-            clearable
-          >
-            <template #suffix>
-              <pixiu-icon
-                name="icon-search"
-                style="cursor: pointer"
-                size="15px"
-                type="iconfont"
-                color="#909399"
-              />
-            </template>
-          </el-input>
-        </el-col>
-      </el-row>
     </div>
-    <el-table
-      v-loading="data.loading"
-      :data="data.tableData"
-      stripe
-      style="margin-top: 6px"
-      header-row-class-name="pixiu-table-header"
-      :cell-style="{
-        'font-size': '12px',
-        color: '#191919',
-      }"
-      @selection-change="handlePodSelectionChange"
+
+    <div v-if="data.activeName === 'second'" style="margin-left: 12px">
+      <div>
+        <el-row>
+          <el-card class="detail-docs">
+            <el-icon
+              style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+              ><WarningFilled
+            /></el-icon>
+            <div style="vertical-align: middle; margin-top: -40px">获取部署计划的 nodes 列表</div>
+          </el-card>
+
+          <el-col>
+            <button style="width: 85px" class="pixiu-two-button" @click="handleCreateDialog">
+              新增节点
+            </button>
+
+            <div style="margin-left: 8px; float: right; margin-left: 12px">
+              <button class="pixiu-two-button" @click="GetPlanNodes">搜索</button>
+            </div>
+
+            <el-input
+              v-model="data.pageInfo.search.searchInfo"
+              placeholder="名称搜索关键字"
+              style="width: 480px; float: right"
+              clearable
+            >
+              <template #suffix>
+                <pixiu-icon
+                  name="icon-search"
+                  style="cursor: pointer"
+                  size="15px"
+                  type="iconfont"
+                  color="#909399"
+                />
+              </template>
+            </el-input>
+          </el-col>
+        </el-row>
+      </div>
+      <el-table
+        v-loading="data.loading"
+        :data="data.tableData"
+        stripe
+        style="margin-top: 6px"
+        header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#191919',
+        }"
+        @selection-change="handlePodSelectionChange"
+      >
+        <el-table-column type="selection" width="30px" />
+        <el-table-column prop="metadata.name" label="节点名称">
+          <template #default="scope">
+            {{ scope.row.name }}
+            <pixiu-icon
+              name="icon-copy"
+              size="11px"
+              type="iconfont"
+              class-name="icon-box"
+              color="#909399"
+              style="cursor: pointer"
+              @click="copy(scope.row.name)"
+            />
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="role" label="角色" :formatter="formatterNodeRole" />
+        <el-table-column prop="ip" label="IP地址" />
+        <el-table-column prop="auth" label="认证方式" :formatter="formatterNodeAuthType">
+        </el-table-column>
+
+        <el-table-column prop="gmt_create" label="创建时间" :formatter="formatterTime" />
+        <el-table-column fixed="right" label="操作" width="160px">
+          <template #default="scope">
+            <el-button
+              size="small"
+              type="text"
+              style="margin-right: -25px; margin-left: -10px; color: #006eff"
+              @click="handleDeleteDialog(scope.row)"
+            >
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+        <template #empty>
+          <div class="table-inline-word">该部署计划暂无节点</div>
+        </template>
+      </el-table>
+
+      <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
+    </div>
+
+    <div v-if="data.activeName === 'third'" style="margin-left: 12px">third</div>
+
+    <el-dialog
+      v-model="data.createDialog.close"
+      style="color: #000000; font: 14px"
+      width="500px"
+      draggable
+      center
+      @close="handleCreateCloseDialog"
     >
-      <el-table-column type="selection" width="30px" />
-      <el-table-column prop="metadata.name" label="节点名称">
-        <template #default="scope">
-          {{ scope.row.name }}
-          <pixiu-icon
-            name="icon-copy"
-            size="11px"
-            type="iconfont"
-            class-name="icon-box"
-            color="#909399"
-            style="cursor: pointer"
-            @click="copy(scope.row.name)"
-          />
-        </template>
-      </el-table-column>
-
-      <el-table-column prop="role" label="角色" :formatter="formatterNodeRole" />
-      <el-table-column prop="ip" label="IP地址" />
-      <el-table-column prop="auth" label="认证方式" :formatter="formatterNodeAuthType">
-      </el-table-column>
-
-      <el-table-column prop="gmt_create" label="创建时间" :formatter="formatterTime" />
-      <el-table-column fixed="right" label="操作" width="160px">
-        <template #default="scope">
-          <el-button
-            size="small"
-            type="text"
-            style="margin-right: -25px; margin-left: -10px; color: #006eff"
-            @click="handleDeleteDialog(scope.row)"
-          >
-            删除
-          </el-button>
-        </template>
-      </el-table-column>
-      <template #empty>
-        <div class="table-inline-word">该部署计划暂无节点</div>
+      <template #header>
+        <div style="text-align: left; font-weight: bold; padding-left: 5px">新增节点</div>
       </template>
-    </el-table>
+      <el-form
+        ref="userFormRef"
+        :label-position="labelPosition"
+        :rules="userFormRules"
+        label-width="80px"
+        :model="data.userForm"
+        style="max-width: 90%"
+      >
+        <el-form-item required prop="name">
+          <template #label>
+            <span style="font-size: 13px; color: #191919">节点名称</span>
+          </template>
+          <el-input v-model="data.createData.name" />
+        </el-form-item>
 
-    <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
-  </div>
-  <div v-if="data.activeName === 'third'" style="margin-left: 12px">third</div>
+        <el-form-item prop="role">
+          <template #label>
+            <span style="font-size: 13px; color: #191919">角色</span>
+          </template>
 
-  <el-dialog
-    v-model="data.createDialog.close"
-    style="color: #000000; font: 14px"
-    width="500px"
-    draggable
-    center
-    @close="handleCreateCloseDialog"
-  >
-    <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">新增节点</div>
-    </template>
-    <el-form
-      ref="userFormRef"
-      :label-position="labelPosition"
-      :rules="userFormRules"
-      label-width="80px"
-      :model="data.userForm"
-      style="max-width: 90%"
-    >
-      <el-form-item required prop="name">
-        <template #label>
-          <span style="font-size: 13px; color: #191919">节点名称</span>
-        </template>
-        <el-input v-model="data.createData.name" />
-      </el-form-item>
+          <el-radio-group v-model="data.createData.role">
+            <el-radio style="margin-right: 16px" :value="1">master</el-radio>
+            <el-radio :value="0">node</el-radio>
+          </el-radio-group>
+        </el-form-item>
 
-      <el-form-item prop="role">
-        <template #label>
-          <span style="font-size: 13px; color: #191919">角色</span>
-        </template>
+        <el-form-item prop="ip">
+          <template #label>
+            <span style="font-size: 13px; color: #191919">IP地址</span>
+          </template>
+          <el-input v-model="data.createData.ip" />
+        </el-form-item>
+      </el-form>
 
-        <el-radio-group v-model="data.createData.role">
-          <el-radio style="margin-right: 16px" :value="1">master</el-radio>
-          <el-radio :value="0">node</el-radio>
-        </el-radio-group>
-      </el-form-item>
+      <div style="margin-top: -20px"></div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button class="pixiu-small-cancel-button" @click="handleCreateCloseDialog"
+            >取消</el-button
+          >
+          <el-button class="pixiu-small-confirm-button" type="primary" @click="confirmCreate"
+            >确定</el-button
+          >
+        </span>
+      </template>
+    </el-dialog>
 
-      <el-form-item prop="ip">
-        <template #label>
-          <span style="font-size: 13px; color: #191919">IP地址</span>
-        </template>
-        <el-input v-model="data.createData.ip" />
-      </el-form-item>
-    </el-form>
-
-    <div style="margin-top: -20px"></div>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button class="pixiu-small-cancel-button" @click="handleCreateCloseDialog"
-          >取消</el-button
-        >
-        <el-button class="pixiu-small-confirm-button" type="primary" @click="confirmCreate"
-          >确定</el-button
-        >
-      </span>
-    </template>
-  </el-dialog>
-
-  <pixiuDialog
-    :close-event="data.deleteDialog.close"
-    :object-name="data.deleteDialog.objectName"
-    :delete-name="data.deleteDialog.deleteName"
-    :alias-name="data.deleteDialog.aliasName"
-    @confirm="confirm"
-    @cancel="cancel"
-  ></pixiuDialog>
+    <pixiuDialog
+      :close-event="data.deleteDialog.close"
+      :object-name="data.deleteDialog.objectName"
+      :delete-name="data.deleteDialog.deleteName"
+      :alias-name="data.deleteDialog.aliasName"
+      @confirm="confirm"
+      @cancel="cancel"
+    ></pixiuDialog>
+  </el-main>
 </template>
 
 <script setup lang="jsx">

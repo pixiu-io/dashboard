@@ -1,19 +1,17 @@
 import { ElMessage } from 'element-plus';
 import axios from 'axios';
-import $ from 'jquery';
 import { router } from '@/router/index';
 
 let baseUrl = '';
-$.ajax({
-  type: 'get',
-  async: false,
-  url: './config.json',
-  data: {},
-  success: function (cfg) {
+
+fetch('./config.json')
+  .then((res) => res.json())
+  .then((cfg) => {
     baseUrl = cfg.url;
-  },
-  error: function (err) {},
-});
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
 const instance = axios.create({
   baseURL: baseUrl ? baseUrl : import.meta.env.VITE_BASE_API, // 如果后端开放了cors，就可以用这个替代上面一行
