@@ -106,9 +106,9 @@
                 text
                 size="small"
                 style="margin-right: -2px; color: #006eff"
-                @click="handleDeleteDialog(scope.row)"
+                @click="deployTask(scope.row)"
               >
-                删除
+                进度
               </el-button>
 
               <el-dropdown>
@@ -121,13 +121,16 @@
                     <el-dropdown-item class="dropdown-item-buttons" @click="startTask(scope.row)">
                       启动部署
                     </el-dropdown-item>
-                  </el-dropdown-menu>
 
-                  <el-dropdown-menu class="dropdown-buttons">
-                    <el-dropdown-item class="dropdown-item-buttons" @click="deployTask(scope.row)">
-                      查看进度
+                    <el-dropdown-item
+                      class="dropdown-item-buttons"
+                      @click="handleDeleteDialog(scope.row)"
+                    >
+                      删除
                     </el-dropdown-item>
                   </el-dropdown-menu>
+
+                  <el-dropdown-menu class="dropdown-buttons"> </el-dropdown-menu>
                 </template>
               </el-dropdown>
             </template>
