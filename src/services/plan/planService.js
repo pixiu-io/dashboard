@@ -104,3 +104,13 @@ export const startPlanTask = async (pid) => {
   );
   return [result, err];
 };
+
+export const getPlanTaskList = async (pid) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'post',
+      url: `/pixiu/plans/${pid}/tasks`,
+    }),
+  );
+  return [result, err];
+};

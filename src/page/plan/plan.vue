@@ -122,6 +122,12 @@
                       启动部署
                     </el-dropdown-item>
                   </el-dropdown-menu>
+
+                  <el-dropdown-menu class="dropdown-buttons">
+                    <el-dropdown-item class="dropdown-item-buttons" @click="deployTask(scope.row)">
+                      查看进度
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
                 </template>
               </el-dropdown>
             </template>
@@ -225,6 +231,7 @@ import {
   deletePlan,
   updatePlan,
   startPlanTask,
+  getPlanTaskList,
 } from '@/services/plan/planService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
@@ -350,6 +357,16 @@ const startTask = async (row) => {
   proxy.$notify.success(`部署计划(${row.name}) 启动成功`);
 };
 // 结束startTask
+
+const deployTask = async (row) => {
+  const [result, err] = await getPlanTaskList(row.id);
+  if (err) {
+    proxy.$message.error(err);
+    return;
+  }
+
+  console.log('result', result);
+};
 
 const getPlanList = async () => {
   data.loading = true;
