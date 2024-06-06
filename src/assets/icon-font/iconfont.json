@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "11399579",
+      "name": "业务状态",
+      "font_class": "yewuzhuangtai",
+      "unicode": "e63b",
+      "unicode_decimal": 58939
+    },
+    {
       "icon_id": "12157077",
       "name": "config",
       "font_class": "config",

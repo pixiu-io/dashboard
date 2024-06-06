@@ -106,9 +106,9 @@
                 text
                 size="small"
                 style="margin-right: -2px; color: #006eff"
-                @click="handleDeleteDialog(scope.row)"
+                @click="deployTask(scope.row)"
               >
-                删除
+                进度
               </el-button>
 
               <el-dropdown>
@@ -121,7 +121,16 @@
                     <el-dropdown-item class="dropdown-item-buttons" @click="startTask(scope.row)">
                       启动部署
                     </el-dropdown-item>
+
+                    <el-dropdown-item
+                      class="dropdown-item-buttons"
+                      @click="handleDeleteDialog(scope.row)"
+                    >
+                      删除
+                    </el-dropdown-item>
                   </el-dropdown-menu>
+
+                  <el-dropdown-menu class="dropdown-buttons"> </el-dropdown-menu>
                 </template>
               </el-dropdown>
             </template>
@@ -225,6 +234,7 @@ import {
   deletePlan,
   updatePlan,
   startPlanTask,
+  getPlanTaskList,
 } from '@/services/plan/planService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
@@ -350,6 +360,16 @@ const startTask = async (row) => {
   proxy.$notify.success(`部署计划(${row.name}) 启动成功`);
 };
 // 结束startTask
+
+const deployTask = async (row) => {
+  const [result, err] = await getPlanTaskList(row.id);
+  if (err) {
+    proxy.$message.error(err);
+    return;
+  }
+
+  console.log('result', result);
+};
 
 const getPlanList = async () => {
   data.loading = true;
