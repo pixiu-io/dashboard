@@ -389,7 +389,7 @@
     <el-dialog
       v-model="data.createDialog.close"
       style="color: #000000; font: 14px"
-      width="500px"
+      width="580px"
       draggable
       center
       @close="handleCreateCloseDialog"
@@ -452,6 +452,39 @@
           <el-radio-button label="key">密钥登陆</el-radio-button>
         </el-radio-group>
       </el-form-item>
+
+      <div v-if="data.createData.auth.type === 'password'">
+        <el-form-item label="用户名">
+          <template #label>
+            <span style="font-size: 13px; color: #191919">用户名</span>
+          </template>
+          <div style="margin-left: 38px">root</div>
+        </el-form-item>
+        <el-form-item label="密码">
+          <template #label>
+            <span style="font-size: 13px; color: #191919">密码</span>
+          </template>
+          <el-input
+            v-model="data.createData.auth.password.password"
+            show-password
+            clearable
+            style="width: 56%; margin-left: 50px"
+          />
+        </el-form-item>
+      </div>
+
+      <div v-if="data.createData.auth.type === 'key'">
+        <div style="margin-top: 25px" />
+        <el-form-item label="用户名"> root </el-form-item>
+        <el-form-item label="密码">
+          <el-input
+            v-model="data.createData.auth.password"
+            show-password
+            clearable
+            style="width: 280px"
+          />
+        </el-form-item>
+      </div>
 
       <template #footer>
         <span class="dialog-footer">
