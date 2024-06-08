@@ -389,7 +389,7 @@
     <el-dialog
       v-model="data.createDialog.close"
       style="color: #000000; font: 14px"
-      width="500px"
+      width="580px"
       draggable
       center
       @close="handleCreateCloseDialog"
@@ -397,15 +397,26 @@
       <template #header>
         <div style="text-align: left; font-weight: bold; padding-left: 5px">新增节点</div>
       </template>
+
+      <el-card class="app-docs" style="margin-left: 6px; margin-top: 1px; height: 40px">
+        <el-icon
+          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+          ><WarningFilled
+        /></el-icon>
+        <div style="vertical-align: middle; margin-top: -40px">
+          Kubernetes 的节点选择，选择之后，可以根据实际情况调整。
+        </div>
+      </el-card>
+
       <el-form
         ref="userFormRef"
         :label-position="labelPosition"
         :rules="userFormRules"
         label-width="80px"
         :model="data.userForm"
-        style="max-width: 90%"
+        style="max-width: 90%; margin-left: 6px"
       >
-        <el-form-item required prop="name">
+        <el-form-item prop="name">
           <template #label>
             <span style="font-size: 13px; color: #191919">节点名称</span>
           </template>
@@ -431,7 +442,57 @@
         </el-form-item>
       </el-form>
 
-      <div style="margin-top: -20px"></div>
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">登陆方式</span>
+        </template>
+
+        <el-radio-group v-model="data.createData.auth.type">
+          <el-radio-button style="margin-left: 22px" label="password">密码登陆</el-radio-button>
+          <el-radio-button label="key">密钥登陆</el-radio-button>
+        </el-radio-group>
+      </el-form-item>
+
+      <div v-if="data.createData.auth.type === 'password'">
+        <el-form-item label="用户名">
+          <template #label>
+            <span style="font-size: 13px; color: #191919">用户名</span>
+          </template>
+          <div style="margin-left: 38px">root</div>
+        </el-form-item>
+        <el-form-item label="密码">
+          <template #label>
+            <span style="font-size: 13px; color: #191919">密码</span>
+          </template>
+          <el-input
+            v-model="data.createData.auth.password.password"
+            show-password
+            clearable
+            style="width: 56%; margin-left: 50px"
+          />
+        </el-form-item>
+        <div class="app-pixiu-describe" style="margin-top: -12px; margin-left: 88px">
+          根据实际需要添加节点名，地址，用户名称，和对应密码。
+        </div>
+      </div>
+
+      <div v-if="data.createData.auth.type === 'key'">
+        <el-form-item label="密钥">
+          <template #label>
+            <span style="font-size: 13px; color: #191919">密钥</span>
+          </template>
+          <el-input
+            v-model="data.createData.auth.key.data"
+            style="width: 82%; margin-left: 48px"
+            type="textarea"
+            :autosize="data.nodeAutosize"
+          />
+        </el-form-item>
+        <div class="app-pixiu-describe" style="margin-top: -12px; margin-left: 88px">
+          输入对接节点的密码。
+        </div>
+      </div>
+
       <template #footer>
         <span class="dialog-footer">
           <el-button class="pixiu-small-cancel-button" @click="handleCreateCloseDialog"
@@ -510,10 +571,18 @@ const data = reactive({
     role: 0,
     ip: '',
     auth: {
-      type: 'key',
-      key: {},
-      password: {},
+      type: 'password',
+      key: {
+        data: '',
+      },
+      password: {
+        user: 'root',
+        password: '',
+      },
     },
+  },
+  nodeAutosize: {
+    minRows: 6,
   },
 
   autosize: {
@@ -719,8 +788,13 @@ const handleCreateCloseDialog = () => {
       ip: '',
       auth: {
         type: 'key',
-        key: {},
-        password: {},
+        key: {
+          data: '',
+        },
+        password: {
+          user: '',
+          password: '',
+        },
       },
     };
   }, 100);
