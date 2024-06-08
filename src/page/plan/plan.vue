@@ -280,12 +280,23 @@
               color: '#191919',
             }"
           >
+            <el-table-column prop="name" label="名称" sortable />
+
             <el-table-column
               prop="gmt_create"
-              label="启动事件"
+              label="启动时间"
               sortable
               :formatter="formatterTime"
             />
+
+            <el-table-column
+              prop="gmt_modified"
+              label="更新时间"
+              sortable
+              :formatter="formatterTime"
+            />
+
+            <el-table-column prop="status" label="状态" />
 
             <template #empty>
               <div class="table-inline-word">暂无部署任务</div>
