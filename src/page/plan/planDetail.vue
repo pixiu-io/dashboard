@@ -404,7 +404,7 @@
           ><WarningFilled
         /></el-icon>
         <div style="vertical-align: middle; margin-top: -40px">
-          Kubernetes 的节点选择，根据实际需要添加节点名，地址，用户名称
+          Kubernetes 的节点选择，选择之后，可以根据实际情况调整。
         </div>
       </el-card>
 
@@ -471,6 +471,9 @@
             style="width: 56%; margin-left: 50px"
           />
         </el-form-item>
+        <div class="app-pixiu-describe" style="margin-top: -12px; margin-left: 88px">
+          根据实际需要添加节点名，地址，用户名称，和对应密码。
+        </div>
       </div>
 
       <div v-if="data.createData.auth.type === 'key'">
