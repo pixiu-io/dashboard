@@ -281,8 +281,8 @@
             }"
           >
             <el-table-column
-              prop="lastTimestamp"
-              label="最后出现时间"
+              prop="gmt_create"
+              label="启动事件"
               sortable
               :formatter="formatterTime"
             />
@@ -452,13 +452,13 @@ const handleTaskDrawer = (row) => {
 };
 
 const openTaskDrawer = async () => {
-  const [result, err] = await getPlanTaskList(row.id);
+  const [result, err] = await getPlanTaskList(data.taskData.task.id);
   if (err) {
     proxy.$message.error(err);
     return;
   }
-
-  console.log('result', result);
+  data.taskData.tableData = result;
+  console.log(' data.taskData', data.taskData);
 };
 
 const closeTaskDrawer = () => {
@@ -466,6 +466,7 @@ const closeTaskDrawer = () => {
 
   setTimeout(() => {
     data.taskData = {
+      tableData: [],
       task: '',
     };
   }, 100);
