@@ -370,7 +370,7 @@ const data = reactive({
   // 部署任务
   taskData: {
     drawer: false,
-    width: '40%',
+    width: '48%',
     task: '',
     tableData: [],
   },
