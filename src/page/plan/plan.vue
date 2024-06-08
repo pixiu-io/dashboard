@@ -77,6 +77,16 @@
               >
                 {{ scope.row.name }}
               </el-link>
+              <el-tooltip content="复制">
+                <pixiu-icon
+                  name="icon-copy"
+                  style="cursor: pointer; margin-left: 3px"
+                  size="12px"
+                  type="iconfont"
+                  color="#909399"
+                  @click="copy(scope.row.name)"
+                />
+              </el-tooltip>
             </template>
           </el-table-column>
 
@@ -92,7 +102,7 @@
 
           <el-table-column prop="gmt_create" label="创建时间" sortable :formatter="formatterTime" />
 
-          <el-table-column fixed="right" label="操作" width="160px">
+          <el-table-column fixed="right" label="操作" width="180px">
             <template #default="scope">
               <el-button
                 text
@@ -108,7 +118,7 @@
                 style="margin-right: -2px; color: #006eff"
                 @click="deployTask(scope.row)"
               >
-                进度
+                查看进度
               </el-button>
 
               <el-dropdown>
@@ -237,6 +247,7 @@ import {
   getPlanTaskList,
 } from '@/services/plan/planService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
+import { copy } from '@/utils/utils';
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
