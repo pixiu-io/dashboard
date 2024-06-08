@@ -477,16 +477,20 @@
       </div>
 
       <div v-if="data.createData.auth.type === 'key'">
-        <div style="margin-top: 25px" />
-        <el-form-item label="用户名"> root </el-form-item>
-        <el-form-item label="密码">
+        <el-form-item label="密钥">
+          <template #label>
+            <span style="font-size: 13px; color: #191919">密钥</span>
+          </template>
           <el-input
-            v-model="data.createData.auth.password"
-            show-password
-            clearable
-            style="width: 280px"
+            v-model="data.createData.auth.key.data"
+            style="width: 82%; margin-left: 48px"
+            type="textarea"
+            :autosize="data.nodeAutosize"
           />
         </el-form-item>
+        <div class="app-pixiu-describe" style="margin-top: -12px; margin-left: 88px">
+          输入对接节点的密码。
+        </div>
       </div>
 
       <template #footer>
@@ -576,6 +580,9 @@ const data = reactive({
         password: '',
       },
     },
+  },
+  nodeAutosize: {
+    minRows: 6,
   },
 
   autosize: {
