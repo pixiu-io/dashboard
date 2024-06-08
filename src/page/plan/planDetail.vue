@@ -414,9 +414,9 @@
         :rules="userFormRules"
         label-width="80px"
         :model="data.userForm"
-        style="max-width: 90%"
+        style="max-width: 90%; margin-left: 6px"
       >
-        <el-form-item required prop="name">
+        <el-form-item prop="name">
           <template #label>
             <span style="font-size: 13px; color: #191919">节点名称</span>
           </template>
@@ -442,7 +442,17 @@
         </el-form-item>
       </el-form>
 
-      <div style="margin-top: -20px"></div>
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">登陆方式</span>
+        </template>
+
+        <el-radio-group v-model="data.createData.auth.type">
+          <el-radio-button style="margin-left: 22px" label="password">密码登陆</el-radio-button>
+          <el-radio-button label="key">密钥登陆</el-radio-button>
+        </el-radio-group>
+      </el-form-item>
+
       <template #footer>
         <span class="dialog-footer">
           <el-button class="pixiu-small-cancel-button" @click="handleCreateCloseDialog"
@@ -521,12 +531,12 @@ const data = reactive({
     role: 0,
     ip: '',
     auth: {
-      type: 'key',
+      type: 'password',
       key: {
         data: '',
       },
       password: {
-        user: '',
+        user: 'root',
         password: '',
       },
     },
