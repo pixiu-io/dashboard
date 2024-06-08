@@ -397,6 +397,17 @@
       <template #header>
         <div style="text-align: left; font-weight: bold; padding-left: 5px">新增节点</div>
       </template>
+
+      <el-card class="app-docs" style="margin-left: 6px; margin-top: 1px; height: 40px">
+        <el-icon
+          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+          ><WarningFilled
+        /></el-icon>
+        <div style="vertical-align: middle; margin-top: -40px">
+          Kubernetes 的节点选择，根据实际需要添加节点名，地址，用户名称
+        </div>
+      </el-card>
+
       <el-form
         ref="userFormRef"
         :label-position="labelPosition"
@@ -511,8 +522,13 @@ const data = reactive({
     ip: '',
     auth: {
       type: 'key',
-      key: {},
-      password: {},
+      key: {
+        data: '',
+      },
+      password: {
+        user: '',
+        password: '',
+      },
     },
   },
 
@@ -719,8 +735,13 @@ const handleCreateCloseDialog = () => {
       ip: '',
       auth: {
         type: 'key',
-        key: {},
-        password: {},
+        key: {
+          data: '',
+        },
+        password: {
+          user: '',
+          password: '',
+        },
       },
     };
   }, 100);
