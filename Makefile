@@ -2,7 +2,7 @@
 
 tag = latest
 releaseName = pixiu-dashboard
-dockerhubUser = jacky06
+dockerhubUser = harbor.cloud.pixiuio.com
 
 ALL: run
 
@@ -16,16 +16,16 @@ build: install
 	npm run build
 
 image:
-	docker build --no-cache -t ${dockerhubUser}/${releaseName}:${tag} --platform=linux -f docker/Dockerfile .
+	docker build --no-cache -t ${dockerhubUser}/pixiuio/${releaseName}:${tag} --platform=linux -f docker/Dockerfile .
 
 push: image
-	docker push ${dockerhubUser}/${releaseName}:${tag}
+	docker push ${dockerhubUser}/pixiuio/${releaseName}:${tag}
 
 image-aio:
-	docker build --no-cache -t ${dockerhubUser}/pixiu-aio:${tag} --platform=linux -f docker/Dockerfile-aio .
+	docker build --no-cache -t ${dockerhubUser}/pixiuio/pixiu-aio:${tag} --platform=linux -f docker/Dockerfile-aio .
 
 push-aio: image-aio
-	docker push ${dockerhubUser}/pixiu-aio:${tag}
+	docker push ${dockerhubUser}/pixiuio/pixiu-aio:${tag}
 
 clean:
 	-rm -rf ./dist ./node_modules
