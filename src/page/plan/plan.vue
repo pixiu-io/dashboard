@@ -116,7 +116,7 @@
                 text
                 size="small"
                 style="margin-right: -2px; color: #006eff"
-                @click="deployTask(scope.row)"
+                @click="handleTaskDrawer(scope.row)"
               >
                 查看进度
               </el-button>
@@ -230,6 +230,71 @@
     @confirm="confirm"
     @cancel="cancel"
   ></pixiuDialog>
+
+  <el-drawer
+    v-model="data.taskData.drawer"
+    :size="data.taskData.width"
+    :with-header="false"
+    @open="openTaskDrawer"
+    @close="closeTaskDrawer"
+  >
+    <div style="display: flex; flex-direction: column; height: 100%">
+      <div>
+        <div
+          style="
+            text-align: left;
+            font-weight: bold;
+            padding-left: 5px;
+            margin-top: 5px;
+            font-size: 14.5px;
+            color: #191919;
+          "
+        >
+          部署计划
+        </div>
+
+        <el-card class="app-docs" style="margin-left: 8px; height: 40px">
+          <el-icon
+            style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+            ><WarningFilled
+          /></el-icon>
+          <div style="vertical-align: middle; margin-top: -40px">获取部署计划的部署情况</div>
+        </el-card>
+
+        <el-row>
+          <el-col>
+            <div style="margin-left: 8px">
+              <button class="pixiu-two-button" @click="openTaskDrawer">刷新</button>
+            </div>
+          </el-col>
+        </el-row>
+
+        <div style="margin-top: 25px">
+          <el-table
+            :data="data.taskData.tableData"
+            stripe
+            style="margin-top: 6px"
+            header-row-class-name="pixiu-table-header"
+            :cell-style="{
+              'font-size': '12px',
+              color: '#191919',
+            }"
+          >
+            <el-table-column
+              prop="lastTimestamp"
+              label="最后出现时间"
+              sortable
+              :formatter="formatterTime"
+            />
+
+            <template #empty>
+              <div class="table-inline-word">暂无部署任务</div>
+            </template>
+          </el-table>
+        </div>
+      </div>
+    </div>
+  </el-drawer>
 </template>
 
 <script setup>
@@ -289,6 +354,14 @@ const data = reactive({
     name: '',
     status: 0,
     description: '',
+  },
+
+  // 部署任务
+  taskData: {
+    drawer: false,
+    width: '40%',
+    task: '',
+    tableData: [],
   },
 });
 
@@ -372,7 +445,13 @@ const startTask = async (row) => {
 };
 // 结束startTask
 
-const deployTask = async (row) => {
+// 开始处理任务进度
+const handleTaskDrawer = (row) => {
+  data.taskData.task = row;
+  data.taskData.drawer = true;
+};
+
+const openTaskDrawer = async () => {
   const [result, err] = await getPlanTaskList(row.id);
   if (err) {
     proxy.$message.error(err);
@@ -381,6 +460,18 @@ const deployTask = async (row) => {
 
   console.log('result', result);
 };
+
+const closeTaskDrawer = () => {
+  data.taskData.drawer = false;
+
+  setTimeout(() => {
+    data.taskData = {
+      task: '',
+    };
+  }, 100);
+};
+
+// 结束处理任务进度
 
 const getPlanList = async () => {
   data.loading = true;
