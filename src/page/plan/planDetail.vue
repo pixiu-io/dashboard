@@ -434,6 +434,17 @@
           </el-radio-group>
         </el-form-item>
 
+        <el-form-item>
+          <template #label>
+            <span style="font-size: 13px; color: #191919">运行时</span>
+          </template>
+
+          <el-radio-group v-model="data.createData.cri">
+            <el-radio-button label="docker">docker</el-radio-button>
+            <el-radio-button label="containerd">containerd</el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+
         <el-form-item prop="ip">
           <template #label>
             <span style="font-size: 13px; color: #191919">IP地址</span>
@@ -570,6 +581,7 @@ const data = reactive({
     name: '',
     role: 0,
     ip: '',
+    cri: 'docker',
     auth: {
       type: 'password',
       key: {
