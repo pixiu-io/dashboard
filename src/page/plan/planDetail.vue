@@ -778,7 +778,6 @@ const GetPlanConfig = async () => {
     proxy.$notify.error(err);
     return;
   }
-  console.log('GetPlanConfig', result);
 };
 
 // 开始创建节点
