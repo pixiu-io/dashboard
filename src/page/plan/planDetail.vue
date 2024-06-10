@@ -722,6 +722,10 @@ const data = reactive({
       label: '无锡',
     },
     {
+      value: '宿迁',
+      label: '宿迁',
+    },
+    {
       value: '杭州',
       label: '杭州',
     },
