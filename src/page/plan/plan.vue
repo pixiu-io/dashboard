@@ -370,7 +370,7 @@ const data = reactive({
   // 部署任务
   taskData: {
     drawer: false,
-    width: '48%',
+    width: '40%',
     task: '',
     tableData: [],
   },
@@ -469,7 +469,6 @@ const openTaskDrawer = async () => {
     return;
   }
   data.taskData.tableData = result;
-  console.log(' data.taskData', data.taskData);
 };
 
 const closeTaskDrawer = () => {
