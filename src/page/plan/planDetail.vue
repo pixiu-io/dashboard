@@ -83,6 +83,17 @@
               </div>
 
               <div style="margin-top: 25px" />
+              <el-form-item label="容器网口">
+                <el-input
+                  v-model="data.PlanConfig.network.network_interface"
+                  placeholder="请容器运行时网口"
+                />
+              </el-form-item>
+              <div class="app-pixiu-describe" style="margin-top: -12px">
+                选择 kubernetes 集群 pod 运行网口，一经选择无法更改，默认为 eth0
+              </div>
+
+              <div style="margin-top: 25px" />
               <el-form-item label="容器网络">
                 <el-card style="width: 90%; background-color: #f2f2f2"
                   >CIDR
@@ -541,6 +552,7 @@ import {
   deletePlanNode,
   createPlanConfig,
   startPlanTask,
+  getPlanConfig,
 } from '@/services/plan/planService';
 
 const { proxy } = getCurrentInstance();
@@ -613,6 +625,7 @@ const data = reactive({
       enable_ha: false,
     },
     network: {
+      network_interface: 'eth0',
       cni: 'flannel',
       pod_network: '',
       service_network: '',
@@ -633,22 +646,6 @@ const data = reactive({
     cloud_type: 2, // 导入集群的类型为 1
     region: '无锡',
     description: '',
-
-    // k8s 的属性定义
-    kubernetes: {
-      api_server: '',
-      version: '1.20.0',
-      runtime: 'docker',
-      cni: 'flannel', // 默认网络插件
-      // k8s service 网段
-      service_cidr: '',
-      // pod 网络相关设置
-      pod_cidr: '',
-      // kube-poxy 模式
-      proxy_mode: 'iptables',
-      masters: [],
-      nodes: [],
-    },
 
     // 安装组件
     install_components: ['Prometheus 监控服务', 'Nginx Ingress'],
@@ -672,16 +669,12 @@ const data = reactive({
   },
   kubernetes_version_options: [
     {
-      value: '1.22.6',
-      label: '1.22.6',
-    },
-    {
-      value: '1.20.0',
-      label: '1.20.0',
-    },
-    {
       value: '1.23.6',
       label: '1.23.6',
+    },
+    {
+      value: '1.24.6',
+      label: '1.24.6',
     },
   ],
 
@@ -729,10 +722,6 @@ const data = reactive({
       label: '无锡',
     },
     {
-      value: '宿迁',
-      label: '宿迁',
-    },
-    {
       value: '杭州',
       label: '杭州',
     },
@@ -745,19 +734,14 @@ const data = reactive({
 
 const labelPosition = ref('left');
 
-const availableComponents = [
-  'Prometheus 监控服务',
-  'Nginx Ingress',
-  'Pixiu Autoscaler',
-  '高性能 eventer',
-  'Operator 生命周期管理组件',
-];
+const availableComponents = ['Prometheus', 'NginxIngress'];
 
 onMounted(async () => {
   data.name = proxy.$route.query.name;
   data.planId = proxy.$route.query.planId;
 
   GetPlanNodes();
+  GetPlanConfig();
 
   newServiceNetwork(data.serviceNetworkForm);
   newPodNetwork(data.podNetworkForm);
@@ -782,6 +766,15 @@ const GetPlanNodes = async () => {
   }
   data.pageInfo.total = data.nodes.length;
   data.tableData = getTableData(data.pageInfo, data.nodes);
+};
+
+const GetPlanConfig = async () => {
+  [result, err] = await getPlanConfig(data.planId);
+  if (err) {
+    proxy.$notify.error(err);
+    return;
+  }
+  console.log('GetPlanConfig', result);
 };
 
 // 开始创建节点
