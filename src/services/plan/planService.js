@@ -84,17 +84,6 @@ export const deletePlanNode = async (pid, nodeId) => {
   return [result, err];
 };
 
-export const createPlanConfig = async (pid, data) => {
-  const [err, result] = await awaitWrap(
-    http({
-      method: 'post',
-      url: `/pixiu/plans/${pid}/configs`,
-      data: data,
-    }),
-  );
-  return [result, err];
-};
-
 export const startPlanTask = async (pid) => {
   const [err, result] = await awaitWrap(
     http({
@@ -110,6 +99,27 @@ export const getPlanTaskList = async (pid) => {
     http({
       method: 'post',
       url: `/pixiu/plans/${pid}/tasks`,
+    }),
+  );
+  return [result, err];
+};
+
+export const createPlanConfig = async (pid, data) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'post',
+      url: `/pixiu/plans/${pid}/configs`,
+      data: data,
+    }),
+  );
+  return [result, err];
+};
+
+export const getPlanConfig = async (pid) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: `/pixiu/plans/${pid}/configs`,
     }),
   );
   return [result, err];
