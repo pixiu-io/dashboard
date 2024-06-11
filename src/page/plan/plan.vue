@@ -477,6 +477,7 @@ const closeTaskDrawer = () => {
   setTimeout(() => {
     data.taskData = {
       tableData: [],
+      width: '40%',
       task: '',
     };
   }, 100);
