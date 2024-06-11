@@ -5,13 +5,12 @@ set -o xtrace
 if [[ ! -d "/etc/pixiu" ]]; then
     mkdir -p /etc/pixiu
 fi
-cp /configs/config.yaml /etc/pixiu/config.yaml
 
 if [[ -e "/usr/share/nginx/html/pixiu/config.json" ]]; then
     rm -rf /usr/share/nginx/html/pixiu/config.json
 fi
-if [[ -e "/configs/config.json" ]]; then
-    cp /configs/config.json /usr/share/nginx/html/pixiu/config.json
+if [[ -e "/etc/pixiu/config.json" ]]; then
+    cp /etc/pixiu/config.json /usr/share/nginx/html/pixiu/config.json
 fi
 
 echo "Starting pixiu dashboard service"
