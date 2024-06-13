@@ -321,6 +321,7 @@ import {
   updatePlan,
   startPlanTask,
   getPlanTaskList,
+  getPlanTaskListStream,
 } from '@/services/plan/planService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { copy } from '@/utils/utils';
@@ -463,12 +464,47 @@ const handleTaskDrawer = (row) => {
 };
 
 const openTaskDrawer = async () => {
-  const [result, err] = await getPlanTaskList(data.taskData.task.id);
-  if (err) {
-    proxy.$message.error(err);
-    return;
-  }
-  data.taskData.tableData = result;
+  // const [result, err] = await getPlanTaskList(data.taskData.task.id);
+  // if (err) {
+  //   proxy.$message.error(err);
+  //   return;
+  // }
+  // data.taskData.tableData = result;
+  console.log('data.taskData.task.id', data.taskData.task.id);
+  await getPlanTaskListStream(data.taskData.task.id).then((response) => {
+    if (response.status !== 200) {
+      return;
+    } else {
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder('utf-8');
+
+      reader.read().then((result) => {
+        while (result.done === false) {
+          if (result.done) {
+            console.log('done');
+            break;
+          }
+          // 将result.value转换为Uint8Array
+          const uint8Array = new Uint8Array(
+            result.value.buffer,
+            result.value.byteOffset,
+            result.value.byteLength,
+          );
+          let decodedString = decoder.decode(uint8Array, { stream: true });
+
+          console.log('decodedString', decodedString);
+          // 解析JSON数据
+          try {
+            const r = JSON.parse(decodedString);
+            console.log('result', r);
+          } catch (e) {
+            console.error('Error parsing JSON:', e);
+          }
+        }
+      });
+    }
+  });
+  // data.taskData.tableData = data;
 };
 
 const closeTaskDrawer = () => {

@@ -124,3 +124,15 @@ export const getPlanConfig = async (pid) => {
   );
   return [result, err];
 };
+
+export const getPlanTaskListStream = async (pid) => {
+  const token = localStorage.getItem('token');
+  const headers = { 'Content-Type': 'application/json' };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return fetch(`http://127.0.0.1:8090/pixiu/plans/${pid}/tasks`, {
+    method: 'POST',
+    headers: headers,
+  });
+};
