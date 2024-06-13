@@ -14,8 +14,9 @@
             margin-right: 8px;
             margin-top: -25px;
           "
-          ><WarningFilled
-        /></el-icon>
+        >
+          <WarningFilled />
+        </el-icon>
 
         <div style="vertical-align: middle; margin-top: -27px; margin-left: 10px">
           新建部署计划以自建 kubernetes 集群，完全兼容开源 Kubernetes
@@ -177,8 +178,9 @@
             margin-right: 8px;
             margin-top: -25px;
           "
-          ><WarningFilled
-        /></el-icon>
+        >
+          <WarningFilled />
+        </el-icon>
 
         <div style="vertical-align: middle; margin-top: -27px; margin-left: 10px">
           新建部署计划以自建 kubernetes 集群.
@@ -256,8 +258,9 @@
         <el-card class="app-docs" style="margin-left: 8px; height: 40px">
           <el-icon
             style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
-            ><WarningFilled
-          /></el-icon>
+          >
+            <WarningFilled />
+          </el-icon>
           <div style="vertical-align: middle; margin-top: -40px">获取部署计划的部署情况</div>
         </el-card>
 
@@ -282,19 +285,9 @@
           >
             <el-table-column prop="name" label="名称" sortable />
 
-            <el-table-column
-              prop="gmt_create"
-              label="启动时间"
-              sortable
-              :formatter="formatterTime"
-            />
+            <el-table-column prop="start_at" label="启动时间" sortable :formatter="formatterTime" />
 
-            <el-table-column
-              prop="gmt_modified"
-              label="更新时间"
-              sortable
-              :formatter="formatterTime"
-            />
+            <el-table-column prop="end_at" label="结束时间" sortable :formatter="formatterTime" />
 
             <el-table-column prop="status" label="状态" />
 
@@ -479,27 +472,26 @@ const openTaskDrawer = async () => {
       const decoder = new TextDecoder('utf-8');
 
       reader.read().then((result) => {
-        while (result.done === false) {
-          if (result.done) {
-            console.log('done');
-            break;
-          }
-          // 将result.value转换为Uint8Array
-          const uint8Array = new Uint8Array(
-            result.value.buffer,
-            result.value.byteOffset,
-            result.value.byteLength,
-          );
-          let decodedString = decoder.decode(uint8Array, { stream: true });
+        if (result.done) {
+          console.log('done');
+          return;
+        }
+        // 将result.value转换为Uint8Array
+        const uint8Array = new Uint8Array(
+          result.value.buffer,
+          result.value.byteOffset,
+          result.value.byteLength,
+        );
+        let decodedString = decoder.decode(uint8Array, { stream: true });
 
-          console.log('decodedString', decodedString);
-          // 解析JSON数据
-          try {
-            const r = JSON.parse(decodedString);
-            console.log('result', r);
-          } catch (e) {
-            console.error('Error parsing JSON:', e);
-          }
+        console.log('decodedString', decodedString);
+        // 解析JSON数据
+        try {
+          const r = JSON.parse(decodedString);
+          console.log('result', r);
+          data.taskData.tableData = r;
+        } catch (e) {
+          console.error('Error parsing JSON:', e);
         }
       });
     }
