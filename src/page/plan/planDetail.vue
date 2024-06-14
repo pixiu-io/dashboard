@@ -60,6 +60,17 @@
               </div>
 
               <div style="margin-top: 25px" />
+              <el-form-item label="操作系统" style="width: 100%">
+                <el-radio-group v-model="data.PlanConfig.os_image">
+                  <el-radio-button
+                    v-for="(item, index) in data.osOptions"
+                    :key="index"
+                    :label="item.label"
+                  />
+                </el-radio-group>
+              </el-form-item>
+
+              <div style="margin-top: 25px" />
               <el-form-item label="容器运行时">
                 <el-radio-group v-model="data.PlanConfig.runtime.runtime">
                   <el-radio-button label="docker">docker</el-radio-button>
@@ -618,6 +629,7 @@ const data = reactive({
     plan_id: 0,
     name: '',
     region: '无锡',
+    os_image: 'centos7',
     description: '',
     kubernetes: {
       api_server: '',
@@ -715,7 +727,20 @@ const data = reactive({
       label: '24',
     },
   ],
-
+  osOptions: [
+    {
+      value: 'centos7',
+      label: 'centos7',
+    },
+    {
+      value: 'ubuntu20.04',
+      label: 'ubuntu20.04',
+    },
+    {
+      value: 'ubuntu22.04',
+      label: 'ubuntu22.04',
+    },
+  ],
   regionOptions: [
     {
       value: '无锡',
