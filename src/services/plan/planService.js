@@ -125,7 +125,7 @@ export const getPlanConfig = async (pid) => {
   return [result, err];
 };
 
-export const getPlanTaskListStream = async (pid) => {
+export const getPlanTaskListStream = async (pid, signal) => {
   const token = localStorage.getItem('token');
   const headers = { 'Content-Type': 'application/json' };
   if (token) {
@@ -134,5 +134,15 @@ export const getPlanTaskListStream = async (pid) => {
   return fetch(`http://127.0.0.1:8090/pixiu/plans/${pid}/tasks`, {
     method: 'POST',
     headers: headers,
+    signal: signal,
   });
+};
+export const getPlanTaskListStreamAxios = async (pid) => {
+  const [err, result] = await awaitWrap(
+    http.headers({
+      method: 'post',
+      url: `/pixiu/plans/${pid}/tasks`,
+    }),
+  );
+  return [result, err];
 };

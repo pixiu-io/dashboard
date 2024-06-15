@@ -289,7 +289,23 @@
 
             <el-table-column prop="end_at" label="结束时间" sortable :formatter="formatterTime" />
 
-            <el-table-column prop="status" label="状态" />
+            <el-table-column prop="status" label="状态">
+              <template #default="scope">
+                <div style="font-size: 12px; color: #29292b" type="primary" :underline="false">
+                  <el-icon class="is-loading" color="#409efc" v-if="scope.row.status === '运行中'"
+                    ><RefreshRight
+                  /></el-icon>
+                  <el-icon color="#529b2e" v-else-if="scope.row.status === '成功'"
+                    ><SuccessFilled
+                  /></el-icon>
+                  <el-icon color="#c45656" v-else-if="scope.row.status === '失败'"
+                    ><CircleCloseFilled
+                  /></el-icon>
+                  <el-icon v-else><InfoFilled /></el-icon>
+                  {{ scope.row.status }}
+                </div>
+              </template>
+            </el-table-column>
 
             <template #empty>
               <div class="table-inline-word">暂无部署任务</div>
@@ -303,7 +319,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref, computed } from 'vue';
 import { formatterTime, formatterPlanStatus } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import {
@@ -315,6 +331,7 @@ import {
   startPlanTask,
   getPlanTaskList,
   getPlanTaskListStream,
+  getPlanTaskListStreamAxios,
 } from '@/services/plan/planService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { copy } from '@/utils/utils';
@@ -324,7 +341,7 @@ const { proxy } = getCurrentInstance();
 
 const data = reactive({
   loading: false,
-
+  streams: [], // 处理流
   tableData: [],
   planList: [],
 
@@ -455,48 +472,63 @@ const handleTaskDrawer = (row) => {
   data.taskData.task = row;
   data.taskData.drawer = true;
 };
-
 const openTaskDrawer = async () => {
-  // const [result, err] = await getPlanTaskList(data.taskData.task.id);
-  // if (err) {
-  //   proxy.$message.error(err);
-  //   return;
+  let controller = new AbortController();
+  let single = controller.signal;
+  // controller.abort();
+  // // Close existing streams
+  // for (const stream of data.streams) {
+  //   try {
+  //     await stream.cancel();
+  //     console.log('Closed stream', stream);
+  //   } catch {
+  //     console.log('Failed to close stream', stream);
+  //   }
   // }
-  // data.taskData.tableData = result;
-  console.log('data.taskData.task.id', data.taskData.task.id);
-  await getPlanTaskListStream(data.taskData.task.id).then((response) => {
-    if (response.status !== 200) {
-      return;
-    } else {
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder('utf-8');
+  // data.streams = [];
 
-      reader.read().then((result) => {
-        if (result.done) {
-          console.log('done');
-          return;
-        }
-        // 将result.value转换为Uint8Array
-        const uint8Array = new Uint8Array(
-          result.value.buffer,
-          result.value.byteOffset,
-          result.value.byteLength,
-        );
-        let decodedString = decoder.decode(uint8Array, { stream: true });
+  const { body, err } = await getPlanTaskListStream(data.taskData.task.id, single);
+  if (err) {
+    proxy.$message.error('Failed to get task list');
+    return;
+  }
+  if (body) {
+    const reader = body.getReader();
+    data.streams.push(reader);
+    readStream(reader);
+  }
+};
+// const openTaskDrawer = async () => {
+//   const [response, err] = await getPlanTaskListStreamAxios(data.taskData.task.id);
+//   if (err) {
+//     proxy.$message.error('获取任务列表失败', err);
+//     return;
+//   }
+//   response.on('data', (chunk) => {
+//     console.log(chunk);
+//   });
+// };
 
-        console.log('decodedString', decodedString);
-        // 解析JSON数据
-        try {
-          const r = JSON.parse(decodedString);
-          console.log('result', r);
-          data.taskData.tableData = r;
-        } catch (e) {
-          console.error('Error parsing JSON:', e);
-        }
-      });
+const readStream = async (reader) => {
+  const decoder = new TextDecoder('utf-8');
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) {
+      reader.cancel();
+      break;
     }
-  });
-  // data.taskData.tableData = data;
+    const uint8Array = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+    let decodedString = decoder.decode(uint8Array, { stream: true });
+    console.log('decodedString', decodedString);
+    // 解析JSON数据
+    try {
+      const result = JSON.parse(decodedString);
+      console.log('result', result);
+      data.taskData.tableData = result;
+    } catch (e) {
+      console.error('Error parsing JSON:', e);
+    }
+  }
 };
 
 const closeTaskDrawer = () => {
