@@ -473,19 +473,16 @@ const handleTaskDrawer = (row) => {
   data.taskData.drawer = true;
 };
 const openTaskDrawer = async () => {
+  if (data.streams.length !== 0) {
+    console.log(data.streams.length);
+    for (const s of data.streams) {
+      s.abort();
+    }
+    data.streams = [];
+  }
   let controller = new AbortController();
   let single = controller.signal;
-  // controller.abort();
-  // // Close existing streams
-  // for (const stream of data.streams) {
-  //   try {
-  //     await stream.cancel();
-  //     console.log('Closed stream', stream);
-  //   } catch {
-  //     console.log('Failed to close stream', stream);
-  //   }
-  // }
-  // data.streams = [];
+  data.streams.push(controller);
 
   const { body, err } = await getPlanTaskListStream(data.taskData.task.id, single);
   if (err) {
@@ -494,8 +491,8 @@ const openTaskDrawer = async () => {
   }
   if (body) {
     const reader = body.getReader();
-    data.streams.push(reader);
-    readStream(reader);
+    // data.streams.push(reader);
+    await readStream(reader);
   }
 };
 // const openTaskDrawer = async () => {
@@ -519,12 +516,11 @@ const readStream = async (reader) => {
     }
     const uint8Array = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
     let decodedString = decoder.decode(uint8Array, { stream: true });
-    console.log('decodedString', decodedString);
     // 解析JSON数据
     try {
       const result = JSON.parse(decodedString);
-      console.log('result', result);
       data.taskData.tableData = result;
+      console.log('获取结果：', result);
     } catch (e) {
       console.error('Error parsing JSON:', e);
     }
@@ -533,7 +529,13 @@ const readStream = async (reader) => {
 
 const closeTaskDrawer = () => {
   data.taskData.drawer = false;
-
+  // 关闭stream
+  if (data.streams.length !== 0) {
+    for (const s of data.streams) {
+      s.abort();
+    }
+    data.streams = [];
+  }
   setTimeout(() => {
     data.taskData = {
       tableData: [],
