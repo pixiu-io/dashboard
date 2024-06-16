@@ -733,12 +733,24 @@ const data = reactive({
       label: 'centos7',
     },
     {
+      value: 'ubuntu18.04',
+      label: 'ubuntu18.04',
+    },
+    {
       value: 'ubuntu20.04',
       label: 'ubuntu20.04',
     },
     {
       value: 'ubuntu22.04',
       label: 'ubuntu22.04',
+    },
+    {
+      value: 'debian10',
+      label: 'debian10',
+    },
+    {
+      value: 'debian11',
+      label: 'debian11',
     },
   ],
   regionOptions: [
