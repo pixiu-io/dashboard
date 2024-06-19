@@ -63,6 +63,7 @@ import CreateTask from './container/cicd/createtask.vue';
 import CreateTaskRun from './container/cicd/createtaskrun.vue';
 import Plan from './plan/plan.vue';
 import PlanDetail from './plan/planDetail.vue';
+import PlanCreate from './plan/planCreate.vue';
 export {
   Home,
   Login,
@@ -129,4 +130,5 @@ export {
   CreateTaskRun,
   Plan,
   PlanDetail,
+  PlanCreate,
 };

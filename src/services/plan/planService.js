@@ -22,6 +22,16 @@ export const getPlan = async (pid) => {
   return [result, err];
 };
 
+export const getPlanResources = async (pid) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: `/pixiu/plans/${pid}/resources`,
+    }),
+  );
+  return [result, err];
+};
+
 export const GetPlanList = async () => {
   const [err, result] = await awaitWrap(
     http({

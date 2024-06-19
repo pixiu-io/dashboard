@@ -31,7 +31,7 @@
             type="primary"
             class="pixiu-button"
             style="margin-left: 1px"
-            @click="handleCreateDialog"
+            @click="goToCreatePlan"
           >
             <el-icon style="vertical-align: middle; margin-right: 4px">
               <component :is="'Plus'" />
@@ -69,12 +69,7 @@
         >
           <el-table-column prop="name" label="名称" sortable>
             <template #default="scope">
-              <el-link
-                class="global-table-world"
-                type="primary"
-                :underline="false"
-                @click="jumpRoute(scope.row)"
-              >
+              <el-link class="global-table-world" type="primary" :underline="false">
                 {{ scope.row.name }}
               </el-link>
               <el-tooltip content="复制">
@@ -108,7 +103,7 @@
                 text
                 size="small"
                 style="margin-right: -24px; margin-left: -10px; color: #006eff"
-                @click="handleDialogValue(scope.row)"
+                @click="updatePlan(scope.row)"
               >
                 更新
               </el-button>
@@ -295,7 +290,6 @@
               sortable
               :formatter="formatterTime"
             />
-
             <el-table-column prop="status" label="状态" />
 
             <template #empty>
@@ -318,7 +312,6 @@ import {
   getPlan,
   GetPlanList,
   deletePlan,
-  updatePlan,
   startPlanTask,
   getPlanTaskList,
 } from '@/services/plan/planService';
@@ -436,6 +429,15 @@ const confirm = async () => {
   cancel();
 };
 
+const updatePlan = (row) => {
+  proxy.$router.push({
+    name: 'PlanUpdate',
+    query: {
+      planId: row.id,
+    },
+  });
+};
+
 const cancel = () => {
   data.deleteDialog.close = false;
   // 延迟 1 秒重置数据，否则页面上会显的很怪
@@ -455,6 +457,12 @@ const startTask = async (row) => {
   proxy.$notify.success(`部署计划(${row.name}) 启动成功`);
 };
 // 结束startTask
+
+const goToCreatePlan = () => {
+  proxy.$router.push({
+    name: 'PlanCreate',
+  });
+};
 
 // 开始处理任务进度
 const handleTaskDrawer = (row) => {

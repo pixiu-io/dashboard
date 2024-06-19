@@ -45,7 +45,7 @@ export { searchData };
 
 const copy = async (val) => {
   try {
-    await toClipboard(val);
+    await toClipboard(String(val));
     ElMessage({
       type: 'success',
       message: '已复制',
@@ -58,3 +58,27 @@ const copy = async (val) => {
   }
 };
 export { copy };
+
+// 深度合并函数
+export const deepMerge = (target, source) => {
+  for (const key in source) {
+    if (source[key] instanceof Object && key in target) {
+      Object.assign(source[key], deepMerge(target[key], source[key]));
+    }
+  }
+  Object.assign(target || {}, source);
+  return target;
+};
+
+// 解析网络字符串
+export const parseNetwork = (networkString) => {
+  const [address, mask] = networkString.split('/');
+  const [a_cidr, b_cidr, c_cidr, d_cidr] = address.split('.');
+  return {
+    a_cidr,
+    b_cidr,
+    c_cidr,
+    d_cidr,
+    mask,
+  };
+};
