@@ -14,38 +14,10 @@ const useClusterStore = defineStore('cluster', () => {
 
   watch(planId, async (newPlanId) => {
     if (newPlanId !== undefined) {
-      // const [result, err] = await getPlanResources(newPlanId);
-      // if (err) {
-      //   return;
-      // }
-      const result = {
-        name: '12312',
-        description: '',
-        resourceVersion: 0,
-        config: {
-          region: '无锡',
-          os_image: 'centos7',
-          kubernetes: { api_server: '', kubernetes_version: '1.23.6', enable_ha: false },
-          network: {
-            network_interface: 'eth0',
-            cni: 'flannel',
-            pod_network: '172.30.0.0/16',
-            service_network: '10.254.0.0/16',
-            kube_proxy: 'iptables',
-          },
-          runtime: { runtime: 'docker' },
-        },
-        install_components: [],
-        nodes: [
-          {
-            name: '1231',
-            ip: '127.0.0.1',
-            cri: 'docker',
-            role: 1,
-            auth: { type: 'password', password: { password: '8874580Cq', user: 'root' }, key: {} },
-          },
-        ],
-      };
+      const [result, err] = await getPlanResources(newPlanId);
+      if (err) {
+        return;
+      }
       deepMerge(configInfo, result);
       // 拆分 pod_network 和 service_network
       if (configInfo.config.network.pod_network) {
@@ -81,7 +53,7 @@ const useClusterStore = defineStore('cluster', () => {
   const configInfo = reactive({
     name: '',
     description: '',
-    resourceVersion: 0,
+    resource_version: 0,
     config: {
       region: '无锡',
       os_image: 'centos7',
