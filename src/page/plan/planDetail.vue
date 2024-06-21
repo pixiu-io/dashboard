@@ -733,6 +733,10 @@ const data = reactive({
       label: 'centos7',
     },
     {
+      value: 'ubuntu18.04',
+      label: 'ubuntu18.04',
+    },
+    {
       value: 'ubuntu20.04',
       label: 'ubuntu20.04',
     },
