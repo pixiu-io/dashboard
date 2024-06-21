@@ -744,14 +744,6 @@ const data = reactive({
       value: 'ubuntu22.04',
       label: 'ubuntu22.04',
     },
-    {
-      value: 'debian10',
-      label: 'debian10',
-    },
-    {
-      value: 'debian11',
-      label: 'debian11',
-    },
   ],
   regionOptions: [
     {
