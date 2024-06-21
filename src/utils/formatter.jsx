@@ -1,6 +1,9 @@
 import { formatTimestamp } from '@/utils/utils';
 
 const formatterTime = (row, column, cellValue) => {
+  if (cellValue === '' || cellValue === undefined) {
+    return '';
+  }
   const time = formatTimestamp(cellValue);
   return (
     <el-tooltip effect="light" placement="top" content={time}>

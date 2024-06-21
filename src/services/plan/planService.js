@@ -22,6 +22,16 @@ export const getPlan = async (pid) => {
   return [result, err];
 };
 
+export const getPlanResources = async (pid) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: `/pixiu/plans/${pid}/resources`,
+    }),
+  );
+  return [result, err];
+};
+
 export const GetPlanList = async () => {
   const [err, result] = await awaitWrap(
     http({
@@ -120,28 +130,6 @@ export const getPlanConfig = async (pid) => {
     http({
       method: 'get',
       url: `/pixiu/plans/${pid}/configs`,
-    }),
-  );
-  return [result, err];
-};
-
-export const getPlanTaskListStream = async (pid, signal) => {
-  const token = localStorage.getItem('token');
-  const headers = { 'Content-Type': 'application/json' };
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-  return fetch(`http://127.0.0.1:8090/pixiu/plans/${pid}/tasks`, {
-    method: 'POST',
-    headers: headers,
-    signal: signal,
-  });
-};
-export const getPlanTaskListStreamAxios = async (pid) => {
-  const [err, result] = await awaitWrap(
-    http.headers({
-      method: 'post',
-      url: `/pixiu/plans/${pid}/tasks`,
     }),
   );
   return [result, err];

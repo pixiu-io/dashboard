@@ -14,9 +14,8 @@
             margin-right: 8px;
             margin-top: -25px;
           "
-        >
-          <WarningFilled />
-        </el-icon>
+          ><WarningFilled
+        /></el-icon>
 
         <div style="vertical-align: middle; margin-top: -27px; margin-left: 10px">
           新建部署计划以自建 kubernetes 集群，完全兼容开源 Kubernetes
@@ -32,7 +31,7 @@
             type="primary"
             class="pixiu-button"
             style="margin-left: 1px"
-            @click="handleCreateDialog"
+            @click="goToCreatePlan"
           >
             <el-icon style="vertical-align: middle; margin-right: 4px">
               <component :is="'Plus'" />
@@ -70,12 +69,7 @@
         >
           <el-table-column prop="name" label="名称" sortable>
             <template #default="scope">
-              <el-link
-                class="global-table-world"
-                type="primary"
-                :underline="false"
-                @click="jumpRoute(scope.row)"
-              >
+              <el-link class="global-table-world" type="primary" :underline="false">
                 {{ scope.row.name }}
               </el-link>
               <el-tooltip content="复制">
@@ -109,7 +103,7 @@
                 text
                 size="small"
                 style="margin-right: -24px; margin-left: -10px; color: #006eff"
-                @click="handleDialogValue(scope.row)"
+                @click="updatePlan(scope.row)"
               >
                 更新
               </el-button>
@@ -178,9 +172,8 @@
             margin-right: 8px;
             margin-top: -25px;
           "
-        >
-          <WarningFilled />
-        </el-icon>
+          ><WarningFilled
+        /></el-icon>
 
         <div style="vertical-align: middle; margin-top: -27px; margin-left: 10px">
           新建部署计划以自建 kubernetes 集群.
@@ -258,9 +251,8 @@
         <el-card class="app-docs" style="margin-left: 8px; height: 40px">
           <el-icon
             style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
-          >
-            <WarningFilled />
-          </el-icon>
+            ><WarningFilled
+          /></el-icon>
           <div style="vertical-align: middle; margin-top: -40px">获取部署计划的部署情况</div>
         </el-card>
 
@@ -285,27 +277,20 @@
           >
             <el-table-column prop="name" label="名称" sortable />
 
-            <el-table-column prop="start_at" label="启动时间" sortable :formatter="formatterTime" />
+            <el-table-column
+              prop="gmt_create"
+              label="启动时间"
+              sortable
+              :formatter="formatterTime"
+            />
 
-            <el-table-column prop="end_at" label="结束时间" sortable :formatter="formatterTime" />
-
-            <el-table-column prop="status" label="状态">
-              <template #default="scope">
-                <div style="font-size: 12px; color: #29292b" type="primary" :underline="false">
-                  <el-icon class="is-loading" color="#409efc" v-if="scope.row.status === '运行中'"
-                    ><RefreshRight
-                  /></el-icon>
-                  <el-icon color="#529b2e" v-else-if="scope.row.status === '成功'"
-                    ><SuccessFilled
-                  /></el-icon>
-                  <el-icon color="#c45656" v-else-if="scope.row.status === '失败'"
-                    ><CircleCloseFilled
-                  /></el-icon>
-                  <el-icon v-else><InfoFilled /></el-icon>
-                  {{ scope.row.status }}
-                </div>
-              </template>
-            </el-table-column>
+            <el-table-column
+              prop="gmt_modified"
+              label="更新时间"
+              sortable
+              :formatter="formatterTime"
+            />
+            <el-table-column prop="status" label="状态" />
 
             <template #empty>
               <div class="table-inline-word">暂无部署任务</div>
@@ -319,7 +304,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref, computed } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { formatterTime, formatterPlanStatus } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import {
@@ -327,11 +312,8 @@ import {
   getPlan,
   GetPlanList,
   deletePlan,
-  updatePlan,
   startPlanTask,
   getPlanTaskList,
-  getPlanTaskListStream,
-  getPlanTaskListStreamAxios,
 } from '@/services/plan/planService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { copy } from '@/utils/utils';
@@ -341,7 +323,7 @@ const { proxy } = getCurrentInstance();
 
 const data = reactive({
   loading: false,
-  streams: [], // 处理流
+
   tableData: [],
   planList: [],
 
@@ -447,6 +429,15 @@ const confirm = async () => {
   cancel();
 };
 
+const updatePlan = (row) => {
+  proxy.$router.push({
+    name: 'PlanUpdate',
+    query: {
+      planId: row.id,
+    },
+  });
+};
+
 const cancel = () => {
   data.deleteDialog.close = false;
   // 延迟 1 秒重置数据，否则页面上会显的很怪
@@ -467,75 +458,30 @@ const startTask = async (row) => {
 };
 // 结束startTask
 
+const goToCreatePlan = () => {
+  proxy.$router.push({
+    name: 'PlanCreate',
+  });
+};
+
 // 开始处理任务进度
 const handleTaskDrawer = (row) => {
   data.taskData.task = row;
   data.taskData.drawer = true;
 };
-const openTaskDrawer = async () => {
-  if (data.streams.length !== 0) {
-    console.log(data.streams.length);
-    for (const s of data.streams) {
-      s.abort();
-    }
-    data.streams = [];
-  }
-  let controller = new AbortController();
-  let single = controller.signal;
-  data.streams.push(controller);
 
-  const { body, err } = await getPlanTaskListStream(data.taskData.task.id, single);
+const openTaskDrawer = async () => {
+  const [result, err] = await getPlanTaskList(data.taskData.task.id);
   if (err) {
-    proxy.$message.error('Failed to get task list');
+    proxy.$message.error(err);
     return;
   }
-  if (body) {
-    const reader = body.getReader();
-    // data.streams.push(reader);
-    await readStream(reader);
-  }
-};
-// const openTaskDrawer = async () => {
-//   const [response, err] = await getPlanTaskListStreamAxios(data.taskData.task.id);
-//   if (err) {
-//     proxy.$message.error('获取任务列表失败', err);
-//     return;
-//   }
-//   response.on('data', (chunk) => {
-//     console.log(chunk);
-//   });
-// };
-
-const readStream = async (reader) => {
-  const decoder = new TextDecoder('utf-8');
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) {
-      reader.cancel();
-      break;
-    }
-    const uint8Array = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
-    let decodedString = decoder.decode(uint8Array, { stream: true });
-    // 解析JSON数据
-    try {
-      const result = JSON.parse(decodedString);
-      data.taskData.tableData = result;
-      console.log('获取结果：', result);
-    } catch (e) {
-      console.error('Error parsing JSON:', e);
-    }
-  }
+  data.taskData.tableData = result;
 };
 
 const closeTaskDrawer = () => {
   data.taskData.drawer = false;
-  // 关闭stream
-  if (data.streams.length !== 0) {
-    for (const s of data.streams) {
-      s.abort();
-    }
-    data.streams = [];
-  }
+
   setTimeout(() => {
     data.taskData = {
       tableData: [],
