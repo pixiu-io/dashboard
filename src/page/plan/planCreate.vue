@@ -484,7 +484,8 @@
               <el-radio :value="0">node</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item prop="cri">
+
+          <!-- <el-form-item prop="cri">
             <template #label>
               <span style="font-size: 13px; color: #191919">运行时</span>
             </template>
@@ -493,7 +494,7 @@
               <el-radio-button label="docker">docker</el-radio-button>
               <el-radio-button label="containerd">containerd</el-radio-button>
             </el-radio-group>
-          </el-form-item>
+          </el-form-item> -->
 
           <el-form-item prop="ip">
             <template #label>
