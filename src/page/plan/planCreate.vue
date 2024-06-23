@@ -586,7 +586,7 @@ const stepContainerRef = ref(null);
 
 const data = reactive({
   autosize: {
-    minRows: 5,
+    minRows: 6,
   },
 });
 
