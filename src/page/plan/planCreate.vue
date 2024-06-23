@@ -594,8 +594,7 @@ const router = useRouter();
 const stepContainerRef = ref(null);
 
 const backToPlan = () => {
-  clusterStore.configFormRef.resetFields();
-  clusterStore.configInfo.nodes = [];
+  clusterStore.resetViewData();
   router.replace({
     name: 'Plan',
   });
