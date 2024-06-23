@@ -49,28 +49,12 @@
           label-width="140px"
           :rules="clusterStore.rules"
         >
-          <el-card id="step-0" header="集群信息">
+          <el-card id="step-0" header="集群信息"> </el-card>
+          <el-card id="step-1" header="集群信息" style="margin-top: 20px">
             <el-form-item label="集群名称" style="width: 50%" prop="name">
               <el-input v-model="clusterStore.configInfo.name" />
             </el-form-item>
-            <el-form-item label="集群描述" style="width: 50%" prop="description">
-              <el-input
-                v-model="clusterStore.configInfo.description"
-                type="textarea"
-                placeholder="请输入 Kubernentes 集群描述"
-                :autosize="data.autosize"
-              />
-            </el-form-item>
-          </el-card>
-          <el-card id="step-1" header="集群信息" style="margin-top: 20px">
-            <!-- <el-form-item label="集群名称" style="width: 50%" prop="name">
-              <el-input
-                v-model="clusterStore.configInfo.name"
-                placeholder="请输入集群名称"
-              />
-            </el-form-item> -->
 
-            <!-- <div style="margin-top: 25px" /> -->
             <el-form-item
               label="Kubernetes 版本"
               style="width: 50%"
@@ -261,14 +245,14 @@
               kubernetes 的 service CIDR，不能和宿主机网络以及 Pod 网络冲突，选择后无法更改。
             </div>
 
-            <!-- <div style="margin-top: 25px" />
-            <el-form-item label="集群描述" style="width: 60%" prop="description">
+            <el-form-item label="集群描述" style="width: 50%; margin-top: 15px" prop="description">
               <el-input
                 v-model="clusterStore.configInfo.description"
-                placeholder="请输入 Kubernentes 集群描述"
                 type="textarea"
+                placeholder="请输入 Kubernentes 集群描述"
+                :autosize="data.autosize"
               />
-            </el-form-item> -->
+            </el-form-item>
           </el-card>
           <el-card id="step-2" header="集群配置" style="margin-top: 20px">
             <div style="margin-top: 20px" />
