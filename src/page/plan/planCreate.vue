@@ -49,7 +49,7 @@
           label-width="140px"
           :rules="clusterStore.rules"
         >
-          <el-card id="step-0" header="集群信息"> </el-card>
+          <!-- <el-card id="step-0" header="集群信息"> </el-card> -->
           <el-card id="step-1" header="集群信息" style="margin-top: 20px">
             <el-form-item label="集群名称" style="width: 50%" prop="name">
               <el-input v-model="clusterStore.configInfo.name" />
