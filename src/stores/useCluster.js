@@ -349,7 +349,7 @@ const useClusterStore = defineStore('cluster', () => {
     });
   };
 
-  const goBackToPlan = () => {
+  const resetViewData = () => {
     configFormRef.value.resetFields();
     configInfo.nodes = [];
     planId.value = undefined;
