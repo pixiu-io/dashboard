@@ -82,20 +82,14 @@
 
             <el-form-item
               label="Kubernetes 版本"
-              style="width: 50%"
+              style="width: 25%"
               prop="config.kubernetes.kubernetes_version"
             >
-              <el-select v-model="clusterStore.configInfo.config.kubernetes.kubernetes_version">
-                <el-option
-                  v-for="item in clusterStore.options.kubernetesVersionOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
+              <el-input v-model="clusterStore.configInfo.config.kubernetes.kubernetes_version" />
             </el-form-item>
+
             <div class="app-pixiu-describe" style="margin-top: -12px">
-              选择 kubernetes 版本有: 1.18、1.20，1.22 版本。
+              输入 kubernetes 版本，推荐 1.23.6、1.20、1.22 版本。
             </div>
 
             <div style="margin-top: 25px" />
