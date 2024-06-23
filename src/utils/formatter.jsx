@@ -552,20 +552,9 @@ const formatterNodeRole = (row, column, cellValue) => {
 export { formatterNodeRole };
 
 const formatterPlanStatus = (row, column, cellValue) => {
-  let s = '未开始';
-  if (cellValue === 1) {
-    s = '进行中';
-  }
-  if (cellValue === 2) {
-    s = '部署失败';
-  }
-  if (cellValue === 3) {
-    s = '已完成';
-  }
-
   return (
     <div>
-      <div style="font-size: 12px; color: #29292b"> {s}</div>
+      <div style="font-size: 12px; color: #29292b"> {cellValue}</div>
     </div>
   );
 };
