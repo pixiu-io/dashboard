@@ -3,6 +3,7 @@ import { ref, reactive, toRaw, watch } from 'vue';
 import { ElMessage } from 'element-plus';
 import { createPlan, updatePlan, getPlanResources } from '@/services/plan/planService';
 import { deepMerge, parseNetwork } from '@/utils/utils';
+// import { router } from '@/router';
 
 const useClusterStore = defineStore('cluster', () => {
   const active = ref(0);
@@ -348,6 +349,12 @@ const useClusterStore = defineStore('cluster', () => {
     });
   };
 
+  const resetViewData = () => {
+    configFormRef.value.resetFields();
+    configInfo.nodes = [];
+    planId.value = undefined;
+  };
+
   const handleDeleteDialog = (scope) => {
     deleteDialog.close = true;
     deleteDialog.index = scope.$index;
@@ -427,6 +434,7 @@ const useClusterStore = defineStore('cluster', () => {
     confirmDelete,
     cancel,
     createOrEditPlan,
+    resetViewData,
   };
 });
 

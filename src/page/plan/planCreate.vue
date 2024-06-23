@@ -579,7 +579,7 @@
   </div>
 </template>
 <script setup>
-import { reactive, getCurrentInstance, ref, onMounted } from 'vue';
+import { reactive, getCurrentInstance, ref, onMounted, onBeforeUnmount } from 'vue';
 import useClusterStore from '@/stores/useCluster';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { formatterTime, formatterNodeAuthType, formatterNodeRole } from '@/utils/formatter';
@@ -594,8 +594,7 @@ const router = useRouter();
 const stepContainerRef = ref(null);
 
 const backToPlan = () => {
-  clusterStore.configFormRef.resetFields();
-  clusterStore.configInfo.nodes = [];
+  clusterStore.resetViewData();
   router.replace({
     name: 'Plan',
   });
@@ -612,6 +611,13 @@ const createPlan = async () => {
     });
   }
 };
+
+onBeforeUnmount(() => {
+  console.log(123);
+  if (clusterStore) {
+    clusterStore.resetViewData();
+  }
+});
 
 /* const goToStep = (index) => {
   clusterStore.active = index - 1;
