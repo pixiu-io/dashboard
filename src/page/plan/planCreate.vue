@@ -117,7 +117,7 @@
             <div style="margin-top: 25px" />
             <el-form-item
               label="容器网口"
-              style="width: 50%"
+              style="width: 25%"
               prop="config.network.network_interface"
             >
               <el-input
