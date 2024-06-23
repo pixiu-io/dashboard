@@ -49,12 +49,17 @@
           label-width="140px"
           :rules="clusterStore.rules"
         >
-          <el-card id="step-0" header="标题和描述">
-            <el-form-item label="计划标题" style="width: 50%" prop="name">
+          <el-card id="step-0" header="集群信息">
+            <el-form-item label="集群名称" style="width: 50%" prop="name">
               <el-input v-model="clusterStore.configInfo.name" />
             </el-form-item>
-            <el-form-item label="计划描述" style="width: 50%" prop="description">
-              <el-input v-model="clusterStore.configInfo.description" type="textarea" />
+            <el-form-item label="集群描述" style="width: 50%" prop="description">
+              <el-input
+                v-model="clusterStore.configInfo.description"
+                type="textarea"
+                placeholder="请输入 Kubernentes 集群描述"
+                :autosize="data.autosize"
+              />
             </el-form-item>
           </el-card>
           <el-card id="step-1" header="集群信息" style="margin-top: 20px">
@@ -592,6 +597,12 @@ const clusterStore = useClusterStore();
 const router = useRouter();
 
 const stepContainerRef = ref(null);
+
+const data = reactive({
+  autosize: {
+    minRows: 5,
+  },
+});
 
 const backToPlan = () => {
   clusterStore.configFormRef.resetFields();
