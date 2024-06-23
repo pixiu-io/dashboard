@@ -103,7 +103,6 @@
               <el-radio-group v-model="clusterStore.configInfo.config.runtime.runtime">
                 <el-radio-button label="docker">docker</el-radio-button>
                 <el-radio-button label="containerd">containerd</el-radio-button>
-                <el-radio-button label="cri-O" disabled>cri-O</el-radio-button>
               </el-radio-group>
             </el-form-item>
             <div class="app-pixiu-describe" style="margin-top: -12px">
