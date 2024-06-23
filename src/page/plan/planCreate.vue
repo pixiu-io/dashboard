@@ -254,48 +254,8 @@
               />
             </el-form-item>
           </el-card>
-          <el-card id="step-2" header="集群配置" style="margin-top: 20px">
-            <div style="margin-top: 20px" />
-            <el-form-item label="高可用 kubernetes">
-              <el-switch
-                v-model="clusterStore.configInfo.config.kubernetes.enable_ha"
-                active-text="启用"
-                inactive-text="关闭"
-              />
-            </el-form-item>
-            <div class="app-pixiu-describe" style="margin-top: -12px">
-              启用高可用 Kubernetes 集群时，推荐 master 节点数为 3
-            </div>
 
-            <el-form-item label="ApiServer 地址">
-              <el-switch v-model="clusterStore.configInfo.config.enablePublicIp" />
-            </el-form-item>
-            <div v-if="clusterStore.configInfo.config.enablePublicIp">
-              <el-form-item style="width: 40%">
-                <el-input
-                  v-model="clusterStore.configInfo.config.kubernetes.api_server"
-                  style="margin-top: -10px"
-                  placeholder="请输入 kubernetes apiserver 地址"
-                />
-              </el-form-item>
-            </div>
-            <div class="app-pixiu-describe" style="margin-top: -12px">
-              指定 kubernetes 集群的 ApiServer 地址，指定时需要在云平台上开启该地址到 master 节点的
-              6443 端口 4 层转发。非高可用时可不指定，不指定时默认使用 master 节点的内网地址。
-            </div>
-
-            <div style="margin-top: 25px" />
-            <el-form-item label="Kube-proxy 模式">
-              <el-radio-group v-model="clusterStore.configInfo.config.network.kube_proxy">
-                <el-radio-button label="iptables">iptables</el-radio-button>
-                <el-radio-button disabled label="ipvs">ipvs</el-radio-button>
-              </el-radio-group>
-            </el-form-item>
-            <div class="app-pixiu-describe" style="margin-top: -12px">
-              默认使用 iptables 模式，ipvs 的转发性能更高。选择之后无法修改。
-            </div>
-          </el-card>
-          <el-card id="step-3" header="节点配置" style="margin-top: 20px">
+          <el-card id="step-2" header="节点配置" style="margin-top: 20px">
             <div>
               <el-row>
                 <el-card class="detail-docs">
@@ -382,6 +342,48 @@
               </el-table-column>
             </el-table>
           </el-card>
+          <el-card id="step-3" header="集群配置" style="margin-top: 20px">
+            <div style="margin-top: 20px" />
+            <el-form-item label="高可用 kubernetes">
+              <el-switch
+                v-model="clusterStore.configInfo.config.kubernetes.enable_ha"
+                active-text="启用"
+                inactive-text="关闭"
+              />
+            </el-form-item>
+            <div class="app-pixiu-describe" style="margin-top: -12px">
+              启用高可用 Kubernetes 集群时，推荐 master 节点数为 3
+            </div>
+
+            <el-form-item label="ApiServer 地址">
+              <el-switch v-model="clusterStore.configInfo.config.enablePublicIp" />
+            </el-form-item>
+            <div v-if="clusterStore.configInfo.config.enablePublicIp">
+              <el-form-item style="width: 40%">
+                <el-input
+                  v-model="clusterStore.configInfo.config.kubernetes.api_server"
+                  style="margin-top: -10px"
+                  placeholder="请输入 kubernetes apiserver 地址"
+                />
+              </el-form-item>
+            </div>
+            <div class="app-pixiu-describe" style="margin-top: -12px">
+              指定 kubernetes 集群的 ApiServer 地址，指定时需要在云平台上开启该地址到 master 节点的
+              6443 端口 4 层转发。非高可用时可不指定，不指定时默认使用 master 节点的内网地址。
+            </div>
+
+            <div style="margin-top: 25px" />
+            <el-form-item label="Kube-proxy 模式">
+              <el-radio-group v-model="clusterStore.configInfo.config.network.kube_proxy">
+                <el-radio-button label="iptables">iptables</el-radio-button>
+                <el-radio-button disabled label="ipvs">ipvs</el-radio-button>
+              </el-radio-group>
+            </el-form-item>
+            <div class="app-pixiu-describe" style="margin-top: -12px">
+              默认使用 iptables 模式，ipvs 的转发性能更高。选择之后无法修改。
+            </div>
+          </el-card>
+
           <el-card id="step-4" header="组件选项" style="margin-top: 20px">
             <el-form-item label="组件选项">
               <el-checkbox-group v-model="clusterStore.configInfo.install_components">
