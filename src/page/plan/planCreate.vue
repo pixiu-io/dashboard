@@ -49,40 +49,11 @@
           label-width="140px"
           :rules="clusterStore.rules"
         >
-          <el-card id="step-0" header="标题和描述">
-            <el-form-item label="计划标题" style="width: 50%" prop="name">
+          <!-- <el-card id="step-0" header="集群信息"> </el-card> -->
+          <el-card id="step-1" header="集群信息" style="margin-top: 20px">
+            <el-form-item label="集群名称" style="width: 50%" prop="name">
               <el-input v-model="clusterStore.configInfo.name" />
             </el-form-item>
-            <el-form-item label="计划描述" style="width: 50%" prop="description">
-              <el-input v-model="clusterStore.configInfo.description" type="textarea" />
-            </el-form-item>
-          </el-card>
-          <el-card id="step-1" header="集群信息" style="margin-top: 20px">
-            <!-- <el-form-item label="集群名称" style="width: 50%" prop="name">
-              <el-input
-                v-model="clusterStore.configInfo.name"
-                placeholder="请输入集群名称"
-              />
-            </el-form-item> -->
-
-            <!-- <div style="margin-top: 25px" /> -->
-            <el-form-item
-              label="Kubernetes 版本"
-              style="width: 50%"
-              prop="config.kubernetes.kubernetes_version"
-            >
-              <el-select v-model="clusterStore.configInfo.config.kubernetes.kubernetes_version">
-                <el-option
-                  v-for="item in clusterStore.options.kubernetesVersionOptions"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                />
-              </el-select>
-            </el-form-item>
-            <div class="app-pixiu-describe" style="margin-top: -12px">
-              当前已支持 kubernetes 版本有: 1.18、1.20，1.22 版本。
-            </div>
 
             <div style="margin-top: 25px" />
             <el-form-item label="所在地域" style="width: 100%" prop="config.region">
@@ -109,12 +80,23 @@
               </el-radio-group>
             </el-form-item>
 
+            <el-form-item
+              label="Kubernetes 版本"
+              style="width: 25%"
+              prop="config.kubernetes.kubernetes_version"
+            >
+              <el-input v-model="clusterStore.configInfo.config.kubernetes.kubernetes_version" />
+            </el-form-item>
+
+            <div class="app-pixiu-describe" style="margin-top: -12px">
+              输入 kubernetes 版本，推荐 1.23.6、1.20、1.22 版本。
+            </div>
+
             <div style="margin-top: 25px" />
             <el-form-item label="容器运行时" prop="config.runtime.runtime">
               <el-radio-group v-model="clusterStore.configInfo.config.runtime.runtime">
                 <el-radio-button label="docker">docker</el-radio-button>
                 <el-radio-button label="containerd">containerd</el-radio-button>
-                <el-radio-button label="cri-O" disabled>cri-O</el-radio-button>
               </el-radio-group>
             </el-form-item>
             <div class="app-pixiu-describe" style="margin-top: -12px">
@@ -135,7 +117,7 @@
             <div style="margin-top: 25px" />
             <el-form-item
               label="容器网口"
-              style="width: 50%"
+              style="width: 25%"
               prop="config.network.network_interface"
             >
               <el-input
@@ -256,57 +238,17 @@
               kubernetes 的 service CIDR，不能和宿主机网络以及 Pod 网络冲突，选择后无法更改。
             </div>
 
-            <!-- <div style="margin-top: 25px" />
-            <el-form-item label="集群描述" style="width: 60%" prop="description">
+            <el-form-item label="集群描述" style="width: 50%; margin-top: 15px" prop="description">
               <el-input
                 v-model="clusterStore.configInfo.description"
-                placeholder="请输入 Kubernentes 集群描述"
                 type="textarea"
-              />
-            </el-form-item> -->
-          </el-card>
-          <el-card id="step-2" header="集群配置" style="margin-top: 20px">
-            <div style="margin-top: 20px" />
-            <el-form-item label="高可用 kubernetes">
-              <el-switch
-                v-model="clusterStore.configInfo.config.kubernetes.enable_ha"
-                active-text="启用"
-                inactive-text="关闭"
+                placeholder="请输入 Kubernentes 集群描述"
+                :autosize="data.autosize"
               />
             </el-form-item>
-            <div class="app-pixiu-describe" style="margin-top: -12px">
-              启用高可用 Kubernetes 集群时，推荐 master 节点数为 3
-            </div>
-
-            <el-form-item label="ApiServer 地址">
-              <el-switch v-model="clusterStore.configInfo.config.enablePublicIp" />
-            </el-form-item>
-            <div v-if="clusterStore.configInfo.config.enablePublicIp">
-              <el-form-item style="width: 40%">
-                <el-input
-                  v-model="clusterStore.configInfo.config.kubernetes.api_server"
-                  style="margin-top: -10px"
-                  placeholder="请输入 kubernetes apiserver 地址"
-                />
-              </el-form-item>
-            </div>
-            <div class="app-pixiu-describe" style="margin-top: -12px">
-              指定 kubernetes 集群的 ApiServer 地址，指定时需要在云平台上开启该地址到 master 节点的
-              6443 端口 4 层转发。非高可用时可不指定，不指定时默认使用 master 节点的内网地址。
-            </div>
-
-            <div style="margin-top: 25px" />
-            <el-form-item label="Kube-proxy 模式">
-              <el-radio-group v-model="clusterStore.configInfo.config.network.kube_proxy">
-                <el-radio-button label="iptables">iptables</el-radio-button>
-                <el-radio-button disabled label="ipvs">ipvs</el-radio-button>
-              </el-radio-group>
-            </el-form-item>
-            <div class="app-pixiu-describe" style="margin-top: -12px">
-              默认使用 iptables 模式，ipvs 的转发性能更高。选择之后无法修改。
-            </div>
           </el-card>
-          <el-card id="step-3" header="节点配置" style="margin-top: 20px">
+
+          <el-card id="step-2" header="节点配置" style="margin-top: 20px">
             <div>
               <el-row>
                 <el-card class="detail-docs">
@@ -393,6 +335,48 @@
               </el-table-column>
             </el-table>
           </el-card>
+          <el-card id="step-3" header="集群配置" style="margin-top: 20px">
+            <div style="margin-top: 20px" />
+            <el-form-item label="高可用 kubernetes">
+              <el-switch
+                v-model="clusterStore.configInfo.config.kubernetes.enable_ha"
+                active-text="启用"
+                inactive-text="关闭"
+              />
+            </el-form-item>
+            <div class="app-pixiu-describe" style="margin-top: -12px">
+              启用高可用 Kubernetes 集群时，推荐 master 节点数为 3
+            </div>
+
+            <el-form-item label="ApiServer 地址">
+              <el-switch v-model="clusterStore.configInfo.config.enablePublicIp" />
+            </el-form-item>
+            <div v-if="clusterStore.configInfo.config.enablePublicIp">
+              <el-form-item style="width: 40%">
+                <el-input
+                  v-model="clusterStore.configInfo.config.kubernetes.api_server"
+                  style="margin-top: -10px"
+                  placeholder="请输入 kubernetes apiserver 地址"
+                />
+              </el-form-item>
+            </div>
+            <div class="app-pixiu-describe" style="margin-top: -12px">
+              指定 kubernetes 集群的 ApiServer 地址，指定时需要在云平台上开启该地址到 master 节点的
+              6443 端口 4 层转发。非高可用时可不指定，不指定时默认使用 master 节点的内网地址。
+            </div>
+
+            <div style="margin-top: 25px" />
+            <el-form-item label="Kube-proxy 模式">
+              <el-radio-group v-model="clusterStore.configInfo.config.network.kube_proxy">
+                <el-radio-button label="iptables">iptables</el-radio-button>
+                <el-radio-button disabled label="ipvs">ipvs</el-radio-button>
+              </el-radio-group>
+            </el-form-item>
+            <div class="app-pixiu-describe" style="margin-top: -12px">
+              默认使用 iptables 模式，ipvs 的转发性能更高。选择之后无法修改。
+            </div>
+          </el-card>
+
           <el-card id="step-4" header="组件选项" style="margin-top: 20px">
             <el-form-item label="组件选项">
               <el-checkbox-group v-model="clusterStore.configInfo.install_components">
@@ -592,6 +576,12 @@ const clusterStore = useClusterStore();
 const router = useRouter();
 
 const stepContainerRef = ref(null);
+
+const data = reactive({
+  autosize: {
+    minRows: 6,
+  },
+});
 
 const backToPlan = () => {
   clusterStore.resetViewData();

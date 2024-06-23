@@ -239,7 +239,7 @@ const useClusterStore = defineStore('cluster', () => {
 
   // TODO: 名称以及IP的重复性校验
   const rules = reactive({
-    name: [{ required: true, message: '请设置计划标题', trigger: 'blur' }],
+    name: [{ required: true, message: '请输入集群名称', trigger: 'blur' }],
     'config.region': [{ required: true, message: '请选择所在地域', trigger: 'change' }],
     'config.os_image': [{ required: true, message: '请选择操作系统', trigger: 'change' }],
     'config.network.network_interface': [
