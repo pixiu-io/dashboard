@@ -71,13 +71,62 @@
 
             <div style="margin-top: 25px" />
             <el-form-item label="操作系统" style="width: 100%" prop="config.os_image">
-              <el-radio-group v-model="clusterStore.configInfo.config.os_image">
-                <el-radio-button
-                  v-for="(item, index) in clusterStore.options.osOptions"
-                  :key="index"
-                  :label="item.label"
-                />
-              </el-radio-group>
+              <el-space direction="vertical" alignment="start">
+                <el-space>
+                  <div
+                    v-for="(item, index) in clusterStore.options.osList"
+                    :key="index"
+                    :class="{ 'hover-state': true }"
+                    :style="{
+                      padding: '10px 30px',
+                      display: 'flex',
+                      'justify-content': 'center',
+                      'align-items': 'center',
+                      cursor: 'pointer',
+                      'font-size': '20px',
+                      'font-weight': 'bold',
+                      'font-style': 'italic',
+                      border: `${
+                        clusterStore.configInfo.config.os_system === item
+                          ? '1px solid #006eff'
+                          : '1px solid var(--el-border-color)'
+                      }`,
+                    }"
+                    @click="clusterStore.selectOS(item)"
+                  >
+                    <el-space
+                      direction="vertical"
+                      :style="{
+                        filter: `${
+                          clusterStore.configInfo.config.os_system === item
+                            ? 'grayscale(0)'
+                            : 'grayscale(1)'
+                        }`,
+                        opacity: `${
+                          clusterStore.configInfo.config.os_system === item ? '1' : '0.5'
+                        }`,
+                      }"
+                    >
+                      <pixiu-icon :name="`${'icon-' + item}`" size="30px" type="iconfont" />
+                      {{ item }}
+                    </el-space>
+                  </div>
+                </el-space>
+                <el-select
+                  v-model="clusterStore.configInfo.config.os_image"
+                  placeholder="请选择操作系统"
+                  style="width: 300px"
+                >
+                  <el-option
+                    v-for="(item, index) in clusterStore.options.osNewOptions[
+                      clusterStore.configInfo.config.os_system
+                    ]"
+                    :key="index"
+                    :label="item"
+                    :value="item"
+                  ></el-option>
+                </el-select>
+              </el-space>
             </el-form-item>
 
             <el-form-item
@@ -665,8 +714,11 @@ const handlerScrollEvent = (e) => {
 const debouncedHandlerScrollEvent = debounce(handlerScrollEvent, 100); */
 
 onMounted(() => {
+  clusterStore.getOptionsForOS();
   // 路由上面的planId
-  clusterStore.planId = router.currentRoute.value.query.planId;
+  if (router.currentRoute.value.query.planId) {
+    clusterStore.planId = router.currentRoute.value.query.planId;
+  }
 
   // if (stepContainerRef.value) {
   //   stepContainerRef.value.addEventListener('scroll', debouncedHandlerScrollEvent);
@@ -679,4 +731,8 @@ onMounted(() => {
 //   }
 // });
 </script>
-<style scoped></style>
+<style scoped>
+.hover-state:hover {
+  border: 1px solid #006eff !important ;
+}
+</style>

@@ -1,7 +1,12 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import { ref, reactive, toRaw, watch } from 'vue';
 import { ElMessage } from 'element-plus';
-import { createPlan, updatePlan, getPlanResources } from '@/services/plan/planService';
+import {
+  createPlan,
+  updatePlan,
+  getPlanResources,
+  getPlanSupportOS,
+} from '@/services/plan/planService';
 import { deepMerge, parseNetwork } from '@/utils/utils';
 // import { router } from '@/router';
 
@@ -41,6 +46,17 @@ const useClusterStore = defineStore('cluster', () => {
           service_mask: serviceNetwork.mask,
         };
       }
+      if (configInfo.config.os_image) {
+        // 通过os_image去options.osNewOptions里面获取key
+        const os_system = findKeyByValue(options.osNewOptions, configInfo.config.os_image);
+        if (os_system !== null) {
+          configInfo.config.os_system = os_system;
+        } else {
+          // 如果出现不存在的情况就将当前的数据设置为默认值centos和centos7
+          configInfo.config.os_system = 'centos';
+          configInfo.config.os_image = 'centos7';
+        }
+      }
     }
   });
 
@@ -57,6 +73,7 @@ const useClusterStore = defineStore('cluster', () => {
     resource_version: 0,
     config: {
       region: '无锡',
+      os_system: 'centos',
       os_image: 'centos7',
       kubernetes: {
         api_server: '',
@@ -137,6 +154,8 @@ const useClusterStore = defineStore('cluster', () => {
         label: 'ubuntu22.04',
       },
     ],
+    osList: [],
+    osNewOptions: {},
     regionOptions: [
       {
         value: '无锡',
@@ -269,6 +288,43 @@ const useClusterStore = defineStore('cluster', () => {
     'auth.password.password': [{ required: true, validator: vaildatePass, trigger: 'blur' }],
     'auth.key.data': [{ required: true, validator: vaildatePass, trigger: 'blur' }],
   });
+
+  const findKeyByValue = (obj, value) => {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        if (obj[key].includes(value)) {
+          return key;
+        }
+      }
+    }
+    return null; // 如果没有找到，返回null
+  };
+
+  const getOptionsForOS = async () => {
+    const [result, err] = await getPlanSupportOS();
+    if (err) {
+      ElMessage({
+        type: 'error',
+        message: `获取支持系统列表失败`,
+      });
+      return;
+    }
+    options.osNewOptions = result;
+    options.osList = Object.keys(result);
+  };
+
+  const selectOS = (item) => {
+    if (item !== configInfo.config.os_system) {
+      configInfo.config.os_system = item;
+      configInfo.config.os_image = options.osNewOptions[item][0];
+    }
+  };
+
+  const selectOSVersion = (item) => {
+    if (item !== configInfo.config.os_image) {
+      configInfo.config.os_image = item;
+    }
+  };
 
   const handleCreateDialog = () => {
     showDialog.value = true;
@@ -435,6 +491,9 @@ const useClusterStore = defineStore('cluster', () => {
     cancel,
     createOrEditPlan,
     resetViewData,
+    getOptionsForOS,
+    selectOS,
+    selectOSVersion,
   };
 });
 

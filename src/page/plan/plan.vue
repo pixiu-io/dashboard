@@ -503,7 +503,9 @@ const getPlanList = async () => {
   }
 
   data.planList = result;
-  data.pageInfo.total = result.length;
+  if (result !== null) {
+    data.pageInfo.total = result.length;
+  }
 };
 
 const jumpRoute = (row) => {
