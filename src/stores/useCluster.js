@@ -1,6 +1,6 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import { ref, reactive, toRaw, watch } from 'vue';
-import { ElMessage } from 'element-plus';
+import { ElMessage, ElLoading } from 'element-plus';
 import {
   createPlan,
   updatePlan,
@@ -17,9 +17,15 @@ const useClusterStore = defineStore('cluster', () => {
   const showDialog = ref(false);
   const configFormRef = ref(null);
   const nodeFormRef = ref(null);
+  const loading = ref(false);
 
   watch(planId, async (newPlanId) => {
     if (newPlanId !== undefined) {
+      // const loading = ElLoading.service({
+      //   lock: true,
+      //   text: '数据加载中...',
+      // });
+      loading.value = true;
       const [result, err] = await getPlanResources(newPlanId);
       if (err) {
         return;
@@ -57,6 +63,10 @@ const useClusterStore = defineStore('cluster', () => {
           configInfo.config.os_image = 'centos7';
         }
       }
+
+      setTimeout(() => {
+        loading.value = false;
+      }, 500);
     }
   });
 
@@ -475,6 +485,7 @@ const useClusterStore = defineStore('cluster', () => {
     showDialog,
     planId,
     labelPosition,
+    loading,
     configFormRef,
     nodeFormRef,
     deleteDialog,

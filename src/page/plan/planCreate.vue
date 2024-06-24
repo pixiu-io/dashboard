@@ -1,5 +1,10 @@
 <template>
-  <div style="display: flex; flex-direction: column; width: 100%; height: 100%">
+  <div
+    v-loading="clusterStore.loading"
+    element-loading-text="数据加载中..."
+    element-loading-background="rgba(0,0,0,0.8)"
+    style="display: flex; flex-direction: column; width: 100%; height: 100%"
+  >
     <div
       style="
         width: 100%;
