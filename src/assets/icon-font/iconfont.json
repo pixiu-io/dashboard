@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "5169437",
+      "name": "centos",
+      "font_class": "centos",
+      "unicode": "e656",
+      "unicode_decimal": 58966
+    },
+    {
+      "icon_id": "7171548",
+      "name": "ubuntu",
+      "font_class": "ubuntu",
+      "unicode": "e62f",
+      "unicode_decimal": 58927
+    },
+    {
+      "icon_id": "39705949",
+      "name": "debian",
+      "font_class": "debian",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
       "icon_id": "11399579",
       "name": "业务状态",
       "font_class": "yewuzhuangtai",

@@ -134,3 +134,13 @@ export const getPlanConfig = async (pid) => {
   );
   return [result, err];
 };
+
+export const getPlanSupportOS = async () => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: '/pixiu/plans/distributions',
+    }),
+  );
+  return [result, err];
+};
