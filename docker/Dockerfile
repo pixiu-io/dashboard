@@ -1,8 +1,11 @@
 FROM node:16.18.0-alpine as builder
 LABEL MAINTAINER="PIXIU"
 WORKDIR /build
+ARG NPM_REGISTRY
 COPY . .
-RUN npm config set registry https://registry.npmmirror.com/ && npm install && npm run build
+RUN npm config set registry ${NPM_REGISTRY} && \
+    npm install && \
+    npm run build
 
 FROM ubuntu:latest as certbuilder
 WORKDIR /certs

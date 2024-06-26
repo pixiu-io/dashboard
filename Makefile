@@ -4,6 +4,9 @@ tag = latest
 releaseName = pixiu-dashboard
 dockerhubUser = harbor.cloud.pixiuio.com
 
+GOPROXY ?= https://goproxy.cn
+NPM_REGISTRY ?= https://registry.npmmirror.com
+
 ALL: run
 
 install:
@@ -16,16 +19,15 @@ build: install
 	npm run build
 
 image:
-	docker build --no-cache -t ${dockerhubUser}/pixiuio/${releaseName}:${tag} --platform=linux -f docker/Dockerfile .
-
-push: image
-	docker push ${dockerhubUser}/pixiuio/${releaseName}:${tag}
+	docker build --no-cache -t ${dockerhubUser}/pixiuio/${releaseName}:${tag} \
+	--build-arg NPM_REGISTRY=${NPM_REGISTRY} \
+	-f docker/Dockerfile .
 
 image-aio:
-	docker build --no-cache -t ${dockerhubUser}/pixiuio/pixiu-aio:${tag} --platform=linux -f docker/Dockerfile-aio .
-
-push-aio: image-aio
-	docker push ${dockerhubUser}/pixiuio/pixiu-aio:${tag}
+	docker build --no-cache -t ${dockerhubUser}/pixiuio/pixiu-aio:${tag} \
+	--build-arg GOPROXY=${GOPROXY} \
+	--build-arg NPM_REGISTRY=${NPM_REGISTRY} \
+	-f docker/Dockerfile.aio .
 
 clean:
 	-rm -rf ./dist ./node_modules
