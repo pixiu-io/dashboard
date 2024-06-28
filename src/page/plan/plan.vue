@@ -284,13 +284,13 @@
             <el-table-column prop="status" label="状态">
               <template #default="scope">
                 <div style="font-size: 12px; color: #29292b" type="primary" :underline="false">
-                  <el-icon class="is-loading" color="#409efc" v-if="scope.row.status === '运行中'"
+                  <el-icon v-if="scope.row.status === '运行中'" class="is-loading" color="#409efc"
                     ><RefreshRight
                   /></el-icon>
-                  <el-icon color="#529b2e" v-else-if="scope.row.status === '成功'"
+                  <el-icon v-else-if="scope.row.status === '成功'" color="#529b2e"
                     ><SuccessFilled
                   /></el-icon>
-                  <el-icon color="#c45656" v-else-if="scope.row.status === '失败'"
+                  <el-icon v-else-if="scope.row.status === '失败'" color="#c45656"
                     ><CircleCloseFilled
                   /></el-icon>
                   <el-icon v-else><InfoFilled /></el-icon>
@@ -322,7 +322,6 @@ import {
   startPlanTask,
   getPlanTaskList,
   getPlanTaskListStream,
-  getPlanTaskListStreamAxios,
 } from '@/services/plan/planService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { copy } from '@/utils/utils';
@@ -330,9 +329,10 @@ import { copy } from '@/utils/utils';
 const router = useRouter();
 const { proxy } = getCurrentInstance();
 
+let controller = ref(null);
+
 const data = reactive({
   loading: false,
-  streams: [], // 处理流
   tableData: [],
   planList: [],
 
@@ -479,17 +479,12 @@ const handleTaskDrawer = (row) => {
   data.taskData.drawer = true;
 };
 const openTaskDrawer = async () => {
-  if (data.streams.length !== 0) {
-    for (const s of data.streams) {
-      s.abort();
-    }
-    data.streams = [];
+  if (controller.value) {
+    controller.value.abort();
   }
-  let controller = new AbortController();
-  let single = controller.signal;
-  data.streams.push(controller);
-
-  const { body, err } = await getPlanTaskListStream(data.taskData.task.id, single);
+  controller.value = new AbortController();
+  // const result = await getPlanTaskListStreamAxios(data.taskData.task.id, single);
+  const { body, err } = await getPlanTaskListStream(data.taskData.task.id, controller.value.single);
   if (err) {
     proxy.$message.error('Failed to get task list');
     return;
@@ -500,16 +495,6 @@ const openTaskDrawer = async () => {
     await readStream(reader);
   }
 };
-// const openTaskDrawer = async () => {
-//   const [response, err] = await getPlanTaskListStreamAxios(data.taskData.task.id);
-//   if (err) {
-//     proxy.$message.error('获取任务列表失败', err);
-//     return;
-//   }
-//   response.on('data', (chunk) => {
-//     console.log(chunk);
-//   });
-// };
 
 const readStream = async (reader) => {
   const decoder = new TextDecoder('utf-8');
@@ -524,8 +509,7 @@ const readStream = async (reader) => {
     // 解析JSON数据
     try {
       const result = JSON.parse(decodedString);
-      data.taskData.tableData = result;
-      console.log('获取结果：', result);
+      data.taskData.tableData = result.result;
     } catch (e) {
       console.error('Error parsing JSON:', e);
     }
@@ -534,13 +518,8 @@ const readStream = async (reader) => {
 
 const closeTaskDrawer = () => {
   data.taskData.drawer = false;
-  // 关闭stream
-  if (data.streams.length !== 0) {
-    for (const s of data.streams) {
-      s.abort();
-    }
-    data.streams = [];
-  }
+  controller.value.abort();
+  controller.value = undefined;
   setTimeout(() => {
     data.taskData = {
       tableData: [],

@@ -85,27 +85,45 @@ instance.interceptors.response.use(
   },
 );
 
-const axiosIntance = ({ method, url, data, config }) => {
-  method = method.toLowerCase();
-  if (method === 'post') {
-    return instance.post(url, data, { ...config });
+const customFetch = ({ method, url, data, config }) => {
+  const token = localStorage.getItem('token');
+  const headers = { 'Content-Type': 'application/json', ...config.headers };
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
   }
-  if (method === 'get') {
-    return instance.get(url, { params: data, ...config });
-  }
-  if (method === 'delete') {
-    return instance.delete(url, { params: data, ...config });
-  }
-  if (method === 'put') {
-    return instance.put(url, data, { ...config });
-  }
-  if (method === 'patch') {
-    return instance.patch(url, data, { ...config });
-  }
+  return fetch(baseUrl + url, {
+    method,
+    body: JSON.stringify(data),
+    headers: headers,
+    signal: config.signal,
+  });
+};
 
-  // 获取 baseUrl
-  if (method === 'config') {
-    return baseUrl ? baseUrl : import.meta.env.VITE_BASE_API;
+const axiosIntance = ({ method, url, data, config = {} }) => {
+  method = method.toLowerCase();
+  // 封装customFetch为stream模式进行处理，判断是否存在responseType=stream来确定是否走fetch这个方法
+  if (config.responseType === 'stream') {
+    return customFetch({ method, url, data, config });
+  } else {
+    if (method === 'post') {
+      return instance.post(url, data, { ...config });
+    }
+    if (method === 'get') {
+      return instance.get(url, { params: data, ...config });
+    }
+    if (method === 'delete') {
+      return instance.delete(url, { params: data, ...config });
+    }
+    if (method === 'put') {
+      return instance.put(url, data, { ...config });
+    }
+    if (method === 'patch') {
+      return instance.patch(url, data, { ...config });
+    }
+    // 获取 baseUrl
+    if (method === 'config') {
+      return baseUrl ? baseUrl : import.meta.env.VITE_BASE_API;
+    }
   }
 
   // console.error(`UnKnown Method:${method}`);
