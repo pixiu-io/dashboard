@@ -277,20 +277,27 @@
           >
             <el-table-column prop="name" label="名称" sortable />
 
-            <el-table-column
-              prop="gmt_create"
-              label="启动时间"
-              sortable
-              :formatter="formatterTime"
-            />
+            <el-table-column prop="start_at" label="启动时间" sortable :formatter="formatterTime" />
 
-            <el-table-column
-              prop="gmt_modified"
-              label="更新时间"
-              sortable
-              :formatter="formatterTime"
-            />
-            <el-table-column prop="status" label="状态" />
+            <el-table-column prop="end_at" label="结束时间" sortable :formatter="formatterTime" />
+
+            <el-table-column prop="status" label="状态">
+              <template #default="scope">
+                <div style="font-size: 12px; color: #29292b" type="primary" :underline="false">
+                  <el-icon class="is-loading" color="#409efc" v-if="scope.row.status === '运行中'"
+                    ><RefreshRight
+                  /></el-icon>
+                  <el-icon color="#529b2e" v-else-if="scope.row.status === '成功'"
+                    ><SuccessFilled
+                  /></el-icon>
+                  <el-icon color="#c45656" v-else-if="scope.row.status === '失败'"
+                    ><CircleCloseFilled
+                  /></el-icon>
+                  <el-icon v-else><InfoFilled /></el-icon>
+                  {{ scope.row.status }}
+                </div>
+              </template>
+            </el-table-column>
 
             <template #empty>
               <div class="table-inline-word">暂无部署任务</div>
@@ -314,6 +321,8 @@ import {
   deletePlan,
   startPlanTask,
   getPlanTaskList,
+  getPlanTaskListStream,
+  getPlanTaskListStreamAxios,
 } from '@/services/plan/planService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { copy } from '@/utils/utils';
@@ -323,7 +332,7 @@ const { proxy } = getCurrentInstance();
 
 const data = reactive({
   loading: false,
-
+  streams: [], // 处理流
   tableData: [],
   planList: [],
 
@@ -405,7 +414,7 @@ const confirmCreate = async () => {
     return;
   }
   proxy.$notify.success({ message: `部署计划(${data.createForm.name})创建成功` });
-  getPlanList();
+  await getPlanList();
   handleCreateCloseDialog();
 };
 // 结束创建
@@ -425,7 +434,7 @@ const confirm = async () => {
   }
   proxy.$notify.success(`部署计划(${data.deleteDialog.aliasName}) 删除成功`);
 
-  getPlanList();
+  await getPlanList();
   cancel();
 };
 
@@ -469,19 +478,69 @@ const handleTaskDrawer = (row) => {
   data.taskData.task = row;
   data.taskData.drawer = true;
 };
-
 const openTaskDrawer = async () => {
-  const [result, err] = await getPlanTaskList(data.taskData.task.id);
+  if (data.streams.length !== 0) {
+    for (const s of data.streams) {
+      s.abort();
+    }
+    data.streams = [];
+  }
+  let controller = new AbortController();
+  let single = controller.signal;
+  data.streams.push(controller);
+
+  const { body, err } = await getPlanTaskListStream(data.taskData.task.id, single);
   if (err) {
-    proxy.$message.error(err);
+    proxy.$message.error('Failed to get task list');
     return;
   }
-  data.taskData.tableData = result;
+  if (body) {
+    const reader = body.getReader();
+    // data.streams.push(reader);
+    await readStream(reader);
+  }
+};
+// const openTaskDrawer = async () => {
+//   const [response, err] = await getPlanTaskListStreamAxios(data.taskData.task.id);
+//   if (err) {
+//     proxy.$message.error('获取任务列表失败', err);
+//     return;
+//   }
+//   response.on('data', (chunk) => {
+//     console.log(chunk);
+//   });
+// };
+
+const readStream = async (reader) => {
+  const decoder = new TextDecoder('utf-8');
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) {
+      reader.cancel();
+      break;
+    }
+    const uint8Array = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+    let decodedString = decoder.decode(uint8Array, { stream: true });
+    // 解析JSON数据
+    try {
+      const result = JSON.parse(decodedString);
+      data.taskData.tableData = result;
+      console.log('获取结果：', result);
+    } catch (e) {
+      console.error('Error parsing JSON:', e);
+    }
+  }
 };
 
 const closeTaskDrawer = () => {
   data.taskData.drawer = false;
-
+  // 关闭stream
+  if (data.streams.length !== 0) {
+    for (const s of data.streams) {
+      s.abort();
+    }
+    data.streams = [];
+  }
   setTimeout(() => {
     data.taskData = {
       tableData: [],
