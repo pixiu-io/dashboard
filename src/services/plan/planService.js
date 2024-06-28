@@ -146,23 +146,28 @@ export const getPlanSupportOS = async () => {
 };
 
 export const getPlanTaskListStream = async (pid, signal) => {
-  const token = localStorage.getItem('token');
-  const headers = { 'Content-Type': 'application/json' };
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-  return fetch(`http://127.0.0.1:8090/pixiu/plans/${pid}/tasks`, {
+  return http({
     method: 'POST',
-    headers: headers,
-    signal: signal,
+    url: `/pixiu/plans/${pid}/tasks`,
+    config: {
+      signal,
+      responseType: 'stream',
+      headers: { Accept: 'text/event-stream' },
+    },
   });
 };
-export const getPlanTaskListStreamAxios = async (pid) => {
-  const [err, result] = await awaitWrap(
-    http.headers({
-      method: 'post',
-      url: `/pixiu/plans/${pid}/tasks`,
-    }),
-  );
-  return [result, err];
+
+export const getPlanTaskListStreamAxios = async (pid, signal) => {
+  // const [err, result] = await awaitWrap(
+  //   http.headers({
+  //     method: 'post',
+  //     url: `/pixiu/plans/${pid}/tasks`,
+  //   }),
+  // );
+  // return [result, err];
+  return http({
+    method: 'stream',
+    url: `/pixiu/plans/${pid}/tasks`,
+    config: { signal: signal },
+  });
 };
