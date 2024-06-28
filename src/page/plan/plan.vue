@@ -322,7 +322,6 @@ import {
   startPlanTask,
   getPlanTaskList,
   getPlanTaskListStream,
-  getPlanTaskListStreamAxios,
 } from '@/services/plan/planService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { copy } from '@/utils/utils';
@@ -480,12 +479,6 @@ const handleTaskDrawer = (row) => {
   data.taskData.drawer = true;
 };
 const openTaskDrawer = async () => {
-  // if (data.streams.length !== 0) {
-  //   for (const s of data.streams) {
-  //     s.abort();
-  //   }
-  //   data.streams = [];
-  // }
   if (controller.value) {
     controller.value.abort();
   }
@@ -502,16 +495,6 @@ const openTaskDrawer = async () => {
     await readStream(reader);
   }
 };
-// const openTaskDrawer = async () => {
-//   const [response, err] = await getPlanTaskListStreamAxios(data.taskData.task.id);
-//   if (err) {
-//     proxy.$message.error('获取任务列表失败', err);
-//     return;
-//   }
-//   response.on('data', (chunk) => {
-//     console.log(chunk);
-//   });
-// };
 
 const readStream = async (reader) => {
   const decoder = new TextDecoder('utf-8');
@@ -535,13 +518,6 @@ const readStream = async (reader) => {
 
 const closeTaskDrawer = () => {
   data.taskData.drawer = false;
-  // 关闭stream
-  // if (data.streams.length !== 0) {
-  //   for (const s of data.streams) {
-  //     s.abort();
-  //   }
-  //   data.streams = [];
-  // }
   controller.value.abort();
   controller.value = undefined;
   setTimeout(() => {

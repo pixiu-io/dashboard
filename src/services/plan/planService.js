@@ -156,18 +156,3 @@ export const getPlanTaskListStream = async (pid, signal) => {
     },
   });
 };
-
-export const getPlanTaskListStreamAxios = async (pid, signal) => {
-  // const [err, result] = await awaitWrap(
-  //   http.headers({
-  //     method: 'post',
-  //     url: `/pixiu/plans/${pid}/tasks`,
-  //   }),
-  // );
-  // return [result, err];
-  return http({
-    method: 'stream',
-    url: `/pixiu/plans/${pid}/tasks`,
-    config: { signal: signal },
-  });
-};
