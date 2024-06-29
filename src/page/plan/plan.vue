@@ -320,8 +320,7 @@ import {
   GetPlanList,
   deletePlan,
   startPlanTask,
-  getPlanTaskList,
-  getPlanTaskListStream,
+  watchPlanTasks,
 } from '@/services/plan/planService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { copy } from '@/utils/utils';
@@ -483,7 +482,7 @@ const openTaskDrawer = async () => {
     controller.value.abort();
   }
   controller.value = new AbortController();
-  const { body, err } = await getPlanTaskListStream(data.taskData.task.id, controller.value.single);
+  const { body, err } = await watchPlanTasks(data.taskData.task.id, controller.value.single);
   if (err) {
     proxy.$message.error('Failed to get task list');
     return;
