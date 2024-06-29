@@ -483,7 +483,6 @@ const openTaskDrawer = async () => {
     controller.value.abort();
   }
   controller.value = new AbortController();
-  // const result = await getPlanTaskListStreamAxios(data.taskData.task.id, single);
   const { body, err } = await getPlanTaskListStream(data.taskData.task.id, controller.value.single);
   if (err) {
     proxy.$message.error('Failed to get task list');
@@ -491,7 +490,6 @@ const openTaskDrawer = async () => {
   }
   if (body) {
     const reader = body.getReader();
-    // data.streams.push(reader);
     await readStream(reader);
   }
 };
@@ -511,7 +509,7 @@ const readStream = async (reader) => {
       const result = JSON.parse(decodedString);
       data.taskData.tableData = result.result;
     } catch (e) {
-      console.error('Error parsing JSON:', e);
+      proxy.$message.error('Error parsing JSON:', e);
     }
   }
 };

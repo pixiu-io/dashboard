@@ -15,6 +15,8 @@ $.ajax({
   error: function (err) {},
 });
 
+const baseURL = baseUrl ? baseUrl : import.meta.env.VITE_BASE_API;
+
 const instance = axios.create({
   baseURL: baseUrl ? baseUrl : import.meta.env.VITE_BASE_API, // 如果后端开放了cors，就可以用这个替代上面一行
   timeout: 6000, // 设置超时时间1分钟
@@ -91,7 +93,8 @@ const customFetch = ({ method, url, data, config }) => {
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
-  return fetch(baseUrl + url, {
+
+  return fetch(baseURL + url, {
     method,
     body: JSON.stringify(data),
     headers: headers,

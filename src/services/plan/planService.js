@@ -147,8 +147,8 @@ export const getPlanSupportOS = async () => {
 
 export const getPlanTaskListStream = async (pid, signal) => {
   return http({
-    method: 'POST',
-    url: `/pixiu/plans/${pid}/tasks`,
+    method: 'get',
+    url: `/pixiu/plans/${pid}/tasks?watch=true`,
     config: {
       signal,
       responseType: 'stream',
