@@ -277,9 +277,19 @@
           >
             <el-table-column prop="name" label="名称" sortable />
 
-            <el-table-column prop="start_at" label="启动时间" sortable :formatter="formatterTime" />
+            <el-table-column
+              prop="gmt_create"
+              label="启动时间"
+              sortable
+              :formatter="formatterTime"
+            />
 
-            <el-table-column prop="end_at" label="结束时间" sortable :formatter="formatterTime" />
+            <el-table-column
+              prop="gmt_modified"
+              label="结束时间"
+              sortable
+              :formatter="formatterTime"
+            />
 
             <el-table-column prop="status" label="状态">
               <template #default="scope">
@@ -287,10 +297,10 @@
                   <el-icon v-if="scope.row.status === '运行中'" class="is-loading" color="#409efc"
                     ><RefreshRight
                   /></el-icon>
-                  <el-icon v-else-if="scope.row.status === '成功'" color="#529b2e"
+                  <el-icon v-else-if="scope.row.status === '已成功'" color="#529b2e"
                     ><SuccessFilled
                   /></el-icon>
-                  <el-icon v-else-if="scope.row.status === '失败'" color="#c45656"
+                  <el-icon v-else-if="scope.row.status === '部署失败'" color="#c45656"
                     ><CircleCloseFilled
                   /></el-icon>
                   <el-icon v-else><InfoFilled /></el-icon>
