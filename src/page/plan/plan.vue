@@ -520,6 +520,8 @@ const readStream = async (reader) => {
 };
 
 const closeTaskDrawer = () => {
+  data.taskData.drawer = false;
+
   // 关闭stream
   if (data.streams.length !== 0) {
     for (const s of data.streams) {
@@ -527,8 +529,6 @@ const closeTaskDrawer = () => {
     }
     data.streams = [];
   }
-
-  data.taskData.drawer = false;
   setTimeout(() => {
     data.taskData = {
       tableData: [],

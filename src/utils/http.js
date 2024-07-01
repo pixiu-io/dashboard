@@ -15,8 +15,6 @@ $.ajax({
   error: function (err) {},
 });
 
-const baseURL = baseUrl ? baseUrl : import.meta.env.VITE_BASE_API;
-
 const instance = axios.create({
   baseURL: baseUrl ? baseUrl : import.meta.env.VITE_BASE_API, // 如果后端开放了cors，就可以用这个替代上面一行
   timeout: 6000, // 设置超时时间1分钟
@@ -104,6 +102,7 @@ const axiosIntance = ({ method, url, data, config }) => {
   if (method === 'patch') {
     return instance.patch(url, data, { ...config });
   }
+
   // 获取 baseUrl
   if (method === 'config') {
     return baseUrl ? baseUrl : import.meta.env.VITE_BASE_API;
