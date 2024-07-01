@@ -2,7 +2,8 @@ name: Publish dashboard and pixiu aio images
 
 on:
   push:
-    branches: [ "master" ]
+    branches:
+     - "master"
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -27,15 +28,31 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login in dockerhub
-        uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
+      - name: Login in harbor
+        uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ secrets.DOCKER_NAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push dashboard image
-        run: make push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/pixiuio/pixiu-dashboard:latest
+            ${{ env.REGISTRY }}/pixiuio/pixiu-dashboard:${{ env.COMMIT_HASH }}
 
       - name: Build and push pixiu aio image
-        run: make push-aio
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./docker/Dockerfile.aio
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/pixiuio/pixiu-aio:latest
+            ${{ env.REGISTRY }}/pixiuio/pixiu-aio:${{ env.COMMIT_HASH }}

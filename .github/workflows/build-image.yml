@@ -1,8 +1,9 @@
-name: Build images for CI
+name: Build images for checking
 
 on:
   pull_request:
-    branches: [master]
+    branches:
+      - "master"
 
 jobs:
   lint:
@@ -12,7 +13,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build the dashboard image
-        run: make image
+        run: NPM_REGISTRY= make image
 
       - name: Build the pixiu aio image
-        run: make image-aio
+        run: GOPROXY= NPM_REGISTRY= make image-aio
