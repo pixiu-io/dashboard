@@ -1,5 +1,6 @@
 import http from '@/utils/http';
 import { awaitWrap } from '@/utils/utils';
+import { getHeadersWithToken } from '@/utils/utils';
 
 export const createPlan = async (data) => {
   const [err, result] = await awaitWrap(
@@ -145,24 +146,12 @@ export const getPlanSupportOS = async () => {
   return [result, err];
 };
 
-export const getPlanTaskListStream = async (pid, signal) => {
-  const token = localStorage.getItem('token');
-  const headers = { 'Content-Type': 'application/json' };
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-  return fetch(`http://127.0.0.1:8090/pixiu/plans/${pid}/tasks`, {
-    method: 'POST',
+export const watchPlanTasks = async (pid, signal) => {
+  const baseUrl = http({ method: 'config' });
+  const headers = getHeadersWithToken();
+  return fetch(`${baseUrl}/pixiu/plans/${pid}/tasks?watch=true`, {
+    method: 'get',
     headers: headers,
     signal: signal,
   });
-};
-export const getPlanTaskListStreamAxios = async (pid) => {
-  const [err, result] = await awaitWrap(
-    http.headers({
-      method: 'post',
-      url: `/pixiu/plans/${pid}/tasks`,
-    }),
-  );
-  return [result, err];
 };
