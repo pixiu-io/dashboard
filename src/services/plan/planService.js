@@ -1,5 +1,6 @@
 import http from '@/utils/http';
 import { awaitWrap } from '@/utils/utils';
+import { getHeadersWithToken } from '@/utils/utils';
 
 export const createPlan = async (data) => {
   const [err, result] = await awaitWrap(
@@ -114,18 +115,6 @@ export const getPlanTaskList = async (pid) => {
   return [result, err];
 };
 
-export const watchPlanTasks = async (pid, signal) => {
-  return http({
-    method: 'get',
-    url: `/pixiu/plans/${pid}/tasks?watch=true`,
-    config: {
-      signal,
-      responseType: 'stream',
-      headers: { Accept: 'text/event-stream' },
-    },
-  });
-};
-
 export const createPlanConfig = async (pid, data) => {
   const [err, result] = await awaitWrap(
     http({
@@ -155,4 +144,14 @@ export const getPlanSupportOS = async () => {
     }),
   );
   return [result, err];
+};
+
+export const watchPlanTasks = async (pid, signal) => {
+  const baseUrl = http({ method: 'config' });
+  const headers = getHeadersWithToken();
+  return fetch(`${baseUrl}/pixiu/plans/${pid}/tasks?watch=true`, {
+    method: 'get',
+    headers: headers,
+    signal: signal,
+  });
 };

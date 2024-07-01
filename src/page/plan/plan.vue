@@ -316,7 +316,6 @@ import { formatterTime, formatterPlanStatus } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import {
   createPlan,
-  getPlan,
   GetPlanList,
   deletePlan,
   startPlanTask,
@@ -328,10 +327,9 @@ import { copy } from '@/utils/utils';
 const router = useRouter();
 const { proxy } = getCurrentInstance();
 
-let controller = ref(null);
-
 const data = reactive({
   loading: false,
+  streams: [], // 处理流
   tableData: [],
   planList: [],
 
@@ -477,14 +475,22 @@ const handleTaskDrawer = (row) => {
   data.taskData.task = row;
   data.taskData.drawer = true;
 };
+
 const openTaskDrawer = async () => {
-  if (controller.value) {
-    controller.value.abort();
+  if (data.streams.length !== 0) {
+    for (const s of data.streams) {
+      s.abort();
+    }
+    data.streams = [];
   }
-  controller.value = new AbortController();
-  const { body, err } = await watchPlanTasks(data.taskData.task.id, controller.value.single);
+
+  let controller = new AbortController();
+  let single = controller.signal;
+  data.streams.push(controller);
+
+  const { body, err } = await watchPlanTasks(data.taskData.task.id, single);
   if (err) {
-    proxy.$message.error('Failed to get task list');
+    proxy.$message.error('Failed to get task list', err);
     return;
   }
   if (body) {
@@ -506,7 +512,7 @@ const readStream = async (reader) => {
     // 解析JSON数据
     try {
       const result = JSON.parse(decodedString);
-      data.taskData.tableData = result.result;
+      data.taskData.tableData = result;
     } catch (e) {
       proxy.$message.error('Error parsing JSON:', e);
     }
@@ -514,9 +520,15 @@ const readStream = async (reader) => {
 };
 
 const closeTaskDrawer = () => {
+  // 关闭stream
+  if (data.streams.length !== 0) {
+    for (const s of data.streams) {
+      s.abort();
+    }
+    data.streams = [];
+  }
+
   data.taskData.drawer = false;
-  controller.value.abort();
-  controller.value = undefined;
   setTimeout(() => {
     data.taskData = {
       tableData: [],
