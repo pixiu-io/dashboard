@@ -657,7 +657,6 @@ const createPlan = async () => {
 };
 
 onBeforeUnmount(() => {
-  console.log(123);
   if (clusterStore) {
     clusterStore.resetViewData();
   }
