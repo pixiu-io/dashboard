@@ -146,6 +146,19 @@ export const getPlanSupportOS = async () => {
   return [result, err];
 };
 
+
+export const getPlanTaskListStream = async (pid, signal) => {
+  return http({
+    method: 'GET',
+    url: `/pixiu/plans/${pid}/tasks`,
+    config: {
+      signal,
+      responseType: 'stream',
+      headers: { Accept: 'text/event-stream' },
+    },
+  });
+};
+
 export const watchPlanTasks = async (pid, signal) => {
   const baseUrl = http({ method: 'config' });
   const headers = getHeadersWithToken();
