@@ -147,7 +147,7 @@ export const getPlanSupportOS = async () => {
 };
 
 export const watchPlanTasks = async (pid, signal) => {
-  const baseUrl = http({ method: 'config' });
+  const baseUrl = http({ method: 'watch' });
   const headers = getHeadersWithToken();
   return fetch(`${baseUrl}/pixiu/plans/${pid}/tasks?watch=true`, {
     method: 'get',
