@@ -85,6 +85,8 @@
             </template>
           </el-table-column>
 
+          <el-table-column prop="gmt_create" label="创建时间" sortable :formatter="formatterTime" />
+
           <el-table-column prop="step" label="状态" :formatter="formatterPlanStatus" />
 
           <el-table-column prop="description" label="描述">
@@ -94,8 +96,6 @@
               </div>
             </template>
           </el-table-column>
-
-          <el-table-column prop="gmt_create" label="创建时间" sortable :formatter="formatterTime" />
 
           <el-table-column fixed="right" label="操作" width="180px">
             <template #default="scope">
