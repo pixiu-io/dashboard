@@ -432,39 +432,11 @@
           </el-card>
 
           <el-card id="step-4" header="组件选项" style="margin-top: 20px">
-            <el-form-item label="组件选项">
-              <el-checkbox-group v-model="clusterStore.configInfo.install_components">
-                <el-checkbox-button
-                  v-for="city in clusterStore.options.availableComponents"
-                  :key="city"
-                  :label="city"
-                >
-                  {{ city }}
-                </el-checkbox-button>
-              </el-checkbox-group>
-            </el-form-item>
+            <kubernetesComponent :app-charts="appCharts" />
+
             <div class="app-pixiu-describe" style="margin-top: -12px">
               如果当前无法评估是否需要安装， 可在集群创建完成后在集群内进行安装
             </div>
-            <kubernetesComponent :app-charts="appCharts" />
-            <el-card class="app-docs" style="margin-left: 140px">
-              <div>
-                <el-icon
-                  style="
-                    vertical-align: middle;
-                    font-size: 18px;
-                    margin-left: -20px;
-                    margin-right: 8px;
-                    margin-top: -25px;
-                  "
-                  ><WarningFilled
-                /></el-icon>
-                <div style="vertical-align: middle; margin-top: -27px; margin-left: 10px">
-                  TODO: 其他自定义字段的添加
-                </div>
-              </div>
-            </el-card>
-            <div style="margin-top: 25px" />
           </el-card>
           <el-card
             style="margin-top: 20px; margin-bottom: 100px; display: flex; justify-content: center"

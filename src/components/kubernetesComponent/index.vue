@@ -1,13 +1,13 @@
 <template>
-  <el-form-item label="组件">
+  <el-form-item label="组件选择">
     <div>
       <el-radio-group v-model="data.category" @change="onChange">
         <el-radio-button
           v-for="(value, key) in data.appCharts"
           :label="key"
           :value="key"
-          border
           :key="key"
+          border
         />
       </el-radio-group>
 
