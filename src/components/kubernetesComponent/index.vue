@@ -74,11 +74,8 @@ const categorizeChartsByKind = (charts) => {
 
 const onChange = () => {
   data.categoryAppCharts = data.appCharts[data.category];
-  console.log(data.categoryAppCharts);
 };
-const onSelect = () => {
-  console.log(data.selectCharts);
-};
+const onSelect = () => {};
 const removeChart = (chart) => {
   data.selectCharts.splice(data.selectCharts.indexOf(chart), 1);
 };
