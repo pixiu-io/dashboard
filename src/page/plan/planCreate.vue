@@ -709,29 +709,28 @@ onMounted(() => {
 // });
 const appCharts = [
   {
-    Name: 'cbs',
-    Label: '{"amd64":"true","arm64":"true","kind":"storage","storage":"true","tke":"true"}',
+    Name: 'Helm',
+    Label: '{"kind":"全部"}',
     LatestVersion: '1.1.5',
   },
   {
-    Name: 'cerberus',
-    Label: '{"amd64":"true","image":"true","kind":"image","tke":"true"}',
+    Name: 'Prometheus',
+    Label: '{"kind":"监控"}',
     LatestVersion: '0.0.1',
   },
   {
-    Name: 'cfs',
-    Label:
-      '{"amd64":"true","arm64":"true","eks":"true","kind":"storage","storage":"true","tke":"true"}',
+    Name: 'Grafana',
+    Label: '{"kind":"监控"}',
     LatestVersion: '1.1.5',
   },
   {
-    Name: 'cfsturbo',
-    Label: '{"amd64":"true","eks":"true","kind":"storage","storage":"true","tke":"true"}',
+    Name: 'Loki',
+    Label: '{"kind":"日志"}',
     LatestVersion: '1.0.2',
   },
   {
-    Name: 'cluster-autoscaler',
-    Label: '{"amd64":"true","arm64":"true","kind":"other","other":"true","tke":"true"}',
+    Name: '镜像',
+    Label: '{"kind":"镜像"}',
     LatestVersion: '2.0.15',
   },
   {
