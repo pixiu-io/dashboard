@@ -85,6 +85,8 @@
             </template>
           </el-table-column>
 
+          <el-table-column prop="gmt_create" label="创建时间" sortable :formatter="formatterTime" />
+
           <el-table-column prop="step" label="状态" :formatter="formatterPlanStatus" />
 
           <el-table-column prop="description" label="描述">
@@ -94,8 +96,6 @@
               </div>
             </template>
           </el-table-column>
-
-          <el-table-column prop="gmt_create" label="创建时间" sortable :formatter="formatterTime" />
 
           <el-table-column fixed="right" label="操作" width="180px">
             <template #default="scope">
@@ -277,9 +277,19 @@
           >
             <el-table-column prop="name" label="名称" sortable />
 
-            <el-table-column prop="start_at" label="启动时间" sortable :formatter="formatterTime" />
+            <el-table-column
+              prop="gmt_create"
+              label="启动时间"
+              sortable
+              :formatter="formatterTime"
+            />
 
-            <el-table-column prop="end_at" label="结束时间" sortable :formatter="formatterTime" />
+            <el-table-column
+              prop="gmt_modified"
+              label="结束时间"
+              sortable
+              :formatter="formatterTime"
+            />
 
             <el-table-column prop="status" label="状态">
               <template #default="scope">
@@ -287,10 +297,10 @@
                   <el-icon v-if="scope.row.status === '运行中'" class="is-loading" color="#409efc"
                     ><RefreshRight
                   /></el-icon>
-                  <el-icon v-else-if="scope.row.status === '成功'" color="#529b2e"
+                  <el-icon v-else-if="scope.row.status === '已成功'" color="#529b2e"
                     ><SuccessFilled
                   /></el-icon>
-                  <el-icon v-else-if="scope.row.status === '失败'" color="#c45656"
+                  <el-icon v-else-if="scope.row.status === '部署失败'" color="#c45656"
                     ><CircleCloseFilled
                   /></el-icon>
                   <el-icon v-else><InfoFilled /></el-icon>
@@ -316,12 +326,10 @@ import { formatterTime, formatterPlanStatus } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import {
   createPlan,
-  getPlan,
   GetPlanList,
   deletePlan,
   startPlanTask,
-  getPlanTaskList,
-  getPlanTaskListStream,
+  watchPlanTasks,
 } from '@/services/plan/planService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { copy } from '@/utils/utils';
@@ -329,10 +337,9 @@ import { copy } from '@/utils/utils';
 const router = useRouter();
 const { proxy } = getCurrentInstance();
 
-let controller = ref(null);
-
 const data = reactive({
   loading: false,
+  streams: [], // 处理流
   tableData: [],
   planList: [],
 
@@ -478,20 +485,26 @@ const handleTaskDrawer = (row) => {
   data.taskData.task = row;
   data.taskData.drawer = true;
 };
+
 const openTaskDrawer = async () => {
-  if (controller.value) {
-    controller.value.abort();
+  if (data.streams.length !== 0) {
+    for (const s of data.streams) {
+      s.abort();
+    }
+    data.streams = [];
   }
-  controller.value = new AbortController();
-  // const result = await getPlanTaskListStreamAxios(data.taskData.task.id, single);
-  const { body, err } = await getPlanTaskListStream(data.taskData.task.id, controller.value.single);
+
+  let controller = new AbortController();
+  let single = controller.signal;
+  data.streams.push(controller);
+
+  const { body, err } = await watchPlanTasks(data.taskData.task.id, single);
   if (err) {
-    proxy.$message.error('Failed to get task list');
+    proxy.$message.error('Failed to get task list', err);
     return;
   }
   if (body) {
     const reader = body.getReader();
-    // data.streams.push(reader);
     await readStream(reader);
   }
 };
@@ -509,17 +522,23 @@ const readStream = async (reader) => {
     // 解析JSON数据
     try {
       const result = JSON.parse(decodedString);
-      data.taskData.tableData = result.result;
+      data.taskData.tableData = result;
     } catch (e) {
-      console.error('Error parsing JSON:', e);
+      proxy.$message.error('Error parsing JSON:', e);
     }
   }
 };
 
 const closeTaskDrawer = () => {
   data.taskData.drawer = false;
-  controller.value.abort();
-  controller.value = undefined;
+
+  // 关闭stream
+  if (data.streams.length !== 0) {
+    for (const s of data.streams) {
+      s.abort();
+    }
+    data.streams = [];
+  }
   setTimeout(() => {
     data.taskData = {
       tableData: [],
