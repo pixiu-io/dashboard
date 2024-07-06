@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "31629021",
+      "name": "openEuler",
+      "font_class": "openEuler",
+      "unicode": "e653",
+      "unicode_decimal": 58963
+    },
+    {
+      "icon_id": "37909371",
+      "name": "rocky",
+      "font_class": "rocky",
+      "unicode": "e6ec",
+      "unicode_decimal": 59116
+    },
+    {
       "icon_id": "5169437",
       "name": "centos",
       "font_class": "centos",

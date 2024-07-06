@@ -88,9 +88,8 @@
                       'justify-content': 'center',
                       'align-items': 'center',
                       cursor: 'pointer',
-                      'font-size': '20px',
+                      'font-size': '18px',
                       'font-weight': 'bold',
-                      'font-style': 'italic',
                       border: `${
                         clusterStore.configInfo.config.os_system === item
                           ? '1px solid #006eff'
@@ -117,6 +116,7 @@
                     </el-space>
                   </div>
                 </el-space>
+                <div style="margin-top: 1px"></div>
                 <el-select
                   v-model="clusterStore.configInfo.config.os_image"
                   placeholder="请选择操作系统"
