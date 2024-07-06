@@ -4,9 +4,9 @@
       <el-radio-group v-model="data.category" @change="onChange">
         <el-radio-button
           v-for="(value, key) in data.appCharts"
+          :key="key"
           :label="key"
           :value="key"
-          :key="key"
           border
         />
       </el-radio-group>
