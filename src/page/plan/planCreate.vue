@@ -714,11 +714,6 @@ const appCharts = [
     LatestVersion: '1.1.5',
   },
   {
-    Name: 'NginxIngress',
-    Label: '{"kind":"全部"}',
-    LatestVersion: '1.0.0',
-  },
-  {
     Name: 'Prometheus',
     Label: '{"kind":"全部"}',
     LatestVersion: '0.0.1',
@@ -727,6 +722,11 @@ const appCharts = [
     Name: 'Grafana',
     Label: '{"kind":"全部"}',
     LatestVersion: '1.1.5',
+  },
+  {
+    Name: 'NginxIngress',
+    Label: '{"kind":"全部"}',
+    LatestVersion: '1.0.0',
   },
 ];
 </script>

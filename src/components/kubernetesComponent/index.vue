@@ -21,12 +21,27 @@
                 </div>
                 {{ chart.LatestVersion }}
               </template>
-              <div class="card-body">
-                <div><pixiu-icon name="icon-ubuntu" size="40px" type="iconfont" /></div>
-                <p class="content">
-                  qGPU是腾讯云推出的GPU共享技术，支持在多个容器间共享GPU卡并提供容器间显存和算力的强隔离，该特性仅支持原生节点。qGPU是腾讯云推出的GPU共享技术，支持在多个容器间共享GPU卡并提供容器间显存和算力的强隔离，该特性仅支持原生节点
-                </p>
+
+              <div v-if="chart.Name === 'Helm'" class="card-body">
+                <pixiu-icon name="icon-Helm" size="40px" type="iconfont" />
+                <p class="content">Helm 功能描述补充</p>
               </div>
+
+              <div v-if="chart.Name === 'NginxIngress'" class="card-body">
+                <pixiu-icon name="icon-ubuntu" size="40px" type="iconfont" />
+                <p class="content">NginxIngress 功能描述补充</p>
+              </div>
+
+              <div v-if="chart.Name === 'Prometheus'" class="card-body">
+                <pixiu-icon name="icon-promethues" size="40px" type="iconfont" />
+                <p class="content">Prometheus 功能描述补充</p>
+              </div>
+
+              <div v-if="chart.Name === 'Grafana'" class="card-body">
+                <pixiu-icon name="icon-grafana" size="40px" type="iconfont" />
+                <p class="content">Grafana 功能描述补充</p>
+              </div>
+
               <template #footer>
                 <el-button type="text" size="small" disabled>参数配置</el-button>
                 <el-button style="margin-left: -10px" type="text" size="small">查看详情</el-button>
