@@ -83,13 +83,14 @@
                     :key="index"
                     :class="{ 'hover-state': true }"
                     :style="{
-                      padding: '9px 30px',
+                      padding: '10px 30px',
                       display: 'flex',
                       'justify-content': 'center',
                       'align-items': 'center',
                       cursor: 'pointer',
-                      'font-size': '18px',
+                      'font-size': '20px',
                       'font-weight': 'bold',
+                      'font-style': 'italic',
                       border: `${
                         clusterStore.configInfo.config.os_system === item
                           ? '1px solid #006eff'
@@ -116,7 +117,6 @@
                     </el-space>
                   </div>
                 </el-space>
-                <div style="margin-top: 1px"></div>
                 <el-select
                   v-model="clusterStore.configInfo.config.os_image"
                   placeholder="请选择操作系统"
@@ -432,11 +432,39 @@
           </el-card>
 
           <el-card id="step-4" header="组件选项" style="margin-top: 20px">
-            <kubernetesComponent :app-charts="appCharts" />
-
+            <el-form-item label="组件选项">
+              <el-checkbox-group v-model="clusterStore.configInfo.install_components">
+                <el-checkbox-button
+                  v-for="city in clusterStore.options.availableComponents"
+                  :key="city"
+                  :label="city"
+                >
+                  {{ city }}
+                </el-checkbox-button>
+              </el-checkbox-group>
+            </el-form-item>
             <div class="app-pixiu-describe" style="margin-top: -12px">
               如果当前无法评估是否需要安装， 可在集群创建完成后在集群内进行安装
             </div>
+
+            <el-card class="app-docs" style="margin-left: 140px">
+              <div>
+                <el-icon
+                  style="
+                    vertical-align: middle;
+                    font-size: 18px;
+                    margin-left: -20px;
+                    margin-right: 8px;
+                    margin-top: -25px;
+                  "
+                  ><WarningFilled
+                /></el-icon>
+                <div style="vertical-align: middle; margin-top: -27px; margin-left: 10px">
+                  TODO: 其他自定义字段的添加
+                </div>
+              </div>
+            </el-card>
+            <div style="margin-top: 25px" />
           </el-card>
           <el-card
             style="margin-top: 20px; margin-bottom: 100px; display: flex; justify-content: center"
@@ -489,10 +517,11 @@
               <span style="font-size: 13px; color: #191919">角色</span>
             </template>
 
-            <el-radio-group v-model="clusterStore.nodeInfo.role">
-              <el-radio style="margin-right: 16px" :value="1">master</el-radio>
-              <el-radio :value="0">node</el-radio>
-            </el-radio-group>
+            <el-checkbox-group v-model="checkedCities">
+              <el-checkbox v-for="city in cities" :key="city" :label="city" :value="city">
+                {{ city }}
+              </el-checkbox>
+            </el-checkbox-group>
           </el-form-item>
 
           <!-- <el-form-item prop="cri">
@@ -595,7 +624,9 @@ import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { formatterTime, formatterNodeAuthType, formatterNodeRole } from '@/utils/formatter';
 import { copy } from '@/utils/utils';
 import { useRouter } from 'vue-router';
-import kubernetesComponent from '@/components/kubernetesComponent/index.vue';
+
+const checkedCities = ref([]);
+const cities = ['master', 'node'];
 
 const { proxy } = getCurrentInstance();
 
@@ -707,28 +738,6 @@ onMounted(() => {
 //     stepContainerRef.value.removeEventListener('scroll', debouncedHandlerScrollEvent);
 //   }
 // });
-const appCharts = [
-  {
-    Name: 'Helm',
-    Label: '{"kind":"全部"}',
-    LatestVersion: '1.1.5',
-  },
-  {
-    Name: 'Prometheus',
-    Label: '{"kind":"全部"}',
-    LatestVersion: '0.0.1',
-  },
-  {
-    Name: 'Grafana',
-    Label: '{"kind":"全部"}',
-    LatestVersion: '1.1.5',
-  },
-  {
-    Name: 'NginxIngress',
-    Label: '{"kind":"全部"}',
-    LatestVersion: '1.0.0',
-  },
-];
 </script>
 <style scoped>
 .hover-state:hover {
