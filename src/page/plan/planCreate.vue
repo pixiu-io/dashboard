@@ -83,7 +83,7 @@
                     :key="index"
                     :class="{ 'hover-state': true }"
                     :style="{
-                      padding: '10px 30px',
+                      padding: '9px 30px',
                       display: 'flex',
                       'justify-content': 'center',
                       'align-items': 'center',
