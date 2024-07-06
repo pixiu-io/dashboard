@@ -714,246 +714,38 @@ const appCharts = [
     LatestVersion: '1.1.5',
   },
   {
+    Name: 'NginxIngress',
+    Label: '{"kind":"全部"}',
+    LatestVersion: '1.0.0',
+  },
+  {
     Name: 'Prometheus',
-    Label: '{"kind":"监控"}',
+    Label: '{"kind":"全部"}',
     LatestVersion: '0.0.1',
   },
   {
     Name: 'Grafana',
-    Label: '{"kind":"监控"}',
+    Label: '{"kind":"全部"}',
     LatestVersion: '1.1.5',
   },
   {
     Name: 'Loki',
-    Label: '{"kind":"日志"}',
+    Label: '{"kind":"全部"}',
     LatestVersion: '1.0.2',
   },
   {
-    Name: '镜像',
-    Label: '{"kind":"镜像"}',
+    Name: 'Harbor',
+    Label: '{"kind":"全部"}',
     LatestVersion: '2.0.15',
   },
   {
-    Name: 'clustermonitor',
-    Label: '{"amd64":"true","kind":"other","tke":"true"}',
+    Name: 'NFS',
+    Label: '{"kind":"全部"}',
     LatestVersion: '1.0.11',
   },
   {
-    Name: 'coredns',
-    Label: '{"amd64":"true","arm":"true","arm64":"true","dns":"true","kind":"dns","tke":"true"}',
-    LatestVersion: '1.0.0',
-  },
-  {
-    Name: 'cos',
-    Label: '{"amd64":"true","arm64":"true","kind":"storage","storage":"true","tke":"true"}',
-    LatestVersion: '1.0.5',
-  },
-  {
-    Name: 'craned',
-    Label: '{"amd64":"true","kind":"other","tke":"true"}',
-    LatestVersion: '2.1.3',
-  },
-  {
-    Name: 'cranescheduler',
-    Label: '{"amd64":"true","kind":"scheduler","scheduler":"true","tke":"true"}',
-    LatestVersion: '1.4.0',
-  },
-  {
-    Name: 'descheduler',
-    Label: '{"amd64":"true","kind":"scheduler","scheduler":"true","tke":"true"}',
-    LatestVersion: '1.0.2',
-  },
-  {
-    Name: 'dnsautoscaler',
-    Label: '{"amd64":"true","arm":"true","arm64":"true","dns":"true","kind":"dns","tke":"true"}',
-    LatestVersion: '1.0.0',
-  },
-  {
-    Name: 'dynamicscheduler',
-    Label: '{"amd64":"true","kind":"scheduler","scheduler":"true","tke":"true"}',
-    LatestVersion: '1.0.4',
-  },
-  {
-    Name: 'edge-headless',
-    Label: '{"amd64":"true","kind":"servicegroup","servicegroup":"true","tke":"true"}',
-    LatestVersion: '1.0.0',
-  },
-  {
-    Name: 'edge-health',
-    Label: '{"amd64":"true","kind":"other","tke":"true"}',
-    LatestVersion: '1.0.0',
-  },
-  {
-    Name: 'eklet',
-    Label: '{"amd64":"true","kind":"other","tke":"true"}',
-    LatestVersion: '1.0.16',
-  },
-  {
-    Name: 'eniipamd',
-    Label: '{"amd64":"true","kind":"other","tke":"true"}',
-    LatestVersion: '3.5.0',
-  },
-  {
-    Name: 'externaledge',
-    Label: '{"amd64":"true","kind":"other","tke":"true"}',
-    LatestVersion: '1.0.1',
-  },
-  {
-    Name: 'externalnodeproxy',
-    Label: '{"amd64":"true","kind":"other","tke":"true"}',
-    LatestVersion: '1.0.1',
-  },
-  {
-    Name: 'externalsecrets',
-    Label: '{"amd64":"true","kind":"other","tke":"true"}',
-    LatestVersion: '0.0.1',
-  },
-  {
-    Name: 'gatekeeper',
-    Label: '{"amd64":"true","kind":"other","tke":"true"}',
-    LatestVersion: '0.1.9',
-  },
-  {
-    Name: 'gpu-operator',
-    Label: '{"amd64":"true","kind":"other","other":"true","tke":"true"}',
-    LatestVersion: '1.0.1',
-  },
-  {
-    Name: 'http-proxy-pod-webhook',
-    Label: '{"amd64":"true","kind":"network","network":"true","tke":"true"}',
-    LatestVersion: '1.0.0',
-  },
-  {
-    Name: 'imc-operator',
-    Label: '{"amd64":"true","eks":"true","image":"true","kind":"image","tke":"true"}',
-    LatestVersion: '0.2.3',
-  },
-  {
-    Name: 'ingressnginx',
-    Label: '{"amd64":"true","eks":"true","kind":"network","network":"true","tke":"true"}',
-    LatestVersion: '1.5.1',
-  },
-  {
-    Name: 'kubejarvis',
-    Label: '{"amd64":"true","kind":"other","tke":"true"}',
-    LatestVersion: '1.0.12',
-  },
-  {
-    Name: 'kubejarvisservice',
-    Label: '{"amd64":"true","kind":"other","tke":"true"}',
-    LatestVersion: '1.0.7',
-  },
-  {
-    Name: 'kubeproxy',
-    Label:
-      '{"amd64":"true","arm":"true","arm64":"true","kind":"network","network":"true","tke":"true"}',
-    LatestVersion: '1.0.0',
-  },
-  {
-    Name: 'localdns',
-    Label: '{"amd64":"true","arm":"true","arm64":"true","dns":"true","kind":"dns","tke":"true"}',
-    LatestVersion: '1.0.0',
-  },
-  {
-    Name: 'monitoragent',
-    Label: '{"amd64":"true","arm64":"true","kind":"monitor","monitor":"true","tke":"true"}',
-    LatestVersion: '1.3.15',
-  },
-  {
-    Name: 'networkpolicy',
-    Label: '{"amd64":"true","kind":"network","network":"true","tke":"true"}',
-    LatestVersion: '1.0.0',
-  },
-  {
-    Name: 'npdplus',
-    Label: '{"amd64":"true","kind":"monitor","monitor":"true","tke":"true"}',
-    LatestVersion: '1.0.3',
-  },
-  {
-    Name: 'nvidia-gpu',
-    Label: '{"amd64":"true","gpu":"true","kind":"gpu","tke":"true"}',
-    LatestVersion: '1.0.0',
-  },
-  {
-    Name: 'oomguard',
-    Label:
-      '{"amd64":"true","arm32":"true","arm64":"true","kind":"monitor","monitor":"true","tke":"true"}',
-    LatestVersion: '1.0.2',
-  },
-  {
-    Name: 'p2p',
-    Label: '{"amd64":"true","image":"true","kind":"image","tke":"true"}',
-    LatestVersion: '1.0.0',
-  },
-  {
-    Name: 'pod-identity-webhook',
-    Label: '{"amd64":"true","kind":"other","tke":"true"}',
-    LatestVersion: '0.1.2',
-  },
-  {
-    Name: 'qgpu',
-    Label: '{"amd64":"true","gpu":"true","kind":"gpu","tke":"true"}',
-    LatestVersion: '1.0.23',
-  },
-  {
-    Name: 'qosagent',
-    Label: '{"amd64":"true","kind":"qos","qos":"true","tke":"true"}',
-    LatestVersion: '1.1.7',
-  },
-  {
-    Name: 'securitygrouppolicy',
-    Label: '{"amd64":"true","kind":"network","network":"true","tke":"true"}',
-    LatestVersion: '1.0.5',
-  },
-  {
-    Name: 'superedge',
-    Label: '{"amd64":"true","kind":"other","tke":"true"}',
-    LatestVersion: '0.1.0',
-  },
-  {
-    Name: 'tcr',
-    Label: '{"amd64":"true","image":"true","kind":"image","tke":"true"}',
-    LatestVersion: '1.0.2',
-  },
-  {
-    Name: 'tke-backup',
-    Label: '{"amd64":"true","kind":"other","tke":"true"}',
-    LatestVersion: '1.1.0',
-  },
-  {
-    Name: 'tke-eni-ip-webhook',
-    Label:
-      '{"amd64":"true","arm":"true","arm64":"true","kind":"network","network":"true","tke":"true"}',
-    LatestVersion: '0.0.7',
-  },
-  {
-    Name: 'tke-event-collector',
-    Label: '{"amd64":"true","kind":"other","tke":"true"}',
-    LatestVersion: '0.0.3',
-  },
-  {
-    Name: 'tke-horizontal-pod-cronscaler',
-    Label: '{"amd64":"true","kind":"other","other":"true","tke":"true"}',
-    LatestVersion: '1.0.0',
-  },
-  {
-    Name: 'tke-hpc-controller',
-    Label: '{"amd64":"true","eks":"true","kind":"other","other":"true","tke":"true"}',
-    LatestVersion: '1.0.6',
-  },
-  {
-    Name: 'tke-kms-plugin',
-    Label: '{"amd64":"true","kind":"security","security":"true","tke":"true"}',
-    LatestVersion: '1.0.0',
-  },
-  {
-    Name: 'tke-log-agent',
-    Label: '{"amd64":"true","kind":"other","tke":"true"}',
-    LatestVersion: '1.1.15',
-  },
-  {
-    Name: 'tkeedge-nginxingress',
-    Label: '{"amd64":"true","kind":"network","network":"true","tke":"true"}',
+    Name: 'LocolStorage',
+    Label: '{"kind":"全部"}',
     LatestVersion: '1.0.0',
   },
 ];

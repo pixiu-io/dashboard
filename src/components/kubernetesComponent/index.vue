@@ -37,7 +37,7 @@
       </div>
     </div>
   </el-form-item>
-  <el-form-item label="已选择组建">
+  <el-form-item label="已选择组件">
     <el-tag
       v-for="chart in data.selectCharts"
       :key="chart.Name"
