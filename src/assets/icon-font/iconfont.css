@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3708393 */
-  src: url('iconfont.woff2?t=1720242478391') format('woff2'),
-       url('iconfont.woff?t=1720242478391') format('woff'),
-       url('iconfont.ttf?t=1720242478391') format('truetype');
+  src: url('iconfont.woff2?t=1720272313610') format('woff2'),
+       url('iconfont.woff?t=1720272313610') format('woff'),
+       url('iconfont.ttf?t=1720272313610') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,18 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-grafana:before {
+  content: "\e7f4";
+}
+
+.icon-promethues:before {
+  content: "\e7a0";
+}
+
+.icon-Helm:before {
+  content: "\e655";
 }
 
 .icon-openEuler:before {

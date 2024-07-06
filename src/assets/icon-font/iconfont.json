@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "27243879",
+      "name": "grafana",
+      "font_class": "grafana",
+      "unicode": "e7f4",
+      "unicode_decimal": 59380
+    },
+    {
+      "icon_id": "38703120",
+      "name": "promethues",
+      "font_class": "promethues",
+      "unicode": "e7a0",
+      "unicode_decimal": 59296
+    },
+    {
+      "icon_id": "40850263",
+      "name": "Helm",
+      "font_class": "Helm",
+      "unicode": "e655",
+      "unicode_decimal": 58965
+    },
+    {
       "icon_id": "31629021",
       "name": "openEuler",
       "font_class": "openEuler",

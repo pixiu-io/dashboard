@@ -728,26 +728,6 @@ const appCharts = [
     Label: '{"kind":"全部"}',
     LatestVersion: '1.1.5',
   },
-  {
-    Name: 'Loki',
-    Label: '{"kind":"全部"}',
-    LatestVersion: '1.0.2',
-  },
-  {
-    Name: 'Harbor',
-    Label: '{"kind":"全部"}',
-    LatestVersion: '2.0.15',
-  },
-  {
-    Name: 'NFS',
-    Label: '{"kind":"全部"}',
-    LatestVersion: '1.0.11',
-  },
-  {
-    Name: 'LocolStorage',
-    Label: '{"kind":"全部"}',
-    LatestVersion: '1.0.0',
-  },
 ];
 </script>
 <style scoped>

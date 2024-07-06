@@ -29,7 +29,7 @@
               </div>
               <template #footer>
                 <el-button type="text" size="small" disabled>参数配置</el-button>
-                <el-button type="text" size="small">查看详情</el-button>
+                <el-button style="margin-left: -10px" type="text" size="small">查看详情</el-button>
               </template>
             </el-card>
           </el-space>
@@ -74,6 +74,7 @@ const categorizeChartsByKind = (charts) => {
 
 const onChange = () => {
   data.categoryAppCharts = data.appCharts[data.category];
+  console.log(data.categoryAppCharts);
 };
 const onSelect = () => {
   console.log(data.selectCharts);
