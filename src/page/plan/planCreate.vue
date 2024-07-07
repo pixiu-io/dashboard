@@ -568,6 +568,9 @@
       </template>
       <template #footer>
         <span class="dialog-footer">
+          <el-button class="pixiu-cancel-button" @click="clusterStore.cancelNodeCreate"
+            >取消</el-button
+          >
           <el-button
             class="pixiu-small-confirm-button"
             type="primary"

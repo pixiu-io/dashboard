@@ -415,6 +415,12 @@ const useClusterStore = defineStore('cluster', () => {
     });
   };
 
+  const cancelNodeCreate = async () => {
+    console.log('ddd');
+    clearFormdata(nodeFormRef);
+    showDialog.value = false;
+  };
+
   const resetViewData = () => {
     configFormRef.value.resetFields();
     configInfo.nodes = [];
@@ -497,6 +503,7 @@ const useClusterStore = defineStore('cluster', () => {
     handleCreateDialog,
     clearFormData,
     confirm,
+    cancelNodeCreate,
     handleDeleteDialog,
     confirmDelete,
     cancel,
