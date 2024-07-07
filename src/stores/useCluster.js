@@ -125,7 +125,7 @@ const useClusterStore = defineStore('cluster', () => {
   });
   const nodeInfo = reactive({
     name: '',
-    role: 1,
+    role: ['master'],
     // cri: 'docker',
     ip: '',
     auth: {
@@ -415,6 +415,11 @@ const useClusterStore = defineStore('cluster', () => {
     });
   };
 
+  const cancelNodeCreate = async () => {
+    clearFormdata(nodeFormRef);
+    showDialog.value = false;
+  };
+
   const resetViewData = () => {
     configFormRef.value.resetFields();
     configInfo.nodes = [];
@@ -497,6 +502,7 @@ const useClusterStore = defineStore('cluster', () => {
     handleCreateDialog,
     clearFormData,
     confirm,
+    cancelNodeCreate,
     handleDeleteDialog,
     confirmDelete,
     cancel,

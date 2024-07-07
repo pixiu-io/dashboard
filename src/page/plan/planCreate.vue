@@ -329,32 +329,15 @@
                   >
                     新增节点
                   </button>
-
-                  <!-- <div style="margin-left: 8px; float: right; margin-left: 12px">
-                    <button type="button" class="pixiu-two-button" @click="GetPlanNodes">
-                      搜索
-                    </button>
-                  </div>
-
-                  <el-input
-                    placeholder="名称搜索关键字"
-                    style="width: 480px; float: right"
-                    clearable
-                  >
-                    <template #suffix>
-                      <pixiu-icon
-                        name="icon-search"
-                        style="cursor: pointer"
-                        size="15px"
-                        type="iconfont"
-                        color="#909399"
-                      />
-                    </template>
-                  </el-input> -->
                 </el-col>
               </el-row>
             </div>
-            <el-table :data="clusterStore.configInfo.nodes">
+            <el-table
+              :data="clusterStore.configInfo.nodes"
+              stripe
+              style="margin-top: 2px; width: 100%"
+              header-row-class-name="pixiu-table-header"
+            >
               <el-table-column prop="metadata.name" label="节点名称">
                 <template #default="scope">
                   {{ scope.row.name }}
@@ -371,7 +354,7 @@
               </el-table-column>
 
               <el-table-column prop="role" label="角色" :formatter="formatterNodeRole" />
-              <el-table-column prop="ip" label="IP地址" />
+              <el-table-column prop="ip" label="IP地址"></el-table-column> />
               <el-table-column prop="auth" label="认证方式" :formatter="formatterNodeAuthType" />
 
               <!--<el-table-column prop="gmt_create" label="创建时间" :formatter="formatterTime" />-->
@@ -489,10 +472,11 @@
               <span style="font-size: 13px; color: #191919">角色</span>
             </template>
 
-            <el-radio-group v-model="clusterStore.nodeInfo.role">
-              <el-radio style="margin-right: 16px" :value="1">master</el-radio>
-              <el-radio :value="0">node</el-radio>
-            </el-radio-group>
+            <el-checkbox-group v-model="clusterStore.nodeInfo.role">
+              <el-checkbox v-for="city in cities" :key="city" :label="city" :value="city">
+                {{ city }}
+              </el-checkbox>
+            </el-checkbox-group>
           </el-form-item>
 
           <!-- <el-form-item prop="cri">
@@ -567,6 +551,9 @@
       </template>
       <template #footer>
         <span class="dialog-footer">
+          <el-button class="pixiu-cancel-button" @click="clusterStore.cancelNodeCreate"
+            >取消</el-button
+          >
           <el-button
             class="pixiu-small-confirm-button"
             type="primary"
@@ -601,6 +588,9 @@ const { proxy } = getCurrentInstance();
 
 const clusterStore = useClusterStore();
 const router = useRouter();
+
+const checkedCities = ref([]);
+const cities = ['master', 'node'];
 
 const stepContainerRef = ref(null);
 
@@ -712,6 +702,11 @@ const appCharts = [
     Name: 'Helm',
     Label: '{"kind":"全部"}',
     LatestVersion: '1.1.5',
+  },
+  {
+    Name: 'Haproxy',
+    Label: '{"kind":"全部"}',
+    LatestVersion: '0.0.1',
   },
   {
     Name: 'Prometheus',

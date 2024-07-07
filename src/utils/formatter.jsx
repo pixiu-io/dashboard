@@ -543,11 +543,7 @@ const formatterNodeAuthType = (row, column, cellValue) => {
 export { formatterNodeAuthType };
 
 const formatterNodeRole = (row, column, cellValue) => {
-  let role = 'node';
-  if (cellValue === 1) {
-    role = 'master';
-  }
-  return role;
+  return cellValue.join(',');
 };
 export { formatterNodeRole };
 

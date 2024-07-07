@@ -27,6 +27,11 @@
                 <p class="content">Helm 功能描述补充</p>
               </div>
 
+              <div v-if="chart.Name === 'Haproxy'" class="card-body">
+                <pixiu-icon name="icon-Haproxy" size="40px" type="iconfont" />
+                <p class="content">HAproxy 功能描述补充</p>
+              </div>
+
               <div v-if="chart.Name === 'NginxIngress'" class="card-body">
                 <pixiu-icon name="icon-ubuntu" size="40px" type="iconfont" />
                 <p class="content">NginxIngress 功能描述补充</p>
