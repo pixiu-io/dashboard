@@ -416,7 +416,6 @@ const useClusterStore = defineStore('cluster', () => {
   };
 
   const cancelNodeCreate = async () => {
-    console.log('ddd');
     clearFormdata(nodeFormRef);
     showDialog.value = false;
   };
