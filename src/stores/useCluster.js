@@ -86,6 +86,7 @@ const useClusterStore = defineStore('cluster', () => {
       os_system: 'centos',
       os_image: 'centos7',
       kubernetes: {
+        enable_public_ip: false,
         api_server: '',
         kubernetes_version: '1.23.6',
         enable_ha: false,
