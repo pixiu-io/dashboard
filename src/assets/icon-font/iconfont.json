@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "11242111",
+      "name": "Haproxy",
+      "font_class": "Haproxy",
+      "unicode": "e68e",
+      "unicode_decimal": 59022
+    },
+    {
       "icon_id": "27243879",
       "name": "grafana",
       "font_class": "grafana",

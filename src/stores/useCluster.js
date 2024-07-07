@@ -125,7 +125,7 @@ const useClusterStore = defineStore('cluster', () => {
   });
   const nodeInfo = reactive({
     name: '',
-    role: 1,
+    role: ['master'],
     // cri: 'docker',
     ip: '',
     auth: {

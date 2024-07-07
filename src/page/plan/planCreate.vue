@@ -489,12 +489,7 @@
               <span style="font-size: 13px; color: #191919">角色</span>
             </template>
 
-            <el-radio-group v-model="clusterStore.nodeInfo.role">
-              <el-radio style="margin-right: 16px" :value="1">master</el-radio>
-              <el-radio :value="0">node</el-radio>
-            </el-radio-group>
-
-            <el-checkbox-group v-model="checkedCities">
+            <el-checkbox-group v-model="clusterStore.nodeInfo.role">
               <el-checkbox v-for="city in cities" :key="city" :label="city" :value="city">
                 {{ city }}
               </el-checkbox>
@@ -721,6 +716,11 @@ const appCharts = [
     Name: 'Helm',
     Label: '{"kind":"全部"}',
     LatestVersion: '1.1.5',
+  },
+  {
+    Name: 'Haproxy',
+    Label: '{"kind":"全部"}',
+    LatestVersion: '0.0.1',
   },
   {
     Name: 'Prometheus',
