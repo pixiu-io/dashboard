@@ -8,6 +8,7 @@ import {
   getPlanSupportOS,
 } from '@/services/plan/planService';
 import { deepMerge, parseNetwork } from '@/utils/utils';
+import _ from 'lodash';
 // import { router } from '@/router';
 
 const useClusterStore = defineStore('cluster', () => {
@@ -18,6 +19,7 @@ const useClusterStore = defineStore('cluster', () => {
   const configFormRef = ref(null);
   const nodeFormRef = ref(null);
   const loading = ref(false);
+  const selectIndex = ref(undefined);
 
   watch(planId, async (newPlanId) => {
     if (newPlanId !== undefined) {
@@ -124,7 +126,7 @@ const useClusterStore = defineStore('cluster', () => {
     install_components: [],
     nodes: [],
   });
-  const nodeInfo = reactive({
+  const initNodeInfo = {
     name: '',
     role: ['master'],
     // cri: 'docker',
@@ -139,7 +141,8 @@ const useClusterStore = defineStore('cluster', () => {
         password: '',
       },
     },
-  });
+  };
+  let nodeInfo = reactive(_.cloneDeep(initNodeInfo));
   const options = reactive({
     kubernetesVersionOptions: [
       {
@@ -341,10 +344,22 @@ const useClusterStore = defineStore('cluster', () => {
     showDialog.value = true;
   };
 
+  const handleEditDialog = (index) => {
+    showDialog.value = true;
+    Object.assign(nodeInfo, reactive(_.cloneDeep(configInfo.nodes[index])));
+    selectIndex.value = index;
+  };
+
   const clearFormdata = (formRef) => {
     if (formRef.value) {
       formRef.value.resetFields();
+      formRef.value.clearValidate();
     }
+  };
+
+  const initNodeForm = () => {
+    Object.assign(nodeInfo, reactive(_.cloneDeep(initNodeInfo)));
+    selectIndex.value = undefined;
   };
 
   const clearFormData = (done) => {
@@ -405,19 +420,32 @@ const useClusterStore = defineStore('cluster', () => {
             key: { data },
           };
         }
-        configInfo.nodes.push(nodeData);
-        ElMessage({
-          type: 'success',
-          message: `节点(${name}) 创建成功`,
-        });
+        if (selectIndex.value === undefined) {
+          // 新增节点
+          configInfo.nodes.push(nodeData);
+          ElMessage({
+            type: 'success',
+            message: `节点(${name}) 创建成功`,
+          });
+        } else {
+          // 更新节点
+          configInfo.nodes[selectIndex.value] = nodeData;
+          ElMessage({
+            type: 'success',
+            message: `节点(${name}) 修改成功`,
+          });
+        }
+
         clearFormdata(nodeFormRef);
+        initNodeForm();
         showDialog.value = false;
       }
     });
   };
 
-  const cancelNodeCreate = async () => {
+  const cancelNodeCreate = () => {
     clearFormdata(nodeFormRef);
+    initNodeForm();
     showDialog.value = false;
   };
 
@@ -501,6 +529,7 @@ const useClusterStore = defineStore('cluster', () => {
     nodeRules,
     options,
     handleCreateDialog,
+    handleEditDialog,
     clearFormData,
     confirm,
     cancelNodeCreate,

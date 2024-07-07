@@ -360,14 +360,24 @@
               <!--<el-table-column prop="gmt_create" label="创建时间" :formatter="formatterTime" />-->
               <el-table-column fixed="right" label="操作" width="160px">
                 <template #default="scope">
-                  <el-button
-                    size="small"
-                    type="text"
-                    style="margin-right: -25px; margin-left: -10px; color: #006eff"
-                    @click="clusterStore.handleDeleteDialog(scope)"
-                  >
-                    删除
-                  </el-button>
+                  <el-space>
+                    <el-button
+                      size="small"
+                      type="text"
+                      style="color: #006eff; padding: 0"
+                      @click="clusterStore.handleEditDialog(scope.$index)"
+                    >
+                      编辑
+                    </el-button>
+                    <el-button
+                      size="small"
+                      type="text"
+                      style="color: #006eff; padding: 0"
+                      @click="clusterStore.handleDeleteDialog(scope)"
+                    >
+                      删除
+                    </el-button>
+                  </el-space>
                 </template>
               </el-table-column>
             </el-table>
