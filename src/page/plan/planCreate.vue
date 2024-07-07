@@ -386,9 +386,9 @@
             </div>
 
             <el-form-item label="ApiServer 地址">
-              <el-switch v-model="clusterStore.configInfo.config.enablePublicIp" />
+              <el-switch v-model="clusterStore.configInfo.config.kubernetes.enable_public_ip" />
             </el-form-item>
-            <div v-if="clusterStore.configInfo.config.enablePublicIp">
+            <div v-if="clusterStore.configInfo.config.kubernetes.enable_public_ip">
               <el-form-item style="width: 40%">
                 <el-input
                   v-model="clusterStore.configInfo.config.kubernetes.api_server"
@@ -589,7 +589,6 @@ const { proxy } = getCurrentInstance();
 const clusterStore = useClusterStore();
 const router = useRouter();
 
-const checkedCities = ref([]);
 const cities = ['master', 'node'];
 
 const stepContainerRef = ref(null);

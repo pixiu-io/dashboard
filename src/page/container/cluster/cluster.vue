@@ -531,7 +531,6 @@ const formatterResource = (row, column, cellValue) => {
 };
 
 function redirectToCreatePlan() {
-  console.log('xxx');
   cloudStore.changeActive();
   router.push({ path: '/plans/create' });
 }
