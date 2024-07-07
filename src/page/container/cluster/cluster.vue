@@ -323,7 +323,7 @@
         :type="2"
         :default-type="cloudStore.cloudType"
         :span="2"
-        @click="cloudStore.changeActive"
+        @click="redirectToCreatePlan"
       >
         <div style="margin-top: 10px; font: 14px; font-weight: 700; color: #000000">自建集群</div>
 
@@ -407,7 +407,9 @@ import useCloudStore from '@/stores/useCloud';
 import { formatterTime } from '@/utils/formatter';
 import { changeClusterProtected } from '@/services/cloudService';
 import { copy } from '@/utils/utils';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
 const cloudStore = useCloudStore();
 const { proxy } = getCurrentInstance();
 
@@ -527,6 +529,12 @@ const formatterResource = (row, column, cellValue) => {
     </div>
   );
 };
+
+function redirectToCreatePlan() {
+  console.log('xxx');
+  cloudStore.changeActive();
+  router.push({ path: '/plans/create' });
+}
 </script>
 
 <style>
