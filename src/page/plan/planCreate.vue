@@ -414,9 +414,9 @@
 
             <el-form-item label="监听端口" style="margin-top: 10px">
               <el-input
-                style="width: 180px"
+                style="width: 100px"
                 v-model="clusterStore.configInfo.config.kubernetes.api_port"
-                placeholder="请输入 apiServer 监听端口 "
+                placeholder="6443"
               />
             </el-form-item>
             <div class="app-pixiu-describe" style="margin-top: -12px">
