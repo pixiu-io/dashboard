@@ -104,6 +104,12 @@ const useClusterStore = defineStore('cluster', () => {
       runtime: {
         runtime: 'docker',
       },
+      component: {
+        haproxy: {
+          enable: false,
+          keepalived_virtual_router_id: '',
+        },
+      },
     },
 
     // k8s service 的选项
