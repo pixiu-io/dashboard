@@ -412,6 +412,17 @@
               6443 端口 4 层转发。非高可用时可不指定，不指定时默认使用 master 节点的内网地址。
             </div>
 
+            <el-form-item label="监听端口" style="margin-top: 10px">
+              <el-input
+                style="width: 180px"
+                v-model="clusterStore.configInfo.config.kubernetes.api_port"
+                placeholder="请输入 apiServer 监听端口 "
+              />
+            </el-form-item>
+            <div class="app-pixiu-describe" style="margin-top: -12px">
+              ApiServer 监听端口, 启用 haproxy + keepalived 时, 监听端口推荐使用 8443
+            </div>
+
             <div style="margin-top: 25px" />
             <el-form-item label="Kube-proxy 模式">
               <el-radio-group v-model="clusterStore.configInfo.config.network.kube_proxy">
