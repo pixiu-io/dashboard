@@ -90,6 +90,7 @@ const useClusterStore = defineStore('cluster', () => {
       kubernetes: {
         enable_public_ip: false,
         api_server: '',
+        api_port: '',
         kubernetes_version: '1.23.6',
         enable_ha: false,
       },
@@ -102,6 +103,12 @@ const useClusterStore = defineStore('cluster', () => {
       },
       runtime: {
         runtime: 'docker',
+      },
+      component: {
+        haproxy: {
+          enable: false,
+          keepalived_virtual_router_id: '',
+        },
       },
     },
 
