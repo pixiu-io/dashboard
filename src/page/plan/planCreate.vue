@@ -395,6 +395,28 @@
               启用高可用 Kubernetes 集群时，推荐 master 节点数为 3
             </div>
 
+            <el-form-item label="自建 LoadBalance" style="margin-top: 10px">
+              <el-switch v-model="clusterStore.configInfo.config.component.haproxy.enable" />
+            </el-form-item>
+            <div class="app-pixiu-describe" style="margin-top: -12px">
+              This configuration is usually enabled when self-created VMs require high availability.
+            </div>
+
+            <div v-if="clusterStore.configInfo.config.component.haproxy.enable">
+              <el-form-item label="虚拟路由ID" style="margin-top: 10px">
+                <el-input
+                  v-model="
+                    clusterStore.configInfo.config.component.haproxy.keepalived_virtual_router_id
+                  "
+                  style="width: 150px"
+                  placeholder="68"
+                />
+              </el-form-item>
+              <div class="app-pixiu-describe" style="margin-top: -12px">
+                Keepalived 的虚拟路由ID，默认 68，可以是 0..255 的任意值，相同网段不允许重复
+              </div>
+            </div>
+
             <el-form-item label="ApiServer 地址">
               <el-switch v-model="clusterStore.configInfo.config.kubernetes.enable_public_ip" />
             </el-form-item>
@@ -412,7 +434,18 @@
               6443 端口 4 层转发。非高可用时可不指定，不指定时默认使用 master 节点的内网地址。
             </div>
 
-            <div style="margin-top: 25px" />
+            <el-form-item label="监听端口" style="margin-top: 15px">
+              <el-input
+                style="width: 150px"
+                v-model="clusterStore.configInfo.config.kubernetes.api_port"
+                placeholder="6443"
+              />
+            </el-form-item>
+            <div class="app-pixiu-describe" style="margin-top: -12px">
+              ApiServer 监听端口, 默认 6443; 启用 haproxy + keepalived 时, 监听端口推荐使用 8443
+            </div>
+
+            <div style="margin-top: 20px" />
             <el-form-item label="Kube-proxy 模式">
               <el-radio-group v-model="clusterStore.configInfo.config.network.kube_proxy">
                 <el-radio-button label="iptables">iptables</el-radio-button>
