@@ -93,6 +93,7 @@ const useClusterStore = defineStore('cluster', () => {
         api_port: '',
         kubernetes_version: '1.23.6',
         enable_ha: false,
+        register: true,
       },
       network: {
         network_interface: 'eth0',
