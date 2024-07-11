@@ -436,8 +436,8 @@
 
             <el-form-item label="监听端口" style="margin-top: 15px">
               <el-input
-                style="width: 150px"
                 v-model="clusterStore.configInfo.config.kubernetes.api_port"
+                style="width: 150px"
                 placeholder="6443"
               />
             </el-form-item>
@@ -751,7 +751,7 @@ const appCharts = [
     LatestVersion: '0.0.1',
   },
   {
-    Name: 'Prometheus',
+    Name: 'Promethues',
     Label: '{"kind":"全部"}',
     LatestVersion: '0.0.1',
   },
