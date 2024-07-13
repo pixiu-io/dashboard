@@ -396,18 +396,16 @@
             </div>
 
             <el-form-item label="自建 LoadBalance" style="margin-top: 10px">
-              <el-switch v-model="clusterStore.configInfo.config.component.haproxy.enable" />
+              <el-switch v-model="clusterStore.configInfo.config.haproxy.enable" />
             </el-form-item>
             <div class="app-pixiu-describe" style="margin-top: -12px">
               This configuration is usually enabled when self-created VMs require high availability.
             </div>
 
-            <div v-if="clusterStore.configInfo.config.component.haproxy.enable">
+            <div v-if="clusterStore.configInfo.config.haproxy.enable">
               <el-form-item label="虚拟路由ID" style="margin-top: 10px">
                 <el-input
-                  v-model="
-                    clusterStore.configInfo.config.component.haproxy.keepalived_virtual_router_id
-                  "
+                  v-model="clusterStore.configInfo.config.haproxy.keepalived_virtual_router_id"
                   style="width: 150px"
                   placeholder="68"
                 />
@@ -458,7 +456,10 @@
           </el-card>
 
           <el-card id="step-4" header="组件选项" style="margin-top: 20px">
-            <kubernetesComponent :app-charts="appCharts" />
+            <kubernetesComponent
+              :ref="(ref) => (clusterStore.componentRef = ref)"
+              :app-charts="appCharts"
+            />
 
             <div class="app-pixiu-describe" style="margin-top: -12px">
               如果当前无法评估是否需要安装， 可在集群创建完成后在集群内进行安装
@@ -650,9 +651,10 @@ const backToPlan = () => {
 };
 
 const createPlan = async () => {
+  console.log(clusterStore.configInfo);
   try {
     await clusterStore.createOrEditPlan();
-    backToPlan();
+    // backToPlan();
   } catch (err) {
     proxy.$message({
       message: err.message,
@@ -739,31 +741,58 @@ onMounted(() => {
 //     stepContainerRef.value.removeEventListener('scroll', debouncedHandlerScrollEvent);
 //   }
 // });
+// const appCharts = {
+//   haproxy: {
+//     version: '2.0.1',
+//     Label: '{"kind":"全部"}',
+//     config: "{keepalived_virtual_router_id: ''}",
+//   },
+//   grafna: {
+//     version: '1.1.5',
+//     Label: '{"kind":"全部"}',
+//     config: '{grafana_admin_user: "admin", grafana_admin_password: "123"}',
+//   },
+//   prometheus: {
+//     version: '1.1.5',
+//     Label: '{"kind":"全部"}',
+//     enable_prometheus: '',
+//   },
+//   helm: {
+//     Label: '{"kind":"全部"}',
+//     version: '1.1.5',
+//     config: '{"helm_release": "pixiu"}',
+//   },
+// };
 const appCharts = [
   {
-    Name: 'Helm',
-    Label: '{"kind":"全部"}',
-    LatestVersion: '1.1.5',
+    name: 'Helm',
+    label: '{"kind":"全部"}',
+    version: '1.1.5',
+    config: '{"grafana_admin_user":"admin","grafana_admin_password":"123"}',
   },
   {
-    Name: 'Haproxy',
-    Label: '{"kind":"全部"}',
-    LatestVersion: '0.0.1',
+    name: 'Haproxy',
+    label: '{"kind":"全部"}',
+    enable: true,
+    version: '0.0.1',
+    config: '{"keepalived_virtual_router_id": 0}',
   },
   {
-    Name: 'Promethues',
-    Label: '{"kind":"全部"}',
-    LatestVersion: '0.0.1',
+    name: 'Promethues',
+    label: '{"kind":"全部"}',
+    version: '0.0.1',
+    config: '{"grafana_admin_user":"admin","grafana_admin_password":"123"}',
   },
   {
-    Name: 'Grafana',
-    Label: '{"kind":"全部"}',
-    LatestVersion: '1.1.5',
+    name: 'Grafana',
+    label: '{"kind":"全部"}',
+    version: '1.1.5',
+    config: '{"grafana_admin_user":"admin","grafana_admin_password":"123"}',
   },
   {
-    Name: 'NginxIngress',
-    Label: '{"kind":"全部"}',
-    LatestVersion: '1.0.0',
+    name: 'NginxIngress',
+    label: '{"kind":"全部"}',
+    version: '1.0.0',
   },
 ];
 </script>

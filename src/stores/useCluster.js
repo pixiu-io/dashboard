@@ -20,6 +20,7 @@ const useClusterStore = defineStore('cluster', () => {
   const nodeFormRef = ref(null);
   const loading = ref(false);
   const selectIndex = ref(undefined);
+  const componentRef = ref(null);
 
   watch(planId, async (newPlanId) => {
     if (newPlanId !== undefined) {
@@ -104,12 +105,11 @@ const useClusterStore = defineStore('cluster', () => {
       runtime: {
         runtime: 'docker',
       },
-      component: {
-        haproxy: {
-          enable: false,
-          keepalived_virtual_router_id: '',
-        },
+      haproxy: {
+        enable: false,
+        keepalived_virtual_router_id: 68,
       },
+      component: {},
     },
 
     // k8s service 的选项
@@ -469,7 +469,13 @@ const useClusterStore = defineStore('cluster', () => {
     deleteDialog.aliasName = scope.row.name;
   };
 
+  const getComponents = () => {
+    const component = componentRef.value.getComponents();
+    configInfo.config.component = component;
+  };
+
   const createOrEditPlan = () => {
+    getComponents();
     return new Promise((resolve, reject) => {
       configFormRef.value.validate(async (valid, fields) => {
         if (valid) {
@@ -485,7 +491,6 @@ const useClusterStore = defineStore('cluster', () => {
             commitData.config.network.service_network = service_network;
             delete commitData.podNetwork;
             delete commitData.serviceNetwork;
-
             let result, err;
             if (planId.value === undefined) {
               // 新建
@@ -530,6 +535,7 @@ const useClusterStore = defineStore('cluster', () => {
     configFormRef,
     nodeFormRef,
     deleteDialog,
+    componentRef,
     configInfo,
     nodeInfo,
     rules,
