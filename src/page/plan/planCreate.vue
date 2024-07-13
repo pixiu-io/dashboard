@@ -453,6 +453,14 @@
             <div class="app-pixiu-describe" style="margin-top: -12px">
               默认使用 iptables 模式，ipvs 的转发性能更高。选择之后无法修改。
             </div>
+
+            <div style="margin-top: 20px" />
+            <el-form-item label="Pixiu 纳管">
+              <el-switch v-model="clusterStore.configInfo.config.kubernetes.register" />
+            </el-form-item>
+            <div class="app-pixiu-describe" style="margin-top: -12px">
+              启用后，完成部署的集群会被自动纳管至 pixiu 平台
+            </div>
           </el-card>
 
           <el-card id="step-4" header="组件选项" style="margin-top: 20px">
@@ -651,10 +659,9 @@ const backToPlan = () => {
 };
 
 const createPlan = async () => {
-  console.log(clusterStore.configInfo);
   try {
     await clusterStore.createOrEditPlan();
-    // backToPlan();
+    backToPlan();
   } catch (err) {
     proxy.$message({
       message: err.message,
