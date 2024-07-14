@@ -115,7 +115,7 @@ const useCloudStore = defineStore('cloud', () => {
   };
   // 根据选择的类型跳转到不同操作页面
   const confirmCreateCloud = () => {
-    const name = cloudType.value === 1 ? 'InsertCluster' : 'CreateCluster';
+    const name = cloudType.value === 1 ? 'InsertCluster' : 'PlanCreate';
     createCloudVisible.value = false;
     router.push({
       name,

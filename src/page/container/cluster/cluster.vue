@@ -323,7 +323,7 @@
         :type="2"
         :default-type="cloudStore.cloudType"
         :span="2"
-        @click="redirectToCreatePlan"
+        @click="cloudStore.changeActive"
       >
         <div style="margin-top: 10px; font: 14px; font-weight: 700; color: #000000">自建集群</div>
 
@@ -529,11 +529,6 @@ const formatterResource = (row, column, cellValue) => {
     </div>
   );
 };
-
-function redirectToCreatePlan() {
-  cloudStore.changeActive();
-  router.push({ path: '/plans/create' });
-}
 </script>
 
 <style>
