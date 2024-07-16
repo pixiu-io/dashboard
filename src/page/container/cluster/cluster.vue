@@ -652,7 +652,7 @@ const jumpRoute = (row) => {
 
 // 根据选择的类型跳转到不同操作页面
 const confirmCreateCloud = () => {
-  const name = cloudStore.cloudType === 1 ? 'CreateCluster' : 'PlanCreate';
+  const name = cloudStore.cloudType === 1 ? 'InsertCluster' : 'PlanCreate';
   cloudStore.createCloudVisible = false;
   router.push({
     name,
