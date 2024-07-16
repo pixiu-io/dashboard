@@ -2,7 +2,9 @@ import { defineStore, acceptHMRUpdate } from 'pinia';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { ref } from 'vue';
 import { getClouds, deleteCloudById, changeClustersAliasName } from '@/services/cloudService';
-import { router } from '@/router';
+import { planTasksStatus } from '@/services/plan/planService';
+
+// import { router } from '@/router';
 const useCloudStore = defineStore('cloud', () => {
   const pageInfo = ref({
     query: '',
@@ -10,8 +12,10 @@ const useCloudStore = defineStore('cloud', () => {
     limit: 10, // 默认值需要是分页定义的值
   });
 
+  let controller = ref(null);
   const loading = ref(false);
   const cloudList = ref([]);
+  const statusData = ref([]);
   const cloudType = ref(1);
   const defaultOption = ref('无锡');
   const total = ref(0);
@@ -101,26 +105,20 @@ const useCloudStore = defineStore('cloud', () => {
     pageInfo.value.page_size = v.limit; //兼容原有写法
     getCloudList();
   };
-  const jumpRoute = (row) => {
-    localStorage.setItem(row.name, row.alias_name);
-    localStorage.setItem('clusterId', row.id);
 
-    router.push({
-      name: 'Info',
-      query: {
-        cluster: row.name,
-        id: row.id,
-      },
-    });
+  const showStatusInfo = async (row) => {
+    const [result, err] = await planTasksStatus(row.id);
+    if (err) {
+      proxy.$notify.error({ message: err });
+      return;
+    }
+    statusData.value = result;
   };
-  // 根据选择的类型跳转到不同操作页面
-  const confirmCreateCloud = () => {
-    const name = cloudType.value === 1 ? 'InsertCluster' : 'PlanCreate';
-    createCloudVisible.value = false;
-    router.push({
-      name,
-    });
+
+  const hideStatusInfo = (row) => {
+    statusData.value = [];
   };
+
   const cancelDeleteCloud = () => {
     showDeleteModal.value = false;
     preDeleteCloudName.value = '';
@@ -149,6 +147,7 @@ const useCloudStore = defineStore('cloud', () => {
     pageInfo,
     options,
     cloudType,
+    statusData,
     defaultOption,
     cloudList,
     loading,
@@ -163,13 +162,13 @@ const useCloudStore = defineStore('cloud', () => {
     onChange,
     createCloud,
     closeModal,
-    jumpRoute,
-    confirmCreateCloud,
     deleteCloud,
     editAlias,
     changeAliasName,
     cancelDeleteCloud,
     confirmDeleteCloud,
+    showStatusInfo,
+    hideStatusInfo,
   };
 });
 
