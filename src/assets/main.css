@@ -336,6 +336,11 @@
   color: #e6a23c;
 }
 
+/* 蓝色状态字体 */
+.color-blue-word {
+  color: #006eff;
+}
+
 .app-pixiu-line-describe4 {
   margin-left: 100px;
   margin-top: -35px;

@@ -303,7 +303,7 @@
                   <el-icon v-else-if="scope.row.status === '部署失败'" color="#c45656"
                     ><CircleCloseFilled
                   /></el-icon>
-                  <el-icon v-else><InfoFilled /></el-icon>
+                  <el-icon v-else color="#909399"><InfoFilled /></el-icon>
                   {{ scope.row.status }}
                 </div>
               </template>
@@ -512,19 +512,23 @@ const openTaskDrawer = async () => {
 const readStream = async (reader) => {
   const decoder = new TextDecoder('utf-8');
   while (true) {
-    const { value, done } = await reader.read();
-    if (done) {
-      reader.cancel();
-      break;
-    }
-    const uint8Array = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
-    let decodedString = decoder.decode(uint8Array, { stream: true });
-    // 解析JSON数据
     try {
-      const result = JSON.parse(decodedString);
-      data.taskData.tableData = result;
+      const { value, done } = await reader.read();
+      if (done) {
+        reader.cancel();
+        break;
+      }
+      const uint8Array = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+      let decodedString = decoder.decode(uint8Array, { stream: true });
+      // 解析JSON数据
+      try {
+        const result = JSON.parse(decodedString);
+        data.taskData.tableData = result;
+      } catch (e) {
+        proxy.$message.error('Error parsing JSON:', e);
+      }
     } catch (e) {
-      proxy.$message.error('Error parsing JSON:', e);
+      break;
     }
   }
 };

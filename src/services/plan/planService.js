@@ -155,3 +155,13 @@ export const watchPlanTasks = async (pid, signal) => {
     signal: signal,
   });
 };
+
+export const planTasksStatus = async (pid) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: `/pixiu/plans/${pid}/tasks`,
+    }),
+  );
+  return [result, err];
+};
