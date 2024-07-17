@@ -658,7 +658,6 @@ const confirmCreateCloud = () => {
     name,
   });
 };
-
 </script>
 
 <style>
