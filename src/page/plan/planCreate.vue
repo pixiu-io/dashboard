@@ -652,9 +652,7 @@ const data = reactive({
 
 const backToPlan = () => {
   clusterStore.resetViewData();
-  router.replace({
-    name: 'Plan',
-  });
+  router.back();
 };
 
 const createPlan = async () => {
