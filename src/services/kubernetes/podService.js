@@ -103,15 +103,10 @@ export const getPodLog = async (cluster, namespace, name, container, line) => {
   return [result, err];
 };
 
-export const watchPodLog = async (cluster, namespace, name, container, line, signal) => {
+export const watchPodLog = (cluster, namespace, name, container, line) => {
   const baseUrl = http({ method: 'watch' });
-  const headers = getHeadersWithToken();
-  return fetch(
-    `${baseUrl}/pixiu/kubeproxy/clusters/${cluster}/namespaces/${namespace}/pods/${name}?container=${container}&tailLines=${line}`,
-    {
-      method: 'get',
-      headers: headers,
-      signal: signal,
-    },
-  );
+  const token = localStorage.getItem('token');
+  const url = `${baseUrl}/pixiu/kubeproxy/clusters/${cluster}/namespaces/${namespace}/pods/${name}?container=${container}&tailLines=${line}`;
+  const ws = new WebSocket(url, [token]);
+  return ws;
 };

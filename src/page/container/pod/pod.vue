@@ -577,7 +577,15 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref, onUnmounted, provide } from 'vue';
+import {
+  reactive,
+  getCurrentInstance,
+  onMounted,
+  ref,
+  onUnmounted,
+  provide,
+  onBeforeUnmount,
+} from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
@@ -661,7 +669,6 @@ const data = reactive({
     close: false,
     containers: [],
   },
-  streams: [],
   logData: {
     width: '70%',
     drawer: false,
@@ -881,86 +888,32 @@ const handleContainerListDialog = async (row) => {
 
   data.podContainers.close = true;
 };
-
+const ws = ref();
 const getPodLogs = async () => {
   if (data.logData.selectedContainer === '') {
     proxy.$notify.error('查询日志时，容器名称为必选项');
     return;
   }
 
-  // const [result, err] = await getPodLog(
-  //   data.cluster,
-  //   data.logData.namespace,
-  //   data.logData.pod,
-  //   data.logData.selectedContainer,
-  //   data.logData.line,
-  // );
-  // if (err) {
-  //   proxy.$notify.error(err.response.data.message);
-  //   return;
-  // }
-  // data.logData.podLogs = result;
-
-  if (data.streams.length !== 0) {
-    for (const s of data.streams) {
-      s.abort();
-    }
-    data.streams = [];
-  }
-  let controller = new AbortController();
-  let single = controller.signal;
-  data.streams.push(controller);
-  const { body, e } = await watchPodLog(
+  ws.value = watchPodLog(
     data.cluster,
     data.logData.namespace,
     data.logData.pod,
     data.logData.selectedContainer,
     data.logData.line,
-    single,
   );
-
-  if (e) {
-    proxy.$message.error('Failed to get task list', e);
-    return;
-  }
-  if (body) {
-    const reader = body.getReader();
-    await readStream(reader);
-  }
-};
-
-const readStream = async (reader) => {
   data.logData.podLogs = '';
-  const decoder = new TextDecoder('utf-8');
-  while (true) {
-    try {
-      const { value, done } = await reader.read();
-      if (done) {
-        reader.cancel();
-        break;
-      }
-      const uint8Array = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
-      let decodedString = decoder.decode(uint8Array, { stream: true });
-
-      data.logData.podLogs += decodedString;
-      data.logData.podLogs = data.logData.podLogs.replace(/^"|"$/g, '');
-      data.logData.podLogs = data.logData.podLogs.replace(/\\"/g, '"');
-      console.log('----', decodedString);
-      // 解析JSON数据
-      // try {
-      //   const result = JSON.parse(decodedString);
-      //   data.logData.podLogs += result;
-      // } catch (e) {
-      //   console.log('解析日志失败： ', e);
-      //   proxy.$message.error('Error parsing JSON:', e);
-      // }
-    } catch (e) {
-      console.log(e);
-      break;
+  ws.value.onmessage = (e) => {
+    if (e.data === 'ping') {
+      return;
+    } else {
+      data.logData.podLogs += e.data;
     }
-  }
+  };
 };
-
+onBeforeUnmount(() => {
+  ws.value.close();
+});
 const cancelpodContainers = () => {
   data.podContainers.close = false;
   data.podContainers.containers = [];
@@ -1004,12 +957,6 @@ const openLogDrawer = () => {
 };
 
 const closeLogDrawer = () => {
-  if (data.streams.length !== 0) {
-    for (const s of data.streams) {
-      s.abort();
-    }
-    data.streams = [];
-  }
   data.logData.pod = '';
   data.logData.namespace = '';
   data.logData.containers = [];
