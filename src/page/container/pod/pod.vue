@@ -888,13 +888,16 @@ const handleContainerListDialog = async (row) => {
 
   data.podContainers.close = true;
 };
-const ws = ref();
+const ws = ref(null);
 const getPodLogs = async () => {
   if (data.logData.selectedContainer === '') {
     proxy.$notify.error('查询日志时，容器名称为必选项');
     return;
   }
 
+  if (ws.value) {
+    ws.value.close();
+  }
   ws.value = watchPodLog(
     data.cluster,
     data.logData.namespace,
@@ -911,9 +914,11 @@ const getPodLogs = async () => {
     }
   };
 };
+
 onBeforeUnmount(() => {
   ws.value.close();
 });
+
 const cancelpodContainers = () => {
   data.podContainers.close = false;
   data.podContainers.containers = [];
@@ -957,6 +962,10 @@ const openLogDrawer = () => {
 };
 
 const closeLogDrawer = () => {
+  if (ws.value) {
+    console.log('关闭日志ws');
+    ws.value.close();
+  }
   data.logData.pod = '';
   data.logData.namespace = '';
   data.logData.containers = [];
