@@ -601,6 +601,7 @@ import {
   getPodByName,
   getPod,
   getPodLog,
+  watchPodLog,
 } from '@/services/kubernetes/podService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { getNode } from '@/services/kubernetes/nodeService';
@@ -660,7 +661,7 @@ const data = reactive({
     close: false,
     containers: [],
   },
-
+  streams: [],
   logData: {
     width: '70%',
     drawer: false,
@@ -887,18 +888,77 @@ const getPodLogs = async () => {
     return;
   }
 
-  const [result, err] = await getPodLog(
+  // const [result, err] = await getPodLog(
+  //   data.cluster,
+  //   data.logData.namespace,
+  //   data.logData.pod,
+  //   data.logData.selectedContainer,
+  //   data.logData.line,
+  // );
+  // if (err) {
+  //   proxy.$notify.error(err.response.data.message);
+  //   return;
+  // }
+  // data.logData.podLogs = result;
+
+  if (data.streams.length !== 0) {
+    for (const s of data.streams) {
+      s.abort();
+    }
+    data.streams = [];
+  }
+  let controller = new AbortController();
+  let single = controller.signal;
+  data.streams.push(controller);
+  const { body, e } = await watchPodLog(
     data.cluster,
     data.logData.namespace,
     data.logData.pod,
     data.logData.selectedContainer,
     data.logData.line,
+    single,
   );
-  if (err) {
-    proxy.$notify.error(err.response.data.message);
+
+  if (e) {
+    proxy.$message.error('Failed to get task list', e);
     return;
   }
-  data.logData.podLogs = result;
+  if (body) {
+    const reader = body.getReader();
+    await readStream(reader);
+  }
+};
+
+const readStream = async (reader) => {
+  data.logData.podLogs = '';
+  const decoder = new TextDecoder('utf-8');
+  while (true) {
+    try {
+      const { value, done } = await reader.read();
+      if (done) {
+        reader.cancel();
+        break;
+      }
+      const uint8Array = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+      let decodedString = decoder.decode(uint8Array, { stream: true });
+
+      data.logData.podLogs += decodedString;
+      data.logData.podLogs = data.logData.podLogs.replace(/^"|"$/g, '');
+      data.logData.podLogs = data.logData.podLogs.replace(/\\"/g, '"');
+      console.log('----', decodedString);
+      // 解析JSON数据
+      // try {
+      //   const result = JSON.parse(decodedString);
+      //   data.logData.podLogs += result;
+      // } catch (e) {
+      //   console.log('解析日志失败： ', e);
+      //   proxy.$message.error('Error parsing JSON:', e);
+      // }
+    } catch (e) {
+      console.log(e);
+      break;
+    }
+  }
 };
 
 const cancelpodContainers = () => {
@@ -944,6 +1004,12 @@ const openLogDrawer = () => {
 };
 
 const closeLogDrawer = () => {
+  if (data.streams.length !== 0) {
+    for (const s of data.streams) {
+      s.abort();
+    }
+    data.streams = [];
+  }
   data.logData.pod = '';
   data.logData.namespace = '';
   data.logData.containers = [];

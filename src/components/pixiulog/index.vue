@@ -15,7 +15,12 @@
         ref="parentRef"
         style="margin-left: 20px; position: absolute; top: 0px; left: 0px; right: 0px; bottom: 0px"
       >
-        <MyMonaco :yaml="data.log" :height="dialogHeight" :read-only="readOnly"></MyMonaco>
+        <MyMonaco
+          :yaml="data.log"
+          :height="dialogHeight"
+          :read-only="readOnly"
+          type="javascript"
+        ></MyMonaco>
       </div>
     </div>
   </el-card>
