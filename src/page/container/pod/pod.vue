@@ -577,7 +577,15 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref, onUnmounted, provide } from 'vue';
+import {
+  reactive,
+  getCurrentInstance,
+  onMounted,
+  ref,
+  onUnmounted,
+  provide,
+  onBeforeUnmount,
+} from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
@@ -601,6 +609,7 @@ import {
   getPodByName,
   getPod,
   getPodLog,
+  watchPodLog,
 } from '@/services/kubernetes/podService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { getNode } from '@/services/kubernetes/nodeService';
@@ -660,7 +669,6 @@ const data = reactive({
     close: false,
     containers: [],
   },
-
   logData: {
     width: '70%',
     drawer: false,
@@ -880,26 +888,36 @@ const handleContainerListDialog = async (row) => {
 
   data.podContainers.close = true;
 };
-
+const ws = ref(null);
 const getPodLogs = async () => {
   if (data.logData.selectedContainer === '') {
     proxy.$notify.error('查询日志时，容器名称为必选项');
     return;
   }
 
-  const [result, err] = await getPodLog(
+  if (ws.value) {
+    ws.value.close();
+  }
+  ws.value = watchPodLog(
     data.cluster,
     data.logData.namespace,
     data.logData.pod,
     data.logData.selectedContainer,
     data.logData.line,
   );
-  if (err) {
-    proxy.$notify.error(err.response.data.message);
-    return;
-  }
-  data.logData.podLogs = result;
+  data.logData.podLogs = '';
+  ws.value.onmessage = (e) => {
+    if (e.data === 'ping') {
+      return;
+    } else {
+      data.logData.podLogs += e.data;
+    }
+  };
 };
+
+onBeforeUnmount(() => {
+  ws.value.close();
+});
 
 const cancelpodContainers = () => {
   data.podContainers.close = false;
@@ -944,6 +962,10 @@ const openLogDrawer = () => {
 };
 
 const closeLogDrawer = () => {
+  if (ws.value) {
+    console.log('关闭日志ws');
+    ws.value.close();
+  }
   data.logData.pod = '';
   data.logData.namespace = '';
   data.logData.containers = [];
