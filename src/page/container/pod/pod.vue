@@ -461,7 +461,7 @@
           <button style="width: 70px" class="pixiu-two-button" @click="getPodLogs">查询</button>
         </div>
         <div>
-          <el-switch v-model="data.logData.follow" @change="changeFollow" /><span
+          <el-switch v-model="data.logData.follow" /><span
             style="font-size: 12px; margin-left: 5px; color: #191919"
             >实时刷新</span
           >
@@ -925,11 +925,20 @@ const getPodLogs = async () => {
       data.logData.line,
     );
     data.logData.podLogs = '';
+    ws.value.onclose = () => {
+      //关闭连接后打印在终端里
+      data.logData.follow = false;
+      data.logData.podLogs = '';
+      ws.value = null;
+    };
+    let tmpLog = '';
     ws.value.onmessage = (e) => {
       if (e.data === 'ping' || !data.logData.follow) {
+        tmpLog += e.data;
         return;
       } else {
-        data.logData.podLogs += e.data;
+        data.logData.podLogs += tmpLog + e.data;
+        tmpLog = '';
       }
     };
   } else {
@@ -946,12 +955,6 @@ const getPodLogs = async () => {
       return;
     }
     data.logData.podLogs = result;
-  }
-};
-
-const changeFollow = () => {
-  if (data.logData.follow) {
-    getPodLogs();
   }
 };
 
