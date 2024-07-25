@@ -136,7 +136,7 @@
               <el-link
                 style="color: #006eff; font-size: 12px; margin-right: 2px"
                 type="primary"
-                @click="cloudStore.jumpRoute(scope.row)"
+                @click="jumpRoute(scope.row)"
               >
                 {{ scope.row.alias_name }}
               </el-link>
@@ -168,7 +168,97 @@
             </template>
           </el-table-column>
 
-          <el-table-column :formatter="cloudStatusFormatter" prop="status" label="状态" />
+          <el-table-column label="状态">
+            <template #default="scope">
+              <div class="pixiu-table-formatter">
+                <el-space>
+                  <el-popover
+                    placement="top-start"
+                    :width="200"
+                    trigger="hover"
+                    @show="cloudStore.showStatusInfo(scope.row)"
+                    @hide="cloudStore.hideStatusInfo()"
+                  >
+                    <template #reference>
+                      <el-icon v-if="scope.row.status === 1" class="is-loading" color="#409efc"
+                        ><RefreshRight
+                      /></el-icon>
+                      <el-icon v-else-if="scope.row.status === 0" color="#529b2e"
+                        ><SuccessFilled
+                      /></el-icon>
+                      <el-icon v-else-if="scope.row.status === 3" color="#c45656"
+                        ><CircleCloseFilled
+                      /></el-icon>
+                      <el-icon v-else color="#006eff"><InfoFilled /></el-icon>
+                    </template>
+                    <template #default>
+                      <div v-if="scope.row.status === 0">运行中...</div>
+                      <div v-else-if="scope.row.status === 1">
+                        <el-table
+                          :data="cloudStore.statusData"
+                          stripe
+                          header-row-class-name="pixiu-table-header"
+                          :cell-style="{
+                            'font-size': '12px',
+                            color: '#191919',
+                          }"
+                        >
+                          <el-table-column prop="name" label="名称" sortable />
+
+                          <el-table-column prop="status" label="状态">
+                            <template #default="scope1">
+                              <div
+                                style="font-size: 12px; color: #29292b"
+                                type="primary"
+                                :underline="false"
+                              >
+                                <el-icon
+                                  v-if="scope1.row.status === '运行中'"
+                                  class="is-loading"
+                                  color="#409efc"
+                                  ><RefreshRight
+                                /></el-icon>
+                                <el-icon v-else-if="scope1.row.status === '已成功'" color="#529b2e"
+                                  ><SuccessFilled
+                                /></el-icon>
+                                <el-icon
+                                  v-else-if="scope1.row.status === '部署失败'"
+                                  color="#c45656"
+                                  ><CircleCloseFilled
+                                /></el-icon>
+                                <el-icon v-else color="#909399"><InfoFilled /></el-icon>
+                                {{ scope1.row.status }}
+                              </div>
+                            </template>
+                          </el-table-column>
+
+                          <template #empty>
+                            <div class="table-inline-word">暂无部署任务</div>
+                          </template>
+                        </el-table>
+                      </div>
+                      <div v-else-if="scope.row.status === 3">部署失败</div>
+                      <div v-else>未启动部署</div>
+                    </template>
+                  </el-popover>
+
+                  <div
+                    :class="`${
+                      scope.row.status === 0
+                        ? 'color-green-word'
+                        : scope.row.status === 1
+                        ? 'color-yellow-word'
+                        : scope.row.status === 3
+                        ? 'color-red-word'
+                        : 'color-blue-word'
+                    }`"
+                  >
+                    {{ statusText[scope.row.status] }}
+                  </div>
+                </el-space>
+              </div>
+            </template>
+          </el-table-column>
 
           <el-table-column :formatter="cloudTypeFormatter" prop="cluster_type" label="集群类型" />
           <el-table-column prop="kubernetes_version" :formatter="cloudVersionFormatter">
@@ -323,7 +413,7 @@
         :type="2"
         :default-type="cloudStore.cloudType"
         :span="2"
-        @click="redirectToCreatePlan"
+        @click="cloudStore.changeActive"
       >
         <div style="margin-top: 10px; font: 14px; font-weight: 700; color: #000000">自建集群</div>
 
@@ -346,10 +436,7 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button class="pixiu-cancel-button" @click="cloudStore.closeModal">取消</el-button>
-        <el-button
-          class="pixiu-confirm-button"
-          type="primary"
-          @click="cloudStore.confirmCreateCloud"
+        <el-button class="pixiu-confirm-button" type="primary" @click="confirmCreateCloud"
           >创建</el-button
         >
       </span>
@@ -493,13 +580,16 @@ const cloudNodeFormatter = (row, column, cellValue) => (
   </div>
 );
 
-const cloudStatusFormatter = (row, column, cellValue) => (
-  <div class="pixiu-table-formatter">
-    <el-space>
-      <div class="color-green-word">运行中</div>
-    </el-space>
-  </div>
-);
+const statusText = {
+  0: '运行中',
+  1: '部署中',
+  2: '等待部署',
+  3: '部署失败',
+};
+
+// const cloudStatusFormatter = (row, column, cellValue) => (
+
+// );
 
 const cloudStatus2Formatter = (row, column, cellValue) => (
   <div style="display:flex;align-items:center">
@@ -530,10 +620,44 @@ const formatterResource = (row, column, cellValue) => {
   );
 };
 
-function redirectToCreatePlan() {
-  cloudStore.changeActive();
-  router.push({ path: '/plans/create' });
-}
+const jumpRoute = (row) => {
+  if (row.status === 0) {
+    localStorage.setItem(row.name, row.alias_name);
+    localStorage.setItem('clusterId', row.id);
+
+    router.push({
+      name: 'Info',
+      query: {
+        cluster: row.name,
+        id: row.id,
+      },
+    });
+  } else if (row.status === 1) {
+    ElMessage({
+      type: 'error',
+      message: '集群正在创建中，请稍后再试',
+    });
+  } else if (row.status === 2) {
+    ElMessage({
+      type: 'error',
+      message: '集群还未启动部署，请先启动部署',
+    });
+  } else if (row.status === 3) {
+    ElMessage({
+      type: 'error',
+      message: '集群部署失败，请检查部署日志',
+    });
+  }
+};
+
+// 根据选择的类型跳转到不同操作页面
+const confirmCreateCloud = () => {
+  const name = cloudStore.cloudType === 1 ? 'InsertCluster' : 'PlanCreate';
+  cloudStore.createCloudVisible = false;
+  router.push({
+    name,
+  });
+};
 </script>
 
 <style>

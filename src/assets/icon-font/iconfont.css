@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3708393 */
-  src: url('iconfont.woff2?t=1720333680440') format('woff2'),
-       url('iconfont.woff?t=1720333680440') format('woff'),
-       url('iconfont.ttf?t=1720333680440') format('truetype');
+  src: url('iconfont.woff2?t=1720450687712') format('woff2'),
+       url('iconfont.woff?t=1720450687712') format('woff'),
+       url('iconfont.ttf?t=1720450687712') format('truetype');
 }
 
 .iconfont {
@@ -13,7 +13,11 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-Haproxy:before {
+.icon-nginxingress:before {
+  content: "\e701";
+}
+
+.icon-haproxy:before {
   content: "\e68e";
 }
 
@@ -25,7 +29,7 @@
   content: "\e7a0";
 }
 
-.icon-Helm:before {
+.icon-helm:before {
   content: "\e655";
 }
 

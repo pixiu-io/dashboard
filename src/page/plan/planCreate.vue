@@ -436,8 +436,8 @@
 
             <el-form-item label="监听端口" style="margin-top: 15px">
               <el-input
-                style="width: 150px"
                 v-model="clusterStore.configInfo.config.kubernetes.api_port"
+                style="width: 150px"
                 placeholder="6443"
               />
             </el-form-item>
@@ -454,6 +454,14 @@
             </el-form-item>
             <div class="app-pixiu-describe" style="margin-top: -12px">
               默认使用 iptables 模式，ipvs 的转发性能更高。选择之后无法修改。
+            </div>
+
+            <div style="margin-top: 20px" />
+            <el-form-item label="Pixiu 纳管">
+              <el-switch v-model="clusterStore.configInfo.config.kubernetes.register" />
+            </el-form-item>
+            <div class="app-pixiu-describe" style="margin-top: -12px">
+              启用后，完成部署的集群会被自动纳管至 pixiu 平台
             </div>
           </el-card>
 
@@ -644,9 +652,7 @@ const data = reactive({
 
 const backToPlan = () => {
   clusterStore.resetViewData();
-  router.replace({
-    name: 'Plan',
-  });
+  router.back();
 };
 
 const createPlan = async () => {
@@ -746,12 +752,7 @@ const appCharts = [
     LatestVersion: '1.1.5',
   },
   {
-    Name: 'Haproxy',
-    Label: '{"kind":"全部"}',
-    LatestVersion: '0.0.1',
-  },
-  {
-    Name: 'Prometheus',
+    Name: 'Promethues',
     Label: '{"kind":"全部"}',
     LatestVersion: '0.0.1',
   },

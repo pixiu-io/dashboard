@@ -1,5 +1,6 @@
 import http from '@/utils/http';
 import { awaitWrap } from '@/utils/utils';
+import { getHeadersWithToken } from '@/utils/utils';
 
 export const getPodList = async (cluster, namespace) => {
   let url = `/pixiu/proxy/${cluster}/api/v1/namespaces/${namespace}/pods`;
@@ -100,4 +101,11 @@ export const getPodLog = async (cluster, namespace, name, container, line) => {
     }),
   );
   return [result, err];
+};
+
+export const watchPodLog = (cluster, namespace, name, container, line) => {
+  const baseUrl = http({ method: 'watch' });
+  const url = `${baseUrl}/pixiu/kubeproxy/clusters/${cluster}/namespaces/${namespace}/pods/${name}/log?container=${container}&tailLines=${line}`;
+  const ws = new WebSocket(url);
+  return ws;
 };

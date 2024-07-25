@@ -448,8 +448,24 @@
         </el-form>
       </div>
 
-      <div style="display: flex; margin-top: -20px; margin-left: 8px">
-        <button style="width: 70px" class="pixiu-two-button" @click="getPodLogs">查询</button>
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          margin-top: -20px;
+          margin-left: 8px;
+          margin-right: 20px;
+        "
+      >
+        <div>
+          <button style="width: 70px" class="pixiu-two-button" @click="getPodLogs">查询</button>
+        </div>
+        <div>
+          <el-switch v-model="data.logData.follow" /><span
+            style="font-size: 12px; margin-left: 5px; color: #191919"
+            >实时刷新</span
+          >
+        </div>
       </div>
 
       <div style="margin-top: 15px; margin-left: 8px; flex: 1">
@@ -577,7 +593,15 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref, onUnmounted, provide } from 'vue';
+import {
+  reactive,
+  getCurrentInstance,
+  onMounted,
+  ref,
+  onUnmounted,
+  provide,
+  onBeforeUnmount,
+} from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
@@ -601,6 +625,7 @@ import {
   getPodByName,
   getPod,
   getPodLog,
+  watchPodLog,
 } from '@/services/kubernetes/podService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { getNode } from '@/services/kubernetes/nodeService';
@@ -660,7 +685,6 @@ const data = reactive({
     close: false,
     containers: [],
   },
-
   logData: {
     width: '70%',
     drawer: false,
@@ -673,6 +697,8 @@ const data = reactive({
     lineOptions: [25, 50, 100, 200, 500],
     podLogs: '点击查询获取日志',
     aggLog: false,
+    //实时日志
+    follow: false,
   },
 
   eventData: {
@@ -880,26 +906,61 @@ const handleContainerListDialog = async (row) => {
 
   data.podContainers.close = true;
 };
-
+const ws = ref(null);
 const getPodLogs = async () => {
   if (data.logData.selectedContainer === '') {
     proxy.$notify.error('查询日志时，容器名称为必选项');
     return;
   }
 
-  const [result, err] = await getPodLog(
-    data.cluster,
-    data.logData.namespace,
-    data.logData.pod,
-    data.logData.selectedContainer,
-    data.logData.line,
-  );
-  if (err) {
-    proxy.$notify.error(err.response.data.message);
-    return;
+  if (ws.value !== null) {
+    ws.value.close();
   }
-  data.logData.podLogs = result;
+  if (data.logData.follow) {
+    ws.value = watchPodLog(
+      data.cluster,
+      data.logData.namespace,
+      data.logData.pod,
+      data.logData.selectedContainer,
+      data.logData.line,
+    );
+    data.logData.podLogs = '';
+    ws.value.onclose = () => {
+      //关闭连接后打印在终端里
+      data.logData.follow = false;
+      data.logData.podLogs = '';
+      ws.value = null;
+    };
+    let tmpLog = '';
+    ws.value.onmessage = (e) => {
+      if (e.data === 'ping' || !data.logData.follow) {
+        tmpLog += e.data;
+        return;
+      } else {
+        data.logData.podLogs += tmpLog + e.data;
+        tmpLog = '';
+      }
+    };
+  } else {
+    data.logData.podLogs = '';
+    const [result, err] = await getPodLog(
+      data.cluster,
+      data.logData.namespace,
+      data.logData.pod,
+      data.logData.selectedContainer,
+      data.logData.line,
+    );
+    if (err) {
+      proxy.$notify.error(err.response.data.message);
+      return;
+    }
+    data.logData.podLogs = result;
+  }
 };
+
+onBeforeUnmount(() => {
+  ws.value.close();
+});
 
 const cancelpodContainers = () => {
   data.podContainers.close = false;
@@ -944,6 +1005,9 @@ const openLogDrawer = () => {
 };
 
 const closeLogDrawer = () => {
+  if (ws.value !== null) {
+    ws.value.close();
+  }
   data.logData.pod = '';
   data.logData.namespace = '';
   data.logData.containers = [];
