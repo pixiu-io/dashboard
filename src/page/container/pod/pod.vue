@@ -448,8 +448,24 @@
         </el-form>
       </div>
 
-      <div style="display: flex; margin-top: -20px; margin-left: 8px">
-        <button style="width: 70px" class="pixiu-two-button" @click="getPodLogs">查询</button>
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          margin-top: -20px;
+          margin-left: 8px;
+          margin-right: 20px;
+        "
+      >
+        <div>
+          <button style="width: 70px" class="pixiu-two-button" @click="getPodLogs">查询</button>
+        </div>
+        <div>
+          <el-switch v-model="data.logData.follow" /><span
+            style="font-size: 12px; margin-left: 5px; color: #191919"
+            >实时刷新</span
+          >
+        </div>
       </div>
 
       <div style="margin-top: 15px; margin-left: 8px; flex: 1">
@@ -681,6 +697,8 @@ const data = reactive({
     lineOptions: [25, 50, 100, 200, 500],
     podLogs: '点击查询获取日志',
     aggLog: false,
+    //实时日志
+    follow: false,
   },
 
   eventData: {
@@ -895,24 +913,49 @@ const getPodLogs = async () => {
     return;
   }
 
-  if (ws.value) {
+  if (ws.value !== null) {
     ws.value.close();
   }
-  ws.value = watchPodLog(
-    data.cluster,
-    data.logData.namespace,
-    data.logData.pod,
-    data.logData.selectedContainer,
-    data.logData.line,
-  );
-  data.logData.podLogs = '';
-  ws.value.onmessage = (e) => {
-    if (e.data === 'ping') {
+  if (data.logData.follow) {
+    ws.value = watchPodLog(
+      data.cluster,
+      data.logData.namespace,
+      data.logData.pod,
+      data.logData.selectedContainer,
+      data.logData.line,
+    );
+    data.logData.podLogs = '';
+    ws.value.onclose = () => {
+      //关闭连接后打印在终端里
+      data.logData.follow = false;
+      data.logData.podLogs = '';
+      ws.value = null;
+    };
+    let tmpLog = '';
+    ws.value.onmessage = (e) => {
+      if (e.data === 'ping' || !data.logData.follow) {
+        tmpLog += e.data;
+        return;
+      } else {
+        data.logData.podLogs += tmpLog + e.data;
+        tmpLog = '';
+      }
+    };
+  } else {
+    data.logData.podLogs = '';
+    const [result, err] = await getPodLog(
+      data.cluster,
+      data.logData.namespace,
+      data.logData.pod,
+      data.logData.selectedContainer,
+      data.logData.line,
+    );
+    if (err) {
+      proxy.$notify.error(err.response.data.message);
       return;
-    } else {
-      data.logData.podLogs += e.data;
     }
-  };
+    data.logData.podLogs = result;
+  }
 };
 
 onBeforeUnmount(() => {
@@ -962,8 +1005,7 @@ const openLogDrawer = () => {
 };
 
 const closeLogDrawer = () => {
-  if (ws.value) {
-    console.log('关闭日志ws');
+  if (ws.value !== null) {
     ws.value.close();
   }
   data.logData.pod = '';
