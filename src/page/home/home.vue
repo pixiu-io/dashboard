@@ -4,7 +4,15 @@
       <el-col :span="18">
         <el-row style="height: 58%">
           <el-card style="width: 100%; height: 100%; border-radius: 0px">
-            <div style="width: 45%; margin-left: 1px; margin-top: 1px; display: inline-block">
+            <div
+              style="
+                height: 450px;
+                width: 45%;
+                margin-left: 30px;
+                margin-top: 20px;
+                display: inline-block;
+              "
+            >
               <my-echarts :option="planOption"></my-echarts>
             </div>
           </el-card>
