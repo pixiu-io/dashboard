@@ -1,40 +1,20 @@
 <template>
-  <div style="display: flex">
-    <div>
-      <el-card class="content1-card-container"> dddddddddddddd</el-card>
-    </div>
-    <div>
-      <el-card class="content3-card-container"> ddd</el-card>
-    </div>
-  </div>
+  <el-main style="background-color: #f3f4f7">
+    <el-row :gutter="15" style="height: 100%">
+      <el-col :span="20">
+        <el-row style="height: 49%">
+          <el-card style="width: 100%; height: 100%; border-radius: 0px">123</el-card>
+        </el-row>
+        <el-row style="height: 2%"></el-row>
+        <el-row style="height: 49%">
+          <el-card style="width: 100%; height: 100%; border-radius: 0px">123</el-card></el-row
+        >
+      </el-col>
+      <el-col :span="4">
+        <el-card style="width: 100%; height: 100%; border-radius: 0px">123</el-card></el-col
+      >
+    </el-row>
+  </el-main>
 </template>
 
-<style>
-.content1-card-container {
-  margin-top: 20px;
-  margin-left: 20px;
-  border-radius: 0px;
-}
-
-.content2-card-container {
-  height: 329px;
-  margin-top: 5px;
-  margin-left: 10px;
-  margin-right: 10px;
-  border-radius: 0px;
-}
-
-.content3-card-container {
-  margin-top: 20px;
-  margin-left: 20px;
-  border-radius: 0px;
-}
-
-.content4-card-container {
-  height: 140px;
-  width: 96%;
-  margin-top: 25px;
-  margin-left: 10px;
-  border-radius: 0px;
-}
-</style>
+<style></style>
