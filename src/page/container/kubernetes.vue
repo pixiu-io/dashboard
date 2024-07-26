@@ -215,52 +215,52 @@ const data = reactive({
         },
       ],
     },
-    {
-      id: 5,
-      name: 'Cicd',
-      icon: 'icon-devops',
-      iconType: 'iconfont',
-      children: [
-        {
-          id: 5.1,
-          name: 'Task',
-          url: '/kubernetes/task',
-        },
-        {
-          id: 5.2,
-          name: 'TaskRun',
-          url: '/kubernetes/taskrun',
-        },
-        {
-          id: 5.3,
-          name: 'Pipeline',
-          url: '/kubernetes/pipeline',
-        },
-        {
-          id: 5.4,
-          name: 'PipelineRun',
-          url: '/kubernetes/pipelinerun',
-        },
-      ],
-    },
-    {
-      id: 6,
-      name: '貔貅商店',
-      icon: 'Shop',
-      iconType: 'el',
-      children: [
-        {
-          id: 6.1,
-          name: 'Operator',
-          url: '/kubernetes/operator',
-        },
-        {
-          id: 6.2,
-          name: 'Helm',
-          url: '/kubernetes/helm',
-        },
-      ],
-    },
+    // {
+    //   id: 5,
+    //   name: 'Cicd',
+    //   icon: 'icon-devops',
+    //   iconType: 'iconfont',
+    //   children: [
+    //     {
+    //       id: 5.1,
+    //       name: 'Task',
+    //       url: '/kubernetes/task',
+    //     },
+    //     {
+    //       id: 5.2,
+    //       name: 'TaskRun',
+    //       url: '/kubernetes/taskrun',
+    //     },
+    //     {
+    //       id: 5.3,
+    //       name: 'Pipeline',
+    //       url: '/kubernetes/pipeline',
+    //     },
+    //     {
+    //       id: 5.4,
+    //       name: 'PipelineRun',
+    //       url: '/kubernetes/pipelinerun',
+    //     },
+    //   ],
+    // },
+    // {
+    //   id: 6,
+    //   name: '貔貅商店',
+    //   icon: 'Shop',
+    //   iconType: 'el',
+    //   children: [
+    //     {
+    //       id: 6.1,
+    //       name: 'Operator',
+    //       url: '/kubernetes/operator',
+    //     },
+    //     {
+    //       id: 6.2,
+    //       name: 'Helm',
+    //       url: '/kubernetes/helm',
+    //     },
+    //   ],
+    // },
   ],
   items: [
     {
