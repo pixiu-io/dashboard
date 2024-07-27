@@ -12,11 +12,11 @@
     </el-card>
     <el-row>
       <el-col>
-        <button class="pixiu-two-button">刷新</button>
+        <button class="pixiu-two-button" @click="getEvents">刷新</button>
         <button
           style="margin-left: 10px; width: 85px"
           class="pixiu-two-button2"
-          @click="deleteEventsInBatch"
+          @click="handleDeleteDialog"
         >
           批量删除
         </button>
@@ -26,11 +26,11 @@
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
-          @clear="syncStorageClasses"
-          @input="searchStorageClassList"
+          @clear="getEvents"
+          @input="getEvents"
         >
           <template #suffix>
-            <el-icon class="el-input__icon" @click="syncStorageClasses">
+            <el-icon class="el-input__icon" @click="getEvents">
               <component :is="'Search'" />
             </el-icon>
           </template>
@@ -48,7 +48,7 @@
           color: '#191919',
         }"
         header-row-class-name="pixiu-table-header"
-        @selection-change="handleSelectionChange"
+        @selection-change="handleEventSelectionChange"
       >
         <el-table-column type="selection" width="30" />
         <el-table-column
@@ -74,19 +74,12 @@
     </el-card>
   </div>
 
-  <PiXiuViewOrEdit
-    :yaml-dialog="data.editYamlDialog"
-    title="编辑Yaml"
-    :yaml="data.yaml"
-    :read-only="false"
-    :refresh="syncStorageClasses"
-  ></PiXiuViewOrEdit>
-
   <pixiuDialog
     :close-event="data.deleteDialog.close"
     :object-name="data.deleteDialog.objectName"
     :delete-name="data.deleteDialog.deleteName"
-    @confirm="confirm"
+    :bulk-delete="true"
+    @confirm="deleteEventsInBatch"
     @cancel="cancel"
   ></pixiuDialog>
 </template>
@@ -94,24 +87,21 @@
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { getTableData, searchData } from '@/utils/utils';
-import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import { reactive, getCurrentInstance, onMounted, onUnmounted, ref } from 'vue';
 import { formatterTime } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
-import PiXiuYaml from '@/components/pixiuyaml/index.vue';
-import {
-  getStorageClassList,
-  getStorageClass,
-  deleteStorageClass,
-} from '@/services/kubernetes/storageClassService';
+import { getNamespaceEventList, deleteEvent } from '@/services/kubernetes/eventService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
+import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
-const editYaml = ref();
 
 const data = reactive({
   cluster: '',
+  namespace: 'default',
+
   loading: false,
 
   pageInfo: {
@@ -125,17 +115,14 @@ const data = reactive({
     },
   },
   tableData: [],
-  stroageClassList: [],
+  eventList: [],
 
-  //  yaml相关属性
-  yaml: '',
-  yamlName: '',
-  editYamlDialog: false,
+  multipleEventSelection: [],
 
   // 删除对象属性
   deleteDialog: {
     close: false,
-    objectName: 'StorageClass',
+    objectName: 'Event',
     deleteName: '',
   },
 });
@@ -144,36 +131,85 @@ const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
 
-  data.tableData = getTableData(data.pageInfo, data.storageClassList);
+  data.tableData = getTableData(data.pageInfo, data.eventList);
 
   if (data.pageInfo.search.searchInfo !== '') {
-    searchStorageClassList();
+    getEvents();
   }
 };
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
+  data.namespace = getLocalNamespace();
 
-  syncStorageClasses();
+  getEvents();
+
+  // 启动 localstorage 缓存监听，用于检测命名空间是否发生了变化
+  window.addEventListener('setItem', handleNamespaceChange);
 });
 
-const handleDeleteDialog = (row) => {
-  data.deleteDialog.close = true;
-  data.deleteDialog.deleteName = row.metadata.name;
+onUnmounted(() => {
+  window.removeEventListener('setItem', handleNamespaceChange);
+});
+
+const handleNamespaceChange = (e) => {
+  if (e.storageArea === localStorage) {
+    if (e.key === 'namespace') {
+      if (e.oldValue === e.newValue) {
+        return;
+      }
+      data.namespace = e.newValue;
+      // 监控到切换命名空间之后，重新获取列表
+      getEvents();
+    }
+  }
 };
 
-const confirm = async () => {
-  const [result, err] = await deleteStorageClass(data.cluster, data.deleteDialog.deleteName);
+const handleEventSelectionChange = (events) => {
+  data.multipleEventSelection = [];
+  for (let event of events) {
+    data.multipleEventSelection.push({
+      name: event.metadata.name,
+      namespace: event.metadata.namespace,
+    });
+  }
+};
+
+const deleteEventsInBatch = async () => {
+  for (let event of data.multipleEventSelection) {
+    const [result, err] = await deleteEvent(data.cluster, event.namespace, event.name);
+    if (err) {
+      proxy.$notify.error(err.response.data.message);
+      return;
+    }
+  }
+
+  proxy.$notify.success('批量删除事件成功');
+  clean();
+  getEvents();
+};
+
+const getEvents = async () => {
+  data.loading = true;
+  const [result, err] = await getNamespaceEventList(data.cluster, data.namespace);
+  data.loading = false;
   if (err) {
-    proxy.$message.error(err.response.data.message);
+    proxy.$notify.error(err.response.data.message);
     return;
   }
-  proxy.$message.success(
-    `${data.deleteDialog.objectName}(${data.deleteDialog.deleteName}) 删除成功`,
-  );
 
-  clean();
-  await syncStorageClasses();
+  data.eventList = result;
+  data.pageInfo.total = result.length;
+  data.tableData = getTableData(data.pageInfo, data.eventList);
+};
+
+const handleDeleteDialog = (row) => {
+  if (data.multipleEventSelection.length === 0) {
+    proxy.$notify.warning('未选择待删除事件');
+    return;
+  }
+
+  data.deleteDialog.close = true;
 };
 
 const cancel = () => {
@@ -185,54 +221,6 @@ const clean = () => {
   setTimeout(() => {
     data.deleteDialog.deleteName = '';
   }, 100);
-};
-
-const syncStorageClasses = async () => {
-  data.loading = true;
-  const [res, err] = await getStorageClassList(data.cluster, data.pageInfo);
-  data.loading = false;
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-
-  data.storageClassList = res.items;
-  data.pageInfo.total = data.storageClassList.length;
-  data.tableData = getTableData(data.pageInfo, data.storageClassList);
-};
-
-const searchStorageClassList = async () => {
-  data.tableData = searchData(data.pageInfo, data.storageClassList);
-};
-
-const createStorageClass = () => {
-  const url = `/storageClasses/createStorageClass?cluster=${data.cluster}`;
-  router.push(url);
-};
-
-const editStorageClass = (row) => {
-  const url = `/storageClasses/editStorageClass?cluster=${data.cluster}&name=${row.metadata.name}`;
-  router.push(url);
-};
-
-const handleEditYamlDialog = async (row) => {
-  data.yamlName = row.metadata.name;
-  // 列表中的属性缺少 Kind 和 apiVersion 属性，重新获取补充
-  const [result, err] = await getStorageClass(data.cluster, data.yamlName);
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-  data.yaml = result;
-  data.editYamlDialog = true;
-};
-
-const formatterProvisioner = (row, column, cellValue) => {
-  return (
-    <el-tooltip effect="light" placement="top" content={cellValue}>
-      <div class="pixiu-ellipsis-style">{cellValue}</div>
-    </el-tooltip>
-  );
 };
 </script>
 
