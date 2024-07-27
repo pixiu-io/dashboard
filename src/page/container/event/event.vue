@@ -1,11 +1,18 @@
 <template>
   <div style="margin-top: 5px">
+    <el-card class="app-docs" style="height: 40px; margin-top: 5px">
+      <el-icon
+        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+        ><WarningFilled
+      /></el-icon>
+      <div style="vertical-align: middle; margin-top: -40px">
+        Event 是集群中某个事件的报告。它一般表示系统的某些状态变化。Event
+        的保留时间有限，触发器和消息可能会随着时间的推移而演变。
+      </div>
+    </el-card>
     <el-row>
       <el-col>
-        <button class="pixiu-two-button" @click="createStorageClass">新建</button>
-        <button class="pixiu-two-button2" style="margin-left: 10px" @click="syncStorageClasses">
-          刷新
-        </button>
+        <button class="pixiu-two-button" @click="createStorageClass">刷新</button>
 
         <el-input
           v-model="data.pageInfo.search.searchInfo"
