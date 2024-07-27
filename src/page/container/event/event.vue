@@ -86,7 +86,7 @@
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { getTableData, searchData } from '@/utils/utils';
-import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import { reactive, getCurrentInstance, onMounted, onUnmounted, ref } from 'vue';
 import { formatterTime } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceEventList, deleteEvent } from '@/services/kubernetes/eventService';
@@ -140,7 +140,29 @@ const onChange = (v) => {
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
   data.namespace = getLocalNamespace();
+
+  getEvents();
+
+  // 启动 localstorage 缓存监听，用于检测命名空间是否发生了变化
+  window.addEventListener('setItem', handleNamespaceChange);
 });
+
+onUnmounted(() => {
+  window.removeEventListener('setItem', handleNamespaceChange);
+});
+
+const handleNamespaceChange = (e) => {
+  if (e.storageArea === localStorage) {
+    if (e.key === 'namespace') {
+      if (e.oldValue === e.newValue) {
+        return;
+      }
+      data.namespace = e.newValue;
+      // 监控到切换命名空间之后，重新获取列表
+      getEvents();
+    }
+  }
+};
 
 const handleEventSelectionChange = (events) => {
   data.multipleEventSelection = [];

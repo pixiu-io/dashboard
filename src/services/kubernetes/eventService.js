@@ -43,10 +43,14 @@ export const getRawEventList = async (cluster, uid, namespace, name, kind, names
 
 // 获取指定命名空间的事件
 export const getNamespaceEventList = async (cluster, namespace) => {
+  let url = `/pixiu/proxy/${cluster}/api/v1/namespaces/${namespace}/events`;
+  if (namespace === '全部空间') {
+    url = `/pixiu/proxy/${cluster}/api/v1/events`;
+  }
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
-      url: `/pixiu/proxy/${cluster}/api/v1/namespaces/${namespace}/events`,
+      url: url,
       data: {
         limit: 500,
       },
