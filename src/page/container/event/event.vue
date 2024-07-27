@@ -12,7 +12,14 @@
     </el-card>
     <el-row>
       <el-col>
-        <button class="pixiu-two-button" @click="createStorageClass">刷新</button>
+        <button class="pixiu-two-button">刷新</button>
+        <button
+          style="margin-left: 10px; width: 85px"
+          class="pixiu-two-button2"
+          @click="deleteEventsInBatch"
+        >
+          批量删除
+        </button>
 
         <el-input
           v-model="data.pageInfo.search.searchInfo"
@@ -44,56 +51,18 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="30" />
-        <el-table-column prop="metadata.name" sortable label="名称">
-          <template #default="scope">
-            <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
-              {{ scope.row.metadata.name }}
-            </el-link>
-          </template>
-        </el-table-column>
-
-        <el-table-column prop="provisioner" label="PROVISIONER" :formatter="formatterProvisioner">
-        </el-table-column>
-        <el-table-column label="回收策略" prop="reclaimPolicy"> </el-table-column>
-        <el-table-column label="绑定模式" prop="volumeBindingMode"> </el-table-column>
-
         <el-table-column
-          label="创建时间"
-          prop="metadata.creationTimestamp"
+          prop="lastTimestamp"
+          label="最后出现时间"
+          sortable
           :formatter="formatterTime"
-        >
+        />
+        <el-table-column prop="type" label="级别" />
+        <el-table-column prop="involvedObject.kind" label="资源类型"> </el-table-column>
+        <el-table-column prop="involvedObject.name" label="资源名称" :formatter="formatString">
         </el-table-column>
-
-        <el-table-column fixed="right" label="操作" width="170px">
-          <template #default="scope">
-            <el-button
-              size="small"
-              type="text"
-              style="margin-right: -20px; margin-left: -10px; color: #006eff"
-              @click="editStorageClass(scope.row)"
-            >
-              设置
-            </el-button>
-
-            <el-button
-              type="text"
-              size="small"
-              style="margin-right: -25px; margin-left: 8px; color: #006eff"
-              @click="handleDeleteDialog(scope.row)"
-            >
-              删除
-            </el-button>
-
-            <el-button
-              type="text"
-              size="small"
-              style="margin-right: 1px; color: #006eff"
-              @click="handleEditYamlDialog(scope.row)"
-            >
-              YAML 设置
-            </el-button>
-          </template>
-        </el-table-column>
+        <el-table-column prop="count" label="出现次数"> </el-table-column>
+        <el-table-column prop="message" label="内容" min-width="250px" />
 
         <template #empty>
           <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
