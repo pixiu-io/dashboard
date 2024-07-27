@@ -12,7 +12,7 @@
     </el-card>
     <el-row>
       <el-col>
-        <button class="pixiu-two-button">刷新</button>
+        <button class="pixiu-two-button" @click="getEvents">刷新</button>
         <button
           style="margin-left: 10px; width: 85px"
           class="pixiu-two-button2"
@@ -74,14 +74,6 @@
     </el-card>
   </div>
 
-  <PiXiuViewOrEdit
-    :yaml-dialog="data.editYamlDialog"
-    title="编辑Yaml"
-    :yaml="data.yaml"
-    :read-only="false"
-    :refresh="syncStorageClasses"
-  ></PiXiuViewOrEdit>
-
   <pixiuDialog
     :close-event="data.deleteDialog.close"
     :object-name="data.deleteDialog.objectName"
@@ -97,12 +89,7 @@ import { getTableData, searchData } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { formatterTime } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
-import PiXiuYaml from '@/components/pixiuyaml/index.vue';
-import {
-  getStorageClassList,
-  getStorageClass,
-  deleteStorageClass,
-} from '@/services/kubernetes/storageClassService';
+import { getNamespaceEventList } from '@/services/kubernetes/eventService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 
@@ -125,12 +112,7 @@ const data = reactive({
     },
   },
   tableData: [],
-  stroageClassList: [],
-
-  //  yaml相关属性
-  yaml: '',
-  yamlName: '',
-  editYamlDialog: false,
+  eventList: [],
 
   // 删除对象属性
   deleteDialog: {
@@ -147,15 +129,29 @@ const onChange = (v) => {
   data.tableData = getTableData(data.pageInfo, data.storageClassList);
 
   if (data.pageInfo.search.searchInfo !== '') {
-    searchStorageClassList();
+    getEvents();
   }
 };
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
 
-  syncStorageClasses();
+  getEvents();
 });
+
+const getEvents = async () => {
+  data.eventData.loading = true;
+  const [result, err] = await getNamespaceEventList(data.cluster, 'default');
+  data.eventData.loading = false;
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.eventData.events = result;
+  data.eventData.pageEventInfo.total = result.length;
+  data.eventData.eventTableData = getTableData(data.eventData.pageEventInfo, data.eventData.events);
+};
 
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
@@ -185,54 +181,6 @@ const clean = () => {
   setTimeout(() => {
     data.deleteDialog.deleteName = '';
   }, 100);
-};
-
-const syncStorageClasses = async () => {
-  data.loading = true;
-  const [res, err] = await getStorageClassList(data.cluster, data.pageInfo);
-  data.loading = false;
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-
-  data.storageClassList = res.items;
-  data.pageInfo.total = data.storageClassList.length;
-  data.tableData = getTableData(data.pageInfo, data.storageClassList);
-};
-
-const searchStorageClassList = async () => {
-  data.tableData = searchData(data.pageInfo, data.storageClassList);
-};
-
-const createStorageClass = () => {
-  const url = `/storageClasses/createStorageClass?cluster=${data.cluster}`;
-  router.push(url);
-};
-
-const editStorageClass = (row) => {
-  const url = `/storageClasses/editStorageClass?cluster=${data.cluster}&name=${row.metadata.name}`;
-  router.push(url);
-};
-
-const handleEditYamlDialog = async (row) => {
-  data.yamlName = row.metadata.name;
-  // 列表中的属性缺少 Kind 和 apiVersion 属性，重新获取补充
-  const [result, err] = await getStorageClass(data.cluster, data.yamlName);
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-  data.yaml = result;
-  data.editYamlDialog = true;
-};
-
-const formatterProvisioner = (row, column, cellValue) => {
-  return (
-    <el-tooltip effect="light" placement="top" content={cellValue}>
-      <div class="pixiu-ellipsis-style">{cellValue}</div>
-    </el-tooltip>
-  );
 };
 </script>
 

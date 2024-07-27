@@ -395,7 +395,7 @@ import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getPodsByLabels, deletePod, getPodLog } from '@/services/kubernetes/podService';
 import { getDeployment, getDeployReady } from '@/services/kubernetes/deploymentService';
-import { getEventList, deleteEvent } from '@/services/kubernetes/eventService';
+import { getNamespaceEventList } from '@/services/kubernetes/eventService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { proxy } = getCurrentInstance();
