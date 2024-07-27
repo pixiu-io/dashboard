@@ -79,7 +79,7 @@
     :object-name="data.deleteDialog.objectName"
     :delete-name="data.deleteDialog.deleteName"
     :bulk-delete="true"
-    @confirm="confirm"
+    @confirm="deleteEventsInBatch"
     @cancel="cancel"
   ></pixiuDialog>
 </template>
@@ -176,11 +176,6 @@ const handleEventSelectionChange = (events) => {
 };
 
 const deleteEventsInBatch = async () => {
-  if (data.multipleEventSelection.length === 0) {
-    proxy.$notify.warning('未选择待删除事件');
-    return;
-  }
-
   for (let event of data.multipleEventSelection) {
     const [result, err] = await deleteEvent(data.cluster, event.namespace, event.name);
     if (err) {
@@ -190,6 +185,7 @@ const deleteEventsInBatch = async () => {
   }
 
   proxy.$notify.success('批量删除事件成功');
+  clean();
   getEvents();
 };
 
