@@ -95,7 +95,6 @@ import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
-const editYaml = ref();
 
 const data = reactive({
   cluster: '',
@@ -126,7 +125,7 @@ const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
 
-  data.tableData = getTableData(data.pageInfo, data.storageClassList);
+  data.tableData = getTableData(data.pageInfo, data.eventList);
 
   if (data.pageInfo.search.searchInfo !== '') {
     getEvents();
@@ -140,17 +139,17 @@ onMounted(() => {
 });
 
 const getEvents = async () => {
-  data.eventData.loading = true;
+  data.loading = true;
   const [result, err] = await getNamespaceEventList(data.cluster, 'default');
-  data.eventData.loading = false;
+  data.loading = false;
   if (err) {
     proxy.$notify.error(err.response.data.message);
     return;
   }
 
-  data.eventData.events = result;
-  data.eventData.pageEventInfo.total = result.length;
-  data.eventData.eventTableData = getTableData(data.eventData.pageEventInfo, data.eventData.events);
+  data.eventList = result;
+  data.pageInfo.total = result.length;
+  data.tableData = getTableData(data.pageInfo, data.eventList);
 };
 
 const handleDeleteDialog = (row) => {
