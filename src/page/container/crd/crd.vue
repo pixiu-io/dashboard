@@ -13,18 +13,18 @@
 
     <el-row>
       <el-col>
-        <button class="pixiu-two-button">刷新</button>
+        <button class="pixiu-two-button" @click="getCRDs">刷新</button>
 
         <el-input
           v-model="data.pageInfo.search.searchInfo"
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
-          @clear="syncStorageClasses"
-          @input="searchStorageClassList"
+          @clear="getCRDs"
+          @input="getCRDs"
         >
           <template #suffix>
-            <el-icon class="el-input__icon" @click="syncStorageClasses">
+            <el-icon class="el-input__icon" @click="getCRDs">
               <component :is="'Search'" />
             </el-icon>
           </template>
@@ -52,11 +52,12 @@
             </el-link>
           </template>
         </el-table-column>
+        <el-table-column prop="spec.names.shortNames" label="简写名称"> </el-table-column>
 
-        <el-table-column prop="kind" label="类型"> </el-table-column>
-        <el-table-column prop="group" label="Group"> </el-table-column>
-        <el-table-column prop="scope" label="Scope"> </el-table-column>
-
+        <el-table-column prop="spec.names.kind" label="类型"> </el-table-column>
+        <el-table-column prop="spec" label="最新版本" :formatter="formatterVersion">
+        </el-table-column>
+        <el-table-column prop="spec.scope" label="作用域"> </el-table-column>
         <el-table-column
           label="创建时间"
           prop="metadata.creationTimestamp"
@@ -81,14 +82,6 @@
     :read-only="false"
     :refresh="syncStorageClasses"
   ></PiXiuViewOrEdit>
-
-  <pixiuDialog
-    :close-event="data.deleteDialog.close"
-    :object-name="data.deleteDialog.objectName"
-    :delete-name="data.deleteDialog.deleteName"
-    @confirm="confirm"
-    @cancel="cancel"
-  ></pixiuDialog>
 </template>
 
 <script setup lang="jsx">
@@ -96,13 +89,9 @@ import { useRouter } from 'vue-router';
 import { getTableData, searchData } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { formatterTime } from '@/utils/formatter';
+import { getCRDList } from '@/services/kubernetes/crdService';
 import Pagination from '@/components/pagination/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
-import {
-  getStorageClassList,
-  getStorageClass,
-  deleteStorageClass,
-} from '@/services/kubernetes/storageClassService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 
@@ -112,6 +101,7 @@ const editYaml = ref();
 
 const data = reactive({
   cluster: '',
+
   loading: false,
 
   pageInfo: {
@@ -125,39 +115,50 @@ const data = reactive({
     },
   },
   tableData: [],
-  stroageClassList: [],
+  crdList: [],
 
   //  yaml相关属性
   yaml: '',
   yamlName: '',
   editYamlDialog: false,
-
-  // 删除对象属性
-  deleteDialog: {
-    close: false,
-    objectName: 'CRD',
-    deleteName: '',
-  },
 });
 
 const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
 
-  data.tableData = getTableData(data.pageInfo, data.storageClassList);
-
-  if (data.pageInfo.search.searchInfo !== '') {
-    searchStorageClassList();
-  }
+  data.tableData = getTableData(data.pageInfo, data.crdList);
 };
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
+
+  getCRDs();
 });
 
-const handleDeleteDialog = (row) => {
-  data.deleteDialog.close = true;
-  data.deleteDialog.deleteName = row.metadata.name;
+const getCRDs = async () => {
+  data.loading = true;
+  const [result, err] = await getCRDList(data.cluster);
+  data.loading = false;
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.crdList = result.items;
+  data.pageInfo.total = data.crdList.length;
+  data.tableData = getTableData(data.pageInfo, data.crdList);
+};
+
+const formatterVersion = (row, column, spec) => {
+  console.log('ddd', spec);
+  const group = spec.group;
+  const versions = spec.versions;
+  if (versions.length === 0) {
+    return group;
+  }
+
+  return group + '/' + versions[0].name;
 };
 </script>
 
