@@ -215,6 +215,18 @@ const data = reactive({
         },
       ],
     },
+    {
+      name: '事件中心',
+      icon: 'icon-devops',
+      iconType: 'iconfont',
+      url: '/kubernetes/events',
+    },
+    {
+      name: '自定义资源',
+      icon: 'Shop',
+      iconType: 'el',
+      url: '/kubernetes/crds',
+    },
     // {
     //   id: 5,
     //   name: 'Cicd',
