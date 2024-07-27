@@ -26,11 +26,11 @@
           placeholder="名称搜索关键字"
           style="width: 480px; float: right"
           clearable
-          @clear="syncStorageClasses"
-          @input="searchStorageClassList"
+          @clear="getEvents"
+          @input="getEvents"
         >
           <template #suffix>
-            <el-icon class="el-input__icon" @click="syncStorageClasses">
+            <el-icon class="el-input__icon" @click="getEvents">
               <component :is="'Search'" />
             </el-icon>
           </template>
@@ -48,7 +48,7 @@
           color: '#191919',
         }"
         header-row-class-name="pixiu-table-header"
-        @selection-change="handleSelectionChange"
+        @selection-change="handleEventSelectionChange"
       >
         <el-table-column type="selection" width="30" />
         <el-table-column
@@ -89,7 +89,7 @@ import { getTableData, searchData } from '@/utils/utils';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { formatterTime } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
-import { getNamespaceEventList } from '@/services/kubernetes/eventService';
+import { getNamespaceEventList, deleteEvent } from '@/services/kubernetes/eventService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 
@@ -113,10 +113,12 @@ const data = reactive({
   tableData: [],
   eventList: [],
 
+  multipleEventSelection: [],
+
   // 删除对象属性
   deleteDialog: {
     close: false,
-    objectName: 'StorageClass',
+    objectName: 'Event',
     deleteName: '',
   },
 });
@@ -134,9 +136,35 @@ const onChange = (v) => {
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
-
-  getEvents();
 });
+
+const handleEventSelectionChange = (events) => {
+  data.multipleEventSelection = [];
+  for (let event of events) {
+    data.multipleEventSelection.push({
+      name: event.metadata.name,
+      namespace: event.metadata.namespace,
+    });
+  }
+};
+
+const deleteEventsInBatch = async () => {
+  if (data.multipleEventSelection.length === 0) {
+    proxy.$notify.warning('未选择待删除事件');
+    return;
+  }
+
+  for (let event of data.multipleEventSelection) {
+    const [result, err] = await deleteEvent(data.cluster, event.namespace, event.name);
+    if (err) {
+      proxy.$notify.error(err.response.data.message);
+      return;
+    }
+  }
+
+  proxy.$notify.success('批量删除事件成功');
+  getEvents();
+};
 
 const getEvents = async () => {
   data.loading = true;
