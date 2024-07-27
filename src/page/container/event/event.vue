@@ -92,12 +92,15 @@ import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceEventList, deleteEvent } from '@/services/kubernetes/eventService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
+import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
 
 const data = reactive({
   cluster: '',
+  namespace: 'default',
+
   loading: false,
 
   pageInfo: {
@@ -136,6 +139,7 @@ const onChange = (v) => {
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
+  data.namespace = getLocalNamespace();
 });
 
 const handleEventSelectionChange = (events) => {
@@ -168,7 +172,7 @@ const deleteEventsInBatch = async () => {
 
 const getEvents = async () => {
   data.loading = true;
-  const [result, err] = await getNamespaceEventList(data.cluster, 'default');
+  const [result, err] = await getNamespaceEventList(data.cluster, data.namespace);
   data.loading = false;
   if (err) {
     proxy.$notify.error(err.response.data.message);
