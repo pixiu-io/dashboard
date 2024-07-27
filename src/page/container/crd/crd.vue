@@ -1,5 +1,16 @@
 <template>
   <div style="margin-top: 5px">
+    <el-card class="app-docs" style="height: 40px; margin-top: 5px">
+      <el-icon
+        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+        ><WarningFilled
+      /></el-icon>
+      <div style="vertical-align: middle; margin-top: -40px">
+        自定义资源 (CRD) 是一种 Kubernetes 实现自定义资源类型的扩展方式,
+        您可以像操作内置资源对象一样操作 CRD 对象.
+      </div>
+    </el-card>
+
     <el-row>
       <el-col>
         <button class="pixiu-two-button">刷新</button>
@@ -34,7 +45,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="30" />
-        <el-table-column prop="metadata.name" sortable label="名称">
+        <el-table-column prop="metadata.name" sortable label="资源名称">
           <template #default="scope">
             <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
               {{ scope.row.metadata.name }}
@@ -44,7 +55,7 @@
 
         <el-table-column prop="kind" label="类型"> </el-table-column>
         <el-table-column prop="group" label="Group"> </el-table-column>
-        <el-table-column label="scope" prop="Scope"> </el-table-column>
+        <el-table-column prop="scope" label="Scope"> </el-table-column>
 
         <el-table-column
           label="创建时间"
