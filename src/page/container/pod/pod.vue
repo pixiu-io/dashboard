@@ -959,7 +959,9 @@ const getPodLogs = async () => {
 };
 
 onBeforeUnmount(() => {
-  ws.value.close();
+  if (ws.value !== null) {
+    ws.value.close();
+  }
 });
 
 const cancelpodContainers = () => {

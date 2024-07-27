@@ -284,7 +284,25 @@
               </el-switch>
             </template>
           </el-table-column>
-
+          <el-table-column>
+            <template #header>
+              <Icon
+                icon="QuestionFilled"
+                desc="启用集群缓存时，需要较大的内存（根据集群资源情况）。"
+              >
+                启用缓存
+              </Icon>
+            </template>
+            <template #default="scope">
+              <el-switch
+                v-model="scope.row.cache"
+                inline-prompt
+                size="small"
+                @change="changeCachedStatus(scope.row)"
+              >
+              </el-switch>
+            </template>
+          </el-table-column>
           <el-table-column label="创建时间" prop="gmt_create" sortable :formatter="formatterTime">
           </el-table-column>
 
@@ -492,7 +510,7 @@ import Icon from '@/components/pixiuTooltip/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import useCloudStore from '@/stores/useCloud';
 import { formatterTime } from '@/utils/formatter';
-import { changeClusterProtected } from '@/services/cloudService';
+import { changeClusterCacheStatus, changeClusterProtected } from '@/services/cloudService';
 import { copy } from '@/utils/utils';
 import { useRouter } from 'vue-router';
 
@@ -514,6 +532,20 @@ onMounted(() => {
 
 const changeProtectStatus = async (row) => {
   const [result, err] = await changeClusterProtected(row.id, row.resource_version, row.protected);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+  row.resource_version = row.resource_version + 1;
+};
+
+const changeCachedStatus = async (row) => {
+  const [result, err] = await changeClusterCacheStatus(
+    row.id,
+    row.name,
+    row.resource_version,
+    row.cache,
+  );
   if (err) {
     proxy.$notify.error(err.response.data.message);
     return;
