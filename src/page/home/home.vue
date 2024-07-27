@@ -1,53 +1,33 @@
 <template>
-  <el-main id="main">
-    <div style="font-weight: bold; font-size: 18px; vertical-align: middle">概览</div>
-    <div>
-      <div style="display: flex; margin-top: 20px; height: 100px; margin-left: 20px">
-        <transition name="el-zoom-in-top">
-          <div v-if="true" class="transition-box"><CountTo :value="800" /><br />集群总数</div>
-        </transition>
-        <transition name="el-zoom-in-center">
-          <div v-if="true" class="transition-box"><count-to :value="80" /><br />节点总数</div>
-        </transition>
-        <transition name="el-zoom-in-center">
-          <div v-if="true" class="transition-box"><count-to :value="67" /> <br />流水线总数</div>
-        </transition>
-        <transition name="el-zoom-in-center">
-          <div v-if="true" class="transition-box"><count-to :value="660" /><br />服务总数</div>
-        </transition>
-        <transition name="el-zoom-in-center">
-          <div v-if="true" class="transition-box"><count-to :value="890" /><br />实例总数</div>
-        </transition>
-        <transition name="el-zoom-in-bottom">
-          <div v-if="true" class="transition-box"><count-to :value="9" /><br />告警总数</div>
-        </transition>
-      </div>
-    </div>
-    <el-row>
-      <el-col>
-        <div
-          style="
-            height: 450px;
-            width: 45%;
-            margin-left: 30px;
-            margin-top: 20px;
-            display: inline-block;
-          "
+  <el-main style="background-color: #f3f4f7">
+    <el-row :gutter="15" style="height: 100%">
+      <el-col :span="18">
+        <el-row style="height: 58%">
+          <el-card style="width: 100%; height: 100%; border-radius: 0px">
+            <div
+              style="
+                height: 450px;
+                width: 45%;
+                margin-left: 30px;
+                margin-top: 20px;
+                display: inline-block;
+              "
+            >
+              <my-echarts :option="planOption"></my-echarts>
+            </div>
+          </el-card>
+        </el-row>
+
+        <el-row style="height: 2%"></el-row>
+
+        <el-row style="height: 40%">
+          <el-card style="width: 100%; height: 100%; border-radius: 0px">监控大盘</el-card></el-row
         >
-          <my-echarts :option="cloudOption"></my-echarts>
-        </div>
-        <div
-          style="
-            height: 450px;
-            width: 45%;
-            margin-left: 30px;
-            margin-top: 20px;
-            display: inline-block;
-          "
-        >
-          <my-echarts :option="option" style="margin-top: 46px"></my-echarts>
-        </div>
       </el-col>
+
+      <el-col :span="6">
+        <el-card style="width: 100%; height: 100%; border-radius: 0px">操作记录</el-card></el-col
+      >
     </el-row>
   </el-main>
 </template>
@@ -55,31 +35,9 @@
 <script setup>
 import { reactive } from 'vue';
 import MyEcharts from '@/components/echarts/index.vue';
-import CountTo from '@/components/pixiucount/index.vue';
 
-const option = reactive({
-  // title: {
-  //   text: "平台用户访问分析",
-  // },
-  tooltip: {},
-  legend: {
-    data: ['用户访问'],
-  },
-  xAxis: {
-    data: ['2022/09/01', '2022/09/02', '2022/09/03', '2022/09/04', '2022/09/05', '2022/09/06'],
-  },
-  yAxis: {},
-  series: [
-    {
-      name: '用户访问',
-      type: 'bar',
-      data: [5, 20, 36, 10, 10, 20],
-    },
-  ],
-});
-
-const cloudOption = reactive({
-  title: { text: '平台产品访问分析' },
+const planOption = reactive({
+  title: { text: '部署计划' },
   legend: {
     top: 'bottom',
   },
@@ -103,30 +61,14 @@ const cloudOption = reactive({
         borderRadius: 8,
       },
       data: [
-        { value: 40, name: '容器服务' },
-        { value: 38, name: '中间件' },
-        { value: 32, name: 'DevOps' },
-        { value: 30, name: '微服务' },
-        { value: 28, name: '用户中心' },
-        { value: 26, name: '低代码' },
+        { value: 40, name: '部署中' },
+        { value: 38, name: '运行中' },
+        { value: 32, name: '未开始' },
+        { value: 10, name: '部署失败' },
       ],
     },
   ],
 });
 </script>
 
-<style scoped>
-.transition-box {
-  margin-bottom: 50px;
-  width: 200px;
-  height: 100px;
-  border-radius: 4px;
-  background-color: #409eff;
-  text-align: center;
-  color: #fff;
-  padding: 20px 20px;
-  box-sizing: border-box;
-  margin-right: 20px;
-  font-size: 18px;
-}
-</style>
+<style></style>
