@@ -67,6 +67,8 @@ import {
   Plan,
   PlanDetail,
   PlanCreate,
+  Event,
+  CRD,
 } from '@/page';
 
 const routes = [
@@ -354,6 +356,22 @@ const routes = [
               title: 'TaskRun',
             },
             component: TaskRun,
+          },
+          {
+            path: 'events',
+            name: 'Event',
+            meta: {
+              title: 'events',
+            },
+            component: Event,
+          },
+          {
+            path: 'crds',
+            name: 'CRD',
+            meta: {
+              title: 'crds',
+            },
+            component: CRD,
           },
         ],
       },

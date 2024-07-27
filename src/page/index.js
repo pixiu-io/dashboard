@@ -64,6 +64,8 @@ import CreateTaskRun from './container/cicd/createtaskrun.vue';
 import Plan from './plan/plan.vue';
 import PlanDetail from './plan/planDetail.vue';
 import PlanCreate from './plan/planCreate.vue';
+import Event from './container/event/event.vue';
+import CRD from './container/crd/crd.vue';
 export {
   Home,
   Login,
@@ -131,4 +133,6 @@ export {
   Plan,
   PlanDetail,
   PlanCreate,
+  Event,
+  CRD,
 };
