@@ -31,13 +31,18 @@
         style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
         ><WarningFilled
       /></el-icon>
-      <div v-if="aliasName !== ''" style="vertical-align: middle; margin-top: -40px">
-        此操作将永久删除 {{ objectName }} (<span style="color: red"> {{ aliasName }}</span
-        >)， 是否继续？
+      <div v-if="bulkDelete" style="vertical-align: middle; margin-top: -40px">
+        此操作将<span style="color: red"> 批量 </span>删除选中的 {{ objectName }} ， 是否继续？
       </div>
-      <div v-else style="vertical-align: middle; margin-top: -40px">
-        此操作将永久删除 {{ objectName }} (<span style="color: red"> {{ deleteName }}</span
-        >)， 是否继续？
+      <div v-else>
+        <div v-if="aliasName !== ''" style="vertical-align: middle; margin-top: -40px">
+          此操作将永久删除 {{ objectName }} (<span style="color: red"> {{ aliasName }}</span
+          >)， 是否继续？
+        </div>
+        <div v-else style="vertical-align: middle; margin-top: -40px">
+          此操作将永久删除 {{ objectName }} (<span style="color: red"> {{ deleteName }}</span
+          >)， 是否继续？
+        </div>
       </div>
     </el-card>
 
@@ -62,6 +67,7 @@ defineProps({
   objectName: { type: String, default: '' },
   deleteName: { type: String, default: '' },
   aliasName: { type: String, default: '' },
+  bulkDelete: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(['confirm', 'cancel']);

@@ -16,7 +16,7 @@
         <button
           style="margin-left: 10px; width: 85px"
           class="pixiu-two-button2"
-          @click="deleteEventsInBatch"
+          @click="handleDeleteDialog"
         >
           批量删除
         </button>
@@ -78,6 +78,7 @@
     :close-event="data.deleteDialog.close"
     :object-name="data.deleteDialog.objectName"
     :delete-name="data.deleteDialog.deleteName"
+    :bulk-delete="true"
     @confirm="confirm"
     @cancel="cancel"
   ></pixiuDialog>
@@ -207,22 +208,12 @@ const getEvents = async () => {
 };
 
 const handleDeleteDialog = (row) => {
-  data.deleteDialog.close = true;
-  data.deleteDialog.deleteName = row.metadata.name;
-};
-
-const confirm = async () => {
-  const [result, err] = await deleteStorageClass(data.cluster, data.deleteDialog.deleteName);
-  if (err) {
-    proxy.$message.error(err.response.data.message);
+  if (data.multipleEventSelection.length === 0) {
+    proxy.$notify.warning('未选择待删除事件');
     return;
   }
-  proxy.$message.success(
-    `${data.deleteDialog.objectName}(${data.deleteDialog.deleteName}) 删除成功`,
-  );
 
-  clean();
-  await syncStorageClasses();
+  data.deleteDialog.close = true;
 };
 
 const cancel = () => {
