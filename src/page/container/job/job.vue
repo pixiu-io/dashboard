@@ -4,7 +4,9 @@
       <PiXiuYaml :refresh="getJobs"></PiXiuYaml>
     </div>
   </div> -->
-
+  <Description
+    :description="'Job 是 Kubernetes 中用于批量执行一组容器的工作流。它可以定义多个容器，并按照顺序执行。当一个容器失败时，Job 会自动重启容器。Job 还可以设置重启策略，以便在失败时自动重试。'"
+  />
   <div style="margin-top: 5px">
     <el-row>
       <el-col>
@@ -137,6 +139,7 @@ import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import { getJobList, getJob, deleteJob, updateJob } from '@/services/kubernetes/jobService';
+import Description from '@/components/description/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import {

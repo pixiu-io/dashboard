@@ -2,6 +2,9 @@
   <!-- <div class="title-card-container2">
     <PiXiuYaml :refresh="getDeployments" title=""></PiXiuYaml>
   </div> -->
+  <Description
+    :description="'Deployment 是 Kubernetes 集群中用来管理应用的一种资源。它定义了应用的期望状态，比如副本数、镜像版本等，并提供策略来控制应用的部署、更新和回滚。'"
+  />
 
   <div style="margin-top: 5px">
     <el-row>
@@ -635,6 +638,7 @@ import {
 import { getEventList, deleteEvent } from '@/services/kubernetes/eventService';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
+import Description from '@/components/description/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import PixiuLog from '@/components/pixiulog/index.vue';
 

@@ -44,24 +44,25 @@
       </el-row>
     </el-card>
 
-    <el-card class="app-docs">
-      <div>
-        <el-icon
-          style="
-            vertical-align: middle;
-            font-size: 18px;
-            margin-left: -20px;
-            margin-right: 8px;
-            margin-top: -25px;
-          "
-          ><WarningFilled
-        /></el-icon>
-
-        <div style="vertical-align: middle; margin-top: -27px; margin-left: 10px">
-          Kubernetnes 节点能力全面升级，支持更多集群版本。
-        </div>
-      </div>
-    </el-card>
+    <Description
+      :description="'Kubernetnes 节点能力全面升级，支持更多集群版本。'"
+      :icon-style="{
+        verticalAlign: 'middle',
+        fontSize: '18px',
+        marginLeft: '-20px',
+        marginRight: '8px',
+        marginTop: '-25px',
+      }"
+      :text-style="{
+        verticalAlign: 'middle',
+        marginTop: '-27px',
+        marginLeft: '10px',
+      }"
+      :card-style="{
+        marginTop: '',
+        height: '',
+      }"
+    />
 
     <div style="margin-top: 20px">
       <el-row>
@@ -487,6 +488,7 @@
 
 <script setup lang="jsx">
 import { getCurrentInstance, onMounted } from 'vue';
+import Description from '@/components/description/index.vue';
 import PixiuRadioCard from '@/components/radioCard/index.vue';
 import Icon from '@/components/pixiuTooltip/index.vue';
 import Pagination from '@/components/pagination/index.vue';

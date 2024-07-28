@@ -4,7 +4,9 @@
       <PiXiuYaml :refresh="getSecrets"></PiXiuYaml>
     </div>
   </div> -->
-
+  <Description
+    :description="'Secret 是一种包含少量敏感信息例如密码、令牌或密钥的对象。 这样的信息可能会被放在 Pod 规约中或者镜像中。 使用 Secret 意味着你不需要在应用程序代码中包含机密数据。'"
+  />
   <div style="margin-top: 5px">
     <el-row>
       <el-col>
@@ -141,6 +143,7 @@ import useClipboard from 'vue-clipboard3';
 import { getTableData, searchData } from '@/utils/utils';
 import { formatterTime, formatString, formatterNamespace } from '@/utils/formatter';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
+import Description from '@/components/description/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import Pagination from '@/components/pagination/index.vue';

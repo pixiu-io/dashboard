@@ -4,6 +4,9 @@
       <PiXiuYaml :refresh="getCronJobs"></PiXiuYaml>
     </div>
   </div> -->
+  <Description
+    :description="'CronJob 比 Job 更强大，可以定时执行任务，且可以设置多个任务并行执行，其他特性与 Job 相同。'"
+  />
   <div style="margin-top: 5px">
     <el-row>
       <el-col>
@@ -210,6 +213,7 @@ import {
   updateDeployment,
   deleteDeployment,
 } from '@/services/kubernetes/deploymentService';
+import Description from '@/components/description/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';

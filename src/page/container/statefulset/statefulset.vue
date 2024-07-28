@@ -4,6 +4,10 @@
     <PiXiuYaml :refresh="getStatefulsets"></PiXiuYaml>
   </el-card>
 
+  <Description
+    :description="'StatefulSet 是 Kubernetes 中用来管理有状态应用的资源对象。它可以保证应用的持久化存储，即使 StatefulSet 中的 Pod 被重新调度，也能保证数据不丢失。'"
+  />
+
   <div style="margin-top: 25px">
     <el-row>
       <el-col>
@@ -216,6 +220,7 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData } from '@/utils/utils';
 import PixiuTag from '@/components/pixiuTag/index.vue';
+import Description from '@/components/description/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import {

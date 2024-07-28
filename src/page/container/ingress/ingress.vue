@@ -4,7 +4,9 @@
       <PiXiuYaml :refresh="getIngresses"></PiXiuYaml>
     </div>
   </div> -->
-
+  <Description
+    :description="'Ingress 是 Kubernetes 中用来定义 Kubernetes 服务访问的规则的资源。它定义了从集群外部到集群内服务的访问方式，包括协议、端口、路径等。'"
+  />
   <div style="margin-top: 5px">
     <el-row>
       <el-col>
@@ -151,6 +153,7 @@ import {
   deleteIngress,
 } from '@/services/kubernetes/ingressService';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
+import Description from '@/components/description/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';

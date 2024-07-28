@@ -141,11 +141,11 @@ const data = reactive({
           name: 'Pod',
           url: '/kubernetes/pods',
         },
-        {
-          id: 1.4,
-          name: 'Helm',
-          url: '/kubernetes/release',
-        },
+        // {
+        //   id: 1.4,
+        //   name: 'Helm',
+        //   url: '/kubernetes/release',
+        // },
       ],
     },
     {
@@ -296,11 +296,11 @@ const data = reactive({
           name: 'Pod',
           url: '/kubernetes/pods',
         },
-        {
-          id: 1.4,
-          name: 'Helm',
-          url: '/kubernetes/release',
-        },
+        // {
+        //   id: 1.4,
+        //   name: 'Helm',
+        //   url: '/kubernetes/release',
+        // },
       ],
     },
     {
@@ -370,24 +370,24 @@ const data = reactive({
         },
       ],
     },
-    {
-      id: 6,
-      name: '貔貅商店',
-      icon: 'Shop',
-      iconType: 'el',
-      children: [
-        {
-          id: 6.1,
-          name: 'Operator',
-          url: '/kubernetes/operator',
-        },
-        {
-          id: 6.2,
-          name: 'Helm',
-          url: '/kubernetes/helm',
-        },
-      ],
-    },
+    // {
+    //   id: 6,
+    //   name: '貔貅商店',
+    //   icon: 'Shop',
+    //   iconType: 'el',
+    //   children: [
+    //     {
+    //       id: 6.1,
+    //       name: 'Operator',
+    //       url: '/kubernetes/operator',
+    //     },
+    //     {
+    //       id: 6.2,
+    //       name: 'Helm',
+    //       url: '/kubernetes/helm',
+    //     },
+    //   ],
+    // },
   ],
 });
 

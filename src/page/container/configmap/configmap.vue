@@ -4,7 +4,9 @@
       <PiXiuYaml :refresh="getConfigMaps"></PiXiuYaml>
     </div>
   </div> -->
-
+  <Description
+    :description="'ConfigMap 是一种 API 对象，用来将非机密性的数据保存到键值对中。使用时， Pod 可以将其用作环境变量、命令行参数或者存储卷中的配置文件。'"
+  />
   <div style="margin-top: 5px">
     <el-row>
       <el-col>
@@ -148,6 +150,7 @@ import { reactive, getCurrentInstance, onMounted, ref, onUnmounted } from 'vue';
 import { getTableData, searchData, copy } from '@/utils/utils';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
+import Description from '@/components/description/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import {
