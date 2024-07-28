@@ -69,6 +69,7 @@ import {
   PlanCreate,
   Event,
   CRD,
+  Audit,
 } from '@/page';
 
 const routes = [
@@ -100,6 +101,14 @@ const routes = [
           title: '容器服务',
         },
         component: Cluster,
+      },
+      {
+        path: 'audits',
+        name: 'Audit',
+        meta: {
+          title: '审计管理',
+        },
+        component: Audit,
       },
       {
         path: 'clusters/insertCluster',

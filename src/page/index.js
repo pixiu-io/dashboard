@@ -66,6 +66,7 @@ import PlanDetail from './plan/planDetail.vue';
 import PlanCreate from './plan/planCreate.vue';
 import Event from './container/event/event.vue';
 import CRD from './container/crd/crd.vue';
+import Audit from './audit/audit.vue';
 export {
   Home,
   Login,
@@ -135,4 +136,5 @@ export {
   PlanCreate,
   Event,
   CRD,
+  Audit,
 };
