@@ -101,6 +101,12 @@ onMounted(() => {
       icon: 'icon-acrrongqijingxiangfuwu',
       iconType: 'iconfont',
     },
+    {
+      name: '审计管理',
+      url: '/audits',
+      icon: 'icon-Audits',
+      iconType: 'iconfont',
+    },
     // {
     //   name: 'DevOps',
     //   url: '/cicd',
