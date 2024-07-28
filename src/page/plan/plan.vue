@@ -4,25 +4,25 @@
       <span style="font-weight: bold; font-size: 18px; vertical-align: middle"> 部署计划 </span>
     </el-card>
 
-    <el-card class="app-docs">
-      <div>
-        <el-icon
-          style="
-            vertical-align: middle;
-            font-size: 18px;
-            margin-left: -20px;
-            margin-right: 8px;
-            margin-top: -25px;
-          "
-          ><WarningFilled
-        /></el-icon>
-
-        <div style="vertical-align: middle; margin-top: -27px; margin-left: 10px">
-          新建部署计划以自建 kubernetes 集群，完全兼容开源 Kubernetes
-          集群标准功能，并强化节点管理、集群网络、容器调度等能力。
-        </div>
-      </div>
-    </el-card>
+    <Description
+      :description="'新建部署计划以自建 kubernetes 集群，完全兼容开源 Kubernetes 集群标准功能，并强化节点管理、集群网络、容器调度等能力。'"
+      :icon-style="{
+        fontSize: '18px',
+        verticalAlign: 'middle',
+        marginLeft: '-20px',
+        marginRight: '8px',
+        marginTop: '-20px',
+      }"
+      :text-style="{
+        verticalAlign: 'middle',
+        marginTop: '-27px',
+        marginLeft: '10px',
+      }"
+      :card-style="{
+        marginTop: '',
+        marginLeft: '',
+      }"
+    />
 
     <div style="margin-top: 20px">
       <el-row>
@@ -331,6 +331,7 @@ import {
   startPlanTask,
   watchPlanTasks,
 } from '@/services/plan/planService';
+import Description from '@/components/description/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { copy } from '@/utils/utils';
 

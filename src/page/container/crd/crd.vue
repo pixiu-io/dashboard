@@ -1,15 +1,8 @@
 <template>
   <div style="margin-top: 5px">
-    <el-card class="app-docs" style="height: 40px; margin-top: 5px">
-      <el-icon
-        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
-        ><WarningFilled
-      /></el-icon>
-      <div style="vertical-align: middle; margin-top: -40px">
-        自定义资源 (CRD) 是一种 Kubernetes 实现自定义资源类型的扩展方式,
-        您可以像操作内置资源对象一样操作 CRD 对象.
-      </div>
-    </el-card>
+    <Description
+      :description="'自定义资源 (CRD) 是一种 Kubernetes 实现自定义资源类型的扩展方式, 您可以像操作内置资源对象一样操作 CRD 对象.'"
+    />
 
     <el-row>
       <el-col>
@@ -91,6 +84,7 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { formatterTime } from '@/utils/formatter';
 import { getCRDList } from '@/services/kubernetes/crdService';
 import Pagination from '@/components/pagination/index.vue';
+import Description from '@/components/description/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
@@ -151,7 +145,6 @@ const getCRDs = async () => {
 };
 
 const formatterVersion = (row, column, spec) => {
-  console.log('ddd', spec);
   const group = spec.group;
   const versions = spec.versions;
   if (versions.length === 0) {

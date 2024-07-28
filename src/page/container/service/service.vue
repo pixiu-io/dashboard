@@ -4,7 +4,9 @@
       <PiXiuYaml :refresh="getServices"></PiXiuYaml>
     </div>
   </div> -->
-
+  <Description
+    :description="'Service 是 Kubernetes 的抽象概念，它提供一个稳定的 IP 地址和一组容器，可以被外部的客户端访问。'"
+  />
   <div style="margin-top: 5px">
     <el-row>
       <el-col>
@@ -142,6 +144,7 @@ import {
   deleteService,
 } from '@/services/kubernetes/serviceService';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
+import Description from '@/components/description/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';

@@ -3,7 +3,9 @@
     <div class="font-container">StorageClass</div>
     <PiXiuYaml :refresh="syncStorageClasses"></PiXiuYaml>
   </el-card> -->
-
+  <Description
+    :description="'StorageClass 是 Kubernetes 中用来描述存储类的资源对象，它定义了 Kubernetes 集群中如何使用底层存储设备。'"
+  />
   <div style="margin-top: 5px">
     <el-row>
       <el-col>
@@ -132,6 +134,7 @@ import {
   getStorageClass,
   deleteStorageClass,
 } from '@/services/kubernetes/storageClassService';
+import Description from '@/components/description/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 

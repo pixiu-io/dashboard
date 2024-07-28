@@ -1,15 +1,8 @@
 <template>
   <div style="margin-top: 5px">
-    <el-card class="app-docs" style="height: 40px; margin-top: 5px">
-      <el-icon
-        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
-        ><WarningFilled
-      /></el-icon>
-      <div style="vertical-align: middle; margin-top: -40px">
-        Event 是集群中某个事件的报告。它一般表示系统的某些状态变化。Event
-        的保留时间有限，触发器和消息可能会随着时间的推移而演变。
-      </div>
-    </el-card>
+    <Description
+      :description="'Event 是集群中某个事件的报告。它一般表示系统的某些状态变化。Event 的保留时间有限，触发器和消息可能会随着时间的推移而演变。'"
+    />
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="getEvents">刷新</button>
@@ -92,6 +85,7 @@ import { formatterTime } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getNamespaceEventList, deleteEvent } from '@/services/kubernetes/eventService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
+import Description from '@/components/description/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 
