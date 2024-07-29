@@ -1,6 +1,6 @@
 <template>
-  <el-card class="app-docs" style="padding: 0">
-    <el-space>
+  <el-card :class="['description', className]">
+    <el-space :alignment="alignment">
       <PixiuIcon :name="iconName" :color="iconColor" :size="'18px'" />
       {{ description }}
     </el-space>
@@ -9,19 +9,38 @@
 
 <script setup>
 import PixiuIcon from '@/components/pixiuIcon/index.vue';
-const props = defineProps({
-  description: {
+defineProps({
+  iconName: {
     type: String,
-    default: '',
-    required: true,
+    default: 'WarningFilled',
   },
   iconColor: {
     type: String,
     default: 'inherit',
   },
-  iconName: {
+  description: {
     type: String,
-    default: 'WarningFilled',
+    default: '',
+    require: true,
+  },
+  alignment: {
+    type: String,
+    default: 'center',
+  },
+  className: {
+    type: String,
+    default: '',
   },
 });
 </script>
+
+<style scoped>
+.description {
+  font-size: 12px;
+  line-height: inherit;
+  color: #002da0;
+  padding: 0;
+  border-radius: 0;
+  background: #d5e7ff;
+}
+</style>
