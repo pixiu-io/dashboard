@@ -44,25 +44,7 @@
       </el-row>
     </el-card>
 
-    <Description
-      :description="'Kubernetnes 节点能力全面升级，支持更多集群版本。'"
-      :icon-style="{
-        verticalAlign: 'middle',
-        fontSize: '18px',
-        marginLeft: '-20px',
-        marginRight: '8px',
-        marginTop: '-25px',
-      }"
-      :text-style="{
-        verticalAlign: 'middle',
-        marginTop: '-27px',
-        marginLeft: '10px',
-      }"
-      :card-style="{
-        marginTop: '',
-        height: '',
-      }"
-    />
+    <Description :description="'Kubernetnes 节点能力全面升级，支持更多集群版本。'" />
 
     <div style="margin-top: 20px">
       <el-row>

@@ -3,7 +3,9 @@
     <el-card style="margin-top: -20px; margin-left: -20px; margin-right: -20px; border-radius: 0px">
       <span style="font-weight: bold; font-size: 18px; vertical-align: middle"> 用户列表 </span>
     </el-card>
-
+    <Description
+      :description="'平台用户管理，包括新建用户、删除用户、更新用户信息、重置密码等功能。'"
+    />
     <div style="margin-top: 20px">
       <el-row>
         <el-col>
@@ -322,6 +324,7 @@ import UserEdit from './userEdit.vue';
 import UserSetRole from './userSetRole.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { GetUserList, deleteUser, createUser, updatePassword } from '@/services/user/userService';
+import Description from '@/components/description/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { copy } from '@/utils/utils';
 

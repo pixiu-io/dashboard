@@ -5,23 +5,7 @@
     </el-card>
 
     <Description
-      :description="'补充点关于审计的文案说明。'"
-      :icon-style="{
-        fontSize: '18px',
-        verticalAlign: 'middle',
-        marginLeft: '-20px',
-        marginRight: '8px',
-        marginTop: '-20px',
-      }"
-      :text-style="{
-        verticalAlign: 'middle',
-        marginTop: '-27px',
-        marginLeft: '10px',
-      }"
-      :card-style="{
-        marginTop: '',
-        marginLeft: '',
-      }"
+      :description="'审计管理用于查看用户针对平台的操作记录，包括创建、修改、删除等操作。'"
     />
 
     <div style="margin-top: 20px">
