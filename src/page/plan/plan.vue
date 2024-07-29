@@ -6,22 +6,6 @@
 
     <Description
       :description="'新建部署计划以自建 kubernetes 集群，完全兼容开源 Kubernetes 集群标准功能，并强化节点管理、集群网络、容器调度等能力。'"
-      :icon-style="{
-        fontSize: '18px',
-        verticalAlign: 'middle',
-        marginLeft: '-20px',
-        marginRight: '8px',
-        marginTop: '-20px',
-      }"
-      :text-style="{
-        verticalAlign: 'middle',
-        marginTop: '-27px',
-        marginLeft: '10px',
-      }"
-      :card-style="{
-        marginTop: '',
-        marginLeft: '',
-      }"
     />
 
     <div style="margin-top: 20px">
