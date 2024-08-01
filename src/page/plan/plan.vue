@@ -298,6 +298,7 @@
                   text
                   size="small"
                   style="margin-right: -24px; margin-left: -10px; color: #006eff"
+                  :disabled="scope.row.status == '未开始'"
                   @click="handleTaskLogDrawer(scope.row)"
                 >
                   日志
