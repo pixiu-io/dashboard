@@ -156,6 +156,16 @@ export const watchPlanTasks = async (pid, signal) => {
   });
 };
 
+export const watchPlanTaskLog = async (pid, name, signal) => {
+  const baseUrl = http({ method: 'watch' });
+  const headers = getHeadersWithToken();
+  return fetch(`${baseUrl}/pixiu/plans/${pid}/tasks/${name}/logs`, {
+    method: 'get',
+    headers: headers,
+    signal: signal,
+  });
+};
+
 export const planTasksStatus = async (pid) => {
   const [err, result] = await awaitWrap(
     http({

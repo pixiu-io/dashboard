@@ -292,6 +292,11 @@
                 </div>
               </template>
             </el-table-column>
+            <el-table-column>
+              <template #default="scope">
+                <el-button text @click="handleTaskLogDrawer(scope.row)">日志</el-button>
+              </template>
+            </el-table-column>
 
             <template #empty>
               <div class="table-inline-word">暂无部署任务</div>
@@ -300,6 +305,30 @@
         </div>
       </div>
     </div>
+    <el-drawer
+      v-model="data.taskLog.drawer"
+      :size="data.taskLog.width"
+      :with-header="false"
+      @open="openTaskLogDrawer"
+      @close="closeTaskLogDrawer"
+    >
+      <div style="display: flex; height: 100%; width: 100%">
+        <div>
+          <el-steps direction="vertical" :active="3" space="60px" process-status="process">
+            <el-step
+              v-for="(activity, index) in data.taskData.tableData"
+              :key="index"
+              :title="activity.name"
+              :description="extractDateFormat(activity.gmt_create)"
+              :status="stepStatus(activity.status)"
+            />
+          </el-steps>
+        </div>
+        <div style="width: 100%">
+          <PixiuLog :yaml-dialog="data.taskLog.drawer" :log="data.taskLog.log"></PixiuLog>
+        </div>
+      </div>
+    </el-drawer>
   </el-drawer>
 </template>
 
@@ -314,10 +343,14 @@ import {
   deletePlan,
   startPlanTask,
   watchPlanTasks,
+  watchPlanTaskLog,
 } from '@/services/plan/planService';
 import Description from '@/components/description/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { copy } from '@/utils/utils';
+import PixiuLog from '@/components/pixiulog/index.vue';
+import { MoreFilled } from '@element-plus/icons-vue';
+import { extractDateFormat } from 'element-plus';
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
@@ -325,6 +358,7 @@ const { proxy } = getCurrentInstance();
 const data = reactive({
   loading: false,
   streams: [], // 处理流
+  LogStreams: [], // 处理流
   tableData: [],
   planList: [],
 
@@ -367,6 +401,12 @@ const data = reactive({
     width: '45%',
     task: '',
     tableData: [],
+  },
+  taskLog: {
+    drawer: false,
+    width: '80%',
+    task: '',
+    log: '',
   },
 });
 
@@ -465,6 +505,49 @@ const goToCreatePlan = () => {
   });
 };
 
+const stepStatus = (status) => {
+  switch (status) {
+    case '已成功':
+      return 'success';
+    case '未开始':
+      return 'wait';
+    case '运行中':
+      return 'process';
+    case '部署失败':
+      return 'error';
+  }
+};
+
+const handleTaskLogDrawer = (row) => {
+  data.taskLog.task = row;
+  data.taskLog.drawer = true;
+};
+const openTaskLogDrawer = async () => {
+  if (data.LogStreams.length !== 0) {
+    for (let s of data.LogStreams) {
+      s.abort();
+    }
+    data.LogStreams = [];
+  }
+
+  let controller = new AbortController();
+  let single = controller.signal;
+  data.LogStreams.push(controller);
+
+  const { body, err } = await watchPlanTaskLog(
+    data.taskLog.task.plan_id,
+    data.taskLog.task.name,
+    single,
+  );
+  if (err) {
+    proxy.$message.error('Failed to get task list', err);
+    return;
+  }
+  if (body) {
+    const reader = body.getReader();
+    await readLogStream(reader);
+  }
+};
 // 开始处理任务进度
 const handleTaskDrawer = (row) => {
   data.taskData.task = row;
@@ -517,7 +600,23 @@ const readStream = async (reader) => {
     }
   }
 };
-
+const readLogStream = async (reader) => {
+  const decoder = new TextDecoder('utf-8');
+  while (true) {
+    try {
+      const { value, done } = await reader.read();
+      if (done) {
+        reader.cancel();
+        break;
+      }
+      const uint8Array = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+      let decodedString = decoder.decode(uint8Array, { stream: true });
+      data.taskLog.log += decodedString;
+    } catch (e) {
+      break;
+    }
+  }
+};
 const closeTaskDrawer = () => {
   data.taskData.drawer = false;
 
@@ -535,6 +634,19 @@ const closeTaskDrawer = () => {
       task: '',
     };
   }, 100);
+};
+
+const closeTaskLogDrawer = () => {
+  data.taskLog.drawer = false;
+  data.taskLog.log = '';
+
+  // 关闭stream
+  if (data.LogStreams.length !== 0) {
+    for (const s of data.LogStreams) {
+      s.abort();
+    }
+    data.LogStreams = [];
+  }
 };
 
 // 结束处理任务进度
