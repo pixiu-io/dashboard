@@ -294,7 +294,14 @@
             </el-table-column>
             <el-table-column>
               <template #default="scope">
-                <el-button text @click="handleTaskLogDrawer(scope.row)">日志</el-button>
+                <el-button
+                  text
+                  size="small"
+                  style="margin-right: -24px; margin-left: -10px; color: #006eff"
+                  @click="handleTaskLogDrawer(scope.row)"
+                >
+                  日志
+                </el-button>
               </template>
             </el-table-column>
 
