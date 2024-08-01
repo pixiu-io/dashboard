@@ -117,8 +117,11 @@
           <el-table-column prop="name" sortable label="集群名称">
             <template #default="scope">
               <el-link
-                style="color: #006eff; font-size: 12px; margin-right: 2px"
+                :style="`color: ${
+                  scope.row.status === 0 ? '#006eff' : '#7b7b7b'
+                }; font-size: 12px; margin-right: 2px`"
                 type="primary"
+                :disabled="!(scope.row.status === 0)"
                 @click="jumpRoute(scope.row)"
               >
                 {{ scope.row.alias_name }}
