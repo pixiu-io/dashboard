@@ -557,16 +557,24 @@ const formatterPlanStatus = (row, column, cellValue) => {
 export { formatterPlanStatus };
 
 const formatterAuditStatus = (row, column, cellValue) => {
-  if (cellValue !== 0) {
+  if (cellValue === 0) {
     return (
       <div>
         <el-tag type="danger">失败</el-tag>
       </div>
     );
   }
+  if (cellValue === 1) {
+    return (
+      <div>
+        <el-tag>成功</el-tag>
+      </div>
+    );
+  }
+
   return (
     <div>
-      <el-tag>成功</el-tag>
+      <el-tag>状态异常</el-tag>
     </div>
   );
 };
