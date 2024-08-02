@@ -557,7 +557,7 @@ const formatterPlanStatus = (row, column, cellValue) => {
 export { formatterPlanStatus };
 
 const formatterAuditStatus = (row, column, cellValue) => {
-  if (cellValue !== 0) {
+  if (cellValue !== 1) {
     return (
       <div>
         <el-tag type="danger">失败</el-tag>
