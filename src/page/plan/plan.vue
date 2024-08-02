@@ -3,6 +3,7 @@
     <el-card style="margin-top: -20px; margin-left: -20px; margin-right: -20px; border-radius: 0px">
       <span style="font-weight: bold; font-size: 18px; vertical-align: middle"> 部署计划 </span>
     </el-card>
+    <div style="margin-top: 20px"></div>
 
     <Description
       :description="'新建部署计划以自建 kubernetes 集群，完全兼容开源 Kubernetes 集群标准功能，并强化节点管理、集群网络、容器调度等能力。'"

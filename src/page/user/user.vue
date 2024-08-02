@@ -3,6 +3,8 @@
     <el-card style="margin-top: -20px; margin-left: -20px; margin-right: -20px; border-radius: 0px">
       <span style="font-weight: bold; font-size: 18px; vertical-align: middle"> 用户列表 </span>
     </el-card>
+    <div style="margin-top: 20px"></div>
+
     <Description
       :description="'平台用户管理，包括新建用户、删除用户、更新用户信息、重置密码等功能。'"
     />
