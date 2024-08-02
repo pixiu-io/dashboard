@@ -75,7 +75,8 @@ instance.interceptors.response.use(
     if (
       error.response.status !== 404 &&
       error.response.status !== 422 &&
-      error.response.status !== 409
+      error.response.status !== 409 &&
+      error.response.status !== 503
     ) {
       ElMessage({
         message: error.message,
