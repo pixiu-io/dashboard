@@ -3,6 +3,7 @@
     <el-card style="margin-top: -20px; margin-left: -20px; margin-right: -20px; border-radius: 0px">
       <span style="font-weight: bold; font-size: 18px; vertical-align: middle"> 审计管理 </span>
     </el-card>
+    <div style="margin-top: 20px"></div>
 
     <Description
       :description="'审计管理用于查看用户针对平台的操作记录，包括创建、修改、删除等操作。'"

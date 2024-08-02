@@ -44,6 +44,8 @@
       </el-row>
     </el-card>
 
+    <div style="margin-top: 20px"></div>
+
     <Description :description="'Kubernetnes 节点能力全面升级，支持更多集群版本。'" />
 
     <div style="margin-top: 20px">
