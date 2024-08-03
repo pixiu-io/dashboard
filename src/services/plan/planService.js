@@ -156,10 +156,10 @@ export const watchPlanTasks = async (pid, signal) => {
   });
 };
 
-export const watchPlanTaskLog = async (pid, name, signal) => {
+export const watchPlanTaskLog = async (pid, id, signal) => {
   const baseUrl = http({ method: 'watch' });
   const headers = getHeadersWithToken();
-  return fetch(`${baseUrl}/pixiu/plans/${pid}/tasks/${name}/logs`, {
+  return fetch(`${baseUrl}/pixiu/plans/${pid}/tasks/${id}/logs`, {
     method: 'get',
     headers: headers,
     signal: signal,

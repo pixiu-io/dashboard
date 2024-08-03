@@ -406,7 +406,7 @@ const data = reactive({
   // 部署任务
   taskData: {
     drawer: false,
-    width: '45%',
+    width: '55%',
     task: '',
     tableData: [],
   },
@@ -544,7 +544,7 @@ const openTaskLogDrawer = async () => {
 
   const { body, err } = await watchPlanTaskLog(
     data.taskLog.task.plan_id,
-    data.taskLog.task.name,
+    data.taskLog.task.id,
     single,
   );
   if (err) {
@@ -608,6 +608,7 @@ const readStream = async (reader) => {
     }
   }
 };
+
 const readLogStream = async (reader) => {
   const decoder = new TextDecoder('utf-8');
   while (true) {
@@ -625,6 +626,7 @@ const readLogStream = async (reader) => {
     }
   }
 };
+
 const closeTaskDrawer = () => {
   data.taskData.drawer = false;
 
