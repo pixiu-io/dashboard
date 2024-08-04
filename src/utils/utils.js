@@ -83,7 +83,7 @@ export const parseNetwork = (networkString) => {
   };
 };
 
-const getHeadersWithToken = () => {
+export const getHeadersWithToken = () => {
   const token = localStorage.getItem('token');
   const headers = { 'Content-Type': 'application/json' };
   if (token) {
@@ -93,4 +93,22 @@ const getHeadersWithToken = () => {
   return headers;
 };
 
-export { getHeadersWithToken };
+export const readStream = async (reader, callback) => {
+  const decoder = new TextDecoder('utf-8');
+  while (true) {
+    try {
+      const { value, done } = await reader.read();
+      if (done) {
+        reader.cancel();
+        break;
+      }
+      const uint8Array = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+      let decodedString = decoder.decode(uint8Array, { stream: true });
+      callback(decodedString);
+    } catch (e) {
+      break;
+    } finally {
+      reader.releaseLock();
+    }
+  }
+};

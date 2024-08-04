@@ -345,6 +345,7 @@
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { formatterTime, formatterPlanStatus } from '@/utils/formatter';
+import { readStream } from '@/utils/utils';
 import Pagination from '@/components/pagination/index.vue';
 import {
   createPlan,
@@ -554,7 +555,9 @@ const openTaskLogDrawer = async () => {
   }
   if (body) {
     const reader = body.getReader();
-    await readLogStream(reader);
+    await readStream(reader, (decodedString) => {
+      data.taskLog.log += decodedString;
+    });
   }
 };
 // 开始处理任务进度
@@ -582,51 +585,52 @@ const openTaskDrawer = async () => {
   }
   if (body) {
     const reader = body.getReader();
-    await readStream(reader);
-  }
-};
-
-const readStream = async (reader) => {
-  const decoder = new TextDecoder('utf-8');
-  while (true) {
-    try {
-      const { value, done } = await reader.read();
-      if (done) {
-        reader.cancel();
-        break;
-      }
-      const uint8Array = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
-      let decodedString = decoder.decode(uint8Array, { stream: true });
-      // 解析JSON数据
+    await readStream(reader, (decodedString) => {
       try {
         const result = JSON.parse(decodedString);
         data.taskData.tableData = result;
       } catch (e) {
         proxy.$message.error('Error parsing JSON:', e);
       }
-    } catch (e) {
-      break;
-    }
+    });
   }
 };
 
-const readLogStream = async (reader) => {
-  const decoder = new TextDecoder('utf-8');
-  while (true) {
-    try {
-      const { value, done } = await reader.read();
-      if (done) {
-        reader.cancel();
-        break;
-      }
-      const uint8Array = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
-      let decodedString = decoder.decode(uint8Array, { stream: true });
-      data.taskLog.log += decodedString;
-    } catch (e) {
-      break;
-    }
-  }
-};
+// const readStream = async (reader) => {
+//   const decoder = new TextDecoder('utf-8');
+//   while (true) {
+//     try {
+//       const { value, done } = await reader.read();
+//       if (done) {
+//         reader.cancel();
+//         break;
+//       }
+//       const uint8Array = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+//       let decodedString = decoder.decode(uint8Array, { stream: true });
+//       // 解析JSON数据
+//     } catch (e) {
+//       break;
+//     }
+//   }
+// };
+
+// const readLogStream = async (reader) => {
+//   const decoder = new TextDecoder('utf-8');
+//   while (true) {
+//     try {
+//       const { value, done } = await reader.read();
+//       if (done) {
+//         reader.cancel();
+//         break;
+//       }
+//       const uint8Array = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+//       let decodedString = decoder.decode(uint8Array, { stream: true });
+//       data.taskLog.log += decodedString;
+//     } catch (e) {
+//       break;
+//     }
+//   }
+// };
 
 const closeTaskDrawer = () => {
   data.taskData.drawer = false;
