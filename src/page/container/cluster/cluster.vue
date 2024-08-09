@@ -6,24 +6,23 @@
           <span style="font-weight: bold; font-size: 18px; vertical-align: middle">
             {{ $t(`container.container.title`) }}
           </span>
-          <span
-            style="font-size: 15px; margin-left: 10px; vertical-align: middle; margin-right: 10px"
-          >
-            {{ $t(`container.container.region`) }}
-          </span>
-
-          <el-select v-model="cloudStore.defaultOption" placeholder="Select" style="width: 102px">
-            <template #prefix>
-              <pixiu-icon size="20px" name="icon-diyufenbu" type="iconfont"></pixiu-icon>
-            </template>
-            <el-option
-              v-for="item in cloudStore.options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-              :disabled="item.disabled"
-            />
-          </el-select>
+          <!--          <el-select-->
+          <!--            v-model="cloudStore.defaultOption"-->
+          <!--            placeholder="选择地域"-->
+          <!--            style="width: 105px; margin-left: 15px"-->
+          <!--            size="small"-->
+          <!--            clearable-->
+          <!--          >-->
+          <!--            <template #prefix>-->
+          <!--              <pixiu-icon size="12px" name="icon-diyufenbu" type="iconfont"></pixiu-icon>-->
+          <!--            </template>-->
+          <!--            <el-option-->
+          <!--              v-for="item in cloudStore.options"-->
+          <!--              :key="item.value"-->
+          <!--              :label="item.label"-->
+          <!--              :value="item.value"-->
+          <!--            />-->
+          <!--          </el-select>-->
 
           <span
             style="

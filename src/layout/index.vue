@@ -38,7 +38,11 @@
               <el-icon @click="toggleCollapse">
                 <component :is="`${data.isCollapse ? 'Expand' : 'Fold'}`"></component>
               </el-icon>
-              <template #title> <span style="margin-left: 10px">体验调研</span></template>
+              <template #title>
+                <span style="margin-left: 10px" @click="experience_research"
+                  >体验调研</span
+                ></template
+              >
             </el-menu-item>
           </el-menu>
         </el-col>
@@ -79,6 +83,10 @@ const getActive = () => {
   const fullPath = router.currentRoute.value.fullPath;
   const index = data.menus.findIndex((item) => item.url === fullPath);
   return index !== -1 ? fullPath : localStorage.getItem('activeIndex') ?? '/index';
+};
+
+const experience_research = () => {
+  window.open('https://github.com/caoyingjunz/pixiu/issues');
 };
 
 onMounted(() => {

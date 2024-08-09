@@ -158,4 +158,8 @@ const getAudits = async () => {
 };
 </script>
 
-<style></style>
+<style>
+.el-main {
+  background-color: #f3f4f7 !important;
+}
+</style>
