@@ -57,6 +57,10 @@ export default ({ mode }) =>
         },
       },
     },
+    // 新增打包配置去除多余的console和debugger
+    esbuild: {
+      drop: ['console', 'debugger'],
+    },
     define: {
       __VUE_I18N_FULL_INSTALL__: true,
       __VUE_I18N_LEGACY_API__: false,
