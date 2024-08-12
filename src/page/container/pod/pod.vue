@@ -623,6 +623,7 @@ import Pagination from '@/components/pagination/index.vue';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import {
   getPodList,
+  getPodListByCache,
   deletePod,
   getPodByName,
   getPod,
@@ -665,7 +666,10 @@ const data = reactive({
   multipleSelection: [],
   yamlDialog: false,
   yaml: '',
-
+  params: {
+    page: 1,
+    limit: 10,
+  },
   podList: [],
   podReplicasDialog: false,
 
@@ -731,9 +735,9 @@ const data = reactive({
 });
 
 const onChange = (v) => {
-  data.pageInfo.limit = v.limit;
-  data.pageInfo.page = v.page;
-  data.tableData = getTableData(data.pageInfo, data.podList);
+  data.params.limit = v.limit;
+  data.params.page = v.page;
+  getPods();
 
   if (data.pageInfo.search.searchInfo !== '') {
     searchPods();
@@ -1097,15 +1101,17 @@ const deletePodsInBatch = async () => {
 
 const getPods = async () => {
   data.loading = true;
-  const [result, err] = await getPodList(data.cluster, data.namespace);
+  // const [result, err] = await getPodList(data.cluster, data.namespace);
+  const [result, err] = await getPodListByCache(data.cluster, data.namespace, data.params);
+
   data.loading = false;
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
-
+  console.log(result);
   data.podList = result.items;
-  data.pageInfo.total = data.podList.length;
+  data.pageInfo.total = result.total;
   data.tableData = getTableData(data.pageInfo, data.podList);
 };
 
