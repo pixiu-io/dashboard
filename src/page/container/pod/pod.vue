@@ -114,19 +114,14 @@
           label="内存申请值/限制值"
           :formatter="formatterContainersMem"
         /> -->
-        <!-- 
+        <!--
         <el-table-column
           prop="spec.containers"
           label="资源申请值/限制值"
           :formatter="formatterContainersResource"
         />-->
 
-        <el-table-column
-          prop="status"
-          label="重启次数"
-          :formatter="formatterRestartCount"
-          width="90px"
-        />
+        <el-table-column prop="status" label="重启次数" :formatter="formatterRestartCount" />
 
         <el-table-column
           prop="metadata.creationTimestamp"
