@@ -904,7 +904,7 @@ const handleRemoteLoginDialog = (row) => {
 };
 
 const handleContainerListDialog = async (row) => {
-  const [pod, err] = await getPod(data.cluster, data.namespace, row.metadata.name);
+  const [pod, err] = await getPod(data.cluster, row.metadata.namespace, row.metadata.name);
   if (err) {
     proxy.$notify.error(err.response.data.message);
     return;
@@ -1211,7 +1211,7 @@ const openWindowShell = () => {
 };
 
 const viewYaml = async (row) => {
-  const [result, err] = await getPodByName(data.cluster, data.namespace, row.metadata.name);
+  const [result, err] = await getPodByName(data.cluster, row.metadata.namespace, row.metadata.name);
   if (err) {
     proxy.$notify.error(err.response.data.message);
     return;
