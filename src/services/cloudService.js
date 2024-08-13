@@ -67,3 +67,20 @@ export const changeClusterProtected = async (cid, resource_version, protect) => 
 
   return [err, result];
 };
+export const changeClusterCacheStatus = async (cid, cluster_name, resource_version, cache) => {
+  let data = {
+    resource_version: resource_version,
+    cluster_name: cluster_name,
+    cache: cache,
+  };
+
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'put',
+      url: `/pixiu/clusters/cache/${cid}`,
+      data: data,
+    }),
+  );
+
+  return [err, result];
+};
