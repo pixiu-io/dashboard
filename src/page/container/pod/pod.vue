@@ -40,6 +40,18 @@
             </el-icon>
           </template>
         </el-input>
+        <div style="float: right; margin-right: 24px">
+          <el-text class="mx-1">自动刷新</el-text>
+          <el-switch
+            v-model="data.refresh"
+            class="mt-2"
+            style="margin-left: 10px"
+            inline-prompt
+            :active-icon="Check"
+            :inactive-icon="Close"
+            @change="startRefresh"
+          />
+        </div>
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -623,6 +635,7 @@ import Pagination from '@/components/pagination/index.vue';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import {
   getPodList,
+  getPodListByCache,
   deletePod,
   getPodByName,
   getPod,
@@ -645,9 +658,10 @@ const selectedContainer = ref('');
 const selectedPod = ref('');
 
 const data = reactive({
+  timer: null,
   cluster: '',
   namespace: 'default',
-
+  refresh: false,
   drawerWidth: '70%',
 
   pageInfo: {
@@ -733,7 +747,7 @@ const data = reactive({
 const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
-  data.tableData = getTableData(data.pageInfo, data.podList);
+  getPods();
 
   if (data.pageInfo.search.searchInfo !== '') {
     searchPods();
@@ -1097,17 +1111,35 @@ const deletePodsInBatch = async () => {
 
 const getPods = async () => {
   data.loading = true;
-  const [result, err] = await getPodList(data.cluster, data.namespace);
+  // const [result, err] = await getPodList(data.cluster, data.namespace);
+  const [result, err] = await getPodListByCache(data.cluster, data.namespace, data.pageInfo);
+
   data.loading = false;
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
-
   data.podList = result.items;
-  data.pageInfo.total = data.podList.length;
+  data.pageInfo.total = result.total;
+  data.tableData = result.items;
   data.tableData = getTableData(data.pageInfo, data.podList);
 };
+
+//每5s请求一次 getPods()
+const startRefresh = () => {
+  if (data.refresh) {
+    data.timer = window.setInterval(() => {
+      getPods();
+    }, 5000);
+  } else {
+    //清除定时器
+    window.clearInterval(data.timer);
+  }
+};
+//页面结束前清除定时器
+onBeforeUnmount(() => {
+  window.clearInterval(data.timer);
+});
 
 provide('getPods', getPods);
 

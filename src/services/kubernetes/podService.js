@@ -19,6 +19,21 @@ export const getPodList = async (cluster, namespace) => {
   return [result, err];
 };
 
+export const getPodListByCache = async (cluster, namespace, params) => {
+  let url = `/pixiu/indexer/clusters/${cluster}/resources/pod/namespaces/${namespace}`;
+  if (namespace === '全部空间') {
+    url = `/pixiu/indexer/clusters/${cluster}/resources/pod/namespaces/all_namespaces`;
+  }
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: url,
+      data: params,
+    }),
+  );
+  return [result, err];
+};
+
 export const getPod = async (cluster, namespace, name) => {
   const [err, result] = await awaitWrap(
     http({
