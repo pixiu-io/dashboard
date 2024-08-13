@@ -15,43 +15,76 @@
     :description="'Pod 是可以在 Kubernetes 中创建和管理的、最小的可部署的计算单元。它包含一个或多个容器，共享网络命名空间，存储，以及唯一的标识符。Pod 通常由一个控制器管理，比如 Deployment、StatefulSet、DaemonSet 等。'"
   />
   <div style="margin-top: 5px">
-    <el-row>
-      <el-col>
-        <button class="pixiu-two-button" @click="createPod">新建</button>
-        <button
-          style="margin-left: 10px; width: 85px"
-          class="pixiu-two-button2"
-          @click="deletePodsInBatch"
-        >
-          批量删除
-        </button>
+    <el-row style="display: flex; align-items: center">
+      <el-col style="display: flex; justify-content: space-between">
+        <el-space>
+          <button class="pixiu-two-button" @click="createPod">新建</button>
+          <button
+            style="margin-left: 10px; width: 85px"
+            class="pixiu-two-button2"
+            @click="deletePodsInBatch"
+          >
+            批量删除
+          </button>
+        </el-space>
+        <el-space style="display: flex; align-items: center">
+          <div>
+            <el-text class="mx-1">自动刷新</el-text>
+            <el-switch
+              v-model="data.refresh"
+              class="mt-2"
+              style="margin-left: 10px"
+              inline-prompt
+              :active-icon="Check"
+              :inactive-icon="Close"
+              @change="startRefresh"
+            />
+          </div>
 
-        <el-input
+          <pixiu-input
+            v-model="data.pageInfo.search.searchInfo"
+            placeholder="名称搜索关键字"
+            :options="data.options"
+            style="width: 400px; font-size: 12px"
+            @update:tags="handleDynamicTags"
+          >
+            <template #suffix>
+              <el-icon class="el-input__icon" style="cursor: pointer" @click="getPods">
+                <component :is="'Search'" />
+              </el-icon>
+            </template>
+          </pixiu-input>
+        </el-space>
+        <!-- <el-input
           v-model="data.pageInfo.search.searchInfo"
           placeholder="名称搜索关键字"
-          style="width: 400px; float: right"
+          style="width: 400px; float: right; border-radius: 0"
           clearable
           @clear="getPods"
           @input="searchPods"
         >
+          <template #prepend>
+            <el-select
+              v-model="data.pageInfo.search.field"
+              placeholder="Select"
+              style="
+                width: 100px;
+                background-color: white;
+                font-size: 12px;
+                border: none;
+                border-radius: 0 !important;
+              "
+            >
+              <el-option label="标签" value="tag" />
+              <el-option label="名称" value="name" />
+            </el-select>
+          </template>
           <template #suffix>
             <el-icon class="el-input__icon" @click="getPods">
               <component :is="'Search'" />
             </el-icon>
           </template>
-        </el-input>
-        <div style="float: right; margin-right: 24px">
-          <el-text class="mx-1">自动刷新</el-text>
-          <el-switch
-            v-model="data.refresh"
-            class="mt-2"
-            style="margin-left: 10px"
-            inline-prompt
-            :active-icon="Check"
-            :inactive-icon="Close"
-            @change="startRefresh"
-          />
-        </div>
+        </el-input> -->
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -619,6 +652,7 @@ import {
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
+import PixiuInput from '@/components/pixiuInput/index.vue';
 import { getTableData, searchData } from '@/utils/utils';
 import {
   formatterTime,
@@ -663,8 +697,12 @@ const data = reactive({
   namespace: 'default',
   refresh: false,
   drawerWidth: '70%',
-
+  options: [
+    { label: '标签', value: 'tag' },
+    { label: '名字', value: 'name' },
+  ],
   pageInfo: {
+    dynamicTags: [],
     page: 1,
     limit: 10,
     query: '',
@@ -743,6 +781,10 @@ const data = reactive({
     drawer: false,
   },
 });
+
+const handleDynamicTags = (tags) => {
+  data.pageInfo.dynamicTags = [...tags];
+};
 
 const onChange = (v) => {
   data.pageInfo.limit = v.limit;
@@ -1110,19 +1152,20 @@ const deletePodsInBatch = async () => {
 };
 
 const getPods = async () => {
-  data.loading = true;
-  // const [result, err] = await getPodList(data.cluster, data.namespace);
-  const [result, err] = await getPodListByCache(data.cluster, data.namespace, data.pageInfo);
+  // data.loading = true;
+  // // const [result, err] = await getPodList(data.cluster, data.namespace);
+  // const [result, err] = await getPodListByCache(data.cluster, data.namespace, data.pageInfo);
 
-  data.loading = false;
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-  data.podList = result.items;
-  data.pageInfo.total = result.total;
-  data.tableData = result.items;
-  data.tableData = getTableData(data.pageInfo, data.podList);
+  // data.loading = false;
+  // if (err) {
+  //   proxy.$message.error(err.response.data.message);
+  //   return;
+  // }
+  // data.podList = result.items;
+  // data.pageInfo.total = result.total;
+  // data.tableData = result.items;
+  // data.tableData = getTableData(data.pageInfo, data.podList);
+  console.log(data.pageInfo);
 };
 
 //每5s请求一次 getPods()
