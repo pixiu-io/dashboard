@@ -40,6 +40,18 @@
             </el-icon>
           </template>
         </el-input>
+        <div style="float: right; margin-right: 24px">
+          <el-text class="mx-1">自动刷新</el-text>
+          <el-switch
+            v-model="data.refresh"
+            class="mt-2"
+            style="margin-left: 10px"
+            inline-prompt
+            :active-icon="Check"
+            :inactive-icon="Close"
+            @change="startRefresh"
+          />
+        </div>
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -646,9 +658,10 @@ const selectedContainer = ref('');
 const selectedPod = ref('');
 
 const data = reactive({
+  timer: null,
   cluster: '',
   namespace: 'default',
-
+  refresh: false,
   drawerWidth: '70%',
 
   pageInfo: {
@@ -1109,11 +1122,27 @@ const getPods = async () => {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  console.log(result);
   data.podList = result.items;
   data.pageInfo.total = result.total;
-  data.tableData = getTableData(data.pageInfo, data.podList);
+  data.tableData = result.items;
+  // data.tableData = getTableData(data.pageInfo, data.podList);
 };
+
+//每5s请求一次 getPods()
+const startRefresh = () => {
+  if (data.refresh) {
+    data.timer = window.setInterval(() => {
+      getPods();
+    }, 5000);
+  } else {
+    //清除定时器
+    window.clearInterval(data.timer);
+  }
+};
+//页面结束前清除定时器
+onBeforeUnmount(() => {
+  window.clearInterval(data.timer);
+});
 
 provide('getPods', getPods);
 
