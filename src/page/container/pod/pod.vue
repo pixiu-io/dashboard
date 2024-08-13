@@ -679,10 +679,7 @@ const data = reactive({
   multipleSelection: [],
   yamlDialog: false,
   yaml: '',
-  params: {
-    page: 1,
-    limit: 10,
-  },
+
   podList: [],
   podReplicasDialog: false,
 
@@ -748,8 +745,8 @@ const data = reactive({
 });
 
 const onChange = (v) => {
-  data.params.limit = v.limit;
-  data.params.page = v.page;
+  data.pageInfo.limit = v.limit;
+  data.pageInfo.page = v.page;
   getPods();
 
   if (data.pageInfo.search.searchInfo !== '') {
@@ -1115,7 +1112,7 @@ const deletePodsInBatch = async () => {
 const getPods = async () => {
   data.loading = true;
   // const [result, err] = await getPodList(data.cluster, data.namespace);
-  const [result, err] = await getPodListByCache(data.cluster, data.namespace, data.params);
+  const [result, err] = await getPodListByCache(data.cluster, data.namespace, data.pageInfo);
 
   data.loading = false;
   if (err) {
@@ -1125,7 +1122,7 @@ const getPods = async () => {
   data.podList = result.items;
   data.pageInfo.total = result.total;
   data.tableData = result.items;
-  // data.tableData = getTableData(data.pageInfo, data.podList);
+  data.tableData = getTableData(data.pageInfo, data.podList);
 };
 
 //每5s请求一次 getPods()
