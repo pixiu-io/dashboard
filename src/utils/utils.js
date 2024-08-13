@@ -43,6 +43,19 @@ const searchData = (pageInfo, sourceData) => {
 
 export { searchData };
 
+const searchFromData = (pageInfo, sourceData) => {
+  let filteredData = [];
+  if (pageInfo.search.field === 'name') {
+    filteredData = sourceData.filter((item) =>
+      item.metadata.name.includes(pageInfo.search.searchInfo),
+    );
+  }
+  pageInfo.total = filteredData.length;
+  return filteredData;
+};
+
+export { searchFromData };
+
 const copy = async (val) => {
   try {
     await toClipboard(String(val));

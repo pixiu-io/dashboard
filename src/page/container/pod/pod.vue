@@ -35,7 +35,7 @@
           @input="searchPods"
         >
           <template #suffix>
-            <el-icon class="el-input__icon" @click="getPods">
+            <el-icon class="el-input__icon" @click="searchPods">
               <component :is="'Search'" />
             </el-icon>
           </template>
@@ -114,12 +114,12 @@
           label="内存申请值/限制值"
           :formatter="formatterContainersMem"
         /> -->
-
+        <!-- 
         <el-table-column
           prop="spec.containers"
           label="资源申请值/限制值"
           :formatter="formatterContainersResource"
-        />
+        />-->
 
         <el-table-column
           prop="status"
@@ -619,7 +619,7 @@ import {
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
-import { getTableData, searchData } from '@/utils/utils';
+import { getTableData, searchFromData } from '@/utils/utils';
 import {
   formatterTime,
   formatterPodStatus,
@@ -747,10 +747,11 @@ const data = reactive({
 const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
-  getPods();
 
   if (data.pageInfo.search.searchInfo !== '') {
     searchPods();
+  } else {
+    getPods();
   }
 };
 
@@ -1110,7 +1111,9 @@ const deletePodsInBatch = async () => {
 };
 
 const getPods = async () => {
-  data.loading = true;
+  if (!data.refresh) {
+    data.loading = true;
+  }
   // const [result, err] = await getPodList(data.cluster, data.namespace);
   const [result, err] = await getPodListByCache(data.cluster, data.namespace, data.pageInfo);
 
@@ -1122,7 +1125,7 @@ const getPods = async () => {
   data.podList = result.items;
   data.pageInfo.total = result.total;
   data.tableData = result.items;
-  data.tableData = getTableData(data.pageInfo, data.podList);
+  // data.tableData = getTableData(data.pageInfo, data.podList);
 };
 
 //每5s请求一次 getPods()
@@ -1144,7 +1147,7 @@ onBeforeUnmount(() => {
 provide('getPods', getPods);
 
 const searchPods = async () => {
-  data.tableData = searchData(data.pageInfo, data.podList);
+  data.tableData = searchFromData(data.pageInfo, data.tableData);
 };
 
 const copy = async (val) => {
