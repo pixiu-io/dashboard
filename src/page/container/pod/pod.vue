@@ -80,7 +80,7 @@
             </el-select>
           </template>
           <template #suffix>
-            <el-icon class="el-input__icon" @click="getPods">
+            <el-icon class="el-input__icon" @click="searchPods">
               <component :is="'Search'" />
             </el-icon>
           </template>
@@ -147,19 +147,14 @@
           label="内存申请值/限制值"
           :formatter="formatterContainersMem"
         /> -->
-
+        <!--
         <el-table-column
           prop="spec.containers"
           label="资源申请值/限制值"
           :formatter="formatterContainersResource"
-        />
+        />-->
 
-        <el-table-column
-          prop="status"
-          label="重启次数"
-          :formatter="formatterRestartCount"
-          width="90px"
-        />
+        <el-table-column prop="status" label="重启次数" :formatter="formatterRestartCount" />
 
         <el-table-column
           prop="metadata.creationTimestamp"
@@ -654,6 +649,7 @@ import useClipboard from 'vue-clipboard3';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import PixiuInput from '@/components/pixiuInput/index.vue';
 import { getTableData, searchData } from '@/utils/utils';
+
 import {
   formatterTime,
   formatterPodStatus,
@@ -789,10 +785,11 @@ const handleDynamicTags = (tags) => {
 const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
-  getPods();
 
   if (data.pageInfo.search.searchInfo !== '') {
     searchPods();
+  } else {
+    getPods();
   }
 };
 
@@ -1152,20 +1149,21 @@ const deletePodsInBatch = async () => {
 };
 
 const getPods = async () => {
-  // data.loading = true;
-  // // const [result, err] = await getPodList(data.cluster, data.namespace);
-  // const [result, err] = await getPodListByCache(data.cluster, data.namespace, data.pageInfo);
+  if (!data.refresh) {
+    data.loading = true;
+  }
+  // const [result, err] = await getPodList(data.cluster, data.namespace);
+  const [result, err] = await getPodListByCache(data.cluster, data.namespace, data.pageInfo);
 
-  // data.loading = false;
-  // if (err) {
-  //   proxy.$message.error(err.response.data.message);
-  //   return;
-  // }
-  // data.podList = result.items;
-  // data.pageInfo.total = result.total;
-  // data.tableData = result.items;
+  data.loading = false;
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  data.podList = result.items;
+  data.pageInfo.total = result.total;
+  data.tableData = result.items;
   // data.tableData = getTableData(data.pageInfo, data.podList);
-  console.log(data.pageInfo);
 };
 
 //每5s请求一次 getPods()
@@ -1187,7 +1185,7 @@ onBeforeUnmount(() => {
 provide('getPods', getPods);
 
 const searchPods = async () => {
-  data.tableData = searchData(data.pageInfo, data.podList);
+  data.tableData = searchFromData(data.pageInfo, data.tableData);
 };
 
 const copy = async (val) => {
