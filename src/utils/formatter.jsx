@@ -53,6 +53,9 @@ const getContainerStatuses = (data, pending) => {
 };
 
 const formatterPodStatus = (row, column, cellValue) => {
+  if (row.metadata.deletionTimestamp) {
+    return formatterIcon('#c62828', 'Terminating');
+  }
   let phase = cellValue.phase;
   switch (phase) {
     case 'Failed':
@@ -60,7 +63,7 @@ const formatterPodStatus = (row, column, cellValue) => {
     case 'Pending':
       return formatterIcon('#f3d362', getContainerStatuses(cellValue, true));
     case 'Succeeded':
-      return formatterIcon('#2ba552', getContainerStatuses(cellValue, false));
+      return formatterIcon('#155ec0', getContainerStatuses(cellValue, false));
     case 'Running':
       if ((cellValue.conditions.filter((s) => s.status !== 'True') || []).length > 0) {
         return formatterIcon('#c62828', getContainerStatuses(cellValue, true));
