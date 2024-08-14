@@ -12,9 +12,9 @@
     </div>
   </el-card> -->
   <Description
-    :description="'Pod 是可以在 Kubernetes 中创建和管理的、最小的可部署的计算单元。它包含一个或多个容器，共享网络命名空间，存储，以及唯一的标识符。Pod 通常由一个控制器管理，比如 Deployment、StatefulSet、DaemonSet 等。'"
+    :description="'Pod 是可以在 Kubernetes 中创建和管理的、最小的可部署的计算单元。它包含一个或多个容器，共享网络命名空间，存储，以及唯一的标识符。'"
   />
-  <div style="margin-top: 5px">
+  <div>
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createPod">新建</button>
