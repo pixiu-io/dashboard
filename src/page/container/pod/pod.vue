@@ -975,6 +975,7 @@ onBeforeUnmount(() => {
   if (ws.value !== null) {
     ws.value.close();
   }
+  window.clearInterval(data.timer);
 });
 
 const cancelpodContainers = () => {
@@ -1117,7 +1118,7 @@ const getPods = async () => {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  data.podList = result.items;
+  // data.podList = result.items;
   data.pageInfo.total = result.total;
   data.tableData = result.items;
   // data.tableData = getTableData(data.pageInfo, data.podList);
@@ -1134,10 +1135,6 @@ const startRefresh = () => {
     window.clearInterval(data.timer);
   }
 };
-//页面结束前清除定时器
-onBeforeUnmount(() => {
-  window.clearInterval(data.timer);
-});
 
 provide('getPods', getPods);
 

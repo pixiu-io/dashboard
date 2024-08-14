@@ -26,7 +26,7 @@
       >) 是否继续？
     </div> -->
 
-    <el-card class="app-docs" style="margin-top: 8px; height: 40px; margin-left: 6px">
+    <el-card class="app-docs" style="margin-top: 8px; margin-left: 6px">
       <el-icon
         style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
         ><WarningFilled
