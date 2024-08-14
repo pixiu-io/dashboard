@@ -12,9 +12,9 @@
     </div>
   </el-card> -->
   <Description
-    :description="'Pod 是可以在 Kubernetes 中创建和管理的、最小的可部署的计算单元。它包含一个或多个容器，共享网络命名空间，存储，以及唯一的标识符。Pod 通常由一个控制器管理，比如 Deployment、StatefulSet、DaemonSet 等。'"
+    :description="'Pod 是可以在 Kubernetes 中创建和管理的、最小的可部署的计算单元。它包含一个或多个容器，共享网络命名空间，存储，以及唯一的标识符。'"
   />
-  <div style="margin-top: 5px">
+  <div>
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createPod">新建</button>
@@ -975,6 +975,7 @@ onBeforeUnmount(() => {
   if (ws.value !== null) {
     ws.value.close();
   }
+  window.clearInterval(data.timer);
 });
 
 const cancelpodContainers = () => {
@@ -1117,7 +1118,7 @@ const getPods = async () => {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  data.podList = result.items;
+  // data.podList = result.items;
   data.pageInfo.total = result.total;
   data.tableData = result.items;
   // data.tableData = getTableData(data.pageInfo, data.podList);
@@ -1134,10 +1135,6 @@ const startRefresh = () => {
     window.clearInterval(data.timer);
   }
 };
-//页面结束前清除定时器
-onBeforeUnmount(() => {
-  window.clearInterval(data.timer);
-});
 
 provide('getPods', getPods);
 

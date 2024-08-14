@@ -41,6 +41,7 @@ defineProps({
   color: #002da0;
   padding: 0;
   border-radius: 0;
+  margin-bottom: 20px;
   background: #d5e7ff;
 }
 </style>
