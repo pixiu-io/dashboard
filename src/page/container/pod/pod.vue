@@ -12,7 +12,7 @@
     </div>
   </el-card> -->
   <Description
-    :description="'Pod 是可以在 Kubernetes 中创建和管理的、最小的可部署的计算单元。它包含一个或多个容器，共享网络命名空间，存储，以及唯一的标识符。Pod 通常由一个控制器管理，比如 Deployment、StatefulSet、DaemonSet 等。'"
+    :description="'Pod 是可以在 Kubernetes 中创建和管理的、最小的可部署的计算单元。它包含一个或多个容器，共享网络命名空间，存储，以及唯一的标识符。'"
   />
   <div style="margin-top: 5px">
     <el-row style="display: flex; align-items: center">
@@ -55,36 +55,6 @@
             </template>
           </pixiu-input>
         </el-space>
-        <!-- <el-input
-          v-model="data.pageInfo.search.searchInfo"
-          placeholder="名称搜索关键字"
-          style="width: 400px; float: right; border-radius: 0"
-          clearable
-          @clear="getPods"
-          @input="searchPods"
-        >
-          <template #prepend>
-            <el-select
-              v-model="data.pageInfo.search.field"
-              placeholder="Select"
-              style="
-                width: 100px;
-                background-color: white;
-                font-size: 12px;
-                border: none;
-                border-radius: 0 !important;
-              "
-            >
-              <el-option label="标签" value="tag" />
-              <el-option label="名称" value="name" />
-            </el-select>
-          </template>
-          <template #suffix>
-            <el-icon class="el-input__icon" @click="searchPods">
-              <component :is="'Search'" />
-            </el-icon>
-          </template>
-        </el-input> -->
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -1018,6 +988,7 @@ onBeforeUnmount(() => {
   if (ws.value !== null) {
     ws.value.close();
   }
+  window.clearInterval(data.timer);
 });
 
 const cancelpodContainers = () => {
@@ -1160,7 +1131,7 @@ const getPods = async () => {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  data.podList = result.items;
+  // data.podList = result.items;
   data.pageInfo.total = result.total;
   data.tableData = result.items;
   // data.tableData = getTableData(data.pageInfo, data.podList);
@@ -1177,10 +1148,6 @@ const startRefresh = () => {
     window.clearInterval(data.timer);
   }
 };
-//页面结束前清除定时器
-onBeforeUnmount(() => {
-  window.clearInterval(data.timer);
-});
 
 provide('getPods', getPods);
 
