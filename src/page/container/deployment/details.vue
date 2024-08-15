@@ -463,6 +463,7 @@ import {
   getDeployment,
   getDeployReady,
   patchDeployment,
+  rolloBackDeployment,
   updateDeployment,
 } from '@/services/kubernetes/deploymentService';
 import { getEventList, getNamespaceEventList } from '@/services/kubernetes/eventService';
@@ -697,7 +698,7 @@ const rolloback = async (replicaset) => {
       value: JSON.parse(JSON.stringify(data.deployment.metadata.annotations)),
     },
   ];
-  const [result, err] = await patchDeployment(
+  const [result, err] = await rolloBackDeployment(
     data.cluster,
     replicaset.metadata.namespace,
     data.name,

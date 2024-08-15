@@ -68,7 +68,7 @@ export const patchDeployment = async (cluster, namespace, name, data) => {
       data: data,
       config: {
         headers: {
-          'Content-Type': 'application/json-patch+json',
+          'Content-Type': 'application/merge-patch+json',
         },
       },
     }),
@@ -77,6 +77,22 @@ export const patchDeployment = async (cluster, namespace, name, data) => {
   return [result, err];
 };
 
+export const rolloBackDeployment = async (cluster, namespace, name, data) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'patch',
+      url: `/pixiu/proxy/${cluster}/apis/apps/v1/namespaces/${namespace}/deployments/${name}`,
+      data: data,
+      config: {
+        headers: {
+          'Content-Type': 'application/json-patch+json',
+        },
+      },
+    }),
+  );
+
+  return [result, err];
+};
 export const getDeployReady = (deploy) => {
   let availableReplicas = deploy.status.availableReplicas;
   if (availableReplicas === undefined) {

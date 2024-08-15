@@ -36,7 +36,9 @@ instance.interceptors.request.use(
 
     // TODO: 后续优化
     if (config.method === 'patch') {
-      // config.headers['Content-Type'] = 'application/merge-patch+json';
+      if (!config.headers['Content-Type']) {
+        config.headers['Content-Type'] = 'application/merge-patch+json';
+      }
     } else {
       config.headers['Content-Type'] = 'application/json;charset=UTF-8';
     }
