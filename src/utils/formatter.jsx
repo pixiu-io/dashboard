@@ -59,6 +59,9 @@ const formatterPodStatus = (row, column, cellValue) => {
   let phase = cellValue.phase;
   switch (phase) {
     case 'Failed':
+      if (cellValue.reason) {
+        return formatterIcon('#c62828', cellValue.reason);
+      }
       return formatterIcon('#c62828', getContainerStatuses(cellValue, false));
     case 'Pending':
       return formatterIcon('#f3d362', getContainerStatuses(cellValue, true));
