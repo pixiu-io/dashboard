@@ -67,7 +67,7 @@ export const patchDeployment = async (cluster, namespace, name, data) => {
       url: `/pixiu/proxy/${cluster}/apis/apps/v1/namespaces/${namespace}/deployments/${name}`,
       data: data,
       config: {
-        header: {
+        headers: {
           'Content-Type': 'application/json-patch+json',
         },
       },
