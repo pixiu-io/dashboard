@@ -68,7 +68,7 @@ export const patchDeployment = async (cluster, namespace, name, data) => {
       data: data,
       config: {
         header: {
-          'Content-Type': 'application/strategic-merge-patch+json',
+          'Content-Type': 'application/json-patch+json',
         },
       },
     }),

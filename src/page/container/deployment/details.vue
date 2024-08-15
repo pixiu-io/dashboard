@@ -420,7 +420,7 @@
           :formatter="formatterTime"
         />
         <el-table-column fixed="right" label="操作" width="160px">
-          <template #default="">
+          <template #default="scope">
             <el-button
               size="small"
               type="text"
@@ -429,8 +429,14 @@
               详情
             </el-button>
 
-            <el-button type="text" size="small" style="margin-right: 1px; color: #006eff">
-              滚滚
+            <el-button
+              type="text"
+              size="small"
+              style="margin-right: 1px; color: #006eff"
+              :disabled="scope.row.status.replicas !== 0"
+              @click="rolloback(scope.row)"
+            >
+              回滚
             </el-button>
           </template>
         </el-table-column>
@@ -453,7 +459,12 @@ import { formatterTime } from '@/utils/formatter';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getPodsByLabels, deletePod, getPodLog } from '@/services/kubernetes/podService';
-import { getDeployment, getDeployReady } from '@/services/kubernetes/deploymentService';
+import {
+  getDeployment,
+  getDeployReady,
+  patchDeployment,
+  updateDeployment,
+} from '@/services/kubernetes/deploymentService';
 import { getEventList, getNamespaceEventList } from '@/services/kubernetes/eventService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { getDeploymentReplicasets } from '@/services/kubernetes/replicasetService';
@@ -673,6 +684,34 @@ const canceldeletePodsInBatch = () => {
   data.batchDeleteDialog.deleteName = '';
 };
 
+const rolloback = async (replicaset) => {
+  const updateBoyd = [
+    {
+      op: 'replace',
+      path: '/spec/template',
+      value: JSON.parse(JSON.stringify(replicaset.spec.template)),
+    },
+    {
+      op: 'replace',
+      path: '/metadata/annotations',
+      value: JSON.parse(JSON.stringify(data.deployment.metadata.annotations)),
+    },
+  ];
+  const [result, err] = await patchDeployment(
+    data.cluster,
+    replicaset.metadata.namespace,
+    data.name,
+    updateBoyd,
+  );
+  if (err) {
+    proxy.$notify.error({ title: 'Deployment', message: err.response.data.message });
+    return;
+  }
+  proxy.$notify.success({
+    title: 'Deployment',
+    message: `${replicaset.name} 回滚成功`,
+  });
+};
 const deletePodsInBatch = async () => {
   for (let pod of data.multiplePodSelection) {
     const [result, err] = await deletePod(data.cluster, data.namespace, pod);
