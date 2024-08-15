@@ -126,6 +126,7 @@
         <el-table-column
           prop="metadata.creationTimestamp"
           label="创建时间"
+          sortable
           :formatter="formatterTime"
         />
 
@@ -683,6 +684,7 @@ const data = reactive({
     close: false,
     objectName: 'Pod',
     deleteName: '',
+    namespace: '',
   },
 
   remoteLogin: {
@@ -809,7 +811,7 @@ const getPodEvents = async () => {
 const handleEventSelectionChange = (events) => {
   data.eventData.multipleEventSelection = [];
   for (let event of events) {
-    data.eventData.multipleEventSelection.push(event.metadata.name);
+    data.eventData.multipleEventSelection.push(event.metadata);
   }
 };
 
@@ -820,7 +822,7 @@ const deleteEventsInBatch = async () => {
   }
 
   for (let event of data.eventData.multipleEventSelection) {
-    const [result, err] = await deleteEvent(data.cluster, data.namespace, event);
+    const [result, err] = await deleteEvent(data.cluster, event.namespace, event.name);
     if (err) {
       proxy.$notify.error(err.response.data.message);
       return;
@@ -859,6 +861,7 @@ const createPod = () => {
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.metadata.name;
+  data.deleteDialog.namespace = row.metadata.namespace;
 };
 
 const cancelRemoteLogin = () => {
@@ -1047,7 +1050,11 @@ const formatterContainerStartTime = (row, column, cellValue) => {
 };
 
 const confirm = async () => {
-  const [result, err] = await deletePod(data.cluster, data.namespace, data.deleteDialog.deleteName);
+  const [result, err] = await deletePod(
+    data.cluster,
+    data.deleteDialog.namespace,
+    data.deleteDialog.deleteName,
+  );
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
@@ -1076,7 +1083,7 @@ const jumpRoute = (row) => {
     name: 'PodDetail',
     query: {
       cluster: data.cluster,
-      namespace: data.namespace,
+      namespace: row.metadata.namespace,
       name: row.metadata.name,
     },
   });
@@ -1085,7 +1092,7 @@ const jumpRoute = (row) => {
 const handlePodSelectionChange = (pods) => {
   data.multipleSelection = [];
   for (let pod of pods) {
-    data.multipleSelection.push(pod.metadata.name);
+    data.multipleSelection.push(pod.metadata);
   }
 };
 
@@ -1096,7 +1103,7 @@ const deletePodsInBatch = async () => {
   }
 
   for (let pod of data.multipleSelection) {
-    const [result, err] = await deletePod(data.cluster, data.namespace, pod);
+    const [result, err] = await deletePod(data.cluster, pod.namespace, pod.name);
     if (err) {
       proxy.$notify.error(err.response.data.message);
       return;

@@ -429,7 +429,7 @@ const confirmStatefulSetScale = async () => {
         },
       },
       config: {
-        header: {
+        headers: {
           'Content-Type': 'application/merge-patch+json',
         },
       },

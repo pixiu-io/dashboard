@@ -434,7 +434,7 @@ const confirmDeploymentScale = async () => {
         },
       },
       config: {
-        header: {
+        headers: {
           'Content-Type': 'application/merge-patch+json',
         },
       },

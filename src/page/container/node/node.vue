@@ -668,7 +668,7 @@ const cordon = (row) => {
         },
         url: `/pixiu/proxy/${data.cluster}/api/v1/nodes/${row.metadata.name}`,
         config: {
-          header: {
+          headers: {
             'Content-Type': 'application/strategic-merge-patch+json',
           },
         },
