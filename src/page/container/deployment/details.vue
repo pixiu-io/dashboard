@@ -386,6 +386,61 @@
       </el-table>
       <pagination :total="data.pageEventInfo.total" @on-change="onEventChange"></pagination>
     </div>
+    <div v-if="data.activeName === 'four'">
+      <div>
+        <el-row>
+          <el-card class="detail-docs">
+            <el-icon
+              style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+              ><WarningFilled
+            /></el-icon>
+            <div style="vertical-align: middle; margin-top: -40px">获取 Deployment 的历史记录</div>
+          </el-card>
+        </el-row>
+      </div>
+      <el-table
+        :data="data.replicasets"
+        style="margin-top: 6px"
+        header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#191919',
+        }"
+      >
+        <el-table-column prop="metadata.name" label="版本号" min-width="70px">
+          <template #default="scope">
+            # {{ scope.row.metadata.annotations['deployment.kubernetes.io/revision'] }}
+            <el-tag v-show="scope.row.status.replicas !== 0" type="success">当前版本</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="spec.template.spec.containers[0].image" label="镜像" />
+        <el-table-column
+          prop="metadata.creationTimestamp"
+          label="创建时间"
+          :formatter="formatterTime"
+        />
+        <el-table-column fixed="right" label="操作" width="160px">
+          <template #default="">
+            <el-button
+              size="small"
+              type="text"
+              style="margin-right: -25px; margin-left: -10px; color: #006eff"
+            >
+              详情
+            </el-button>
+
+            <el-button type="text" size="small" style="margin-right: 1px; color: #006eff">
+              滚滚
+            </el-button>
+          </template>
+        </el-table-column>
+        <template #empty>
+          <div class="table-inline-word">该 workload 的实例列表为空</div>
+        </template>
+      </el-table>
+
+      <pagination :total="data.pageReplicasetInfo.total" @on-change="onChange"></pagination>
+    </div>
   </el-card>
 </template>
 
@@ -401,6 +456,7 @@ import { getPodsByLabels, deletePod, getPodLog } from '@/services/kubernetes/pod
 import { getDeployment, getDeployReady } from '@/services/kubernetes/deploymentService';
 import { getEventList, getNamespaceEventList } from '@/services/kubernetes/eventService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
+import { getDeploymentReplicasets } from '@/services/kubernetes/replicasetService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -416,6 +472,7 @@ const data = reactive({
   name: '',
   namespace: '',
   activeName: 'first',
+  labels: '',
 
   workloadType: 'Deployment',
 
@@ -429,7 +486,12 @@ const data = reactive({
       searchInfo: '',
     },
   },
-
+  replicasets: [],
+  pageReplicasetInfo: {
+    page: 1,
+    limit: 10,
+    total: 0,
+  },
   pageEventInfo: {
     page: 1,
     limit: 10,
@@ -490,7 +552,6 @@ const data = reactive({
 onMounted(async () => {
   data.cluster = proxy.$route.query.cluster;
   data.clusterName = localStorage.getItem(data.cluster);
-
   data.name = proxy.$route.query.name;
   data.namespace = proxy.$route.query.namespace;
 
@@ -752,6 +813,26 @@ const getDeploymentEvents = async () => {
   data.eventTableData = getTableData(data.pageEventInfo, data.deploymentEvents);
 };
 
+const getDeploymentRs = async () => {
+  data.loading = true;
+  const lables = data.deployment.metadata.labels;
+  let labelStr = Object.keys(lables)
+    .map((key) => {
+      return key + '=' + lables[key];
+    })
+    .join(',');
+
+  const [result, err] = await getDeploymentReplicasets(data.cluster, data.namespace, labelStr);
+  data.loading = false;
+  if (err) {
+    proxy.$notify.error({ title: 'Event', message: err.response.data.message });
+    return;
+  }
+  data.replicasets = result.items;
+  console.log(result);
+  data.pageReplicasetInfo.total = result.length;
+};
+
 const deleteEventObject = async (row) => {
   const [result, err] = await deleteEvent(data.cluster, data.namespace, row.metadata.name);
   if (err) {
@@ -829,12 +910,16 @@ const getPodRestartCount = (row, column, cellValue) => {
 const handleClick = (tab, event) => {};
 
 const handleChange = async (name) => {
+  console.log(name);
   switch (name) {
     case 'second':
       await getDeploymentObject();
       break;
     case 'third':
       await getDeploymentEvents();
+      break;
+    case 'four':
+      await getDeploymentRs();
       break;
   }
 };
