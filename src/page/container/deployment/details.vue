@@ -869,7 +869,6 @@ const getDeploymentRs = async () => {
     return;
   }
   data.replicasets = result.items;
-  console.log(result);
   data.pageReplicasetInfo.total = result.length;
 };
 
@@ -950,7 +949,6 @@ const getPodRestartCount = (row, column, cellValue) => {
 const handleClick = (tab, event) => {};
 
 const handleChange = async (name) => {
-  console.log(name);
   switch (name) {
     case 'second':
       await getDeploymentObject();
