@@ -22,17 +22,38 @@
       </el-col>
 
       <el-col :span="6">
-        <el-card style="width: 100%; height: 100%; border-radius: 0px">操作记录</el-card></el-col
+        <el-card style="width: 100%; height: 100vh; border-radius: 0px; overflow-y: auto">
+          <h4 style="margin-bottom: 20px">操作记录</h4>
+          <el-timeline style="max-width: 600px">
+            <el-timeline-item
+              v-for="(item, index) in clusterOption.audits"
+              :key="index"
+              :color="item.status === 0 ? '#337ecc' : '#337ecc'"
+              :timestamp="formatTimestamp(item.gmt_create)"
+              placement="top"
+            >
+              <div>
+                <h4>{{ item.action }}</h4>
+                <p>IP：{{ item.ip }} 操作：{{ item.operator }}</p>
+              </div>
+            </el-timeline-item>
+          </el-timeline>
+        </el-card></el-col
       >
     </el-row>
   </el-main>
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { onMounted, reactive } from 'vue';
 import MyEcharts from '@/components/echarts/index.vue';
+import { getAuditList } from '@/services/audit/auditService';
+import { extractDateFormat } from 'element-plus';
+import { formatterTime } from '@/utils/formatter';
+import { formatTimestamp } from '@/utils/utils';
 
 const clusterOption = reactive({
+  audits: [],
   title: { text: '运行情况' },
   legend: {
     top: 'bottom',
@@ -113,6 +134,17 @@ const userOption = reactive({
       ],
     },
   ],
+});
+const listAudits = async () => {
+  const [result, err] = await getAuditList();
+  if (err) {
+    proxy.$notify.error({ title: 'Deployment', message: err.response.data.message });
+    return;
+  }
+  clusterOption.audits = result;
+};
+onMounted(async () => {
+  await listAudits();
 });
 </script>
 
