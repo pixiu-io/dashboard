@@ -210,7 +210,6 @@
         </el-row>
       </div>
       <el-table
-        v-loading="data.loading"
         :data="data.tableData"
         stripe
         style="margin-top: 6px"
@@ -222,7 +221,12 @@
         @selection-change="handlePodSelectionChange"
       >
         <el-table-column type="selection" width="30px" />
-        <el-table-column prop="metadata.name" label="实例名称" min-width="70px">
+        <el-table-column
+          prop="metadata.name"
+          label="实例名称"
+          min-width="70px"
+          show-overflow-tooltip
+        >
           <template #default="scope">
             {{ scope.row.metadata.name }}
             <pixiu-icon
@@ -395,7 +399,7 @@ import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getPodsByLabels, deletePod, getPodLog } from '@/services/kubernetes/podService';
 import { getDeployment, getDeployReady } from '@/services/kubernetes/deploymentService';
-import { getNamespaceEventList } from '@/services/kubernetes/eventService';
+import { getEventList, getNamespaceEventList } from '@/services/kubernetes/eventService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { proxy } = getCurrentInstance();
@@ -492,7 +496,7 @@ onMounted(async () => {
 
   await getDeploymentObject();
   await getDeploymentPods();
-  await getDeploymentEvents();
+  // await getDeploymentEvents();
 });
 
 // 监听子属性变化
@@ -824,7 +828,16 @@ const getPodRestartCount = (row, column, cellValue) => {
 
 const handleClick = (tab, event) => {};
 
-const handleChange = (name) => {};
+const handleChange = async (name) => {
+  switch (name) {
+    case 'second':
+      await getDeploymentObject();
+      break;
+    case 'third':
+      await getDeploymentEvents();
+      break;
+  }
+};
 
 const confirm = () => {
   data.readOnly = true;
