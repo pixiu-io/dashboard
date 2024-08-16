@@ -452,7 +452,7 @@
   <PiXiuDiffView
     v-if="data.diffYamlDialog"
     v-model:dialogVisible="data.diffYamlDialog"
-    title="历史版本详情"
+    title="版本差异"
     :original="data.deployment.spec.template"
     :modified="data.modifiedYaml"
   ></PiXiuDiffView>

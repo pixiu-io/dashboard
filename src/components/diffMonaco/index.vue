@@ -19,7 +19,7 @@ const data = reactive({
   original: {},
   modified: {},
   width: '100%',
-  height: '100%',
+  height: '70vh',
 });
 
 const props = defineProps({
@@ -36,8 +36,8 @@ const props = defineProps({
     default: false,
   },
   height: {
-    type: Number,
-    default: 450,
+    type: String,
+    default: '75vh',
   },
   type: {
     type: String,

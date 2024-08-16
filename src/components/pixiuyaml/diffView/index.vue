@@ -31,7 +31,6 @@
         ref="editYaml"
         :original="data.original"
         :modified="data.modified"
-        :height="data.dialogHeight"
         :read-only="readOnly"
       ></MyMonaco>
     </div>
