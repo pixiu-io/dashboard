@@ -52,8 +52,6 @@
 import { reactive } from 'vue';
 import MyEcharts from '@/components/echarts/index.vue';
 import { getAuditList } from '@/services/audit/auditService';
-import { extractDateFormat } from 'element-plus';
-import { formatterTime } from '@/utils/formatter';
 import { formatTimestamp } from '@/utils/utils';
 
 const clusterOption = reactive({
