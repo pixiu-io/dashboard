@@ -668,15 +668,11 @@ const data = reactive({
     { label: '名字', value: 'name' },
   ],
   pageInfo: {
-    dynamicTags: [],
     page: 1,
     limit: 10,
     query: '',
     total: 0,
-    search: {
-      field: 'name',
-      searchInfo: '',
-    },
+    search: {},
   },
   tableData: [],
   loading: false,
@@ -749,7 +745,11 @@ const data = reactive({
 });
 
 const handleDynamicTags = (tags) => {
-  data.pageInfo.dynamicTags = [...tags];
+  const result = tags.reduce((obj, item) => {
+    obj[item.value] = item.inputValue;
+    return obj;
+  }, {});
+  data.pageInfo.query = result;
 };
 
 const onChange = (v) => {
