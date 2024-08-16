@@ -12,7 +12,7 @@
         style="
           text-align: left;
           font-weight: bold;
-          padding-left: 5px;
+          padding-left: 12px;
           margin-top: 5px;
           font-size: 14.5px;
         "
@@ -26,7 +26,7 @@
       >) 是否继续？
     </div> -->
 
-    <el-card class="app-docs" style="margin-top: 8px; margin-left: 6px">
+    <el-card class="app-docs" style="margin-left: 6px; margin-top: -20px">
       <el-icon
         style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
         ><WarningFilled
