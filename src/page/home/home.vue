@@ -28,13 +28,17 @@
             <el-timeline-item
               v-for="(item, index) in clusterOption.audits"
               :key="index"
-              :color="item.status === 0 ? '#337ecc' : '#337ecc'"
+              :type="item.status === 0 ? 'danger' : 'primary'"
               :timestamp="formatTimestamp(item.gmt_create)"
               placement="top"
+              hollow
             >
               <div>
-                <h4>{{ item.action }}</h4>
-                <p>IP：{{ item.ip }} 操作：{{ item.operator }}</p>
+                <p>
+                  {{ item.operator }}
+                  {{ op(item.action) }}
+                  {{ item.resource_type }}
+                </p>
               </div>
             </el-timeline-item>
           </el-timeline>
@@ -146,6 +150,19 @@ const listAudits = async () => {
 onMounted(async () => {
   await listAudits();
 });
+
+const op = (method) => {
+  switch (method) {
+    case 'POST':
+      return '新增';
+    case 'PUT':
+      return '更新';
+    case 'PATCH':
+      return '修改';
+    case 'DELETE':
+      return '删除';
+  }
+};
 </script>
 
 <style></style>
