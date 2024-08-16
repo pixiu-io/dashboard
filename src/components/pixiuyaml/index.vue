@@ -67,20 +67,22 @@
     center
     @close="closeYamlDialog"
   >
-    <template #header>
-      <div
-        style="
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          text-align: left;
-          font-weight: bold;
-          padding-left: 5px;
-        "
-      >
-        <span style="height: 15px; font-size: 15px; margin-bottom: 20px"> YAML创建资源 </span>
-      </div>
-    </template>
+    <div
+      style="
+        display: flex;
+        justify-content: space-between;
+        /*align-items: center;*/
+        text-align: left;
+        font-weight: bold;
+        padding-left: 5px;
+        padding-bottom: 0;
+        position: relative;
+        margin: 0 0 10px;
+      "
+    >
+      <span style="font-size: 14px; min-height: 22px"> YAML创建资源 </span>
+    </div>
+
     <div style="margin-top: -18px"></div>
     <MyMonaco ref="editYaml" :yaml="data.yaml" :height="data.dialogHeight"></MyMonaco>
 
