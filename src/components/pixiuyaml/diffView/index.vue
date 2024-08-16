@@ -35,11 +35,6 @@
         :read-only="readOnly"
       ></MyMonaco>
     </div>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button class="pixiu-small-cancel-button" @click="closeYamlDialog">关闭</el-button>
-      </span>
-    </template>
   </el-dialog>
 </template>
 
@@ -56,8 +51,8 @@ const data = reactive({
   original: '',
   modified: '',
   fromSize: 'small',
-  dialogWidth: 900,
-  dialogHeight: 450,
+  dialogWidth: 1100,
+  dialogHeight: 650,
   marginTop: '50px',
   dialogVisible: false, // 控制对话框显示与隐藏的变量
   isFullscreen: false, // 控制对话框是否全屏的变量
@@ -90,22 +85,6 @@ onMounted(() => {
   data.original = jsYaml.dump(props.original.valueOf(), { quotingType: '"' });
   data.modified = jsYaml.dump(props.modified.valueOf(), { quotingType: '"' });
   data.dialogVisible = props.dialogVisible.valueOf();
-
-  /**
-   * 窗体大小变更
-   */
-  if (data.fromSize === 'small') {
-    data.dialogWidth = 900;
-    data.dialogHeight = 450;
-    data.isFullscreen = false;
-  } else if (data.fromSize === 'middle') {
-    data.dialogWidth = 1200;
-    data.dialogHeight = 560;
-    data.isFullscreen = false;
-  } else {
-    data.dialogHeight = 800;
-    data.isFullscreen = !data.isFullscreen; // 切换全屏状态
-  }
 });
 
 const emit = defineEmits(['update', 'update:dialogVisible']);

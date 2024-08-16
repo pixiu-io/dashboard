@@ -66,6 +66,7 @@ const isNumber = (value) => {
 };
 
 const init = () => {
+  console.log(props);
   data.original = props.original.valueOf();
   data.modified = props.modified.valueOf();
   data.readOnly = props.readOnly.valueOf();
