@@ -423,14 +423,15 @@
           <template #default="scope">
             <el-button
               size="small"
-              type="text"
-              style="margin-right: -25px; margin-left: -10px; color: #006eff"
+              link
+              style="margin-right: -10px; margin-left: -10px; color: #006eff"
+              @click="showYaml(scope.row)"
             >
               详情
             </el-button>
 
             <el-button
-              type="text"
+              link
               size="small"
               style="margin-right: 1px; color: #006eff"
               :disabled="scope.row.status.replicas !== 0"
@@ -448,6 +449,13 @@
       <pagination :total="data.pageReplicasetInfo.total" @on-change="onChange"></pagination>
     </div>
   </el-card>
+  <PiXiuDiffView
+    v-if="data.diffYamlDialog"
+    v-model:dialogVisible="data.diffYamlDialog"
+    title="版本差异"
+    :original="data.deployment.spec.template"
+    :modified="data.modifiedYaml"
+  ></PiXiuDiffView>
 </template>
 
 <script setup lang="jsx">
@@ -456,7 +464,6 @@ import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData, copy } from '@/utils/utils';
 import { formatterTime } from '@/utils/formatter';
-import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getPodsByLabels, deletePod, getPodLog } from '@/services/kubernetes/podService';
 import {
@@ -466,6 +473,7 @@ import {
   rolloBackDeployment,
   updateDeployment,
 } from '@/services/kubernetes/deploymentService';
+import PiXiuDiffView from '@/components/pixiuyaml/diffView/index.vue';
 import { getEventList, getNamespaceEventList } from '@/services/kubernetes/eventService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { getDeploymentReplicasets } from '@/services/kubernetes/replicasetService';
@@ -559,6 +567,8 @@ const data = reactive({
     objectName: 'Pods',
     deleteNames: '',
   },
+  diffYamlDialog: false,
+  modifiedYaml: '',
 });
 
 onMounted(async () => {
@@ -683,6 +693,11 @@ const deleteDeploymentPod = async () => {
 const canceldeletePodsInBatch = () => {
   data.batchDeleteDialog.close = false;
   data.batchDeleteDialog.deleteName = '';
+};
+
+const showYaml = (replicaset) => {
+  data.diffYamlDialog = true;
+  data.modifiedYaml = replicaset.spec.template;
 };
 
 const rolloback = async (replicaset) => {
