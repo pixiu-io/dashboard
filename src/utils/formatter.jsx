@@ -592,3 +592,18 @@ const formatterAuditStatus = (row, column, cellValue) => {
   );
 };
 export { formatterAuditStatus };
+
+const formatterClusterNode = (row, column, cellValue) => {
+  console.log(cellValue);
+
+  return (
+    <div class="pixiu-table-formatter">
+      <el-space>
+        <div>
+          {cellValue}台 (<span class="color-green-word">全部正常</span>)
+        </div>
+      </el-space>
+    </div>
+  );
+};
+export { formatterClusterNode };

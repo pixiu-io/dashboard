@@ -253,7 +253,7 @@
               <Icon icon="QuestionFilled" desc="原生 kubernetes 的版本"> kubernetes版本 </Icon>
             </template>
           </el-table-column>
-          <el-table-column prop="nodes" label="节点数" :formatter="cloudNodeFormatter" />
+          <el-table-column prop="nodes" label="节点数" :formatter="formatterClusterNode" />
 
           <el-table-column>
             <template #header>
@@ -479,7 +479,7 @@ import PixiuRadioCard from '@/components/radioCard/index.vue';
 import Icon from '@/components/pixiuTooltip/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import useCloudStore from '@/stores/useCloud';
-import { formatterTime } from '@/utils/formatter';
+import { formatterTime, formatterClusterNode } from '@/utils/formatter';
 import { changeClusterProtected } from '@/services/cloudService';
 import { copy } from '@/utils/utils';
 import { useRouter } from 'vue-router';
@@ -554,16 +554,6 @@ const cloudVersionFormatter = (row, column, cellValue) => (
   <div class="pixiu-table-formatter">
     <el-space>
       <div>{cellValue}</div>
-    </el-space>
-  </div>
-);
-
-const cloudNodeFormatter = (row, column, cellValue) => (
-  <div class="pixiu-table-formatter">
-    <el-space>
-      <div>
-        {cellValue}台 (<span class="color-green-word">全部正常</span>)
-      </div>
     </el-space>
   </div>
 );
