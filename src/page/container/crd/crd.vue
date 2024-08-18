@@ -40,12 +40,7 @@
         <el-table-column type="selection" width="30" />
         <el-table-column prop="metadata.name" sortable label="资源名称">
           <template #default="scope">
-            <el-tooltip
-              class="box-item"
-              effect="dark"
-              content="{scope.row.metadata.name}"
-              placement="top-start"
-            >
+            <el-tooltip effect="dark" :content="scope.row.metadata.name" placement="top-start">
               <el-link
                 class="global-table-world"
                 :underline="false"
