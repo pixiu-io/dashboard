@@ -49,7 +49,7 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue';
+import { reactive, onMounted } from 'vue';
 import MyEcharts from '@/components/echarts/index.vue';
 import { getAuditList } from '@/services/audit/auditService';
 import { formatTimestamp } from '@/utils/utils';
