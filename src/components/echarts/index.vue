@@ -23,11 +23,22 @@ const props = defineProps({
 onMounted(() => {
   myChart = echarts.init(chartDom.value);
   myChart.setOption(props.option, true);
+
+  let lastWidth = chartDom.value.offsetWidth;
+  let lastHeight = chartDom.value.offsetHeight;
+
   const erd = elementResizeDetectorMaker();
-  erd.listenTo(chartDom.value.parentNode, (element) => {
-    nextTick(() => {
-      myChart.resize(); // 上层容器变化触发图标重载
-    });
+  erd.listenTo(chartDom.value, () => {
+    const newWidth = chartDom.value.offsetWidth;
+    const newHeight = chartDom.value.offsetHeight;
+
+    if (newWidth !== lastWidth || newHeight !== lastHeight) {
+      lastWidth = newWidth;
+      lastHeight = newHeight;
+      nextTick(() => {
+        myChart.resize(); // 仅当尺寸变化时重新调整图表
+      });
+    }
   });
 });
 
