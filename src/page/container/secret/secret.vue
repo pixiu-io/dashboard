@@ -48,6 +48,7 @@
           <template #default="scope">
             <el-link
               class="global-table-world"
+              :underline="false"
               type="primary"
               style="margin-right: 2px"
               @click="jumpRoute(scope.row)"
