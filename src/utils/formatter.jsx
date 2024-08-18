@@ -592,3 +592,32 @@ const formatterAuditStatus = (row, column, cellValue) => {
   );
 };
 export { formatterAuditStatus };
+
+const formatterClusterNode = (row, column, cellValue) => {
+  const ready = cellValue.ready.length;
+  const notReady = cellValue.not_ready.length;
+  const total = ready + notReady;
+
+  if (notReady === 0) {
+    return (
+      <div class="pixiu-table-formatter">
+        <el-space>
+          <div>
+            {total} 台 (<span class="color-green-word">全部正常</span>)
+          </div>
+        </el-space>
+      </div>
+    );
+  }
+  return (
+    <div class="pixiu-table-formatter">
+      <el-space>
+        <div>
+          {total} 台 (<span class="color-green-word">正常 {ready} 台, </span>
+          <span class="color-red-word">异常 {notReady} 台</span>)
+        </div>
+      </el-space>
+    </div>
+  );
+};
+export { formatterClusterNode };
