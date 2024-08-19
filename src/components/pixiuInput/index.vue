@@ -45,6 +45,7 @@
                 :placeholder="placeholder"
                 @focus="openDropdown"
                 @blur="closeDropdown"
+                @keydown.enter="closeDropdown"
               />
             </div>
             <slot name="suffix"></slot>
