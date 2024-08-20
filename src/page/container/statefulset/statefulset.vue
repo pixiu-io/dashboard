@@ -14,7 +14,7 @@
         <el-input
           v-model="data.pageInfo.query"
           placeholder="名称搜索关键字"
-          style="width: 480px; float: right"
+          style="width: 30%; float: right"
           clearable
           @clear="getStatefulsets"
         >
@@ -215,6 +215,7 @@ import {
   deleteStatefulSet,
   getStatefulSetList,
 } from '@/services/kubernetes/statefulsetService';
+import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
@@ -225,6 +226,8 @@ const editYaml = ref();
 
 const data = reactive({
   cluster: '',
+  namespace: '',
+
   pageInfo: {
     page: 1,
     limit: 10,
@@ -234,8 +237,6 @@ const data = reactive({
   tableData: [],
   loading: false,
 
-  namespace: 'default',
-  namespaces: [],
   statefulSetList: [],
 
   statefulSetReplicasDialog: false,
@@ -260,9 +261,9 @@ const data = reactive({
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
+  data.namespace = getLocalNamespace();
 
   getStatefulsets();
-  getNamespaces();
 });
 
 const handleDeleteDialog = (row) => {
