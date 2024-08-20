@@ -1,14 +1,9 @@
 <template>
-  <el-card class="title-card-container">
-    <div class="font-container">StatefulSet</div>
-    <PiXiuYaml :refresh="getStatefulsets"></PiXiuYaml>
-  </el-card>
-
   <Description
     :description="'StatefulSet 是 Kubernetes 中用来管理有状态应用的资源对象。它可以保证应用的持久化存储，即使 StatefulSet 中的 Pod 被重新调度，也能保证数据不丢失。'"
   />
 
-  <div style="margin-top: 25px">
+  <div style="margin-top: 5px">
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createStatefulSet">新建</button>
@@ -34,15 +29,6 @@
             />
           </template>
         </el-input>
-
-        <el-select
-          v-model="data.namespace"
-          style="width: 200px; float: right; margin-right: 10px"
-          @change="changeNamespace"
-        >
-          <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
-        </el-select>
-        <!-- <div class="namespace-container" style="width: 112px; float: right">命名空间</div> -->
       </el-col>
     </el-row>
     <el-card class="box-card">
