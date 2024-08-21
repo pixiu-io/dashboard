@@ -305,7 +305,14 @@
         color: '#191919',
       }"
     >
-      <el-table-column prop="name" sortable label="容器名称" width="280px" />
+      <el-table-column prop="name" sortable label="容器名称" width="280px">
+        <template #default="scope">
+          {{ scope.row.name
+          }}<el-tag v-if="scope.row.init" type="danger" size="small" style="margin-left: 10px"
+            >Init容器</el-tag
+          >
+        </template>
+      </el-table-column>
       <el-table-column prop="image" sortable label="镜像">
         <template #default="scope">
           <div style="display: flex">
@@ -682,6 +689,7 @@ const data = reactive({
     close: false,
     objectName: 'Deployment',
     deleteName: '',
+    namespace: '',
   },
 
   imageData: {
@@ -955,12 +963,13 @@ const getDeployReady = (row) => {
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.metadata.name;
+  data.deleteDialog.namespace = row.metadata.namespace;
 };
 
 const confirm = async () => {
   const [result, err] = await deleteDeployment(
     data.cluster,
-    data.namespace,
+    data.deleteDialog.namespace,
     data.deleteDialog.deleteName,
   );
   if (err) {
@@ -1045,6 +1054,7 @@ const handleImageDialog = async (row) => {
   data.imageData.images = [];
   for (let container of containers) {
     data.imageData.images.push({
+      init: false,
       image: container.image,
       name: container.name,
       change: false,
@@ -1052,6 +1062,20 @@ const handleImageDialog = async (row) => {
       deploymentName: row.metadata.name,
       ns: row.metadata.namespace,
     });
+  }
+  if (deploy.spec.template.spec.initContainers) {
+    const containers = deploy.spec.template.spec.initContainers;
+    for (let container of containers) {
+      data.imageData.images.push({
+        init: true,
+        image: container.image,
+        name: container.name,
+        change: false,
+        newImage: '',
+        deploymentName: row.metadata.name,
+        ns: row.metadata.namespace,
+      });
+    }
   }
   data.imageData.close = true;
 };
@@ -1063,7 +1087,11 @@ const cancelImageFunc = () => {
 
 const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
-  const [result, err] = await getDeployment(data.cluster, data.namespace, data.yamlName);
+  const [result, err] = await getDeployment(
+    data.cluster,
+    row.metadata.namespace,
+    row.metadata.name,
+  );
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
@@ -1146,7 +1174,7 @@ const confirmDeploymentScale = async () => {
     return;
   }
 
-  getDeployments();
+  await getDeployments();
   closeDeploymentScaleDialog();
 };
 </script>
