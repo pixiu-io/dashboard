@@ -48,23 +48,13 @@
           <template #default="scope">
             <el-link
               class="global-table-world"
+              :underline="false"
               type="primary"
               style="margin-right: 2px"
               @click="jumpRoute(scope.row)"
             >
               {{ scope.row.metadata.name }}
             </el-link>
-
-            <el-tooltip content="复制">
-              <pixiu-icon
-                name="icon-copy"
-                size="11px"
-                type="iconfont"
-                class-name="icon-box"
-                color="#909399"
-                @click="copy(scope.row.metadata.name)"
-              />
-            </el-tooltip>
           </template>
         </el-table-column>
 

@@ -14,44 +14,47 @@
   <Description
     :description="'Pod 是可以在 Kubernetes 中创建和管理的、最小的可部署的计算单元。它包含一个或多个容器，共享网络命名空间，存储，以及唯一的标识符。'"
   />
-  <div>
-    <el-row>
-      <el-col>
-        <button class="pixiu-two-button" @click="createPod">新建</button>
-        <button
-          style="margin-left: 10px; width: 85px"
-          class="pixiu-two-button2"
-          @click="deletePodsInBatch"
-        >
-          批量删除
-        </button>
+  <div style="margin-top: 5px">
+    <el-row style="display: flex; align-items: center">
+      <el-col style="display: flex; justify-content: space-between">
+        <el-space>
+          <button class="pixiu-two-button" @click="createPod">新建</button>
+          <button
+            style="margin-left: 10px; width: 85px"
+            class="pixiu-two-button2"
+            @click="deletePodsInBatch"
+          >
+            批量删除
+          </button>
+        </el-space>
+        <el-space style="display: flex; align-items: center">
+          <div>
+            <el-text class="mx-1">自动刷新</el-text>
+            <el-switch
+              v-model="data.refresh"
+              class="mt-2"
+              style="margin-left: 10px"
+              inline-prompt
+              :active-icon="Check"
+              :inactive-icon="Close"
+              @change="startRefresh"
+            />
+          </div>
 
-        <el-input
-          v-model="data.pageInfo.search.searchInfo"
-          placeholder="名称搜索关键字"
-          style="width: 400px; float: right"
-          clearable
-          @clear="getPods"
-          @input="searchPods"
-        >
-          <template #suffix>
-            <el-icon class="el-input__icon" @click="searchPods">
-              <component :is="'Search'" />
-            </el-icon>
-          </template>
-        </el-input>
-        <div style="float: right; margin-right: 24px">
-          <el-text class="mx-1">自动刷新</el-text>
-          <el-switch
-            v-model="data.refresh"
-            class="mt-2"
-            style="margin-left: 10px"
-            inline-prompt
-            :active-icon="Check"
-            :inactive-icon="Close"
-            @change="startRefresh"
-          />
-        </div>
+          <pixiu-input
+            v-model="data.pageInfo.search.searchInfo"
+            placeholder="名称搜索关键字"
+            :options="data.options"
+            style="width: 400px; font-size: 12px"
+            @update:tags="handleDynamicTags"
+          >
+            <template #suffix>
+              <el-icon class="el-input__icon" style="cursor: pointer" @click="getPods">
+                <component :is="'Search'" />
+              </el-icon>
+            </template>
+          </pixiu-input>
+        </el-space>
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -615,7 +618,9 @@ import {
 import { ElMessage, ElMessageBox } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
-import { getTableData, searchFromData } from '@/utils/utils';
+import PixiuInput from '@/components/pixiuInput/index.vue';
+import { getTableData, searchData } from '@/utils/utils';
+
 import {
   formatterTime,
   formatterPodStatus,
@@ -659,16 +664,16 @@ const data = reactive({
   namespace: 'default',
   refresh: false,
   drawerWidth: '70%',
-
+  options: [
+    { label: '标签', value: 'tag' },
+    { label: '名字', value: 'name' },
+  ],
   pageInfo: {
     page: 1,
     limit: 10,
     query: '',
     total: 0,
-    search: {
-      field: 'name',
-      searchInfo: '',
-    },
+    search: {},
   },
   tableData: [],
   loading: false,
@@ -740,6 +745,14 @@ const data = reactive({
     drawer: false,
   },
 });
+
+const handleDynamicTags = (tags) => {
+  const result = tags.reduce((obj, item) => {
+    obj[item.value] = item.inputValue;
+    return obj;
+  }, {});
+  data.pageInfo.query = result;
+};
 
 const onChange = (v) => {
   data.pageInfo.limit = v.limit;

@@ -40,9 +40,16 @@
         <el-table-column type="selection" width="30" />
         <el-table-column prop="metadata.name" sortable label="资源名称">
           <template #default="scope">
-            <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
-              {{ scope.row.metadata.name }}
-            </el-link>
+            <el-tooltip effect="dark" :content="scope.row.metadata.name" placement="top-start">
+              <el-link
+                class="global-table-world"
+                :underline="false"
+                type="primary"
+                @click="jumpRoute(scope.row)"
+              >
+                {{ scope.row.metadata.name }}
+              </el-link>
+            </el-tooltip>
           </template>
         </el-table-column>
         <el-table-column prop="spec.names.shortNames" label="简写名称"> </el-table-column>
