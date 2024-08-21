@@ -54,15 +54,16 @@
           <el-form-item>
             <template #label>
               <span style="margin-left: 20px; font-size: 13px; color: #191919"
-                >实例个数(正常/全部)</span
+                >实例(就绪/副本/失败)</span
               >
             </template>
+
             <span
-              v-if="data.deployment && data.deployment.status"
+              v-if="data.daemonset && data.daemonset.status"
               class="detail-card-style-form2"
               style="margin-left: 40px"
             >
-              {{ getDeployReady(data.deployment) }}
+              {{ getDaemonsetReady(data.daemonset) }}
             </span>
             <pixiu-icon
               name="icon-edit"
@@ -90,11 +91,11 @@
               <span style="margin-left: 20px; font-size: 13px; color: #191919">命名空间</span>
             </template>
             <span
-              v-if="data.deployment.metadata && data.deployment.metadata.namespace"
+              v-if="data.daemonset.metadata && data.daemonset.metadata.namespace"
               class="detail-card-style-form2"
               style="margin-left: 106px"
             >
-              {{ data.deployment.metadata.namespace }}
+              {{ data.daemonset.metadata.namespace }}
             </span>
           </el-form-item>
 
@@ -104,11 +105,11 @@
               <span style="margin-left: 20px; font-size: 13px; color: #191919">创建时间</span>
             </template>
             <span
-              v-if="data.deployment.metadata && data.deployment.metadata.creationTimestamp"
+              v-if="data.daemonset.metadata && data.daemonset.metadata.creationTimestamp"
               class="detail-card-style-form2"
               style="margin-left: 106px"
             >
-              {{ data.deployment.metadata.creationTimestamp }}
+              {{ data.daemonset.metadata.creationTimestamp }}
             </span>
           </el-form-item>
 
@@ -119,14 +120,14 @@
             </template>
             <span
               v-if="
-                data.deployment.spec &&
-                data.deployment.spec.strategy &&
-                data.deployment.spec.strategy.type
+                data.daemonset.spec &&
+                data.daemonset.spec.updateStrategy &&
+                data.daemonset.spec.updateStrategy.type
               "
               class="detail-card-style-form2"
               style="margin-left: 106px"
             >
-              {{ data.deployment.spec.strategy.type }}
+              {{ data.daemonset.spec.updateStrategy.type }}
             </span>
           </el-form-item>
 
@@ -164,7 +165,7 @@
               ><WarningFilled
             /></el-icon>
             <div style="vertical-align: middle; margin-top: -40px">
-              获取 Deployment 的实时实例列表
+              获取 Daemonset 的实时实例列表
             </div>
           </el-card>
 
@@ -178,7 +179,7 @@
             </button>
 
             <div style="margin-left: 8px; float: right; margin-left: 12px">
-              <button class="pixiu-two-button" @click="searchDeploymentPods">搜索</button>
+              <button class="pixiu-two-button" @click="searchDaemonsetPods">搜索</button>
             </div>
 
             <el-input
@@ -186,8 +187,8 @@
               placeholder="名称搜索关键字"
               style="width: 480px; float: right"
               clearable
-              @clear="getDeploymentPods"
-              @input="searchDeploymentPods"
+              @clear="getDaemonsetPods"
+              @input="searchDaemonsetPods"
             >
               <template #suffix>
                 <pixiu-icon
@@ -196,7 +197,7 @@
                   size="15px"
                   type="iconfont"
                   color="#909399"
-                  @click="getDeploymentPods"
+                  @click="getDaemonsetPods"
                 />
               </template>
             </el-input>
@@ -313,7 +314,7 @@
         <el-row>
           <el-col>
             <div>
-              <!-- <button class="pixiu-two-button" @click="getDeploymentEvents">刷新</button> -->
+              <!-- <button class="pixiu-two-button" @click="getDaemonsetEvents">刷新</button> -->
               <button
                 style="margin-left: 10px; width: 85px"
                 class="pixiu-two-button2"
@@ -323,7 +324,7 @@
               </button>
 
               <div style="margin-left: 8px; float: right; margin-left: 12px">
-                <button class="pixiu-two-button" @click="getDeploymentEvents">搜索</button>
+                <button class="pixiu-two-button" @click="getDaemonsetEvents">搜索</button>
               </div>
 
               <el-input
@@ -331,8 +332,8 @@
                 placeholder="名称搜索关键字"
                 style="width: 480px; float: right"
                 clearable
-                @clear="getDeploymentEvents"
-                @input="getDeploymentEvents"
+                @clear="getDaemonsetEvents"
+                @input="getDaemonsetEvents"
               >
                 <template #suffix>
                   <pixiu-icon
@@ -341,7 +342,7 @@
                     size="15px"
                     type="iconfont"
                     color="#909399"
-                    @click="getDeploymentEvents"
+                    @click="getDaemonsetEvents"
                   />
                 </template>
               </el-input>
@@ -394,7 +395,7 @@
               style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
               ><WarningFilled
             /></el-icon>
-            <div style="vertical-align: middle; margin-top: -40px">获取 Deployment 的历史记录</div>
+            <div style="vertical-align: middle; margin-top: -40px">获取 Daemonset 的历史记录</div>
           </el-card>
         </el-row>
       </div>
@@ -409,7 +410,7 @@
       >
         <el-table-column prop="metadata.name" label="版本号" min-width="70px">
           <template #default="scope">
-            # {{ scope.row.metadata.annotations['deployment.kubernetes.io/revision'] }}
+            # {{ scope.row.metadata.annotations['daemonset.kubernetes.io/revision'] }}
             <el-tag v-show="scope.row.status.replicas !== 0" type="success">当前版本</el-tag>
           </template>
         </el-table-column>
@@ -453,30 +454,35 @@
     v-if="data.diffYamlDialog"
     v-model:dialogVisible="data.diffYamlDialog"
     title="版本差异"
-    :original="data.deployment.spec.template"
+    :original="data.daemonset.spec.template"
     :modified="data.modifiedYaml"
   ></PiXiuDiffView>
+  <pixiuDialog
+    :close-event="data.deleteDialog.close"
+    :object-name="data.deleteDialog.objectName"
+    :delete-name="data.deleteDialog.deleteName"
+    @confirm="deleteDaemonsetPod"
+    @cancel="cancelDeletePod"
+  ></pixiuDialog>
 </template>
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
+import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { getTableData, copy } from '@/utils/utils';
 import { formatterTime } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getPodsByLabels, deletePod, getPodLog } from '@/services/kubernetes/podService';
 import {
-  getDeployment,
-  getDeployReady,
-  patchDeployment,
-  rolloBackDeployment,
-  updateDeployment,
-} from '@/services/kubernetes/deploymentService';
+  getDaemonset,
+  getDaemonsetReady,
+  rolloBackDaemonset,
+} from '@/services/kubernetes/daemonsetService';
 import PiXiuDiffView from '@/components/pixiuyaml/diffView/index.vue';
-import { getEventList, getNamespaceEventList } from '@/services/kubernetes/eventService';
-import pixiuDialog from '@/components/pixiuDialog/index.vue';
-import { getDeploymentReplicasets } from '@/services/kubernetes/replicasetService';
+import { getEventByResourceList } from '@/services/kubernetes/eventService';
+import { getDaemonsetReplicasets } from '@/services/kubernetes/replicasetService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -494,7 +500,7 @@ const data = reactive({
   activeName: 'first',
   labels: '',
 
-  workloadType: 'Deployment',
+  workloadType: 'Daemonset',
 
   pageInfo: {
     page: 1,
@@ -525,10 +531,10 @@ const data = reactive({
   restarts: 0,
   loading: false,
 
-  deployment: {},
-  deploymentPods: [],
+  daemonset: {},
+  daemonsetPods: [],
 
-  deploymentEvents: [],
+  daemonsetEvents: [],
 
   selectedPods: [],
   selectedPod: '',
@@ -560,6 +566,7 @@ const data = reactive({
     close: false,
     objectName: 'Pod',
     deleteName: '',
+    namespace: '',
   },
 
   batchDeleteDialog: {
@@ -576,23 +583,9 @@ onMounted(async () => {
   data.clusterName = localStorage.getItem(data.cluster);
   data.name = proxy.$route.query.name;
   data.namespace = proxy.$route.query.namespace;
-
-  await getDeploymentObject();
-  await getDeploymentPods();
-  // await getDeploymentEvents();
+  await getDaemonsetObject();
+  await getDaemonsetPods();
 });
-
-// 监听子属性变化
-watch(
-  () => data.autoSyncPods,
-  (newActive, oldActive) => {
-    // if (newActive) {
-    //   var a = window.setInterval(getDeploymentPods, 5000);
-    // } else {
-    //   window.clearInterval(a);
-    // }
-  },
-);
 
 const openShell = (val) => {
   selectedPod.value = val.metadata.name;
@@ -647,19 +640,20 @@ const changeLogLine = async (val) => {
   }
 };
 
-const getDeploymentObject = async () => {
-  const [result, err] = await getDeployment(data.cluster, data.namespace, data.name);
+const getDaemonsetObject = async () => {
+  const [result, err] = await getDaemonset(data.cluster, data.namespace, data.name);
   if (err) {
     proxy.$notify.error(err.response.data.message);
     return;
   }
-  data.deployment = result;
-  data.yaml = jsYaml.dump(data.deployment, { quotingType: '"' });
+  data.daemonset = result;
+  data.yaml = jsYaml.dump(data.daemonset, { quotingType: '"' });
 };
 
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.metadata.name;
+  data.deleteDialog.namespace = row.metadata.namespace;
 };
 
 const handleBatchDeleteDialog = (row) => {
@@ -678,8 +672,12 @@ const cancelDeletePod = () => {
   }, 100);
 };
 
-const deleteDeploymentPod = async () => {
-  const [result, err] = await deletePod(data.cluster, data.namespace, data.deleteDialog.deleteName);
+const deleteDaemonsetPod = async () => {
+  const [result, err] = await deletePod(
+    data.cluster,
+    data.deleteDialog.namespace,
+    data.deleteDialog.deleteName,
+  );
   if (err) {
     proxy.$notify.error({ title: 'Pod', message: err.response.data.message });
     return;
@@ -687,7 +685,7 @@ const deleteDeploymentPod = async () => {
   proxy.$notify.success({ title: 'Pod', message: `${data.deleteDialog.deleteName} 删除成功` });
 
   cancelDeletePod();
-  await getDeploymentPods();
+  await getDaemonsetPods();
 };
 
 const canceldeletePodsInBatch = () => {
@@ -710,21 +708,21 @@ const rolloback = async (replicaset) => {
     {
       op: 'replace',
       path: '/metadata/annotations',
-      value: JSON.parse(JSON.stringify(data.deployment.metadata.annotations)),
+      value: JSON.parse(JSON.stringify(data.daemonset.metadata.annotations)),
     },
   ];
-  const [result, err] = await rolloBackDeployment(
+  const [result, err] = await rolloBackDaemonset(
     data.cluster,
     replicaset.metadata.namespace,
     data.name,
     updateBoyd,
   );
   if (err) {
-    proxy.$notify.error({ title: 'Deployment', message: err.response.data.message });
+    proxy.$notify.error({ title: 'Daemonset', message: err.response.data.message });
     return;
   }
   proxy.$notify.success({
-    title: 'Deployment',
+    title: 'Daemonset',
     message: `${replicaset.name} 回滚成功`,
   });
 };
@@ -737,17 +735,17 @@ const deletePodsInBatch = async () => {
   }
 
   canceldeletePodsInBatch();
-  await getDeploymentPods();
+  await getDaemonsetPods();
 };
 
 const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
 
-  data.tableData = getTableData(data.pageInfo, data.deploymentPods);
+  data.tableData = getTableData(data.pageInfo, data.daemonsetPods);
 
   if (data.pageInfo.search.searchInfo !== '') {
-    searchDeploymentPods();
+    searchDaemonsetPods();
   }
 };
 
@@ -755,7 +753,7 @@ const onEventChange = (v) => {
   data.pageEventInfo.limit = v.limit;
   data.pageEventInfo.page = v.page;
 
-  data.eventTableData = getTableData(data.pageEventInfo, data.deploymentEvents);
+  data.eventTableData = getTableData(data.pageEventInfo, data.daemonsetEvents);
 };
 
 const getPodLogs = async () => {
@@ -801,8 +799,8 @@ const getPodLogs = async () => {
   }
 };
 
-const getDeploymentPods = async () => {
-  let matchLabels = data.deployment.spec.selector.matchLabels;
+const getDaemonsetPods = async () => {
+  let matchLabels = data.daemonset.spec.selector.matchLabels;
   let labels = [];
   for (let key in matchLabels) {
     labels.push(key + '=' + matchLabels[key]);
@@ -815,14 +813,14 @@ const getDeploymentPods = async () => {
     proxy.$notify.error(err.response.data.message);
     return;
   }
-  data.deploymentPods = result.items;
-  data.pageInfo.total = data.deploymentPods.length;
-  data.tableData = getTableData(data.pageInfo, data.deploymentPods);
+  data.daemonsetPods = result.items;
+  data.pageInfo.total = data.daemonsetPods.length;
+  data.tableData = getTableData(data.pageInfo, data.daemonsetPods);
 
   data.selectedPods = [];
   data.selectedContainers = [];
   data.selectedPodMap = {};
-  for (let item of data.deploymentPods) {
+  for (let item of data.daemonsetPods) {
     let cs = [];
     for (let c of item.spec.containers) {
       cs.push(c.name);
@@ -841,10 +839,10 @@ const getDeploymentPods = async () => {
   }
 };
 
-const searchDeploymentPods = async () => {
+const searchDaemonsetPods = async () => {
   let allSearchedPods = [];
   if (data.pageInfo.search.field === 'name') {
-    for (let pod of data.deploymentPods) {
+    for (let pod of data.daemonsetPods) {
       if (pod.metadata.name.search(data.pageInfo.search.searchInfo) !== -1) {
         allSearchedPods.push(pod);
       }
@@ -855,29 +853,32 @@ const searchDeploymentPods = async () => {
   data.tableData = getTableData(data.pageInfo, allSearchedPods);
 };
 
-const getDeploymentEvents = async () => {
-  data.loading = true;
-  const [result, err] = await getEventList(data.cluster, data.namespace, data.name);
-  data.loading = false;
+const getDaemonsetEvents = async () => {
+  const [result, err] = await getEventByResourceList(
+    data.cluster,
+    data.namespace,
+    data.name,
+    'daemonsets',
+  );
   if (err) {
     proxy.$notify.error({ title: 'Event', message: err.response.data.message });
     return;
   }
-  data.deploymentEvents = result;
+  data.daemonsetEvents = result;
   data.pageEventInfo.total = result.length;
-  data.eventTableData = getTableData(data.pageEventInfo, data.deploymentEvents);
+  data.eventTableData = getTableData(data.pageEventInfo, data.daemonsetEvents);
 };
 
-const getDeploymentRs = async () => {
+const getDaemonsetRs = async () => {
   data.loading = true;
-  const lables = data.deployment.metadata.labels;
+  const lables = data.daemonset.metadata.labels;
   let labelStr = Object.keys(lables)
     .map((key) => {
       return key + '=' + lables[key];
     })
     .join(',');
 
-  const [result, err] = await getDeploymentReplicasets(data.cluster, data.namespace, labelStr);
+  const [result, err] = await getDaemonsetReplicasets(data.cluster, data.namespace, labelStr);
   data.loading = false;
   if (err) {
     proxy.$notify.error({ title: 'Event', message: err.response.data.message });
@@ -893,7 +894,7 @@ const deleteEventObject = async (row) => {
     proxy.$notify.error({ title: 'Event', message: err.response.data.message });
     return;
   }
-  await getDeploymentEvents();
+  await getDaemonsetEvents();
   proxy.$notify.success({ title: 'Event', message: `${row.metadata.name} 删除成功` });
 };
 
@@ -904,7 +905,7 @@ const deleteEventsInBatch = async () => {
       proxy.$notify.error({ title: 'Pod', message: err.response.data.message });
     }
   }
-  await getDeploymentEvents();
+  await getDaemonsetEvents();
   proxy.$notify.success({ title: 'Events', message: '批量删除事件成功' });
 };
 
@@ -966,13 +967,13 @@ const handleClick = (tab, event) => {};
 const handleChange = async (name) => {
   switch (name) {
     case 'second':
-      await getDeploymentObject();
+      await getDaemonsetObject();
       break;
     case 'third':
-      await getDeploymentEvents();
+      await getDaemonsetEvents();
       break;
     case 'four':
-      await getDeploymentRs();
+      await getDaemonsetRs();
       break;
   }
 };
@@ -991,7 +992,7 @@ const editYaml = () => {
 </script>
 
 <style scoped="scoped">
-.deployment-tab {
+.daemonset-tab {
   margin-top: 1px;
   margin-bottom: -32px;
 }
@@ -1003,7 +1004,7 @@ const editYaml = () => {
   font-weight: 600;
 }
 
-.deployment-info {
+.daemonset-info {
   color: #909399;
   font-size: 13px;
   margin-left: 8px;

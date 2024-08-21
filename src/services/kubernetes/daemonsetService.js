@@ -93,11 +93,14 @@ export const rolloBackDaemonset = async (cluster, namespace, name, data) => {
 
   return [result, err];
 };
-export const getDeployReady = (deploy) => {
-  let availableReplicas = deploy.status.availableReplicas;
-  if (availableReplicas === undefined) {
-    availableReplicas = 0;
-  }
 
-  return availableReplicas + '/' + deploy.spec.replicas;
+export const getDaemonsetReady = (deploy) => {
+  let status = deploy.status;
+  return (
+    status.numberReady +
+    '/' +
+    status.updatedNumberScheduled +
+    '/' +
+    (status.numberUnavailable ? status.numberUnavailable : 0)
+  );
 };

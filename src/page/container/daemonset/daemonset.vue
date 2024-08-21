@@ -61,9 +61,9 @@
         <el-table-column prop="status" label="就绪/副本/失败">
           <template #default="scope">
             <a style="color: green">{{ scope.row.status.numberReady }}</a
-            >/ <a style="color: green">{{ scope.row.status.numberAvailable }}</a
+            >/ <a style="color: green">{{ scope.row.status.updatedNumberScheduled }}</a
             >/
-            <a style="color: red">{{ scope.row.status.numberMisscheduled }}</a>
+            <a style="color: red">{{ scope.row.status.numberUnavailable || 0 }}</a>
           </template>
         </el-table-column>
 
@@ -155,58 +155,8 @@
   </div>
 
   <el-dialog
-    :model-value="data.daemonsetReplicasDialog"
-    style="color: #000000; font-size: 14px"
-    width="400px"
-    center
-    @close="closeDaemonsetScaleDialog"
-  >
-    <template #header>
-      <div
-        style="
-          text-align: left;
-          font-weight: bold;
-          padding-left: 5px;
-          margin-top: 5px;
-          font-size: 14.5px;
-          color: #191919;
-        "
-      >
-        调整实例数
-      </div>
-    </template>
-
-    <el-form label-width="80px" style="max-width: 300px">
-      <el-form-item>
-        <template #label>
-          <span style="font-size: 13px; color: #191919">原副本数</span>
-        </template>
-        <el-input v-model="data.daemonsetRepcliasFrom.origin" disabled />
-      </el-form-item>
-      <el-form-item>
-        <template #label>
-          <span style="font-size: 13px; color: #191919">新副本数</span>
-        </template>
-        <el-input v-model="data.daemonsetRepcliasFrom.target" placeholder="请输入新副本数" />
-      </el-form-item>
-    </el-form>
-
-    <div style="margin-top: -25px"></div>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button class="pixiu-small-cancel-button" @click="closeDaemonsetScaleDialog"
-          >取消</el-button
-        >
-        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmDaemonsetScale"
-          >确认</el-button
-        >
-      </span>
-    </template>
-  </el-dialog>
-
-  <el-dialog
     :model-value="data.imageData.close"
-    style="color: #000000; font: 14px"
+    style="color: #000000; font-size: 14px"
     align-center
     draggable
     center
@@ -253,7 +203,7 @@
       <el-table-column label="容器类型" width="180px">
         <template #default="scope">
           <el-tag :type="scope.row.init ? 'danger' : 'success'">{{
-            scope.row.init ? '初始化' : '普通'
+            scope.row.init ? 'Init' : 'Normal'
           }}</el-tag>
         </template>
       </el-table-column>
@@ -444,13 +394,7 @@
     </div>
   </el-drawer>
 
-  <el-drawer
-    v-model="data.monitorData.drawer"
-    :size="data.drawerWidth"
-    :with-header="false"
-    @open="openMonitorDrawer"
-    @close="closeMonitorDrawer"
-  >
+  <el-drawer v-model="data.monitorData.drawer" :size="data.drawerWidth" :with-header="false">
     <div style="display: flex; flex-direction: column; height: 100%">
       <div>
         <div
@@ -459,7 +403,7 @@
             font-weight: bold;
             padding-left: 5px;
             margin-top: 5px;
-            font-size: 14.5px;
+            font-size: 14px;
             color: #191919;
           "
         >
@@ -480,7 +424,6 @@
     v-model="data.eventData.drawer"
     :size="data.eventData.width"
     :with-header="false"
-    @open="openEventDrawer"
     @close="closeEventDrawer"
   >
     <div style="display: flex; flex-direction: column; height: 100%">
@@ -593,6 +536,7 @@ import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import Description from '@/components/description/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import PixiuLog from '@/components/pixiulog/index.vue';
+import { WarningFilled } from '@element-plus/icons-vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -750,9 +694,7 @@ const getDaemonsetEvents = async () => {
   const namespace = data.eventData.daemonset.metadata.namespace;
   const name = data.eventData.daemonset.metadata.name;
 
-  data.eventData.loading = true;
   const [result, err] = await getEventByResourceList(data.cluster, namespace, name, 'daemonset');
-  data.eventData.loading = false;
   if (err) {
     proxy.$notify.error(err.response.data.message);
     return;
@@ -790,7 +732,7 @@ const deleteEventsInBatch = async () => {
     }
   }
   proxy.$notify.success('批量删除事件成功');
-  getDaemonsetEvents();
+  await getDaemonsetEvents();
 };
 
 const handleLogDrawer = (row) => {
@@ -823,7 +765,11 @@ const getDaemonsetPods = async () => {
     labels.push(key + '=' + matchLabels[key]);
   }
 
-  const [result, err] = await getPodsByLabels(data.cluster, data.namespace, labels.join(','));
+  const [result, err] = await getPodsByLabels(
+    data.cluster,
+    data.logData.daemonset.metadata.namespace,
+    labels.join(','),
+  );
   if (err) {
     proxy.$notify.error(err.response.data.message);
     return;
@@ -893,10 +839,6 @@ const getPodLogs = async () => {
     }
     data.logData.podLogs = result;
   }
-};
-
-const getDaemonsetReady = (row) => {
-  return row.status.numberReady + '/' + row.status.numberAvailable;
 };
 
 const handleDeleteDialog = (row) => {
@@ -1036,13 +978,7 @@ const handleEditYamlDialog = async (row) => {
 };
 
 const createDaemonset = () => {
-  const url = `/daemonsets/createDaemonset?cluster=${data.cluster}`;
-  router.push(url);
-};
-
-const editDaemonset = (row) => {
-  const url = `/daemonsets/editDaemonset?cluster=${data.cluster}&name=${row.metadata.name}`;
-  router.push(url);
+  proxy.$message.warning('暂不支持');
 };
 
 const jumpRoute = (row) => {
@@ -1076,41 +1012,12 @@ const searchDaemonsets = async () => {
   data.tableData = searchData(data.pageInfo, data.daemonsetList);
 };
 
-const handleDaemonsetScaleDialog = (row) => {
-  data.daemonsetRepcliasFrom.name = row.metadata.name;
-  data.daemonsetRepcliasFrom.target = '';
-  data.daemonsetRepcliasFrom.origin = row.spec.replicas;
-  data.daemonsetReplicasDialog = true;
-};
-
 const closeDaemonsetScaleDialog = (row) => {
   data.daemonsetReplicasDialog = false;
 
   data.daemonsetRepcliasFrom.name = '';
   data.daemonsetRepcliasFrom.origin = '';
   data.daemonsetRepcliasFrom.target = 0;
-};
-
-const confirmDaemonsetScale = async () => {
-  const patchData = {
-    spec: {
-      replicas: Number(data.daemonsetRepcliasFrom.target),
-    },
-  };
-
-  const [result, err] = await patchDaemonset(
-    data.cluster,
-    data.namespace,
-    data.daemonsetRepcliasFrom.name,
-    patchData,
-  );
-  if (err) {
-    proxy.$notify.error(err.response.data.message);
-    return;
-  }
-
-  getDaemonsets();
-  closeDaemonsetScaleDialog();
 };
 </script>
 

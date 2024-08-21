@@ -68,6 +68,7 @@ import Event from './container/event/event.vue';
 import CRD from './container/crd/crd.vue';
 import Audit from './audit/audit.vue';
 import Daemonset from './container/daemonset/daemonset.vue';
+import DaemonsetDetail from './container/daemonset/details.vue';
 export {
   Home,
   Login,
@@ -84,6 +85,7 @@ export {
   DeploymentDetail,
   // Daemonset
   Daemonset,
+  DaemonsetDetail,
   Release,
   Node,
   NodeDetail,

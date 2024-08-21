@@ -71,6 +71,7 @@ import {
   Event,
   CRD,
   Audit,
+  DaemonsetDetail,
 } from '@/page';
 
 const routes = [
@@ -195,6 +196,14 @@ const routes = [
               func: 'getDaemonsets',
             },
             component: Daemonset,
+          },
+          {
+            path: 'daemonsets/detail',
+            name: 'DaemonsetDetail',
+            meta: {
+              title: 'daemonsetDetail',
+            },
+            component: DaemonsetDetail,
           },
           {
             path: 'statefulsets',
