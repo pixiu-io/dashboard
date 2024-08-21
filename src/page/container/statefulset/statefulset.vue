@@ -48,7 +48,12 @@
 
         <el-table-column prop="metadata.name" sortable label="名称">
           <template #default="scope">
-            <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
+            <el-link
+              class="global-table-world"
+              :underline="false"
+              type="primary"
+              @click="jumpRoute(scope.row)"
+            >
               {{ scope.row.metadata.name }}
             </el-link>
           </template>
@@ -67,8 +72,23 @@
         >
         </el-table-column>
 
-        <el-table-column prop="status" label="Pod状态" :formatter="formatterStatus" width="90px">
+        <el-table-column prop="status" label="Pod状态" :formatter="formatterStatus">
         </el-table-column>
+
+        <el-table-column
+          v-if="data.namespace === '全部空间'"
+          prop="metadata.namespace"
+          label="命名空间"
+          :formatter="formatterNamespace"
+        >
+        </el-table-column>
+
+        <el-table-column
+          prop="metadata.creationTimestamp"
+          label="创建时间"
+          sortable
+          :formatter="formatterTime"
+        />
 
         <el-table-column
           label="镜像"
@@ -209,6 +229,7 @@ import PixiuTag from '@/components/pixiuTag/index.vue';
 import Description from '@/components/description/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
+import { formatterImage, formatterTime, formatterNamespace } from '@/utils/formatter';
 import {
   getStatefulSet,
   updateStatefulSet,
@@ -485,24 +506,6 @@ const formatterStatus = (row, column, cellValue) => {
     <div>
       {availableReplicas}/{row.spec.replicas}
     </div>
-  );
-};
-
-const formatterImage = (row, column, cellValue) => {
-  const images = [];
-  for (let c of cellValue) {
-    images.push(c.image);
-  }
-
-  const displayContent = `
-    <div>
-      ${images.map((image) => `<div class="pixiu-table-formatter">${image}</div>`).join('')}
-    </div>
-  `;
-  return (
-    <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
-      <div class="pixiu-ellipsis-style">{images.join(',')}</div>;
-    </el-tooltip>
   );
 };
 </script>
