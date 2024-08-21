@@ -67,6 +67,7 @@ import PlanCreate from './plan/planCreate.vue';
 import Event from './container/event/event.vue';
 import CRD from './container/crd/crd.vue';
 import Audit from './audit/audit.vue';
+import Daemonset from './container/daemonset/daemonset.vue';
 export {
   Home,
   Login,
@@ -81,6 +82,8 @@ export {
   CreateDeployment,
   EditDeployment,
   DeploymentDetail,
+  // Daemonset
+  Daemonset,
   Release,
   Node,
   NodeDetail,

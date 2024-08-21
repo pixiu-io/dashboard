@@ -17,6 +17,7 @@ import {
   CreateDeployment,
   EditDeployment,
   DeploymentDetail,
+  Daemonset,
   Release,
   Terminal,
   Monitor,
@@ -185,6 +186,15 @@ const routes = [
               func: 'getDeployments',
             },
             component: Deployment,
+          },
+          {
+            path: 'daemonsets',
+            name: 'Demonset',
+            meta: {
+              title: 'daemonset',
+              func: 'getDaemonsets',
+            },
+            component: Daemonset,
           },
           {
             path: 'statefulsets',
