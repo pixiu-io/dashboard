@@ -14,7 +14,7 @@
         <el-input
           v-model="data.pageInfo.query"
           placeholder="名称搜索关键字"
-          style="width: 30%; float: right"
+          style="width: 35%; float: right"
           clearable
           @clear="getStatefulsets"
         >
@@ -202,7 +202,7 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import { reactive, getCurrentInstance, onMounted, onUnmounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData } from '@/utils/utils';
 import PixiuTag from '@/components/pixiuTag/index.vue';
@@ -234,6 +234,7 @@ const data = reactive({
     query: '',
     total: 0,
   },
+
   tableData: [],
   loading: false,
 
@@ -263,12 +264,31 @@ onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
   data.namespace = getLocalNamespace();
 
+  window.addEventListener('setItem', handleStorageChange);
+
   getStatefulsets();
+});
+
+onUnmounted(() => {
+  window.removeEventListener('setItem', handleStorageChange);
 });
 
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.metadata.name;
+};
+
+const handleStorageChange = (e) => {
+  if (e.storageArea === localStorage) {
+    if (e.key === 'namespace') {
+      if (e.oldValue === e.newValue) {
+        return;
+      }
+      data.namespace = e.newValue;
+      // 监控到切换命名空间之后，重新获取 workload 列表
+      getStatefulsets();
+    }
+  }
 };
 
 const confirm = async () => {
