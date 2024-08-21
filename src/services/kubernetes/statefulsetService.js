@@ -44,10 +44,14 @@ export const deleteStatefulSet = async (cluster, namespace, name) => {
 };
 
 export const getStatefulSetList = async (cluster, namespace) => {
+  let url = `/pixiu/proxy/${cluster}/apis/apps/v1/namespaces/${namespace}/statefulsets`;
+  if (namespace === '全部空间') {
+    url = `/pixiu/proxy/${cluster}/apis/apps/v1/statefulsets`;
+  }
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
-      url: `/pixiu/proxy/${cluster}/apis/apps/v1/namespaces/${namespace}/statefulsets`,
+      url: url,
       data: {
         limit: 500,
       },
