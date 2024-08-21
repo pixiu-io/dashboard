@@ -17,7 +17,7 @@
         <el-input
           v-model="data.pageInfo.search.searchInfo"
           placeholder="名称搜索关键字"
-          style="width: 400px; float: right"
+          style="width: 35%; float: right"
           clearable
           @clear="getDeployments"
           @input="searchDeployments"
