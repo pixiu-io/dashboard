@@ -72,7 +72,7 @@
         >
         </el-table-column>
 
-        <el-table-column prop="status" label="Pod状态" :formatter="formatterStatus">
+        <el-table-column prop="status" label="实例个数(正常/全部)" :formatter="formatterStatus">
         </el-table-column>
 
         <el-table-column
@@ -97,24 +97,24 @@
         >
         </el-table-column>
 
-        <el-table-column fixed="right" label="操作" width="180">
+        <el-table-column fixed="right" label="操作" width="150px">
           <template #default="scope">
             <el-button
               size="small"
               type="text"
-              style="margin-right: -20px; margin-left: -10px; color: #006eff"
-              @click="editStatefulSet(scope.row)"
+              style="margin-right: -25px; margin-left: -10px; color: #006eff"
+              @click="handleMonitorDrawer(scope.row)"
             >
-              编辑
+              监控
             </el-button>
 
             <el-button
               type="text"
               size="small"
-              style="margin-right: 1px; color: #006eff"
-              @click="handleStatefulSetScaleDialog(scope.row)"
+              style="margin-right: -2px; color: #006eff"
+              @click="handleEventDrawer(scope.row)"
             >
-              调整副本数
+              事件
             </el-button>
 
             <el-dropdown>
@@ -126,15 +126,15 @@
                 <el-dropdown-menu class="dropdown-buttons">
                   <el-dropdown-item
                     class="dropdown-item-buttons"
-                    @click="handleDeleteDialog(scope.row)"
+                    @click="handleEditYamlDialog(scope.row)"
                   >
-                    删除
+                    编辑YAML
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
-                    @click="handleEditYamlDialog(scope.row)"
+                    @click="handleDeleteDialog(scope.row)"
                   >
-                    编辑yaml
+                    删除
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
