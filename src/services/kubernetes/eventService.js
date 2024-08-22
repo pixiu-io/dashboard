@@ -12,6 +12,16 @@ export const getEventList = async (cluster, namespace, name) => {
   return [result.items, err];
 };
 
+export const getEventByResourceList = async (cluster, namespace, name, resource) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: `/pixiu/kubeproxy/clusters/${cluster}/namespaces/${namespace}/name/${name}/kind/${resource}/events`,
+    }),
+  );
+
+  return [result.items, err];
+};
 export const deleteEvent = async (cluster, namespace, name) => {
   const [err, result] = await awaitWrap(
     http({
