@@ -138,13 +138,13 @@ const data = reactive({
         },
         {
           id: 1.3,
-          name: 'Pod',
-          url: '/kubernetes/pods',
+          name: 'DaemonSet',
+          url: '/kubernetes/daemonsets',
         },
         {
           id: 1.4,
-          name: 'Daemonset',
-          url: '/kubernetes/daemonsets',
+          name: 'Pod',
+          url: '/kubernetes/pods',
         },
         // {
         //   id: 1.4,

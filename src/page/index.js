@@ -83,7 +83,6 @@ export {
   CreateDeployment,
   EditDeployment,
   DeploymentDetail,
-  // Daemonset
   Daemonset,
   DaemonsetDetail,
   Release,
