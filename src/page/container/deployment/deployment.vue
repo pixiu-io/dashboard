@@ -191,6 +191,12 @@
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
+                    @click="handleRedeploy(scope.row)"
+                  >
+                    重新部署
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
                     @click="handleDeleteDialog(scope.row)"
                   >
                     删除
@@ -622,7 +628,7 @@
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, onUnmounted, ref, watch, provide } from 'vue';
 import jsYaml from 'js-yaml';
-import { getTableData, searchData } from '@/utils/utils';
+import { formatTimestamp, getTableData, searchData } from '@/utils/utils';
 import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
@@ -633,6 +639,7 @@ import {
   updateDeployment,
   deleteDeployment,
   patchDeployment,
+  reDeployDeployment,
 } from '@/services/kubernetes/deploymentService';
 import {
   formatterImage,
@@ -1041,6 +1048,30 @@ const handleImageChange = (row) => {
   row.change = true;
 };
 
+const handleRedeploy = async (row) => {
+  const patchData = {
+    spec: {
+      template: {
+        metadata: {
+          annotations: {
+            'deployment.pixiu.io/restartAt': formatTimestamp(new Date()),
+          },
+        },
+      },
+    },
+  };
+  const [result, err] = await reDeployDeployment(
+    data.cluster,
+    row.metadata.namespace,
+    row.metadata.name,
+    patchData,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(`Deployment(${row.metadata.name}) 重新部署执行成功`);
+};
 const handleImageDialog = async (row) => {
   const namespace = row.metadata.namespace;
   const name = row.metadata.name;
