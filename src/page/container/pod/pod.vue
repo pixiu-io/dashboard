@@ -660,8 +660,8 @@ const data = reactive({
   refresh: false,
   drawerWidth: '70%',
   options: [
-    { label: '标签', value: 'label' },
     { label: '名字', value: 'name' },
+    { label: '标签', value: 'label' },
   ],
   pageInfo: {
     page: 1,
