@@ -42,7 +42,6 @@
           </div>
 
           <pixiu-input
-            v-model="data.pageInfo.search.searchInfo"
             placeholder="名称搜索关键字"
             :options="data.options"
             style="width: 400px; font-size: 12px"
@@ -201,7 +200,7 @@
         </template>
       </el-table>
 
-      <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
+      <pagination :total="data.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
 
@@ -607,48 +606,42 @@
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import {
-  reactive,
   getCurrentInstance,
+  onBeforeUnmount,
   onMounted,
-  ref,
   onUnmounted,
   provide,
-  onBeforeUnmount,
+  reactive,
+  ref,
 } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { ElMessage } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
-import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import PixiuInput from '@/components/pixiuInput/index.vue';
-import { getTableData, searchData } from '@/utils/utils';
+import { getTableData, searchFromData } from '@/utils/utils';
 
 import {
-  formatterTime,
+  formatString,
+  formatterContainerImage,
+  formatterNamespace,
   formatterPodStatus,
   formatterRestartCount,
-  formatterNamespace,
-  formatString,
-  formatterContainersCPU,
-  formatterContainersMem,
-  formatterContainersResource,
-  formatterContainerImage,
+  formatterTime,
 } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import {
-  getPodList,
-  getPodListByCache,
   deletePod,
-  getPodByName,
   getPod,
+  getPodByName,
+  getPodListByCache,
   getPodLog,
   watchPodLog,
 } from '@/services/kubernetes/podService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
-import { getNode } from '@/services/kubernetes/nodeService';
 import Description from '@/components/description/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import PixiuLog from '@/components/pixiulog/index.vue';
-import { getRawEventList, deleteEvent } from '@/services/kubernetes/eventService';
+import { deleteEvent, getRawEventList } from '@/services/kubernetes/eventService';
 
 const { toClipboard } = useClipboard();
 const { proxy } = getCurrentInstance();
@@ -659,21 +652,24 @@ const selectedContainer = ref('');
 const selectedPod = ref('');
 
 const data = reactive({
+  total: 0,
+  search: {},
   timer: null,
   cluster: '',
   namespace: 'default',
   refresh: false,
   drawerWidth: '70%',
   options: [
-    { label: '标签', value: 'tag' },
+    { label: '标签', value: 'label' },
     { label: '名字', value: 'name' },
   ],
   pageInfo: {
     page: 1,
     limit: 10,
-    query: '',
-    total: 0,
-    search: {},
+    query: {
+      name: '',
+      label: '',
+    },
   },
   tableData: [],
   loading: false,
@@ -747,22 +743,19 @@ const data = reactive({
 });
 
 const handleDynamicTags = (tags) => {
-  const result = tags.reduce((obj, item) => {
+  data.pageInfo.query = tags.reduce((obj, item) => {
     obj[item.value] = item.inputValue;
     return obj;
   }, {});
-  data.pageInfo.query = result;
+  if (!data.pageInfo.query.name && !data.pageInfo.query.label) {
+    getPods();
+  }
 };
 
 const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
-
-  if (data.pageInfo.search.searchInfo !== '') {
-    searchPods();
-  } else {
-    getPods();
-  }
+  getPods();
 };
 
 onMounted(() => {
@@ -1139,7 +1132,7 @@ const getPods = async () => {
     return;
   }
   // data.podList = result.items;
-  data.pageInfo.total = result.total;
+  data.total = result.total;
   data.tableData = result.items;
   // data.tableData = getTableData(data.pageInfo, data.podList);
 };
@@ -1149,7 +1142,7 @@ const startRefresh = () => {
   if (data.refresh) {
     data.timer = window.setInterval(() => {
       getPods();
-    }, 5000);
+    }, 3000);
   } else {
     //清除定时器
     window.clearInterval(data.timer);
