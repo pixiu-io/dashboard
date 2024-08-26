@@ -45,7 +45,7 @@
                 :placeholder="placeholder"
                 @focus="openDropdown"
                 @blur="closeDropdown"
-                @keydown.enter="closeDropdown"
+                @keydown.enter="keyEnter"
               />
             </div>
             <slot name="suffix"></slot>
@@ -85,6 +85,10 @@ const props = defineProps({
   placeholder: {
     type: String,
     default: '',
+  },
+  enterEvent: {
+    type: Function,
+    default: () => {},
   },
 });
 
@@ -128,6 +132,16 @@ const closeDropdown = () => {
     localDynamicTags.push(indexItem);
     updateDynamicTags();
   }
+  if (inputValue.value && !selectedItem.value.label) {
+    if (localOptions.length > 0) {
+      selectedItem.value = localOptions[0];
+      selectedItem.value.index = 0;
+      localOptions.splice(0, 1);
+      const indexItem = { ...selectedItem.value, inputValue: inputValue.value };
+      localDynamicTags.push(indexItem);
+      updateDynamicTags();
+    }
+  }
   if (!inputValue.value && selectedItem.value.label) {
     localOptions.splice(selectedItem.value.index, 0, {
       label: selectedItem.value.label,
@@ -136,6 +150,11 @@ const closeDropdown = () => {
   }
   selectedItem.value = {};
   inputValue.value = '';
+};
+
+const keyEnter = (event) => {
+  closeDropdown();
+  props.enterEvent();
 };
 
 const handleClose = (tag) => {

@@ -201,10 +201,13 @@
               </template>
             </el-input>
             <div style="float: right">
-              <el-switch v-model="data.autoSyncPods" inline-prompt width="36px" /><span
-                style="font-size: 13px; margin-left: 5px; margin-right: 10px"
-                >自动刷新</span
+              <button
+                class="pixiu-two-button2"
+                style="width: 60px; margin-right: 10px"
+                @click="getDeploymentPods"
               >
+                刷新
+              </button>
             </div>
           </el-col>
         </el-row>
@@ -456,6 +459,14 @@
     :original="data.deployment.spec.template"
     :modified="data.modifiedYaml"
   ></PiXiuDiffView>
+  <!--  删除pod提示框-->
+  <pixiuDialog
+    :close-event="data.deleteDialog.close"
+    :object-name="data.deleteDialog.objectName"
+    :delete-name="data.deleteDialog.deleteName"
+    @confirm="confirmDeletePod"
+    @cancel="cancel"
+  ></pixiuDialog>
 </template>
 
 <script setup lang="jsx">
@@ -560,6 +571,7 @@ const data = reactive({
     close: false,
     objectName: 'Pod',
     deleteName: '',
+    namespace: '',
   },
 
   batchDeleteDialog: {
@@ -660,6 +672,7 @@ const getDeploymentObject = async () => {
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.metadata.name;
+  data.deleteDialog.namespace = row.metadata.namespace;
 };
 
 const handleBatchDeleteDialog = (row) => {
@@ -738,6 +751,29 @@ const deletePodsInBatch = async () => {
 
   canceldeletePodsInBatch();
   await getDeploymentPods();
+};
+const confirmDeletePod = async () => {
+  const [result, err] = await deletePod(
+    data.cluster,
+    data.deleteDialog.namespace,
+    data.deleteDialog.deleteName,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(
+    `${data.deleteDialog.objectName}(${data.deleteDialog.deleteName}) 删除成功`,
+  );
+
+  clean();
+  await getDeploymentPods();
+};
+const clean = () => {
+  data.deleteDialog.close = false;
+  setTimeout(() => {
+    data.deleteDialog.deleteName = '';
+  }, 100);
 };
 
 const onChange = (v) => {

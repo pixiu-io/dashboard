@@ -101,3 +101,20 @@ export const getDeployReady = (deploy) => {
 
   return availableReplicas + '/' + deploy.spec.replicas;
 };
+
+export const reDeployDeployment = async (cluster, namespace, name, data) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'patch',
+      url: `/pixiu/proxy/${cluster}/apis/apps/v1/namespaces/${namespace}/deployments/${name}?fieldManager=pixiu-rollout`,
+      data: data,
+      config: {
+        headers: {
+          'Content-Type': 'application/merge-patch+json',
+        },
+      },
+    }),
+  );
+
+  return [result, err];
+};
