@@ -355,7 +355,6 @@
       />
     </el-table>
 
-    <div style="margin-bottom: -15px" />
     <template #footer>
       <span class="dialog-footer">
         <el-button style="float: right" class="pixiu-delete-cancel-button" @click="cancelImageFunc"
