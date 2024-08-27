@@ -660,15 +660,15 @@ const data = reactive({
   refresh: false,
   drawerWidth: '70%',
   options: [
-    { label: '名字', value: 'name' },
-    { label: '标签', value: 'label' },
+    { label: '名字', value: 'nameSelector' },
+    { label: '标签', value: 'labelSelector' },
   ],
   pageInfo: {
     page: 1,
     limit: 10,
     query: {
-      name: '',
-      label: '',
+      nameSelector: '',
+      labelSelector: '',
     },
   },
   tableData: [],
@@ -743,11 +743,13 @@ const data = reactive({
 });
 
 const handleDynamicTags = (tags) => {
-  data.pageInfo.query = tags.reduce((obj, item) => {
+  const ret = tags.reduce((obj, item) => {
     obj[item.value] = item.inputValue;
     return obj;
   }, {});
-  if (!data.pageInfo.query.name && !data.pageInfo.query.label) {
+  data.pageInfo.query.nameSelector = ret['nameSelector'];
+  data.pageInfo.query.labelSelector = ret['labelSelector'];
+  if (!data.pageInfo.query.nameSelector && !data.pageInfo.query.labelSelector) {
     getPods();
   }
 };
