@@ -1018,7 +1018,7 @@ const confirm = () => {
 };
 
 const cancel = () => {
-  data.readOnly = true;
+  clean();
 };
 
 const editYaml = () => {
