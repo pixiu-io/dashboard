@@ -666,10 +666,8 @@ const data = reactive({
   pageInfo: {
     page: 1,
     limit: 10,
-    query: {
-      nameSelector: '',
-      labelSelector: '',
-    },
+    nameSelector: '',
+    labelSelector: '',
   },
   tableData: [],
   loading: false,
@@ -747,9 +745,9 @@ const handleDynamicTags = (tags) => {
     obj[item.value] = item.inputValue;
     return obj;
   }, {});
-  data.pageInfo.query.nameSelector = ret['nameSelector'];
-  data.pageInfo.query.labelSelector = ret['labelSelector'];
-  if (!data.pageInfo.query.nameSelector && !data.pageInfo.query.labelSelector) {
+  data.pageInfo.labelSelector = ret['labelSelector'];
+  data.pageInfo.nameSelector = ret['nameSelector'];
+  if (!data.pageInfo.nameSelector && !data.pageInfo.labelSelector) {
     getPods();
   }
 };
