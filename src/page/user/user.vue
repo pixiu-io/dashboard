@@ -388,6 +388,7 @@ const data = reactive({
     name: '',
     password: '',
     status: 0,
+    role: 2,
     confirmPassword: '',
   },
 
