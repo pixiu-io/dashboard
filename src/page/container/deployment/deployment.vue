@@ -28,37 +28,6 @@
             </el-icon>
           </template>
         </el-input>
-
-        <!-- <el-input
-          v-model="data.pageInfo.search.searchInfo"
-          placeholder="Name: 关键字，Label: key1=value1,key2=value2"
-          style="width: 400px; float: right"
-          class="input-select-style"
-          clearable
-          @clear="getDeployments"
-          @input="searchDeployments"
-        >
-          <template #prefix>
-            <el-select
-              v-model="data.pageInfo.search.field"
-              class="select-no-arrow"
-              style="width: 50px"
-            >
-              <el-option label="名称" value="name" />
-              <el-option label="标签" value="label" />
-            </el-select>
-          </template>
-          <template #suffix>
-            <pixiu-icon
-              name="icon-search"
-              style="cursor: pointer"
-              size="15px"
-              type="iconfont"
-              color="#909399"
-              @click="getDeployments"
-            />
-          </template>
-        </el-input> -->
       </el-col>
     </el-row>
     <el-card class="box-card">
