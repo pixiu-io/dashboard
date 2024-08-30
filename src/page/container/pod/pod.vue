@@ -44,6 +44,7 @@
           <pixiu-input
             placeholder="名称搜索关键字"
             :options="data.options"
+            :enter-event="getPods"
             style="width: 400px; font-size: 12px"
             @update:tags="handleDynamicTags"
           >
@@ -660,16 +661,14 @@ const data = reactive({
   refresh: false,
   drawerWidth: '70%',
   options: [
-    { label: '名字', value: 'name' },
-    { label: '标签', value: 'label' },
+    { label: '名字', value: 'nameSelector' },
+    { label: '标签', value: 'labelSelector' },
   ],
   pageInfo: {
     page: 1,
     limit: 10,
-    query: {
-      name: '',
-      label: '',
-    },
+    nameSelector: '',
+    labelSelector: '',
   },
   tableData: [],
   loading: false,
@@ -743,11 +742,13 @@ const data = reactive({
 });
 
 const handleDynamicTags = (tags) => {
-  data.pageInfo.query = tags.reduce((obj, item) => {
+  const ret = tags.reduce((obj, item) => {
     obj[item.value] = item.inputValue;
     return obj;
   }, {});
-  if (!data.pageInfo.query.name && !data.pageInfo.query.label) {
+  data.pageInfo.labelSelector = ret['labelSelector'];
+  data.pageInfo.nameSelector = ret['nameSelector'];
+  if (!data.pageInfo.nameSelector && !data.pageInfo.labelSelector) {
     getPods();
   }
 };

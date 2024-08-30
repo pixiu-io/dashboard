@@ -26,6 +26,7 @@
                 :closable="true"
                 :disable-transitions="false"
                 style="flex-shrink: 1"
+                size="small"
                 @close="handleClose(tag)"
               >
                 {{ tag.label + ':' + tag.inputValue }}
@@ -44,7 +45,7 @@
                 tabindex="0"
                 :placeholder="placeholder"
                 @focus="openDropdown"
-                @blur="closeDropdown"
+                @blur="keyEnter"
                 @keydown.enter="keyEnter"
               />
             </div>
@@ -69,7 +70,7 @@
   </div>
 </template>
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue';
+import { ref, reactive, onMounted, computed, watch } from 'vue';
 import { ElInput, ElTag, ElSpace, ElPopover } from 'element-plus';
 
 const props = defineProps({
@@ -123,6 +124,10 @@ const openDropdown = () => {
   visible.value = true;
   isPopoverFocused.value = true;
 };
+
+watch(inputValue, (newValue, oldValue) => {
+  visible.value = false;
+});
 
 const closeDropdown = () => {
   visible.value = false;
@@ -178,8 +183,8 @@ const handleClose = (tag) => {
   color: #606266;
   flex-grow: 1;
   font-size: inherit;
-  height: inherit;
-  line-height: inherit;
+  height: 20px;
+  line-height: 20px;
   outline: none;
   padding: 0;
   width: 100%;
@@ -202,6 +207,7 @@ input[type='text' i] {
   font-size: inherit;
   align-items: center;
   background-color: #fff;
+  height: inherit;
 }
 .input-container:hover {
   border-color: #aaa;
