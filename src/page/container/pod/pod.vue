@@ -33,7 +33,7 @@
             placeholder="名称搜索关键字"
             :options="data.options"
             :enter-event="getPods"
-            style="width: 400px; font-size: 12px"
+            style="width: 460px; font-size: 12px"
             @update:tags="handleDynamicTags"
           >
             <template #suffix>
