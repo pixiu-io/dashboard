@@ -1,19 +1,8 @@
 <template>
-  <!-- <div class="title-card-container2"> -->
-  <!-- <div class="font-container2">Pod</div> -->
-  <!-- <div style="flex-grow: 1">
-      <PiXiuYaml :refresh="getPods"></PiXiuYaml>
-    </div>
-  </div> -->
-  <!-- <el-card class="title-card-container">
-    <div class="font-container">Pod</div>
-    <div>
-      <PiXiuYaml :refresh="getPods"></PiXiuYaml>
-    </div>
-  </el-card> -->
   <Description
     :description="'Pod 是可以在 Kubernetes 中创建和管理的、最小的可部署的计算单元。它包含一个或多个容器，共享网络命名空间，存储，以及唯一的标识符。'"
   />
+
   <div style="margin-top: 5px">
     <el-row style="display: flex; align-items: center">
       <el-col style="display: flex; justify-content: space-between">
@@ -29,16 +18,15 @@
         </el-space>
         <el-space style="display: flex; align-items: center">
           <div>
-            <el-text class="mx-1">自动刷新</el-text>
             <el-switch
               v-model="data.refresh"
-              class="mt-2"
-              style="margin-left: 10px"
               inline-prompt
               :active-icon="Check"
               :inactive-icon="Close"
               @change="startRefresh"
             />
+            <!-- <span style="font-size: 13px; margin-left: 5px; margin-right: 5px">自动刷新</span> -->
+            <el-text style="font-size: 13px; margin-left: 5px; margin-right: 5px">自动刷新</el-text>
           </div>
 
           <pixiu-input
@@ -49,9 +37,14 @@
             @update:tags="handleDynamicTags"
           >
             <template #suffix>
-              <el-icon class="el-input__icon" style="cursor: pointer" @click="getPods">
-                <component :is="'Search'" />
-              </el-icon>
+              <pixiu-icon
+                name="icon-search"
+                style="cursor: pointer"
+                size="15px"
+                type="iconfont"
+                color="#909399"
+                @click="getPods"
+              />
             </template>
           </pixiu-input>
         </el-space>

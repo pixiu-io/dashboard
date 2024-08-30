@@ -349,10 +349,8 @@
                 </template>
               </el-input>
               <div style="float: right">
-                <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
-                  style="font-size: 13px; margin-left: 5px; margin-right: 10px"
-                  >自动刷新</span
-                >
+                <el-switch v-model="data.crontab" inline-prompt width="36px" />
+                <span style="font-size: 13px; margin-left: 5px; margin-right: 10px">自动刷新</span>
               </div>
             </div>
           </el-col>
