@@ -3,7 +3,9 @@
     <div class="font-container">StorageClass</div>
     <PiXiuYaml :refresh="syncStorageClasses"></PiXiuYaml>
   </el-card> -->
-
+  <Description
+    :description="'StorageClass 是 Kubernetes 中用来描述存储类的资源对象，它定义了 Kubernetes 集群中如何使用底层存储设备。'"
+  />
   <div style="margin-top: 5px">
     <el-row>
       <el-col>
@@ -44,7 +46,12 @@
         <el-table-column type="selection" width="30" />
         <el-table-column prop="metadata.name" sortable label="名称">
           <template #default="scope">
-            <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
+            <el-link
+              class="global-table-world"
+              :underline="false"
+              type="primary"
+              @click="jumpRoute(scope.row)"
+            >
               {{ scope.row.metadata.name }}
             </el-link>
           </template>
@@ -132,6 +139,7 @@ import {
   getStorageClass,
   deleteStorageClass,
 } from '@/services/kubernetes/storageClassService';
+import Description from '@/components/description/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 

@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "6245011",
+      "name": "Audits",
+      "font_class": "Audits",
+      "unicode": "e727",
+      "unicode_decimal": 59175
+    },
+    {
       "icon_id": "27239379",
       "name": "nginxingress",
       "font_class": "nginxingress",

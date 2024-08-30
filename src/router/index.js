@@ -17,6 +17,7 @@ import {
   CreateDeployment,
   EditDeployment,
   DeploymentDetail,
+  Daemonset,
   Release,
   Terminal,
   Monitor,
@@ -67,6 +68,10 @@ import {
   Plan,
   PlanDetail,
   PlanCreate,
+  Event,
+  CRD,
+  Audit,
+  DaemonsetDetail,
 } from '@/page';
 
 const routes = [
@@ -98,6 +103,14 @@ const routes = [
           title: '容器服务',
         },
         component: Cluster,
+      },
+      {
+        path: 'audits',
+        name: 'Audit',
+        meta: {
+          title: '审计管理',
+        },
+        component: Audit,
       },
       {
         path: 'clusters/insertCluster',
@@ -174,6 +187,23 @@ const routes = [
               func: 'getDeployments',
             },
             component: Deployment,
+          },
+          {
+            path: 'daemonsets',
+            name: 'Demonset',
+            meta: {
+              title: 'daemonset',
+              func: 'getDaemonsets',
+            },
+            component: Daemonset,
+          },
+          {
+            path: 'daemonsets/detail',
+            name: 'DaemonsetDetail',
+            meta: {
+              title: 'daemonsetDetail',
+            },
+            component: DaemonsetDetail,
           },
           {
             path: 'statefulsets',
@@ -354,6 +384,22 @@ const routes = [
               title: 'TaskRun',
             },
             component: TaskRun,
+          },
+          {
+            path: 'events',
+            name: 'Event',
+            meta: {
+              title: 'events',
+            },
+            component: Event,
+          },
+          {
+            path: 'crds',
+            name: 'CRD',
+            meta: {
+              title: 'crds',
+            },
+            component: CRD,
           },
         ],
       },

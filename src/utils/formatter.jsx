@@ -15,53 +15,66 @@ export { formatterTime };
 
 const formatterIcon = (color, status) => {
   return (
-    <div style="display: flex">
-      <div>
-        <pixiu-icon name="icon-circle-dot" size="12px" type="iconfont" color={color} />
-      </div>
+    <div style="display: flex; align-items: center;">
+      <pixiu-icon name="icon-circle-dot" size="12px" type="iconfont" color={color} />
       <div style="margin-left: 6px"> {status}</div>
     </div>
   );
 };
 export { formatterIcon };
 
+const getContainerStatuses = (data, pending) => {
+  let containers = [...(data.initContainerStatuses || []), ...(data.containerStatuses || [])];
+  containers = containers.filter((s) => !s.ready);
+  const waiting = containers.find((s) => s.state.waiting);
+  const terminated = containers.find((s) => s.state.terminated);
+
+  if (pending) {
+    const init = (data.initContainerStatuses || []).filter((s) => s.ready).length;
+    if (init === (data.initContainerStatuses || []).length) {
+      return containers.length === 0
+        ? 'Pending'
+        : waiting
+        ? waiting.state.waiting.reason
+        : terminated
+        ? terminated.state.terminated.reason
+        : 'Pending';
+    }
+    return `Init:${init}/${data.initContainerStatuses ? data.initContainerStatuses.length : 0}`;
+  }
+
+  return containers.length === 0
+    ? 'unknown'
+    : waiting
+    ? waiting.state.waiting.reason
+    : terminated
+    ? terminated.state.terminated.reason
+    : 'unknown';
+};
+
 const formatterPodStatus = (row, column, cellValue) => {
+  if (row.metadata.deletionTimestamp) {
+    return formatterIcon('#c62828', 'Terminating');
+  }
   let phase = cellValue.phase;
-  if (phase == 'Failed') {
-    phase = cellValue.reason;
-  } else if (phase == 'Pending') {
-    const containerStatuses = cellValue.containerStatuses;
-    if (containerStatuses === undefined) {
-      return formatterIcon('#FFFF00', phase);
-    }
-
-    for (let i = 0; i < containerStatuses.length; i++) {
-      if (containerStatuses[i].ready) {
-        continue;
+  switch (phase) {
+    case 'Failed':
+      if (cellValue.reason) {
+        return formatterIcon('#c62828', cellValue.reason);
       }
-      const waiting = containerStatuses[i].state.waiting;
-      if (waiting) {
-        return formatterIcon('#0000FF', waiting.reason);
+      return formatterIcon('#c62828', getContainerStatuses(cellValue, false));
+    case 'Pending':
+      return formatterIcon('#f3d362', getContainerStatuses(cellValue, true));
+    case 'Succeeded':
+      return formatterIcon('#155ec0', getContainerStatuses(cellValue, false));
+    case 'Running':
+      if ((cellValue.conditions.filter((s) => s.status !== 'True') || []).length > 0) {
+        return formatterIcon('#c62828', getContainerStatuses(cellValue, true));
       }
-    }
-    return formatterIcon('#FFFF00', phase);
+      return formatterIcon('#2ba552', phase);
+    default:
+      return formatterIcon('#c62828', phase);
   }
-
-  if (phase == 'Running') {
-    const containerStatuses = cellValue.containerStatuses;
-    for (let i = 0; i < containerStatuses.length; i++) {
-      if (containerStatuses[i].ready) {
-        continue;
-      }
-      const waiting = containerStatuses[i].state.waiting;
-      if (waiting) {
-        return formatterIcon('#FFA500', waiting.reason);
-      }
-    }
-    return formatterIcon('#28C65A', phase);
-  }
-
-  return formatterIcon('#28C65A', phase);
 };
 export { formatterPodStatus };
 
@@ -555,3 +568,56 @@ const formatterPlanStatus = (row, column, cellValue) => {
   );
 };
 export { formatterPlanStatus };
+
+const formatterAuditStatus = (row, column, cellValue) => {
+  if (cellValue === 0) {
+    return (
+      <div>
+        <el-tag type="danger">失败</el-tag>
+      </div>
+    );
+  }
+  if (cellValue === 1) {
+    return (
+      <div>
+        <el-tag>成功</el-tag>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <el-tag>状态异常</el-tag>
+    </div>
+  );
+};
+export { formatterAuditStatus };
+
+const formatterClusterNode = (row, column, cellValue) => {
+  const ready = cellValue.ready.length;
+  const notReady = cellValue.not_ready.length;
+  const total = ready + notReady;
+
+  if (notReady === 0) {
+    return (
+      <div class="pixiu-table-formatter">
+        <el-space>
+          <div>
+            {total} 台 (<span class="color-green-word">全部正常</span>)
+          </div>
+        </el-space>
+      </div>
+    );
+  }
+  return (
+    <div class="pixiu-table-formatter">
+      <el-space>
+        <div>
+          {total} 台 (<span class="color-green-word">正常 {ready} 台, </span>
+          <span class="color-red-word">异常 {notReady} 台</span>)
+        </div>
+      </el-space>
+    </div>
+  );
+};
+export { formatterClusterNode };

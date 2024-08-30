@@ -131,21 +131,26 @@ const data = reactive({
           name: 'Deployment',
           url: '/kubernetes/deployments',
         },
-        // {
-        //   id: 1.2,
-        //   name: 'StatefulSet',
-        //   url: '/kubernetes/statefulsets',
-        // },
+        {
+          id: 1.2,
+          name: 'StatefulSet',
+          url: '/kubernetes/statefulsets',
+        },
         {
           id: 1.3,
-          name: 'Pod',
-          url: '/kubernetes/pods',
+          name: 'DaemonSet',
+          url: '/kubernetes/daemonsets',
         },
         {
           id: 1.4,
-          name: 'Helm',
-          url: '/kubernetes/release',
+          name: 'Pod',
+          url: '/kubernetes/pods',
         },
+        // {
+        //   id: 1.4,
+        //   name: 'Helm',
+        //   url: '/kubernetes/release',
+        // },
       ],
     },
     {
@@ -216,51 +221,63 @@ const data = reactive({
       ],
     },
     {
-      id: 5,
-      name: 'Cicd',
+      name: '事件中心',
       icon: 'icon-devops',
       iconType: 'iconfont',
-      children: [
-        {
-          id: 5.1,
-          name: 'Task',
-          url: '/kubernetes/task',
-        },
-        {
-          id: 5.2,
-          name: 'TaskRun',
-          url: '/kubernetes/taskrun',
-        },
-        {
-          id: 5.3,
-          name: 'Pipeline',
-          url: '/kubernetes/pipeline',
-        },
-        {
-          id: 5.4,
-          name: 'PipelineRun',
-          url: '/kubernetes/pipelinerun',
-        },
-      ],
+      url: '/kubernetes/events',
     },
     {
-      id: 6,
-      name: '貔貅商店',
+      name: '自定义资源',
       icon: 'Shop',
       iconType: 'el',
-      children: [
-        {
-          id: 6.1,
-          name: 'Operator',
-          url: '/kubernetes/operator',
-        },
-        {
-          id: 6.2,
-          name: 'Helm',
-          url: '/kubernetes/helm',
-        },
-      ],
+      url: '/kubernetes/crds',
     },
+    // {
+    //   id: 5,
+    //   name: 'Cicd',
+    //   icon: 'icon-devops',
+    //   iconType: 'iconfont',
+    //   children: [
+    //     {
+    //       id: 5.1,
+    //       name: 'Task',
+    //       url: '/kubernetes/task',
+    //     },
+    //     {
+    //       id: 5.2,
+    //       name: 'TaskRun',
+    //       url: '/kubernetes/taskrun',
+    //     },
+    //     {
+    //       id: 5.3,
+    //       name: 'Pipeline',
+    //       url: '/kubernetes/pipeline',
+    //     },
+    //     {
+    //       id: 5.4,
+    //       name: 'PipelineRun',
+    //       url: '/kubernetes/pipelinerun',
+    //     },
+    //   ],
+    // },
+    // {
+    //   id: 6,
+    //   name: '貔貅商店',
+    //   icon: 'Shop',
+    //   iconType: 'el',
+    //   children: [
+    //     {
+    //       id: 6.1,
+    //       name: 'Operator',
+    //       url: '/kubernetes/operator',
+    //     },
+    //     {
+    //       id: 6.2,
+    //       name: 'Helm',
+    //       url: '/kubernetes/helm',
+    //     },
+    //   ],
+    // },
   ],
   items: [
     {
@@ -284,11 +301,11 @@ const data = reactive({
           name: 'Pod',
           url: '/kubernetes/pods',
         },
-        {
-          id: 1.4,
-          name: 'Helm',
-          url: '/kubernetes/release',
-        },
+        // {
+        //   id: 1.4,
+        //   name: 'Helm',
+        //   url: '/kubernetes/release',
+        // },
       ],
     },
     {
@@ -358,24 +375,24 @@ const data = reactive({
         },
       ],
     },
-    {
-      id: 6,
-      name: '貔貅商店',
-      icon: 'Shop',
-      iconType: 'el',
-      children: [
-        {
-          id: 6.1,
-          name: 'Operator',
-          url: '/kubernetes/operator',
-        },
-        {
-          id: 6.2,
-          name: 'Helm',
-          url: '/kubernetes/helm',
-        },
-      ],
-    },
+    // {
+    //   id: 6,
+    //   name: '貔貅商店',
+    //   icon: 'Shop',
+    //   iconType: 'el',
+    //   children: [
+    //     {
+    //       id: 6.1,
+    //       name: 'Operator',
+    //       url: '/kubernetes/operator',
+    //     },
+    //     {
+    //       id: 6.2,
+    //       name: 'Helm',
+    //       url: '/kubernetes/helm',
+    //     },
+    //   ],
+    // },
   ],
 });
 
@@ -402,18 +419,23 @@ const changeClouds = (value) => {
       // 子级url拼接集群名称
       item.children.map((childrenItem) => {
         const url = childrenItem.url.split('?')[0];
-        childrenItem.url = `${url}?cluster=${data.cloud.cluster}`;
+
+        childrenItem.url = `${url}?${praseDataToQuery(data.cloud)}`;
       });
     } else {
       // 父级url拼接集群名称
       const url = item.url.split('?')[0];
-      item.url = `${url}?cluster=${data.cloud.cluster}`;
+      item.url = `${url}?${praseDataToQuery(data.cloud)}`;
     }
   });
   data.path = `${path}?cluster=${value}`;
   const newQuery = JSON.parse(JSON.stringify(query));
   newQuery.cluster = value;
   proxy.$router.replace({ path, query: newQuery });
+};
+
+const praseDataToQuery = (data) => {
+  return new URLSearchParams(data).toString();
 };
 
 // watch(
