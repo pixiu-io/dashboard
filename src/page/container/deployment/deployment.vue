@@ -970,15 +970,10 @@ const clean = () => {
   }, 100);
 };
 
-const onChange = (v) => {
+const onChange = async (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
-
-  data.tableData = getTableData(data.pageInfo, data.deploymentList);
-
-  if (data.pageInfo.search.searchInfo !== '') {
-    searchDeployments();
-  }
+  getDeployments();
 };
 
 const confirmEvent = async (row) => {
