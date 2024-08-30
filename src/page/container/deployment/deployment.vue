@@ -15,39 +15,13 @@
         </button>
 
         <el-input
-          v-model="data.pageInfo.search.searchInfo"
+          v-model="data.pageInfo.nameSelector"
           placeholder="名称搜索关键字"
           style="width: 35%; float: right"
           clearable
           @clear="getDeployments"
-          @input="searchDeployments"
+          @input="getDeployments"
         >
-          <template #suffix>
-            <el-icon class="el-input__icon" @click="searchDeployments">
-              <component :is="'Search'" />
-            </el-icon>
-          </template>
-        </el-input>
-
-        <!-- <el-input
-          v-model="data.pageInfo.search.searchInfo"
-          placeholder="Name: 关键字，Label: key1=value1,key2=value2"
-          style="width: 400px; float: right"
-          class="input-select-style"
-          clearable
-          @clear="getDeployments"
-          @input="searchDeployments"
-        >
-          <template #prefix>
-            <el-select
-              v-model="data.pageInfo.search.field"
-              class="select-no-arrow"
-              style="width: 50px"
-            >
-              <el-option label="名称" value="name" />
-              <el-option label="标签" value="label" />
-            </el-select>
-          </template>
           <template #suffix>
             <pixiu-icon
               name="icon-search"
@@ -58,7 +32,7 @@
               @click="getDeployments"
             />
           </template>
-        </el-input> -->
+        </el-input>
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -666,13 +640,10 @@ const data = reactive({
   pageInfo: {
     page: 1,
     limit: 10,
-    query: '',
-    total: 0,
-    search: {
-      field: 'name',
-      searchInfo: '',
-    },
+    nameSelector: '',
+    labelSelector: '',
   },
+
   tableData: [],
   loading: false,
 
@@ -999,15 +970,10 @@ const clean = () => {
   }, 100);
 };
 
-const onChange = (v) => {
+const onChange = async (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
-
-  data.tableData = getTableData(data.pageInfo, data.deploymentList);
-
-  if (data.pageInfo.search.searchInfo !== '') {
-    searchDeployments();
-  }
+  getDeployments();
 };
 
 const confirmEvent = async (row) => {
@@ -1153,16 +1119,15 @@ const jumpRoute = (row) => {
 
 const getDeployments = async () => {
   data.loading = true;
-  const [result, err] = await getDeploymentList(data.cluster, data.namespace);
+  const [result, err] = await getDeploymentList(data.cluster, data.namespace, data.pageInfo);
   data.loading = false;
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
 
-  data.deploymentList = result.items;
-  data.pageInfo.total = data.deploymentList.length;
-  data.tableData = getTableData(data.pageInfo, data.deploymentList);
+  data.tableData = result.items;
+  data.pageInfo.total = result.total;
 };
 
 provide('getDeployments', getDeployments);
