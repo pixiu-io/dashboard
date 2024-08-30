@@ -1131,7 +1131,7 @@ const getPods = async () => {
   // data.tableData = getTableData(data.pageInfo, data.podList);
 };
 
-//每5s请求一次 getPods()
+//每3s请求一次 getPods()
 const startRefresh = () => {
   if (data.refresh) {
     data.timer = window.setInterval(() => {

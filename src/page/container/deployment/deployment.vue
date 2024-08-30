@@ -15,17 +15,22 @@
         </button>
 
         <el-input
-          v-model="data.pageInfo.search.searchInfo"
+          v-model="data.pageInfo.nameSelector"
           placeholder="名称搜索关键字"
           style="width: 35%; float: right"
           clearable
           @clear="getDeployments"
-          @input="searchDeployments"
+          @input="getDeployments"
         >
           <template #suffix>
-            <el-icon class="el-input__icon" @click="searchDeployments">
-              <component :is="'Search'" />
-            </el-icon>
+            <pixiu-icon
+              name="icon-search"
+              style="cursor: pointer"
+              size="15px"
+              type="iconfont"
+              color="#909399"
+              @click="getDeployments"
+            />
           </template>
         </el-input>
       </el-col>
@@ -635,13 +640,10 @@ const data = reactive({
   pageInfo: {
     page: 1,
     limit: 10,
-    query: '',
-    total: 0,
-    search: {
-      field: 'name',
-      searchInfo: '',
-    },
+    nameSelector: '',
+    labelSelector: '',
   },
+
   tableData: [],
   loading: false,
 
@@ -1122,16 +1124,15 @@ const jumpRoute = (row) => {
 
 const getDeployments = async () => {
   data.loading = true;
-  const [result, err] = await getDeploymentList(data.cluster, data.namespace);
+  const [result, err] = await getDeploymentList(data.cluster, data.namespace, data.pageInfo);
   data.loading = false;
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
 
-  data.deploymentList = result.items;
-  data.pageInfo.total = data.deploymentList.length;
-  data.tableData = getTableData(data.pageInfo, data.deploymentList);
+  data.tableData = result.items;
+  data.pageInfo.total = result.total;
 };
 
 provide('getDeployments', getDeployments);
