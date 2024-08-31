@@ -111,12 +111,12 @@
           :formatter="formatterTime"
         />
 
-        <el-table-column
+        <!-- <el-table-column
           label="镜像名称"
           prop="spec.template.spec.containers"
           :formatter="formatterImage"
         >
-        </el-table-column>
+        </el-table-column> -->
 
         <el-table-column fixed="right" label="操作" width="150px">
           <template #default="scope">
@@ -161,7 +161,7 @@
                     class="dropdown-item-buttons"
                     @click="handleImageDialog(scope.row)"
                   >
-                    镜像列表
+                    镜像管理
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
