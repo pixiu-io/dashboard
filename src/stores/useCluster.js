@@ -8,6 +8,7 @@ import {
   getPlanSupportOS,
 } from '@/services/plan/planService';
 import { deepMerge, parseNetwork } from '@/utils/utils';
+import _ from 'lodash';
 // import { router } from '@/router';
 
 const useClusterStore = defineStore('cluster', () => {
@@ -18,6 +19,7 @@ const useClusterStore = defineStore('cluster', () => {
   const configFormRef = ref(null);
   const nodeFormRef = ref(null);
   const loading = ref(false);
+  const selectIndex = ref(undefined);
 
   watch(planId, async (newPlanId) => {
     if (newPlanId !== undefined) {
@@ -86,9 +88,12 @@ const useClusterStore = defineStore('cluster', () => {
       os_system: 'centos',
       os_image: 'centos7',
       kubernetes: {
+        enable_public_ip: false,
         api_server: '',
+        api_port: '',
         kubernetes_version: '1.23.6',
         enable_ha: false,
+        register: true,
       },
       network: {
         network_interface: 'eth0',
@@ -99,6 +104,12 @@ const useClusterStore = defineStore('cluster', () => {
       },
       runtime: {
         runtime: 'docker',
+      },
+      component: {
+        haproxy: {
+          enable: false,
+          keepalived_virtual_router_id: '',
+        },
       },
     },
 
@@ -123,9 +134,9 @@ const useClusterStore = defineStore('cluster', () => {
     install_components: [],
     nodes: [],
   });
-  const nodeInfo = reactive({
+  const initNodeInfo = {
     name: '',
-    role: 1,
+    role: ['master'],
     // cri: 'docker',
     ip: '',
     auth: {
@@ -138,7 +149,8 @@ const useClusterStore = defineStore('cluster', () => {
         password: '',
       },
     },
-  });
+  };
+  let nodeInfo = reactive(_.cloneDeep(initNodeInfo));
   const options = reactive({
     kubernetesVersionOptions: [
       {
@@ -340,10 +352,22 @@ const useClusterStore = defineStore('cluster', () => {
     showDialog.value = true;
   };
 
+  const handleEditDialog = (index) => {
+    showDialog.value = true;
+    Object.assign(nodeInfo, reactive(_.cloneDeep(configInfo.nodes[index])));
+    selectIndex.value = index;
+  };
+
   const clearFormdata = (formRef) => {
     if (formRef.value) {
       formRef.value.resetFields();
+      formRef.value.clearValidate();
     }
+  };
+
+  const initNodeForm = () => {
+    Object.assign(nodeInfo, reactive(_.cloneDeep(initNodeInfo)));
+    selectIndex.value = undefined;
   };
 
   const clearFormData = (done) => {
@@ -404,15 +428,33 @@ const useClusterStore = defineStore('cluster', () => {
             key: { data },
           };
         }
-        configInfo.nodes.push(nodeData);
-        ElMessage({
-          type: 'success',
-          message: `节点(${name}) 创建成功`,
-        });
+        if (selectIndex.value === undefined) {
+          // 新增节点
+          configInfo.nodes.push(nodeData);
+          ElMessage({
+            type: 'success',
+            message: `节点(${name}) 创建成功`,
+          });
+        } else {
+          // 更新节点
+          configInfo.nodes[selectIndex.value] = nodeData;
+          ElMessage({
+            type: 'success',
+            message: `节点(${name}) 修改成功`,
+          });
+        }
+
         clearFormdata(nodeFormRef);
+        initNodeForm();
         showDialog.value = false;
       }
     });
+  };
+
+  const cancelNodeCreate = () => {
+    clearFormdata(nodeFormRef);
+    initNodeForm();
+    showDialog.value = false;
   };
 
   const resetViewData = () => {
@@ -495,8 +537,10 @@ const useClusterStore = defineStore('cluster', () => {
     nodeRules,
     options,
     handleCreateDialog,
+    handleEditDialog,
     clearFormData,
     confirm,
+    cancelNodeCreate,
     handleDeleteDialog,
     confirmDelete,
     cancel,

@@ -6,6 +6,27 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "6245011",
+      "name": "Audits",
+      "font_class": "Audits",
+      "unicode": "e727",
+      "unicode_decimal": 59175
+    },
+    {
+      "icon_id": "27239379",
+      "name": "nginxingress",
+      "font_class": "nginxingress",
+      "unicode": "e701",
+      "unicode_decimal": 59137
+    },
+    {
+      "icon_id": "11242111",
+      "name": "haproxy",
+      "font_class": "haproxy",
+      "unicode": "e68e",
+      "unicode_decimal": 59022
+    },
+    {
       "icon_id": "27243879",
       "name": "grafana",
       "font_class": "grafana",
@@ -21,8 +42,8 @@
     },
     {
       "icon_id": "40850263",
-      "name": "Helm",
-      "font_class": "Helm",
+      "name": "helm",
+      "font_class": "helm",
       "unicode": "e655",
       "unicode_decimal": 58965
     },

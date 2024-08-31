@@ -331,9 +331,19 @@
   color: #c62828;
 }
 
+/* 灰色状态字体 */
+.color-gray-word {
+  color: #7b7b7b;
+}
+
 /* 告警状态字体 */
 .color-yellow-word {
   color: #e6a23c;
+}
+
+/* 蓝色状态字体 */
+.color-blue-word {
+  color: #006eff;
 }
 
 .app-pixiu-line-describe4 {
@@ -526,4 +536,8 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+}
+
+.namespace-select-container {
+  flex: 1;
 }

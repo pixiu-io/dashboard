@@ -201,16 +201,18 @@
               </template>
             </el-input>
             <div style="float: right">
-              <el-switch v-model="data.autoSyncPods" inline-prompt width="36px" /><span
-                style="font-size: 13px; margin-left: 5px; margin-right: 10px"
-                >自动刷新</span
+              <button
+                class="pixiu-two-button2"
+                style="width: 60px; margin-right: 10px"
+                @click="getDeploymentPods"
               >
+                刷新
+              </button>
             </div>
           </el-col>
         </el-row>
       </div>
       <el-table
-        v-loading="data.loading"
         :data="data.tableData"
         stripe
         style="margin-top: 6px"
@@ -222,7 +224,12 @@
         @selection-change="handlePodSelectionChange"
       >
         <el-table-column type="selection" width="30px" />
-        <el-table-column prop="metadata.name" label="实例名称" min-width="70px">
+        <el-table-column
+          prop="metadata.name"
+          label="实例名称"
+          min-width="70px"
+          show-overflow-tooltip
+        >
           <template #default="scope">
             {{ scope.row.metadata.name }}
             <pixiu-icon
@@ -342,10 +349,8 @@
                 </template>
               </el-input>
               <div style="float: right">
-                <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
-                  style="font-size: 13px; margin-left: 5px; margin-right: 10px"
-                  >自动刷新</span
-                >
+                <el-switch v-model="data.crontab" inline-prompt width="36px" />
+                <span style="font-size: 13px; margin-left: 5px; margin-right: 10px">自动刷新</span>
               </div>
             </div>
           </el-col>
@@ -382,7 +387,84 @@
       </el-table>
       <pagination :total="data.pageEventInfo.total" @on-change="onEventChange"></pagination>
     </div>
+    <div v-if="data.activeName === 'four'">
+      <div>
+        <el-row>
+          <el-card class="detail-docs">
+            <el-icon
+              style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+              ><WarningFilled
+            /></el-icon>
+            <div style="vertical-align: middle; margin-top: -40px">获取 Deployment 的历史记录</div>
+          </el-card>
+        </el-row>
+      </div>
+      <el-table
+        :data="data.replicasets"
+        style="margin-top: 6px"
+        header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#191919',
+        }"
+      >
+        <el-table-column prop="metadata.name" label="版本号" min-width="70px">
+          <template #default="scope">
+            # {{ scope.row.metadata.annotations['deployment.kubernetes.io/revision'] }}
+            <el-tag v-show="scope.row.status.replicas !== 0" type="success">当前版本</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="spec.template.spec.containers[0].image" label="镜像" />
+        <el-table-column
+          prop="metadata.creationTimestamp"
+          label="创建时间"
+          :formatter="formatterTime"
+        />
+        <el-table-column fixed="right" label="操作" width="160px">
+          <template #default="scope">
+            <el-button
+              size="small"
+              link
+              style="margin-right: -10px; margin-left: -10px; color: #006eff"
+              @click="showYaml(scope.row)"
+            >
+              详情
+            </el-button>
+
+            <el-button
+              link
+              size="small"
+              style="margin-right: 1px; color: #006eff"
+              :disabled="scope.row.status.replicas !== 0"
+              @click="rolloback(scope.row)"
+            >
+              回滚
+            </el-button>
+          </template>
+        </el-table-column>
+        <template #empty>
+          <div class="table-inline-word">该 workload 的实例列表为空</div>
+        </template>
+      </el-table>
+
+      <pagination :total="data.pageReplicasetInfo.total" @on-change="onChange"></pagination>
+    </div>
   </el-card>
+  <PiXiuDiffView
+    v-if="data.diffYamlDialog"
+    v-model:dialogVisible="data.diffYamlDialog"
+    title="版本差异"
+    :original="data.deployment.spec.template"
+    :modified="data.modifiedYaml"
+  ></PiXiuDiffView>
+  <!--  删除pod提示框-->
+  <pixiuDialog
+    :close-event="data.deleteDialog.close"
+    :object-name="data.deleteDialog.objectName"
+    :delete-name="data.deleteDialog.deleteName"
+    @confirm="confirmDeletePod"
+    @cancel="cancel"
+  ></pixiuDialog>
 </template>
 
 <script setup lang="jsx">
@@ -391,12 +473,19 @@ import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData, copy } from '@/utils/utils';
 import { formatterTime } from '@/utils/formatter';
-import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getPodsByLabels, deletePod, getPodLog } from '@/services/kubernetes/podService';
-import { getDeployment, getDeployReady } from '@/services/kubernetes/deploymentService';
-import { getEventList, deleteEvent } from '@/services/kubernetes/eventService';
+import {
+  getDeployment,
+  getDeployReady,
+  patchDeployment,
+  rolloBackDeployment,
+  updateDeployment,
+} from '@/services/kubernetes/deploymentService';
+import PiXiuDiffView from '@/components/pixiuyaml/diffView/index.vue';
+import { getEventList, getNamespaceEventList } from '@/services/kubernetes/eventService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
+import { getDeploymentReplicasets } from '@/services/kubernetes/replicasetService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -412,6 +501,7 @@ const data = reactive({
   name: '',
   namespace: '',
   activeName: 'first',
+  labels: '',
 
   workloadType: 'Deployment',
 
@@ -425,7 +515,12 @@ const data = reactive({
       searchInfo: '',
     },
   },
-
+  replicasets: [],
+  pageReplicasetInfo: {
+    page: 1,
+    limit: 10,
+    total: 0,
+  },
   pageEventInfo: {
     page: 1,
     limit: 10,
@@ -474,6 +569,7 @@ const data = reactive({
     close: false,
     objectName: 'Pod',
     deleteName: '',
+    namespace: '',
   },
 
   batchDeleteDialog: {
@@ -481,18 +577,19 @@ const data = reactive({
     objectName: 'Pods',
     deleteNames: '',
   },
+  diffYamlDialog: false,
+  modifiedYaml: '',
 });
 
 onMounted(async () => {
   data.cluster = proxy.$route.query.cluster;
   data.clusterName = localStorage.getItem(data.cluster);
-
   data.name = proxy.$route.query.name;
   data.namespace = proxy.$route.query.namespace;
 
   await getDeploymentObject();
   await getDeploymentPods();
-  await getDeploymentEvents();
+  // await getDeploymentEvents();
 });
 
 // 监听子属性变化
@@ -573,6 +670,7 @@ const getDeploymentObject = async () => {
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.metadata.name;
+  data.deleteDialog.namespace = row.metadata.namespace;
 };
 
 const handleBatchDeleteDialog = (row) => {
@@ -608,6 +706,39 @@ const canceldeletePodsInBatch = () => {
   data.batchDeleteDialog.deleteName = '';
 };
 
+const showYaml = (replicaset) => {
+  data.diffYamlDialog = true;
+  data.modifiedYaml = replicaset.spec.template;
+};
+
+const rolloback = async (replicaset) => {
+  const updateBoyd = [
+    {
+      op: 'replace',
+      path: '/spec/template',
+      value: JSON.parse(JSON.stringify(replicaset.spec.template)),
+    },
+    {
+      op: 'replace',
+      path: '/metadata/annotations',
+      value: JSON.parse(JSON.stringify(data.deployment.metadata.annotations)),
+    },
+  ];
+  const [result, err] = await rolloBackDeployment(
+    data.cluster,
+    replicaset.metadata.namespace,
+    data.name,
+    updateBoyd,
+  );
+  if (err) {
+    proxy.$notify.error({ title: 'Deployment', message: err.response.data.message });
+    return;
+  }
+  proxy.$notify.success({
+    title: 'Deployment',
+    message: `${replicaset.name} 回滚成功`,
+  });
+};
 const deletePodsInBatch = async () => {
   for (let pod of data.multiplePodSelection) {
     const [result, err] = await deletePod(data.cluster, data.namespace, pod);
@@ -618,6 +749,29 @@ const deletePodsInBatch = async () => {
 
   canceldeletePodsInBatch();
   await getDeploymentPods();
+};
+const confirmDeletePod = async () => {
+  const [result, err] = await deletePod(
+    data.cluster,
+    data.deleteDialog.namespace,
+    data.deleteDialog.deleteName,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(
+    `${data.deleteDialog.objectName}(${data.deleteDialog.deleteName}) 删除成功`,
+  );
+
+  clean();
+  await getDeploymentPods();
+};
+const clean = () => {
+  data.deleteDialog.close = false;
+  setTimeout(() => {
+    data.deleteDialog.deleteName = '';
+  }, 100);
 };
 
 const onChange = (v) => {
@@ -748,6 +902,25 @@ const getDeploymentEvents = async () => {
   data.eventTableData = getTableData(data.pageEventInfo, data.deploymentEvents);
 };
 
+const getDeploymentRs = async () => {
+  data.loading = true;
+  const lables = data.deployment.metadata.labels;
+  let labelStr = Object.keys(lables)
+    .map((key) => {
+      return key + '=' + lables[key];
+    })
+    .join(',');
+
+  const [result, err] = await getDeploymentReplicasets(data.cluster, data.namespace, labelStr);
+  data.loading = false;
+  if (err) {
+    proxy.$notify.error({ title: 'Event', message: err.response.data.message });
+    return;
+  }
+  data.replicasets = result.items;
+  data.pageReplicasetInfo.total = result.length;
+};
+
 const deleteEventObject = async (row) => {
   const [result, err] = await deleteEvent(data.cluster, data.namespace, row.metadata.name);
   if (err) {
@@ -824,14 +997,26 @@ const getPodRestartCount = (row, column, cellValue) => {
 
 const handleClick = (tab, event) => {};
 
-const handleChange = (name) => {};
+const handleChange = async (name) => {
+  switch (name) {
+    case 'second':
+      await getDeploymentObject();
+      break;
+    case 'third':
+      await getDeploymentEvents();
+      break;
+    case 'four':
+      await getDeploymentRs();
+      break;
+  }
+};
 
 const confirm = () => {
   data.readOnly = true;
 };
 
 const cancel = () => {
-  data.readOnly = true;
+  clean();
 };
 
 const editYaml = () => {

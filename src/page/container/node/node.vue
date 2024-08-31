@@ -4,7 +4,9 @@
       <PiXiuYaml :refresh="getNodes" title="节点管理" :display-namespace="false"></PiXiuYaml>
     </div>
   </div> -->
-
+  <Description
+    :description="'Kubernetes 通过将容器放入在节点（Node）上运行的 Pod 中来执行你的工作负载。 节点可以是一个虚拟机或者物理机器，取决于所在的集群配置。 每个节点包含运行 Pod 所需的服务。'"
+  />
   <div style="margin-top: 5px">
     <el-row>
       <el-col>
@@ -421,6 +423,7 @@ import { reactive, getCurrentInstance, onMounted, provide } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
+import Description from '@/components/description/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getNodeList, patchNode, getNode, drainNode } from '@/services/kubernetes/nodeService';
@@ -665,7 +668,7 @@ const cordon = (row) => {
         },
         url: `/pixiu/proxy/${data.cluster}/api/v1/nodes/${row.metadata.name}`,
         config: {
-          header: {
+          headers: {
             'Content-Type': 'application/strategic-merge-patch+json',
           },
         },

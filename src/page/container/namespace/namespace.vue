@@ -4,7 +4,9 @@
       <PiXiuYaml :refresh="getNamespaces" title="命名空间" :display-namespace="false"></PiXiuYaml>
     </div>
   </div> -->
-
+  <Description
+    :description="'Namespace 提供一种机制，将同一集群中的资源划分为相互隔离的组。同一名字空间内的资源名称要唯一。'"
+  />
   <div style="margin-top: 5px">
     <el-row>
       <el-col>
@@ -207,6 +209,7 @@ import {
 } from '@/services/kubernetes/namespaceService';
 import { getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
+import Description from '@/components/description/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { formatterTime, formatterIcon, formatterLabelsBackup2 } from '@/utils/formatter';

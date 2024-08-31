@@ -41,7 +41,7 @@ export const patchNode = async (cluster, name, data) => {
       url: `/pixiu/proxy/${cluster}/api/v1/nodes/${name}`,
       data: data,
       config: {
-        header: {
+        headers: {
           'Content-Type': 'application/strategic-merge-patch+json',
         },
       },

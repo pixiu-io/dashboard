@@ -2,6 +2,9 @@
   <!-- <div class="title-card-container2">
     <PiXiuYaml :refresh="getDeployments" title=""></PiXiuYaml>
   </div> -->
+  <Description
+    :description="'Deployment 是 Kubernetes 集群中用来管理应用的一种资源。它定义了应用的期望状态，比如副本数、镜像版本等，并提供策略来控制应用的部署、更新和回滚。'"
+  />
 
   <div style="margin-top: 5px">
     <el-row>
@@ -12,39 +15,13 @@
         </button>
 
         <el-input
-          v-model="data.pageInfo.search.searchInfo"
+          v-model="data.pageInfo.nameSelector"
           placeholder="名称搜索关键字"
-          style="width: 400px; float: right"
+          style="width: 35%; float: right"
           clearable
           @clear="getDeployments"
-          @input="searchDeployments"
+          @input="getDeployments"
         >
-          <template #suffix>
-            <el-icon class="el-input__icon" @click="searchDeployments">
-              <component :is="'Search'" />
-            </el-icon>
-          </template>
-        </el-input>
-
-        <!-- <el-input
-          v-model="data.pageInfo.search.searchInfo"
-          placeholder="Name: 关键字，Label: key1=value1,key2=value2"
-          style="width: 400px; float: right"
-          class="input-select-style"
-          clearable
-          @clear="getDeployments"
-          @input="searchDeployments"
-        >
-          <template #prefix>
-            <el-select
-              v-model="data.pageInfo.search.field"
-              class="select-no-arrow"
-              style="width: 50px"
-            >
-              <el-option label="名称" value="name" />
-              <el-option label="标签" value="label" />
-            </el-select>
-          </template>
           <template #suffix>
             <pixiu-icon
               name="icon-search"
@@ -55,7 +32,7 @@
               @click="getDeployments"
             />
           </template>
-        </el-input> -->
+        </el-input>
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -188,6 +165,12 @@
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
+                    @click="handleRedeploy(scope.row)"
+                  >
+                    重新部署
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
                     @click="handleDeleteDialog(scope.row)"
                   >
                     删除
@@ -302,7 +285,14 @@
         color: '#191919',
       }"
     >
-      <el-table-column prop="name" sortable label="容器名称" width="280px" />
+      <el-table-column prop="name" sortable label="容器名称" width="280px">
+        <template #default="scope">
+          {{ scope.row.name
+          }}<el-tag v-if="scope.row.init" type="danger" size="small" style="margin-left: 10px"
+            >Init容器</el-tag
+          >
+        </template>
+      </el-table-column>
       <el-table-column prop="image" sortable label="镜像">
         <template #default="scope">
           <div style="display: flex">
@@ -339,7 +329,6 @@
       />
     </el-table>
 
-    <div style="margin-bottom: -15px" />
     <template #footer>
       <span class="dialog-footer">
         <el-button style="float: right" class="pixiu-delete-cancel-button" @click="cancelImageFunc"
@@ -612,7 +601,7 @@
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, onUnmounted, ref, watch, provide } from 'vue';
 import jsYaml from 'js-yaml';
-import { getTableData, searchData } from '@/utils/utils';
+import { formatTimestamp, getTableData, searchData } from '@/utils/utils';
 import PixiuTag from '@/components/pixiuTag/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
@@ -623,6 +612,7 @@ import {
   updateDeployment,
   deleteDeployment,
   patchDeployment,
+  reDeployDeployment,
 } from '@/services/kubernetes/deploymentService';
 import {
   formatterImage,
@@ -635,6 +625,7 @@ import {
 import { getEventList, deleteEvent } from '@/services/kubernetes/eventService';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
+import Description from '@/components/description/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import PixiuLog from '@/components/pixiulog/index.vue';
 
@@ -649,13 +640,10 @@ const data = reactive({
   pageInfo: {
     page: 1,
     limit: 10,
-    query: '',
-    total: 0,
-    search: {
-      field: 'name',
-      searchInfo: '',
-    },
+    nameSelector: '',
+    labelSelector: '',
   },
+
   tableData: [],
   loading: false,
 
@@ -678,6 +666,7 @@ const data = reactive({
     close: false,
     objectName: 'Deployment',
     deleteName: '',
+    namespace: '',
   },
 
   imageData: {
@@ -951,12 +940,13 @@ const getDeployReady = (row) => {
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.metadata.name;
+  data.deleteDialog.namespace = row.metadata.namespace;
 };
 
 const confirm = async () => {
   const [result, err] = await deleteDeployment(
     data.cluster,
-    data.namespace,
+    data.deleteDialog.namespace,
     data.deleteDialog.deleteName,
   );
   if (err) {
@@ -980,15 +970,10 @@ const clean = () => {
   }, 100);
 };
 
-const onChange = (v) => {
+const onChange = async (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
-
-  data.tableData = getTableData(data.pageInfo, data.deploymentList);
-
-  if (data.pageInfo.search.searchInfo !== '') {
-    searchDeployments();
-  }
+  getDeployments();
 };
 
 const confirmEvent = async (row) => {
@@ -1028,6 +1013,30 @@ const handleImageChange = (row) => {
   row.change = true;
 };
 
+const handleRedeploy = async (row) => {
+  const patchData = {
+    spec: {
+      template: {
+        metadata: {
+          annotations: {
+            'deployment.pixiu.io/restartAt': formatTimestamp(new Date()),
+          },
+        },
+      },
+    },
+  };
+  const [result, err] = await reDeployDeployment(
+    data.cluster,
+    row.metadata.namespace,
+    row.metadata.name,
+    patchData,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(`Deployment(${row.metadata.name}) 重新部署执行成功`);
+};
 const handleImageDialog = async (row) => {
   const namespace = row.metadata.namespace;
   const name = row.metadata.name;
@@ -1041,6 +1050,7 @@ const handleImageDialog = async (row) => {
   data.imageData.images = [];
   for (let container of containers) {
     data.imageData.images.push({
+      init: false,
       image: container.image,
       name: container.name,
       change: false,
@@ -1048,6 +1058,20 @@ const handleImageDialog = async (row) => {
       deploymentName: row.metadata.name,
       ns: row.metadata.namespace,
     });
+  }
+  if (deploy.spec.template.spec.initContainers) {
+    const containers = deploy.spec.template.spec.initContainers;
+    for (let container of containers) {
+      data.imageData.images.push({
+        init: true,
+        image: container.image,
+        name: container.name,
+        change: false,
+        newImage: '',
+        deploymentName: row.metadata.name,
+        ns: row.metadata.namespace,
+      });
+    }
   }
   data.imageData.close = true;
 };
@@ -1059,7 +1083,11 @@ const cancelImageFunc = () => {
 
 const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
-  const [result, err] = await getDeployment(data.cluster, data.namespace, data.yamlName);
+  const [result, err] = await getDeployment(
+    data.cluster,
+    row.metadata.namespace,
+    row.metadata.name,
+  );
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
@@ -1091,16 +1119,15 @@ const jumpRoute = (row) => {
 
 const getDeployments = async () => {
   data.loading = true;
-  const [result, err] = await getDeploymentList(data.cluster, data.namespace);
+  const [result, err] = await getDeploymentList(data.cluster, data.namespace, data.pageInfo);
   data.loading = false;
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
 
-  data.deploymentList = result.items;
-  data.pageInfo.total = data.deploymentList.length;
-  data.tableData = getTableData(data.pageInfo, data.deploymentList);
+  data.tableData = result.items;
+  data.pageInfo.total = result.total;
 };
 
 provide('getDeployments', getDeployments);
@@ -1142,7 +1169,7 @@ const confirmDeploymentScale = async () => {
     return;
   }
 
-  getDeployments();
+  await getDeployments();
   closeDeploymentScaleDialog();
 };
 </script>

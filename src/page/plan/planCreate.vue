@@ -329,32 +329,15 @@
                   >
                     新增节点
                   </button>
-
-                  <!-- <div style="margin-left: 8px; float: right; margin-left: 12px">
-                    <button type="button" class="pixiu-two-button" @click="GetPlanNodes">
-                      搜索
-                    </button>
-                  </div>
-
-                  <el-input
-                    placeholder="名称搜索关键字"
-                    style="width: 480px; float: right"
-                    clearable
-                  >
-                    <template #suffix>
-                      <pixiu-icon
-                        name="icon-search"
-                        style="cursor: pointer"
-                        size="15px"
-                        type="iconfont"
-                        color="#909399"
-                      />
-                    </template>
-                  </el-input> -->
                 </el-col>
               </el-row>
             </div>
-            <el-table :data="clusterStore.configInfo.nodes">
+            <el-table
+              :data="clusterStore.configInfo.nodes"
+              stripe
+              style="margin-top: 2px; width: 100%"
+              header-row-class-name="pixiu-table-header"
+            >
               <el-table-column prop="metadata.name" label="节点名称">
                 <template #default="scope">
                   {{ scope.row.name }}
@@ -371,20 +354,30 @@
               </el-table-column>
 
               <el-table-column prop="role" label="角色" :formatter="formatterNodeRole" />
-              <el-table-column prop="ip" label="IP地址" />
+              <el-table-column prop="ip" label="IP地址"></el-table-column> />
               <el-table-column prop="auth" label="认证方式" :formatter="formatterNodeAuthType" />
 
               <!--<el-table-column prop="gmt_create" label="创建时间" :formatter="formatterTime" />-->
               <el-table-column fixed="right" label="操作" width="160px">
                 <template #default="scope">
-                  <el-button
-                    size="small"
-                    type="text"
-                    style="margin-right: -25px; margin-left: -10px; color: #006eff"
-                    @click="clusterStore.handleDeleteDialog(scope)"
-                  >
-                    删除
-                  </el-button>
+                  <el-space>
+                    <el-button
+                      size="small"
+                      type="text"
+                      style="color: #006eff; padding: 0"
+                      @click="clusterStore.handleEditDialog(scope.$index)"
+                    >
+                      编辑
+                    </el-button>
+                    <el-button
+                      size="small"
+                      type="text"
+                      style="color: #006eff; padding: 0"
+                      @click="clusterStore.handleDeleteDialog(scope)"
+                    >
+                      删除
+                    </el-button>
+                  </el-space>
                 </template>
               </el-table-column>
             </el-table>
@@ -402,10 +395,32 @@
               启用高可用 Kubernetes 集群时，推荐 master 节点数为 3
             </div>
 
-            <el-form-item label="ApiServer 地址">
-              <el-switch v-model="clusterStore.configInfo.config.enablePublicIp" />
+            <el-form-item label="自建 LoadBalance" style="margin-top: 10px">
+              <el-switch v-model="clusterStore.configInfo.config.component.haproxy.enable" />
             </el-form-item>
-            <div v-if="clusterStore.configInfo.config.enablePublicIp">
+            <div class="app-pixiu-describe" style="margin-top: -12px">
+              This configuration is usually enabled when self-created VMs require high availability.
+            </div>
+
+            <div v-if="clusterStore.configInfo.config.component.haproxy.enable">
+              <el-form-item label="虚拟路由ID" style="margin-top: 10px">
+                <el-input
+                  v-model="
+                    clusterStore.configInfo.config.component.haproxy.keepalived_virtual_router_id
+                  "
+                  style="width: 150px"
+                  placeholder="68"
+                />
+              </el-form-item>
+              <div class="app-pixiu-describe" style="margin-top: -12px">
+                Keepalived 的虚拟路由ID，默认 68，可以是 0..255 的任意值，相同网段不允许重复
+              </div>
+            </div>
+
+            <el-form-item label="ApiServer 地址">
+              <el-switch v-model="clusterStore.configInfo.config.kubernetes.enable_public_ip" />
+            </el-form-item>
+            <div v-if="clusterStore.configInfo.config.kubernetes.enable_public_ip">
               <el-form-item style="width: 40%">
                 <el-input
                   v-model="clusterStore.configInfo.config.kubernetes.api_server"
@@ -419,7 +434,18 @@
               6443 端口 4 层转发。非高可用时可不指定，不指定时默认使用 master 节点的内网地址。
             </div>
 
-            <div style="margin-top: 25px" />
+            <el-form-item label="监听端口" style="margin-top: 15px">
+              <el-input
+                v-model="clusterStore.configInfo.config.kubernetes.api_port"
+                style="width: 150px"
+                placeholder="6443"
+              />
+            </el-form-item>
+            <div class="app-pixiu-describe" style="margin-top: -12px">
+              ApiServer 监听端口, 默认 6443; 启用 haproxy + keepalived 时, 监听端口推荐使用 8443
+            </div>
+
+            <div style="margin-top: 20px" />
             <el-form-item label="Kube-proxy 模式">
               <el-radio-group v-model="clusterStore.configInfo.config.network.kube_proxy">
                 <el-radio-button label="iptables">iptables</el-radio-button>
@@ -428,6 +454,14 @@
             </el-form-item>
             <div class="app-pixiu-describe" style="margin-top: -12px">
               默认使用 iptables 模式，ipvs 的转发性能更高。选择之后无法修改。
+            </div>
+
+            <div style="margin-top: 20px" />
+            <el-form-item label="Pixiu 纳管">
+              <el-switch v-model="clusterStore.configInfo.config.kubernetes.register" />
+            </el-form-item>
+            <div class="app-pixiu-describe" style="margin-top: -12px">
+              启用后，完成部署的集群会被自动纳管至 pixiu 平台
             </div>
           </el-card>
 
@@ -489,10 +523,11 @@
               <span style="font-size: 13px; color: #191919">角色</span>
             </template>
 
-            <el-radio-group v-model="clusterStore.nodeInfo.role">
-              <el-radio style="margin-right: 16px" :value="1">master</el-radio>
-              <el-radio :value="0">node</el-radio>
-            </el-radio-group>
+            <el-checkbox-group v-model="clusterStore.nodeInfo.role">
+              <el-checkbox v-for="city in cities" :key="city" :label="city" :value="city">
+                {{ city }}
+              </el-checkbox>
+            </el-checkbox-group>
           </el-form-item>
 
           <!-- <el-form-item prop="cri">
@@ -567,6 +602,9 @@
       </template>
       <template #footer>
         <span class="dialog-footer">
+          <el-button class="pixiu-cancel-button" @click="clusterStore.cancelNodeCreate"
+            >取消</el-button
+          >
           <el-button
             class="pixiu-small-confirm-button"
             type="primary"
@@ -602,6 +640,8 @@ const { proxy } = getCurrentInstance();
 const clusterStore = useClusterStore();
 const router = useRouter();
 
+const cities = ['master', 'node'];
+
 const stepContainerRef = ref(null);
 
 const data = reactive({
@@ -612,9 +652,7 @@ const data = reactive({
 
 const backToPlan = () => {
   clusterStore.resetViewData();
-  router.replace({
-    name: 'Plan',
-  });
+  router.back();
 };
 
 const createPlan = async () => {
@@ -714,7 +752,7 @@ const appCharts = [
     LatestVersion: '1.1.5',
   },
   {
-    Name: 'Prometheus',
+    Name: 'Promethues',
     Label: '{"kind":"全部"}',
     LatestVersion: '0.0.1',
   },

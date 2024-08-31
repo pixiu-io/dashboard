@@ -43,18 +43,21 @@ export const deleteDeployment = async (cluster, namespace, name) => {
   return [result, err];
 };
 
-export const getDeploymentList = async (cluster, namespace) => {
-  let url = `/pixiu/proxy/${cluster}/apis/apps/v1/namespaces/${namespace}/deployments`;
+export const getDeploymentList = async (cluster, namespace, params) => {
+  // let url = `/pixiu/proxy/${cluster}/apis/apps/v1/namespaces/${namespace}/deployments`;
+  // if (namespace === '全部空间') {
+  //   url = `/pixiu/proxy/${cluster}/apis/apps/v1/deployments`;
+  // }
+  let url = `/pixiu/indexer/clusters/${cluster}/resources/deployment/namespaces/${namespace}`;
   if (namespace === '全部空间') {
-    url = `/pixiu/proxy/${cluster}/apis/apps/v1/deployments`;
+    url = `/pixiu/indexer/clusters/${cluster}/resources/deployment/namespaces/all_namespaces`;
   }
+
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
       url: url,
-      data: {
-        limit: 500,
-      },
+      data: params,
     }),
   );
   return [result, err];
@@ -67,8 +70,8 @@ export const patchDeployment = async (cluster, namespace, name, data) => {
       url: `/pixiu/proxy/${cluster}/apis/apps/v1/namespaces/${namespace}/deployments/${name}`,
       data: data,
       config: {
-        header: {
-          'Content-Type': 'application/strategic-merge-patch+json',
+        headers: {
+          'Content-Type': 'application/merge-patch+json',
         },
       },
     }),
@@ -77,6 +80,22 @@ export const patchDeployment = async (cluster, namespace, name, data) => {
   return [result, err];
 };
 
+export const rolloBackDeployment = async (cluster, namespace, name, data) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'patch',
+      url: `/pixiu/proxy/${cluster}/apis/apps/v1/namespaces/${namespace}/deployments/${name}`,
+      data: data,
+      config: {
+        headers: {
+          'Content-Type': 'application/json-patch+json',
+        },
+      },
+    }),
+  );
+
+  return [result, err];
+};
 export const getDeployReady = (deploy) => {
   let availableReplicas = deploy.status.availableReplicas;
   if (availableReplicas === undefined) {
@@ -84,4 +103,21 @@ export const getDeployReady = (deploy) => {
   }
 
   return availableReplicas + '/' + deploy.spec.replicas;
+};
+
+export const reDeployDeployment = async (cluster, namespace, name, data) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'patch',
+      url: `/pixiu/proxy/${cluster}/apis/apps/v1/namespaces/${namespace}/deployments/${name}?fieldManager=pixiu-rollout`,
+      data: data,
+      config: {
+        headers: {
+          'Content-Type': 'application/merge-patch+json',
+        },
+      },
+    }),
+  );
+
+  return [result, err];
 };

@@ -1,10 +1,9 @@
 <template>
-  <el-card class="title-card-container">
-    <div class="font-container">StatefulSet</div>
-    <PiXiuYaml :refresh="getStatefulsets"></PiXiuYaml>
-  </el-card>
+  <Description
+    :description="'StatefulSet 是 Kubernetes 中用来管理有状态应用的资源对象。它可以保证应用的持久化存储，即使 StatefulSet 中的 Pod 被重新调度，也能保证数据不丢失。'"
+  />
 
-  <div style="margin-top: 25px">
+  <div style="margin-top: 5px">
     <el-row>
       <el-col>
         <button class="pixiu-two-button" @click="createStatefulSet">新建</button>
@@ -15,7 +14,7 @@
         <el-input
           v-model="data.pageInfo.query"
           placeholder="名称搜索关键字"
-          style="width: 480px; float: right"
+          style="width: 35%; float: right"
           clearable
           @clear="getStatefulsets"
         >
@@ -30,15 +29,6 @@
             />
           </template>
         </el-input>
-
-        <el-select
-          v-model="data.namespace"
-          style="width: 200px; float: right; margin-right: 10px"
-          @change="changeNamespace"
-        >
-          <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
-        </el-select>
-        <!-- <div class="namespace-container" style="width: 112px; float: right">命名空间</div> -->
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -58,7 +48,12 @@
 
         <el-table-column prop="metadata.name" sortable label="名称">
           <template #default="scope">
-            <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
+            <el-link
+              class="global-table-world"
+              :underline="false"
+              type="primary"
+              @click="jumpRoute(scope.row)"
+            >
               {{ scope.row.metadata.name }}
             </el-link>
           </template>
@@ -77,8 +72,23 @@
         >
         </el-table-column>
 
-        <el-table-column prop="status" label="Pod状态" :formatter="formatterStatus" width="90px">
+        <el-table-column prop="status" label="实例个数(正常/全部)" :formatter="formatterStatus">
         </el-table-column>
+
+        <el-table-column
+          v-if="data.namespace === '全部空间'"
+          prop="metadata.namespace"
+          label="命名空间"
+          :formatter="formatterNamespace"
+        >
+        </el-table-column>
+
+        <el-table-column
+          prop="metadata.creationTimestamp"
+          label="创建时间"
+          sortable
+          :formatter="formatterTime"
+        />
 
         <el-table-column
           label="镜像"
@@ -87,24 +97,24 @@
         >
         </el-table-column>
 
-        <el-table-column fixed="right" label="操作" width="180">
+        <el-table-column fixed="right" label="操作" width="150px">
           <template #default="scope">
             <el-button
               size="small"
               type="text"
-              style="margin-right: -20px; margin-left: -10px; color: #006eff"
-              @click="editStatefulSet(scope.row)"
+              style="margin-right: -25px; margin-left: -10px; color: #006eff"
+              @click="handleMonitorDrawer(scope.row)"
             >
-              编辑
+              监控
             </el-button>
 
             <el-button
               type="text"
               size="small"
-              style="margin-right: 1px; color: #006eff"
-              @click="handleStatefulSetScaleDialog(scope.row)"
+              style="margin-right: -2px; color: #006eff"
+              @click="handleEventDrawer(scope.row)"
             >
-              调整副本数
+              事件
             </el-button>
 
             <el-dropdown>
@@ -116,15 +126,15 @@
                 <el-dropdown-menu class="dropdown-buttons">
                   <el-dropdown-item
                     class="dropdown-item-buttons"
-                    @click="handleDeleteDialog(scope.row)"
+                    @click="handleEditYamlDialog(scope.row)"
                   >
-                    删除
+                    编辑YAML
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
-                    @click="handleEditYamlDialog(scope.row)"
+                    @click="handleDeleteDialog(scope.row)"
                   >
-                    编辑yaml
+                    删除
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
@@ -212,18 +222,21 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import { reactive, getCurrentInstance, onMounted, onUnmounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData } from '@/utils/utils';
 import PixiuTag from '@/components/pixiuTag/index.vue';
+import Description from '@/components/description/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
+import { formatterImage, formatterTime, formatterNamespace } from '@/utils/formatter';
 import {
   getStatefulSet,
   updateStatefulSet,
   deleteStatefulSet,
   getStatefulSetList,
 } from '@/services/kubernetes/statefulsetService';
+import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
@@ -234,17 +247,18 @@ const editYaml = ref();
 
 const data = reactive({
   cluster: '',
+  namespace: '',
+
   pageInfo: {
     page: 1,
     limit: 10,
     query: '',
     total: 0,
   },
+
   tableData: [],
   loading: false,
 
-  namespace: 'default',
-  namespaces: [],
   statefulSetList: [],
 
   statefulSetReplicasDialog: false,
@@ -269,14 +283,33 @@ const data = reactive({
 
 onMounted(() => {
   data.cluster = proxy.$route.query.cluster;
+  data.namespace = getLocalNamespace();
+
+  window.addEventListener('setItem', handleStorageChange);
 
   getStatefulsets();
-  getNamespaces();
+});
+
+onUnmounted(() => {
+  window.removeEventListener('setItem', handleStorageChange);
 });
 
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.metadata.name;
+};
+
+const handleStorageChange = (e) => {
+  if (e.storageArea === localStorage) {
+    if (e.key === 'namespace') {
+      if (e.oldValue === e.newValue) {
+        return;
+      }
+      data.namespace = e.newValue;
+      // 监控到切换命名空间之后，重新获取 workload 列表
+      getStatefulsets();
+    }
+  }
 };
 
 const confirm = async () => {
@@ -424,7 +457,7 @@ const confirmStatefulSetScale = async () => {
         },
       },
       config: {
-        header: {
+        headers: {
           'Content-Type': 'application/merge-patch+json',
         },
       },
@@ -473,24 +506,6 @@ const formatterStatus = (row, column, cellValue) => {
     <div>
       {availableReplicas}/{row.spec.replicas}
     </div>
-  );
-};
-
-const formatterImage = (row, column, cellValue) => {
-  const images = [];
-  for (let c of cellValue) {
-    images.push(c.image);
-  }
-
-  const displayContent = `
-    <div>
-      ${images.map((image) => `<div class="pixiu-table-formatter">${image}</div>`).join('')}
-    </div>
-  `;
-  return (
-    <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
-      <div class="pixiu-ellipsis-style">{images.join(',')}</div>;
-    </el-tooltip>
   );
 };
 </script>

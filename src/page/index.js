@@ -64,6 +64,11 @@ import CreateTaskRun from './container/cicd/createtaskrun.vue';
 import Plan from './plan/plan.vue';
 import PlanDetail from './plan/planDetail.vue';
 import PlanCreate from './plan/planCreate.vue';
+import Event from './container/event/event.vue';
+import CRD from './container/crd/crd.vue';
+import Audit from './audit/audit.vue';
+import Daemonset from './container/daemonset/daemonset.vue';
+import DaemonsetDetail from './container/daemonset/details.vue';
 export {
   Home,
   Login,
@@ -78,6 +83,8 @@ export {
   CreateDeployment,
   EditDeployment,
   DeploymentDetail,
+  Daemonset,
+  DaemonsetDetail,
   Release,
   Node,
   NodeDetail,
@@ -131,4 +138,7 @@ export {
   Plan,
   PlanDetail,
   PlanCreate,
+  Event,
+  CRD,
+  Audit,
 };

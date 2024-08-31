@@ -3,26 +3,11 @@
     <el-card style="margin-top: -20px; margin-left: -20px; margin-right: -20px; border-radius: 0px">
       <span style="font-weight: bold; font-size: 18px; vertical-align: middle"> 部署计划 </span>
     </el-card>
+    <div style="margin-top: 20px"></div>
 
-    <el-card class="app-docs">
-      <div>
-        <el-icon
-          style="
-            vertical-align: middle;
-            font-size: 18px;
-            margin-left: -20px;
-            margin-right: 8px;
-            margin-top: -25px;
-          "
-          ><WarningFilled
-        /></el-icon>
-
-        <div style="vertical-align: middle; margin-top: -27px; margin-left: 10px">
-          新建部署计划以自建 kubernetes 集群，完全兼容开源 Kubernetes
-          集群标准功能，并强化节点管理、集群网络、容器调度等能力。
-        </div>
-      </div>
-    </el-card>
+    <Description
+      :description="'新建部署计划以自建 kubernetes 集群，完全兼容开源 Kubernetes 集群标准功能，并强化节点管理、集群网络、容器调度等能力。'"
+    />
 
     <div style="margin-top: 20px">
       <el-row>
@@ -303,9 +288,22 @@
                   <el-icon v-else-if="scope.row.status === '部署失败'" color="#c45656"
                     ><CircleCloseFilled
                   /></el-icon>
-                  <el-icon v-else><InfoFilled /></el-icon>
+                  <el-icon v-else color="#909399"><InfoFilled /></el-icon>
                   {{ scope.row.status }}
                 </div>
+              </template>
+            </el-table-column>
+            <el-table-column>
+              <template #default="scope">
+                <el-button
+                  text
+                  size="small"
+                  style="margin-right: -24px; margin-left: -10px; color: #006eff"
+                  :disabled="scope.row.status == '未开始'"
+                  @click="handleTaskLogDrawer(scope.row)"
+                >
+                  日志
+                </el-button>
               </template>
             </el-table-column>
 
@@ -316,6 +314,30 @@
         </div>
       </div>
     </div>
+    <el-drawer
+      v-model="data.taskLog.drawer"
+      :size="data.taskLog.width"
+      :with-header="false"
+      @open="openTaskLogDrawer"
+      @close="closeTaskLogDrawer"
+    >
+      <div style="display: flex; height: 100%; width: 100%">
+        <div>
+          <el-steps direction="vertical" :active="3" space="60px" process-status="process">
+            <el-step
+              v-for="(activity, index) in data.taskData.tableData"
+              :key="index"
+              :title="activity.name"
+              :description="extractDateFormat(activity.gmt_create)"
+              :status="stepStatus(activity.status)"
+            />
+          </el-steps>
+        </div>
+        <div style="width: 100%">
+          <PixiuLog :yaml-dialog="data.taskLog.drawer" :log="data.taskLog.log"></PixiuLog>
+        </div>
+      </div>
+    </el-drawer>
   </el-drawer>
 </template>
 
@@ -323,6 +345,7 @@
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { formatterTime, formatterPlanStatus } from '@/utils/formatter';
+import { readStream } from '@/utils/utils';
 import Pagination from '@/components/pagination/index.vue';
 import {
   createPlan,
@@ -330,9 +353,14 @@ import {
   deletePlan,
   startPlanTask,
   watchPlanTasks,
+  watchPlanTaskLog,
 } from '@/services/plan/planService';
+import Description from '@/components/description/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { copy } from '@/utils/utils';
+import PixiuLog from '@/components/pixiulog/index.vue';
+import { MoreFilled } from '@element-plus/icons-vue';
+import { extractDateFormat } from 'element-plus';
 
 const router = useRouter();
 const { proxy } = getCurrentInstance();
@@ -340,6 +368,7 @@ const { proxy } = getCurrentInstance();
 const data = reactive({
   loading: false,
   streams: [], // 处理流
+  LogStreams: [], // 处理流
   tableData: [],
   planList: [],
 
@@ -379,9 +408,15 @@ const data = reactive({
   // 部署任务
   taskData: {
     drawer: false,
-    width: '45%',
+    width: '55%',
     task: '',
     tableData: [],
+  },
+  taskLog: {
+    drawer: false,
+    width: '80%',
+    task: '',
+    log: '',
   },
 });
 
@@ -480,6 +515,51 @@ const goToCreatePlan = () => {
   });
 };
 
+const stepStatus = (status) => {
+  switch (status) {
+    case '已成功':
+      return 'success';
+    case '未开始':
+      return 'wait';
+    case '运行中':
+      return 'process';
+    case '部署失败':
+      return 'error';
+  }
+};
+
+const handleTaskLogDrawer = (row) => {
+  data.taskLog.task = row;
+  data.taskLog.drawer = true;
+};
+const openTaskLogDrawer = async () => {
+  if (data.LogStreams.length !== 0) {
+    for (let s of data.LogStreams) {
+      s.abort();
+    }
+    data.LogStreams = [];
+  }
+
+  let controller = new AbortController();
+  let single = controller.signal;
+  data.LogStreams.push(controller);
+
+  const { body, err } = await watchPlanTaskLog(
+    data.taskLog.task.plan_id,
+    data.taskLog.task.id,
+    single,
+  );
+  if (err) {
+    proxy.$message.error('Failed to get task list', err);
+    return;
+  }
+  if (body) {
+    const reader = body.getReader();
+    await readStream(reader, (decodedString) => {
+      data.taskLog.log += decodedString;
+    });
+  }
+};
 // 开始处理任务进度
 const handleTaskDrawer = (row) => {
   data.taskData.task = row;
@@ -505,29 +585,52 @@ const openTaskDrawer = async () => {
   }
   if (body) {
     const reader = body.getReader();
-    await readStream(reader);
+    await readStream(reader, (decodedString) => {
+      try {
+        const result = JSON.parse(decodedString);
+        data.taskData.tableData = result;
+      } catch (e) {
+        proxy.$message.error('Error parsing JSON:', e);
+      }
+    });
   }
 };
 
-const readStream = async (reader) => {
-  const decoder = new TextDecoder('utf-8');
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) {
-      reader.cancel();
-      break;
-    }
-    const uint8Array = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
-    let decodedString = decoder.decode(uint8Array, { stream: true });
-    // 解析JSON数据
-    try {
-      const result = JSON.parse(decodedString);
-      data.taskData.tableData = result;
-    } catch (e) {
-      proxy.$message.error('Error parsing JSON:', e);
-    }
-  }
-};
+// const readStream = async (reader) => {
+//   const decoder = new TextDecoder('utf-8');
+//   while (true) {
+//     try {
+//       const { value, done } = await reader.read();
+//       if (done) {
+//         reader.cancel();
+//         break;
+//       }
+//       const uint8Array = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+//       let decodedString = decoder.decode(uint8Array, { stream: true });
+//       // 解析JSON数据
+//     } catch (e) {
+//       break;
+//     }
+//   }
+// };
+
+// const readLogStream = async (reader) => {
+//   const decoder = new TextDecoder('utf-8');
+//   while (true) {
+//     try {
+//       const { value, done } = await reader.read();
+//       if (done) {
+//         reader.cancel();
+//         break;
+//       }
+//       const uint8Array = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+//       let decodedString = decoder.decode(uint8Array, { stream: true });
+//       data.taskLog.log += decodedString;
+//     } catch (e) {
+//       break;
+//     }
+//   }
+// };
 
 const closeTaskDrawer = () => {
   data.taskData.drawer = false;
@@ -546,6 +649,19 @@ const closeTaskDrawer = () => {
       task: '',
     };
   }, 100);
+};
+
+const closeTaskLogDrawer = () => {
+  data.taskLog.drawer = false;
+  data.taskLog.log = '';
+
+  // 关闭stream
+  if (data.LogStreams.length !== 0) {
+    for (const s of data.LogStreams) {
+      s.abort();
+    }
+    data.LogStreams = [];
+  }
 };
 
 // 结束处理任务进度

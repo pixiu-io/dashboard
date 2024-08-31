@@ -13,6 +13,30 @@
 
       <div class="form-content">
         <el-checkbox-group v-model="data.selectCharts" class="checkbox" @change="onSelect">
+          <el-space wrap :size="12">
+            <el-card v-for="chart in data.categoryAppCharts" :key="chart.Name" class="card">
+              <template #header>
+                <div class="card-header">
+                  <el-checkbox :label="chart.Name" :value="chart" />
+                </div>
+                {{ chart.LatestVersion }}
+              </template>
+              <div class="card-body">
+                <pixiu-icon
+                  :name="`icon-${chart.Name.toLowerCase()}`"
+                  size="40px"
+                  type="iconfont"
+                />
+                <p class="content">{{ chart.Name }} 功能描述补充</p>
+              </div>
+              <template #footer>
+                <el-button type="text" size="small" disabled>参数配置</el-button>
+                <el-button style="margin-left: -10px" type="text" size="small">查看详情</el-button>
+              </template>
+            </el-card>
+          </el-space>
+        </el-checkbox-group>
+        <!-- <el-checkbox-group v-model="data.selectCharts" class="checkbox" @change="onSelect">
           <el-space wrap>
             <el-card v-for="chart in data.categoryAppCharts" :key="chart.Name" class="card">
               <template #header>
@@ -25,6 +49,11 @@
               <div v-if="chart.Name === 'Helm'" class="card-body">
                 <pixiu-icon name="icon-Helm" size="40px" type="iconfont" />
                 <p class="content">Helm 功能描述补充</p>
+              </div>
+
+              <div v-if="chart.Name === 'Haproxy'" class="card-body">
+                <pixiu-icon name="icon-Haproxy" size="40px" type="iconfont" />
+                <p class="content">HAproxy 功能描述补充</p>
               </div>
 
               <div v-if="chart.Name === 'NginxIngress'" class="card-body">
@@ -48,7 +77,7 @@
               </template>
             </el-card>
           </el-space>
-        </el-checkbox-group>
+        </el-checkbox-group> -->
       </div>
     </div>
   </el-form-item>
@@ -71,7 +100,7 @@ import { onMounted, reactive } from 'vue';
 
 const data = reactive({
   appCharts: '',
-  category: '',
+  category: '全部',
   categoryAppCharts: [],
   selectCharts: [],
 });
@@ -97,6 +126,7 @@ const removeChart = (chart) => {
 onMounted(() => {
   if (props.appCharts) {
     data.appCharts = categorizeChartsByKind(props.appCharts);
+    data.categoryAppCharts = data.appCharts['全部'];
   }
 });
 
@@ -108,22 +138,15 @@ const props = defineProps({
 });
 </script>
 <style scoped>
-.card {
-  min-width: 453px;
-  max-width: 453px;
-  height: 218px;
-}
-.el-card ::v-deep .el-card__header {
+.el-card :deep(.el-card__header) {
   background-color: #f5f5f5;
   padding: 5px 18px;
 }
 
-.el-card ::v-deep .el-card__footer {
+.el-card :deep(.el-card__footer) {
   padding: 5px 7px;
 }
-.el-card ::v-deep .el-card__body {
-  padding: 0;
-}
+
 .card-body {
   max-height: 90px;
   overflow-y: auto;
@@ -133,13 +156,11 @@ const props = defineProps({
   display: flex;
   align-items: center;
   text-align: left;
-  padding: 20px;
 }
 .content {
   margin-left: 18px;
 }
 .form-content {
-  width: 90%;
   margin-top: 20px;
   padding: 20px;
   max-height: 500px;

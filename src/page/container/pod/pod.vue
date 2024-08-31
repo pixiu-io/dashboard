@@ -1,43 +1,53 @@
 <template>
-  <!-- <div class="title-card-container2"> -->
-  <!-- <div class="font-container2">Pod</div> -->
-  <!-- <div style="flex-grow: 1">
-      <PiXiuYaml :refresh="getPods"></PiXiuYaml>
-    </div>
-  </div> -->
-  <!-- <el-card class="title-card-container">
-    <div class="font-container">Pod</div>
-    <div>
-      <PiXiuYaml :refresh="getPods"></PiXiuYaml>
-    </div>
-  </el-card> -->
+  <Description
+    :description="'Pod 是可以在 Kubernetes 中创建和管理的、最小的可部署的计算单元。它包含一个或多个容器，共享网络命名空间，存储，以及唯一的标识符。'"
+  />
 
   <div style="margin-top: 5px">
-    <el-row>
-      <el-col>
-        <button class="pixiu-two-button" @click="createPod">新建</button>
-        <button
-          style="margin-left: 10px; width: 85px"
-          class="pixiu-two-button2"
-          @click="deletePodsInBatch"
-        >
-          批量删除
-        </button>
+    <el-row style="display: flex; align-items: center">
+      <el-col style="display: flex; justify-content: space-between">
+        <el-space>
+          <button class="pixiu-two-button" @click="createPod">新建</button>
+          <button
+            style="margin-left: 10px; width: 85px"
+            class="pixiu-two-button2"
+            @click="deletePodsInBatch"
+          >
+            批量删除
+          </button>
+        </el-space>
+        <el-space style="display: flex; align-items: center">
+          <div>
+            <el-switch
+              v-model="data.refresh"
+              inline-prompt
+              :active-icon="Check"
+              :inactive-icon="Close"
+              @change="startRefresh"
+            />
+            <!-- <span style="font-size: 13px; margin-left: 5px; margin-right: 5px">自动刷新</span> -->
+            <el-text style="font-size: 13px; margin-left: 5px; margin-right: 5px">自动刷新</el-text>
+          </div>
 
-        <el-input
-          v-model="data.pageInfo.search.searchInfo"
-          placeholder="名称搜索关键字"
-          style="width: 400px; float: right"
-          clearable
-          @clear="getPods"
-          @input="searchPods"
-        >
-          <template #suffix>
-            <el-icon class="el-input__icon" @click="getPods">
-              <component :is="'Search'" />
-            </el-icon>
-          </template>
-        </el-input>
+          <pixiu-input
+            placeholder="名称搜索关键字"
+            :options="data.options"
+            :enter-event="getPods"
+            style="width: 460px; font-size: 12px"
+            @update:tags="handleDynamicTags"
+          >
+            <template #suffix>
+              <pixiu-icon
+                name="icon-search"
+                style="cursor: pointer"
+                size="15px"
+                type="iconfont"
+                color="#909399"
+                @click="getPods"
+              />
+            </template>
+          </pixiu-input>
+        </el-space>
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -100,23 +110,19 @@
           label="内存申请值/限制值"
           :formatter="formatterContainersMem"
         /> -->
-
+        <!--
         <el-table-column
           prop="spec.containers"
           label="资源申请值/限制值"
           :formatter="formatterContainersResource"
-        />
+        />-->
 
-        <el-table-column
-          prop="status"
-          label="重启次数"
-          :formatter="formatterRestartCount"
-          width="90px"
-        />
+        <el-table-column prop="status" label="重启次数" :formatter="formatterRestartCount" />
 
         <el-table-column
           prop="metadata.creationTimestamp"
           label="创建时间"
+          sortable
           :formatter="formatterTime"
         />
 
@@ -188,7 +194,7 @@
         </template>
       </el-table>
 
-      <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
+      <pagination :total="data.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
 
@@ -448,8 +454,24 @@
         </el-form>
       </div>
 
-      <div style="display: flex; margin-top: -20px; margin-left: 8px">
-        <button style="width: 70px" class="pixiu-two-button" @click="getPodLogs">查询</button>
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          margin-top: -20px;
+          margin-left: 8px;
+          margin-right: 20px;
+        "
+      >
+        <div>
+          <button style="width: 70px" class="pixiu-two-button" @click="getPodLogs">查询</button>
+        </div>
+        <div>
+          <el-switch v-model="data.logData.follow" /><span
+            style="font-size: 12px; margin-left: 5px; color: #191919"
+            >实时刷新</span
+          >
+        </div>
       </div>
 
       <div style="margin-top: 15px; margin-left: 8px; flex: 1">
@@ -577,36 +599,43 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref, onUnmounted, provide } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
-import useClipboard from 'vue-clipboard3';
-import PiXiuYaml from '@/components/pixiuyaml/index.vue';
-import { getTableData, searchData } from '@/utils/utils';
 import {
-  formatterTime,
+  getCurrentInstance,
+  onBeforeUnmount,
+  onMounted,
+  onUnmounted,
+  provide,
+  reactive,
+  ref,
+} from 'vue';
+import { ElMessage } from 'element-plus';
+import useClipboard from 'vue-clipboard3';
+import PixiuInput from '@/components/pixiuInput/index.vue';
+import { getTableData, searchFromData } from '@/utils/utils';
+
+import {
+  formatString,
+  formatterContainerImage,
+  formatterNamespace,
   formatterPodStatus,
   formatterRestartCount,
-  formatterNamespace,
-  formatString,
-  formatterContainersCPU,
-  formatterContainersMem,
-  formatterContainersResource,
-  formatterContainerImage,
+  formatterTime,
 } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import {
-  getPodList,
   deletePod,
-  getPodByName,
   getPod,
+  getPodByName,
+  getPodListByCache,
   getPodLog,
+  watchPodLog,
 } from '@/services/kubernetes/podService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
-import { getNode } from '@/services/kubernetes/nodeService';
+import Description from '@/components/description/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import PixiuLog from '@/components/pixiulog/index.vue';
-import { getRawEventList, deleteEvent } from '@/services/kubernetes/eventService';
+import { deleteEvent, getRawEventList } from '@/services/kubernetes/eventService';
 
 const { toClipboard } = useClipboard();
 const { proxy } = getCurrentInstance();
@@ -617,20 +646,22 @@ const selectedContainer = ref('');
 const selectedPod = ref('');
 
 const data = reactive({
+  total: 0,
+  search: {},
+  timer: null,
   cluster: '',
   namespace: 'default',
-
+  refresh: false,
   drawerWidth: '70%',
-
+  options: [
+    { label: '名字', value: 'nameSelector' },
+    { label: '标签', value: 'labelSelector' },
+  ],
   pageInfo: {
     page: 1,
     limit: 10,
-    query: '',
-    total: 0,
-    search: {
-      field: 'name',
-      searchInfo: '',
-    },
+    nameSelector: '',
+    labelSelector: '',
   },
   tableData: [],
   loading: false,
@@ -646,6 +677,7 @@ const data = reactive({
     close: false,
     objectName: 'Pod',
     deleteName: '',
+    namespace: '',
   },
 
   remoteLogin: {
@@ -660,7 +692,6 @@ const data = reactive({
     close: false,
     containers: [],
   },
-
   logData: {
     width: '70%',
     drawer: false,
@@ -673,6 +704,8 @@ const data = reactive({
     lineOptions: [25, 50, 100, 200, 500],
     podLogs: '点击查询获取日志',
     aggLog: false,
+    //实时日志
+    follow: false,
   },
 
   eventData: {
@@ -701,14 +734,22 @@ const data = reactive({
   },
 });
 
+const handleDynamicTags = (tags) => {
+  const ret = tags.reduce((obj, item) => {
+    obj[item.value] = item.inputValue;
+    return obj;
+  }, {});
+  data.pageInfo.labelSelector = ret['labelSelector'];
+  data.pageInfo.nameSelector = ret['nameSelector'];
+  if (!data.pageInfo.nameSelector && !data.pageInfo.labelSelector) {
+    getPods();
+  }
+};
+
 const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
-  data.tableData = getTableData(data.pageInfo, data.podList);
-
-  if (data.pageInfo.search.searchInfo !== '') {
-    searchPods();
-  }
+  getPods();
 };
 
 onMounted(() => {
@@ -770,7 +811,7 @@ const getPodEvents = async () => {
 const handleEventSelectionChange = (events) => {
   data.eventData.multipleEventSelection = [];
   for (let event of events) {
-    data.eventData.multipleEventSelection.push(event.metadata.name);
+    data.eventData.multipleEventSelection.push(event.metadata);
   }
 };
 
@@ -781,7 +822,7 @@ const deleteEventsInBatch = async () => {
   }
 
   for (let event of data.eventData.multipleEventSelection) {
-    const [result, err] = await deleteEvent(data.cluster, data.namespace, event);
+    const [result, err] = await deleteEvent(data.cluster, event.namespace, event.name);
     if (err) {
       proxy.$notify.error(err.response.data.message);
       return;
@@ -820,6 +861,7 @@ const createPod = () => {
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.metadata.name;
+  data.deleteDialog.namespace = row.metadata.namespace;
 };
 
 const cancelRemoteLogin = () => {
@@ -861,7 +903,7 @@ const handleRemoteLoginDialog = (row) => {
 };
 
 const handleContainerListDialog = async (row) => {
-  const [pod, err] = await getPod(data.cluster, data.namespace, row.metadata.name);
+  const [pod, err] = await getPod(data.cluster, row.metadata.namespace, row.metadata.name);
   if (err) {
     proxy.$notify.error(err.response.data.message);
     return;
@@ -880,26 +922,64 @@ const handleContainerListDialog = async (row) => {
 
   data.podContainers.close = true;
 };
-
+const ws = ref(null);
 const getPodLogs = async () => {
   if (data.logData.selectedContainer === '') {
     proxy.$notify.error('查询日志时，容器名称为必选项');
     return;
   }
 
-  const [result, err] = await getPodLog(
-    data.cluster,
-    data.logData.namespace,
-    data.logData.pod,
-    data.logData.selectedContainer,
-    data.logData.line,
-  );
-  if (err) {
-    proxy.$notify.error(err.response.data.message);
-    return;
+  if (ws.value !== null) {
+    ws.value.close();
   }
-  data.logData.podLogs = result;
+  if (data.logData.follow) {
+    ws.value = watchPodLog(
+      data.cluster,
+      data.logData.namespace,
+      data.logData.pod,
+      data.logData.selectedContainer,
+      data.logData.line,
+    );
+    data.logData.podLogs = '';
+    ws.value.onclose = () => {
+      //关闭连接后打印在终端里
+      data.logData.follow = false;
+      data.logData.podLogs = '';
+      ws.value = null;
+    };
+    let tmpLog = '';
+    ws.value.onmessage = (e) => {
+      if (e.data === 'ping' || !data.logData.follow) {
+        tmpLog += e.data;
+        return;
+      } else {
+        data.logData.podLogs += tmpLog + e.data;
+        tmpLog = '';
+      }
+    };
+  } else {
+    data.logData.podLogs = '';
+    const [result, err] = await getPodLog(
+      data.cluster,
+      data.logData.namespace,
+      data.logData.pod,
+      data.logData.selectedContainer,
+      data.logData.line,
+    );
+    if (err) {
+      proxy.$notify.error(err.response.data.message);
+      return;
+    }
+    data.logData.podLogs = result;
+  }
 };
+
+onBeforeUnmount(() => {
+  if (ws.value !== null) {
+    ws.value.close();
+  }
+  window.clearInterval(data.timer);
+});
 
 const cancelpodContainers = () => {
   data.podContainers.close = false;
@@ -944,6 +1024,9 @@ const openLogDrawer = () => {
 };
 
 const closeLogDrawer = () => {
+  if (ws.value !== null) {
+    ws.value.close();
+  }
   data.logData.pod = '';
   data.logData.namespace = '';
   data.logData.containers = [];
@@ -967,7 +1050,11 @@ const formatterContainerStartTime = (row, column, cellValue) => {
 };
 
 const confirm = async () => {
-  const [result, err] = await deletePod(data.cluster, data.namespace, data.deleteDialog.deleteName);
+  const [result, err] = await deletePod(
+    data.cluster,
+    data.deleteDialog.namespace,
+    data.deleteDialog.deleteName,
+  );
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
@@ -996,7 +1083,7 @@ const jumpRoute = (row) => {
     name: 'PodDetail',
     query: {
       cluster: data.cluster,
-      namespace: data.namespace,
+      namespace: row.metadata.namespace,
       name: row.metadata.name,
     },
   });
@@ -1005,7 +1092,7 @@ const jumpRoute = (row) => {
 const handlePodSelectionChange = (pods) => {
   data.multipleSelection = [];
   for (let pod of pods) {
-    data.multipleSelection.push(pod.metadata.name);
+    data.multipleSelection.push(pod.metadata);
   }
 };
 
@@ -1016,7 +1103,7 @@ const deletePodsInBatch = async () => {
   }
 
   for (let pod of data.multipleSelection) {
-    const [result, err] = await deletePod(data.cluster, data.namespace, pod);
+    const [result, err] = await deletePod(data.cluster, pod.namespace, pod.name);
     if (err) {
       proxy.$notify.error(err.response.data.message);
       return;
@@ -1027,23 +1114,39 @@ const deletePodsInBatch = async () => {
 };
 
 const getPods = async () => {
-  data.loading = true;
-  const [result, err] = await getPodList(data.cluster, data.namespace);
+  if (!data.refresh) {
+    data.loading = true;
+  }
+  // const [result, err] = await getPodList(data.cluster, data.namespace);
+  const [result, err] = await getPodListByCache(data.cluster, data.namespace, data.pageInfo);
+
   data.loading = false;
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
+  // data.podList = result.items;
+  data.total = result.total;
+  data.tableData = result.items;
+  // data.tableData = getTableData(data.pageInfo, data.podList);
+};
 
-  data.podList = result.items;
-  data.pageInfo.total = data.podList.length;
-  data.tableData = getTableData(data.pageInfo, data.podList);
+//每3s请求一次 getPods()
+const startRefresh = () => {
+  if (data.refresh) {
+    data.timer = window.setInterval(() => {
+      getPods();
+    }, 3000);
+  } else {
+    //清除定时器
+    window.clearInterval(data.timer);
+  }
 };
 
 provide('getPods', getPods);
 
 const searchPods = async () => {
-  data.tableData = searchData(data.pageInfo, data.podList);
+  data.tableData = searchFromData(data.pageInfo, data.tableData);
 };
 
 const copy = async (val) => {
@@ -1110,7 +1213,7 @@ const openWindowShell = () => {
 };
 
 const viewYaml = async (row) => {
-  const [result, err] = await getPodByName(data.cluster, data.namespace, row.metadata.name);
+  const [result, err] = await getPodByName(data.cluster, row.metadata.namespace, row.metadata.name);
   if (err) {
     proxy.$notify.error(err.response.data.message);
     return;
