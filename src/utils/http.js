@@ -4,6 +4,7 @@ import $ from 'jquery';
 // import { router } from '@/router/index';
 
 let baseUrl = '';
+let watchUrl = '';
 $.ajax({
   type: 'get',
   async: false,
@@ -11,6 +12,7 @@ $.ajax({
   data: {},
   success: function (cfg) {
     baseUrl = cfg.url;
+    watchUrl = cfg.watchUrl;
   },
   error: function (err) {},
 });
@@ -106,6 +108,11 @@ const axiosIntance = ({ method, url, data, config }) => {
   // 获取 baseUrl
   if (method === 'config') {
     return baseUrl ? baseUrl : import.meta.env.VITE_BASE_API;
+  }
+
+  // 获取 watchUrl
+  if (method === 'watch') {
+    return watchUrl ? watchUrl : import.meta.env.VITE_BASE_API;
   }
 
   // console.error(`UnKnown Method:${method}`);

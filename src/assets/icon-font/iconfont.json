@@ -6,6 +6,62 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "27243879",
+      "name": "grafana",
+      "font_class": "grafana",
+      "unicode": "e7f4",
+      "unicode_decimal": 59380
+    },
+    {
+      "icon_id": "38703120",
+      "name": "promethues",
+      "font_class": "promethues",
+      "unicode": "e7a0",
+      "unicode_decimal": 59296
+    },
+    {
+      "icon_id": "40850263",
+      "name": "Helm",
+      "font_class": "Helm",
+      "unicode": "e655",
+      "unicode_decimal": 58965
+    },
+    {
+      "icon_id": "31629021",
+      "name": "openEuler",
+      "font_class": "openEuler",
+      "unicode": "e653",
+      "unicode_decimal": 58963
+    },
+    {
+      "icon_id": "37909371",
+      "name": "rocky",
+      "font_class": "rocky",
+      "unicode": "e6ec",
+      "unicode_decimal": 59116
+    },
+    {
+      "icon_id": "5169437",
+      "name": "centos",
+      "font_class": "centos",
+      "unicode": "e656",
+      "unicode_decimal": 58966
+    },
+    {
+      "icon_id": "7171548",
+      "name": "ubuntu",
+      "font_class": "ubuntu",
+      "unicode": "e62f",
+      "unicode_decimal": 58927
+    },
+    {
+      "icon_id": "39705949",
+      "name": "debian",
+      "font_class": "debian",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
       "icon_id": "11399579",
       "name": "业务状态",
       "font_class": "yewuzhuangtai",

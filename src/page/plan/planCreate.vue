@@ -1,5 +1,10 @@
 <template>
-  <div style="display: flex; flex-direction: column; width: 100%; height: 100%">
+  <div
+    v-loading="clusterStore.loading"
+    element-loading-text="数据加载中..."
+    element-loading-background="rgba(0,0,0,0.8)"
+    style="display: flex; flex-direction: column; width: 100%; height: 100%"
+  >
     <div
       style="
         width: 100%;
@@ -71,13 +76,62 @@
 
             <div style="margin-top: 25px" />
             <el-form-item label="操作系统" style="width: 100%" prop="config.os_image">
-              <el-radio-group v-model="clusterStore.configInfo.config.os_image">
-                <el-radio-button
-                  v-for="(item, index) in clusterStore.options.osOptions"
-                  :key="index"
-                  :label="item.label"
-                />
-              </el-radio-group>
+              <el-space direction="vertical" alignment="start">
+                <el-space>
+                  <div
+                    v-for="(item, index) in clusterStore.options.osList"
+                    :key="index"
+                    :class="{ 'hover-state': true }"
+                    :style="{
+                      padding: '9px 30px',
+                      display: 'flex',
+                      'justify-content': 'center',
+                      'align-items': 'center',
+                      cursor: 'pointer',
+                      'font-size': '18px',
+                      'font-weight': 'bold',
+                      border: `${
+                        clusterStore.configInfo.config.os_system === item
+                          ? '1px solid #006eff'
+                          : '1px solid var(--el-border-color)'
+                      }`,
+                    }"
+                    @click="clusterStore.selectOS(item)"
+                  >
+                    <el-space
+                      direction="vertical"
+                      :style="{
+                        filter: `${
+                          clusterStore.configInfo.config.os_system === item
+                            ? 'grayscale(0)'
+                            : 'grayscale(1)'
+                        }`,
+                        opacity: `${
+                          clusterStore.configInfo.config.os_system === item ? '1' : '0.5'
+                        }`,
+                      }"
+                    >
+                      <pixiu-icon :name="`${'icon-' + item}`" size="30px" type="iconfont" />
+                      {{ item }}
+                    </el-space>
+                  </div>
+                </el-space>
+                <div style="margin-top: 1px"></div>
+                <el-select
+                  v-model="clusterStore.configInfo.config.os_image"
+                  placeholder="请选择操作系统"
+                  style="width: 300px"
+                >
+                  <el-option
+                    v-for="(item, index) in clusterStore.options.osNewOptions[
+                      clusterStore.configInfo.config.os_system
+                    ]"
+                    :key="index"
+                    :label="item"
+                    :value="item"
+                  ></el-option>
+                </el-select>
+              </el-space>
             </el-form-item>
 
             <el-form-item
@@ -378,39 +432,11 @@
           </el-card>
 
           <el-card id="step-4" header="组件选项" style="margin-top: 20px">
-            <el-form-item label="组件选项">
-              <el-checkbox-group v-model="clusterStore.configInfo.install_components">
-                <el-checkbox-button
-                  v-for="city in clusterStore.options.availableComponents"
-                  :key="city"
-                  :label="city"
-                >
-                  {{ city }}
-                </el-checkbox-button>
-              </el-checkbox-group>
-            </el-form-item>
+            <kubernetesComponent :app-charts="appCharts" />
+
             <div class="app-pixiu-describe" style="margin-top: -12px">
               如果当前无法评估是否需要安装， 可在集群创建完成后在集群内进行安装
             </div>
-
-            <el-card class="app-docs" style="margin-left: 140px">
-              <div>
-                <el-icon
-                  style="
-                    vertical-align: middle;
-                    font-size: 18px;
-                    margin-left: -20px;
-                    margin-right: 8px;
-                    margin-top: -25px;
-                  "
-                  ><WarningFilled
-                /></el-icon>
-                <div style="vertical-align: middle; margin-top: -27px; margin-left: 10px">
-                  TODO: 其他自定义字段的添加
-                </div>
-              </div>
-            </el-card>
-            <div style="margin-top: 25px" />
           </el-card>
           <el-card
             style="margin-top: 20px; margin-bottom: 100px; display: flex; justify-content: center"
@@ -569,6 +595,7 @@ import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { formatterTime, formatterNodeAuthType, formatterNodeRole } from '@/utils/formatter';
 import { copy } from '@/utils/utils';
 import { useRouter } from 'vue-router';
+import kubernetesComponent from '@/components/kubernetesComponent/index.vue';
 
 const { proxy } = getCurrentInstance();
 
@@ -603,7 +630,6 @@ const createPlan = async () => {
 };
 
 onBeforeUnmount(() => {
-  console.log(123);
   if (clusterStore) {
     clusterStore.resetViewData();
   }
@@ -665,8 +691,11 @@ const handlerScrollEvent = (e) => {
 const debouncedHandlerScrollEvent = debounce(handlerScrollEvent, 100); */
 
 onMounted(() => {
+  clusterStore.getOptionsForOS();
   // 路由上面的planId
-  clusterStore.planId = router.currentRoute.value.query.planId;
+  if (router.currentRoute.value.query.planId) {
+    clusterStore.planId = router.currentRoute.value.query.planId;
+  }
 
   // if (stepContainerRef.value) {
   //   stepContainerRef.value.addEventListener('scroll', debouncedHandlerScrollEvent);
@@ -678,5 +707,31 @@ onMounted(() => {
 //     stepContainerRef.value.removeEventListener('scroll', debouncedHandlerScrollEvent);
 //   }
 // });
+const appCharts = [
+  {
+    Name: 'Helm',
+    Label: '{"kind":"全部"}',
+    LatestVersion: '1.1.5',
+  },
+  {
+    Name: 'Prometheus',
+    Label: '{"kind":"全部"}',
+    LatestVersion: '0.0.1',
+  },
+  {
+    Name: 'Grafana',
+    Label: '{"kind":"全部"}',
+    LatestVersion: '1.1.5',
+  },
+  {
+    Name: 'NginxIngress',
+    Label: '{"kind":"全部"}',
+    LatestVersion: '1.0.0',
+  },
+];
 </script>
-<style scoped></style>
+<style scoped>
+.hover-state:hover {
+  border: 1px solid #006eff !important ;
+}
+</style>

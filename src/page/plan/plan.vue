@@ -85,6 +85,8 @@
             </template>
           </el-table-column>
 
+          <el-table-column prop="gmt_create" label="创建时间" sortable :formatter="formatterTime" />
+
           <el-table-column prop="step" label="状态" :formatter="formatterPlanStatus" />
 
           <el-table-column prop="description" label="描述">
@@ -94,8 +96,6 @@
               </div>
             </template>
           </el-table-column>
-
-          <el-table-column prop="gmt_create" label="创建时间" sortable :formatter="formatterTime" />
 
           <el-table-column fixed="right" label="操作" width="180px">
             <template #default="scope">
@@ -286,11 +286,28 @@
 
             <el-table-column
               prop="gmt_modified"
-              label="更新时间"
+              label="结束时间"
               sortable
               :formatter="formatterTime"
             />
-            <el-table-column prop="status" label="状态" />
+
+            <el-table-column prop="status" label="状态">
+              <template #default="scope">
+                <div style="font-size: 12px; color: #29292b" type="primary" :underline="false">
+                  <el-icon v-if="scope.row.status === '运行中'" class="is-loading" color="#409efc"
+                    ><RefreshRight
+                  /></el-icon>
+                  <el-icon v-else-if="scope.row.status === '已成功'" color="#529b2e"
+                    ><SuccessFilled
+                  /></el-icon>
+                  <el-icon v-else-if="scope.row.status === '部署失败'" color="#c45656"
+                    ><CircleCloseFilled
+                  /></el-icon>
+                  <el-icon v-else><InfoFilled /></el-icon>
+                  {{ scope.row.status }}
+                </div>
+              </template>
+            </el-table-column>
 
             <template #empty>
               <div class="table-inline-word">暂无部署任务</div>
@@ -309,11 +326,10 @@ import { formatterTime, formatterPlanStatus } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import {
   createPlan,
-  getPlan,
   GetPlanList,
   deletePlan,
   startPlanTask,
-  getPlanTaskList,
+  watchPlanTasks,
 } from '@/services/plan/planService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { copy } from '@/utils/utils';
@@ -323,7 +339,7 @@ const { proxy } = getCurrentInstance();
 
 const data = reactive({
   loading: false,
-
+  streams: [], // 处理流
   tableData: [],
   planList: [],
 
@@ -363,7 +379,7 @@ const data = reactive({
   // 部署任务
   taskData: {
     drawer: false,
-    width: '40%',
+    width: '45%',
     task: '',
     tableData: [],
   },
@@ -405,7 +421,7 @@ const confirmCreate = async () => {
     return;
   }
   proxy.$notify.success({ message: `部署计划(${data.createForm.name})创建成功` });
-  getPlanList();
+  await getPlanList();
   handleCreateCloseDialog();
 };
 // 结束创建
@@ -425,7 +441,7 @@ const confirm = async () => {
   }
   proxy.$notify.success(`部署计划(${data.deleteDialog.aliasName}) 删除成功`);
 
-  getPlanList();
+  await getPlanList();
   cancel();
 };
 
@@ -471,17 +487,58 @@ const handleTaskDrawer = (row) => {
 };
 
 const openTaskDrawer = async () => {
-  const [result, err] = await getPlanTaskList(data.taskData.task.id);
+  if (data.streams.length !== 0) {
+    for (const s of data.streams) {
+      s.abort();
+    }
+    data.streams = [];
+  }
+
+  let controller = new AbortController();
+  let single = controller.signal;
+  data.streams.push(controller);
+
+  const { body, err } = await watchPlanTasks(data.taskData.task.id, single);
   if (err) {
-    proxy.$message.error(err);
+    proxy.$message.error('Failed to get task list', err);
     return;
   }
-  data.taskData.tableData = result;
+  if (body) {
+    const reader = body.getReader();
+    await readStream(reader);
+  }
+};
+
+const readStream = async (reader) => {
+  const decoder = new TextDecoder('utf-8');
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) {
+      reader.cancel();
+      break;
+    }
+    const uint8Array = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+    let decodedString = decoder.decode(uint8Array, { stream: true });
+    // 解析JSON数据
+    try {
+      const result = JSON.parse(decodedString);
+      data.taskData.tableData = result;
+    } catch (e) {
+      proxy.$message.error('Error parsing JSON:', e);
+    }
+  }
 };
 
 const closeTaskDrawer = () => {
   data.taskData.drawer = false;
 
+  // 关闭stream
+  if (data.streams.length !== 0) {
+    for (const s of data.streams) {
+      s.abort();
+    }
+    data.streams = [];
+  }
   setTimeout(() => {
     data.taskData = {
       tableData: [],
@@ -503,7 +560,9 @@ const getPlanList = async () => {
   }
 
   data.planList = result;
-  data.pageInfo.total = result.length;
+  if (result !== null) {
+    data.pageInfo.total = result.length;
+  }
 };
 
 const jumpRoute = (row) => {
