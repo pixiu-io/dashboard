@@ -12,8 +12,9 @@
         style="
           text-align: left;
           font-weight: bold;
-          padding-left: 12px;
+          padding-left: 6px;
           margin-top: 5px;
+          margin-bottom: 20px;
           font-size: 14.5px;
         "
       >
