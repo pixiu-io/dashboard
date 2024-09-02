@@ -12,11 +12,12 @@
         </button>
 
         <el-input
-          v-model="data.pageInfo.query"
+          v-model="data.pageInfo.nameSelector"
           placeholder="名称搜索关键字"
           style="width: 35%; float: right"
           clearable
           @clear="getStatefulsets"
+          @input="getStatefulsets"
         >
           <template #suffix>
             <pixiu-icon
@@ -420,16 +421,15 @@ const getStatefulsets = async () => {
   if (!data.autoRefresh) {
     data.loading = true;
   }
-  const [result, err] = await getStatefulSetList(data.cluster, data.namespace);
+  const [result, err] = await getStatefulSetList(data.cluster, data.namespace, data.pageInfo);
   data.loading = false;
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
 
-  data.statefulSetList = result.items;
-  data.pageInfo.total = data.statefulSetList.length;
-  data.tableData = getTableData(data.pageInfo, data.statefulSetList);
+  data.tableData = result.items;
+  data.pageInfo.total = result.total;
 };
 
 const startAutoRefresh = () => {
