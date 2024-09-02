@@ -33,6 +33,14 @@
             />
           </template>
         </el-input>
+        <div style="float: right">
+          <el-switch
+            v-model="data.autoRefresh"
+            inline-prompt
+            width="36px"
+            @change="startAutoRefresh"
+          /><span style="font-size: 13px; margin-left: 5px; margin-right: 10px">自动刷新</span>
+        </div>
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -599,7 +607,16 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, onUnmounted, ref, watch, provide } from 'vue';
+import {
+  reactive,
+  getCurrentInstance,
+  onMounted,
+  onUnmounted,
+  onBeforeUnmount,
+  ref,
+  watch,
+  provide,
+} from 'vue';
 import jsYaml from 'js-yaml';
 import { formatTimestamp, getTableData, searchData } from '@/utils/utils';
 import PixiuTag from '@/components/pixiuTag/index.vue';
@@ -636,6 +653,9 @@ const editYaml = ref();
 const data = reactive({
   cluster: '',
   namespace: 'default',
+
+  autoRefresh: false,
+  timer: null,
 
   pageInfo: {
     page: 1,
@@ -734,6 +754,10 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('setItem', handleStorageChange);
+});
+
+onBeforeUnmount(() => {
+  window.clearInterval(data.timer);
 });
 
 const handleStorageChange = (e) => {
@@ -1037,6 +1061,7 @@ const handleRedeploy = async (row) => {
   }
   proxy.$message.success(`Deployment(${row.metadata.name}) 重新部署执行成功`);
 };
+
 const handleImageDialog = async (row) => {
   const namespace = row.metadata.namespace;
   const name = row.metadata.name;
@@ -1118,7 +1143,9 @@ const jumpRoute = (row) => {
 };
 
 const getDeployments = async () => {
-  data.loading = true;
+  if (!data.autoRefresh) {
+    data.loading = true;
+  }
   const [result, err] = await getDeploymentList(data.cluster, data.namespace, data.pageInfo);
   data.loading = false;
   if (err) {
@@ -1128,6 +1155,17 @@ const getDeployments = async () => {
 
   data.tableData = result.items;
   data.pageInfo.total = result.total;
+};
+
+//每3s请求一次 getPods()
+const startAutoRefresh = () => {
+  if (data.autoRefresh) {
+    data.timer = window.setInterval(() => {
+      getDeployments();
+    }, 3000);
+  } else {
+    window.clearInterval(data.timer);
+  }
 };
 
 provide('getDeployments', getDeployments);
