@@ -660,6 +660,7 @@ const data = reactive({
   pageInfo: {
     page: 1,
     limit: 10,
+    total: 0,
     nameSelector: '',
     labelSelector: '',
   },

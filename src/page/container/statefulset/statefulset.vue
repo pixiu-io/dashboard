@@ -264,8 +264,9 @@ const data = reactive({
   pageInfo: {
     page: 1,
     limit: 10,
-    query: '',
     total: 0,
+    nameSelector: '',
+    labelSelector: '',
   },
 
   tableData: [],
@@ -358,8 +359,7 @@ const clean = () => {
 const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
-
-  data.tableData = getTableData(data.pageInfo, data.deploymentList);
+  getStatefulSet();
 };
 
 const handleEditYamlDialog = async (row) => {
