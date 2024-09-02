@@ -43,18 +43,20 @@ export const deleteStatefulSet = async (cluster, namespace, name) => {
   return [result, err];
 };
 
-export const getStatefulSetList = async (cluster, namespace) => {
-  let url = `/pixiu/proxy/${cluster}/apis/apps/v1/namespaces/${namespace}/statefulsets`;
+export const getStatefulSetList = async (cluster, namespace, params) => {
+  // let url = `/pixiu/proxy/${cluster}/apis/apps/v1/namespaces/${namespace}/statefulsets`;
+  // if (namespace === '全部空间') {
+  //   url = `/pixiu/proxy/${cluster}/apis/apps/v1/statefulsets`;
+  // }
+  let url = `/pixiu/indexer/clusters/${cluster}/resources/deployment/namespaces/${namespace}`;
   if (namespace === '全部空间') {
-    url = `/pixiu/proxy/${cluster}/apis/apps/v1/statefulsets`;
+    url = `/pixiu/indexer/clusters/${cluster}/resources/deployment/namespaces/all_namespaces`;
   }
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
       url: url,
-      data: {
-        limit: 500,
-      },
+      data: params,
     }),
   );
   return [result, err];
