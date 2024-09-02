@@ -660,6 +660,7 @@ const data = reactive({
   pageInfo: {
     page: 1,
     limit: 10,
+    total: 0,
     nameSelector: '',
     labelSelector: '',
   },
@@ -1157,7 +1158,6 @@ const getDeployments = async () => {
   data.pageInfo.total = result.total;
 };
 
-//每3s请求一次 getPods()
 const startAutoRefresh = () => {
   if (data.autoRefresh) {
     data.timer = window.setInterval(() => {
