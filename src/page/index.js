@@ -16,6 +16,7 @@ import Terminal from './container/terminal.vue';
 import Monitor from './container/monitor.vue';
 import Node from './container/node/node.vue';
 import NodeDetail from './container/node/nodeDetail.vue';
+import NodeTerminal from './container/node/nodeTerminal.vue';
 import Info from './container/info/info.vue';
 import Home from './home/home.vue';
 import Login from './login/login.vue';
@@ -88,6 +89,7 @@ export {
   Release,
   Node,
   NodeDetail,
+  NodeTerminal,
   Terminal,
   Monitor,
   Cluster,
