@@ -29,6 +29,14 @@
             />
           </template>
         </el-input>
+        <div style="float: right">
+          <el-switch
+            v-model="data.autoRefresh"
+            inline-prompt
+            width="36px"
+            @change="startAutoRefresh"
+          /><span style="font-size: 13px; margin-left: 5px; margin-right: 10px">自动刷新</span>
+        </div>
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -90,12 +98,12 @@
           :formatter="formatterTime"
         />
 
-        <el-table-column
+        <!-- <el-table-column
           label="镜像"
           prop="spec.template.spec.containers"
           :formatter="formatterImage"
         >
-        </el-table-column>
+        </el-table-column> -->
 
         <el-table-column fixed="right" label="操作" width="150px">
           <template #default="scope">
@@ -222,7 +230,7 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, onUnmounted, ref } from 'vue';
+import { reactive, getCurrentInstance, onMounted, onUnmounted, onBeforeUnmount, ref } from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData } from '@/utils/utils';
 import PixiuTag from '@/components/pixiuTag/index.vue';
@@ -248,6 +256,9 @@ const editYaml = ref();
 const data = reactive({
   cluster: '',
   namespace: '',
+
+  autoRefresh: false,
+  timer: null,
 
   pageInfo: {
     page: 1,
@@ -292,6 +303,10 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('setItem', handleStorageChange);
+});
+
+onBeforeUnmount(() => {
+  window.clearInterval(data.timer);
 });
 
 const handleDeleteDialog = (row) => {
@@ -402,7 +417,9 @@ const jumpRoute = (row) => {
 };
 
 const getStatefulsets = async () => {
-  data.loading = true;
+  if (!data.autoRefresh) {
+    data.loading = true;
+  }
   const [result, err] = await getStatefulSetList(data.cluster, data.namespace);
   data.loading = false;
   if (err) {
@@ -413,6 +430,16 @@ const getStatefulsets = async () => {
   data.statefulSetList = result.items;
   data.pageInfo.total = data.statefulSetList.length;
   data.tableData = getTableData(data.pageInfo, data.statefulSetList);
+};
+
+const startAutoRefresh = () => {
+  if (data.autoRefresh) {
+    data.timer = window.setInterval(() => {
+      getStatefulsets();
+    }, 3000);
+  } else {
+    window.clearInterval(data.timer);
+  }
 };
 
 const changeNamespace = async (val) => {

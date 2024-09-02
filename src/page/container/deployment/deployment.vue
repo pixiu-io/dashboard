@@ -1157,7 +1157,6 @@ const getDeployments = async () => {
   data.pageInfo.total = result.total;
 };
 
-//每3s请求一次 getPods()
 const startAutoRefresh = () => {
   if (data.autoRefresh) {
     data.timer = window.setInterval(() => {
