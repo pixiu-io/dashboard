@@ -48,9 +48,9 @@ export const getStatefulSetList = async (cluster, namespace, params) => {
   // if (namespace === '全部空间') {
   //   url = `/pixiu/proxy/${cluster}/apis/apps/v1/statefulsets`;
   // }
-  let url = `/pixiu/indexer/clusters/${cluster}/resources/deployment/namespaces/${namespace}`;
+  let url = `/pixiu/indexer/clusters/${cluster}/resources/statefulset/namespaces/${namespace}`;
   if (namespace === '全部空间') {
-    url = `/pixiu/indexer/clusters/${cluster}/resources/deployment/namespaces/all_namespaces`;
+    url = `/pixiu/indexer/clusters/${cluster}/resources/statefulset/namespaces/all_namespaces`;
   }
   const [err, result] = await awaitWrap(
     http({
