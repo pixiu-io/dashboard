@@ -233,17 +233,11 @@ const confirmYaml = async () => {
   try {
     yamlData = jsYaml.load(editYaml.value.code);
   } catch (err) {
-    ElMessage({
-      message: err.reason,
-      type: 'error',
-    });
+    ElMessage({ message: err.reason, type: 'error' });
     return;
   }
   if (yamlData === undefined) {
-    ElMessage({
-      message: 'YAML创建资源不能为空',
-      type: 'warning',
-    });
+    ElMessage({ message: 'YAML创建资源不能为空', type: 'warning' });
     return;
   }
 
