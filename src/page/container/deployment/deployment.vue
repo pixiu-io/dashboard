@@ -303,7 +303,7 @@
       </el-table-column>
       <el-table-column prop="image" sortable label="镜像">
         <template #default="scope">
-          <div style="display: flex">
+          <div :style="`${!scope.row.change && 'display: flex'}`">
             <el-tag round>
               <div style="display: flex">
                 <pixiu-icon name="icon-docker" size="16px" type="iconfont" color="#409EFF" />
@@ -322,7 +322,7 @@
               />
             </div>
 
-            <div v-if="scope.row.change" style="margin-left: 10px; flex: 1">
+            <div v-if="scope.row.change" style="margin-top: 4px; width: 50%">
               <el-input v-model="scope.row.newImage"></el-input>
               <div style="display: flex">
                 <div style="cursor: pointer" @click="confirmEvent(scope.row)">确认</div>
