@@ -74,7 +74,7 @@
         /*align-items: center;*/
         text-align: left;
         font-weight: bold;
-        padding-left: 5px;
+        padding-left: 1px;
         padding-bottom: 0;
         position: relative;
         margin: 0 0 10px;
@@ -229,12 +229,15 @@ const checkEmpty = (name, value) => {
 };
 
 const confirmYaml = async () => {
-  const yamlData = jsYaml.load(editYaml.value.code);
+  let yamlData;
+  try {
+    yamlData = jsYaml.load(editYaml.value.code);
+  } catch (err) {
+    ElMessage({ message: err.reason, type: 'error' });
+    return;
+  }
   if (yamlData === undefined) {
-    ElMessage({
-      message: 'YAML创建资源不能为空',
-      type: 'warning',
-    });
+    ElMessage({ message: 'YAML创建资源不能为空', type: 'warning' });
     return;
   }
 
