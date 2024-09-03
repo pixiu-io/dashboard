@@ -134,17 +134,19 @@ const formatterImage = (row, column, cellValue) => {
       ${images.map((image) => `<div class="pixiu-table-formatter">${image}</div>`).join('')}
     </div>
   `;
-
+  // 背景色：#d9ecff
   return (
     <el-tooltip effect="light" placement="top" content={displayContent.toString()} raw-content>
-      <div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
         {images.map((image) => (
-          <el-tag round>
-            <div style="display: flex">
+          <div style="width:100%;background-color:#d9ecff;border-color:#d9ecff;border-radius:9999px">
+            <div style="display:flex;align-items:center;padding: 0 10px">
               <pixiu-icon name="icon-docker" size="16px" type="iconfont" color="#409EFF" />
-              <div style="margin-left: 6px"> {image}</div>
+              <div style="margin-left: 6px; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;color:#409eff;font-size:12px">
+                {image}
+              </div>
             </div>
-          </el-tag>
+          </div>
         ))}
       </div>
     </el-tooltip>
