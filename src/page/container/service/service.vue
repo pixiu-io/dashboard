@@ -21,12 +21,17 @@
           style="width: 480px; float: right"
           clearable
           @clear="getServices"
-          @input="searchService"
+          @input="getServices"
         >
           <template #suffix>
-            <el-icon class="el-input__icon" @click="getServices">
-              <component :is="'Search'" />
-            </el-icon>
+            <pixiu-icon
+              name="icon-search"
+              style="cursor: pointer"
+              size="15px"
+              type="iconfont"
+              color="#909399"
+              @click="getServices"
+            />
           </template>
         </el-input>
       </el-col>
@@ -254,12 +259,7 @@ const clean = () => {
 const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
-
-  data.tableData = getTableData(data.pageInfo, data.serviceList);
-
-  if (data.pageInfo.search.searchInfo !== '') {
-    searchSecrets();
-  }
+  data.tableData = searchData(data.pageInfo, data.serviceList);
 };
 
 const createService = () => {
@@ -295,10 +295,7 @@ const getServices = async () => {
 
   data.serviceList = result.items;
   data.pageInfo.total = data.serviceList.length;
-  data.tableData = getTableData(data.pageInfo, data.serviceList);
-};
 
-const searchService = async () => {
   data.tableData = searchData(data.pageInfo, data.serviceList);
 };
 
