@@ -170,16 +170,16 @@
 
           <el-col>
             <button
-              class="pixiu-two-button2"
+              class="pixiu-two-button"
               style="margin-left: 10px; width: 85px"
               @click="handleBatchDeleteDialog"
             >
               批量删除
             </button>
 
-            <div style="margin-left: 8px; float: right; margin-left: 12px">
+            <!-- <div style="margin-left: 8px; float: right; margin-left: 12px">
               <button class="pixiu-two-button" @click="searchDeploymentPods">搜索</button>
-            </div>
+            </div> -->
 
             <el-input
               v-model="data.pageInfo.search.searchInfo"
@@ -673,13 +673,21 @@ const handleDeleteDialog = (row) => {
   data.deleteDialog.namespace = row.metadata.namespace;
 };
 
-const handleBatchDeleteDialog = (row) => {
+const handleBatchDeleteDialog = async (row) => {
   if (data.multiplePodSelection.length === 0) {
     proxy.$notify.warning({ title: 'Pods', message: '未选择批量删除的 Pods' });
     return;
   }
-  data.batchDeleteDialog.close = true;
-  data.batchDeleteDialog.deleteName = data.multiplePodSelection.join(', ');
+
+  for (let pod of data.multiplePodSelection) {
+    const [result, err] = await deletePod(data.cluster, pod.namespace, pod.name);
+    if (err) {
+      proxy.$notify.error(err.response.data.message);
+      return;
+    }
+  }
+  proxy.$notify.success('批量删除Pods成功');
+  await getDeploymentPods();
 };
 
 const cancelDeletePod = () => {
@@ -945,7 +953,7 @@ const deleteEventsInBatch = async () => {
 const handlePodSelectionChange = (pods) => {
   data.multiplePodSelection = [];
   for (let pod of pods) {
-    data.multiplePodSelection.push(pod.metadata.name);
+    data.multiplePodSelection.push(pod.metadata);
   }
 };
 

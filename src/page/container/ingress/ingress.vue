@@ -21,12 +21,17 @@
           style="width: 480px; float: right"
           clearable
           @clear="getIngresses"
-          @input="searchIngress"
+          @input="getIngresses"
         >
           <template #suffix>
-            <el-icon class="el-input__icon" @click="getIngresses">
-              <component :is="'Search'" />
-            </el-icon>
+            <pixiu-icon
+              name="icon-search"
+              style="cursor: pointer"
+              size="15px"
+              type="iconfont"
+              color="#909399"
+              @click="getIngresses"
+            />
           </template>
         </el-input>
       </el-col>
@@ -264,11 +269,7 @@ const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
 
-  data.tableData = getTableData(data.pageInfo, data.ingressList);
-
-  if (data.pageInfo.search.searchInfo !== '') {
-    searchIngress();
-  }
+  data.tableData = searchData(data.pageInfo, data.ingressList);
 };
 
 const getIngresses = async () => {
@@ -282,10 +283,6 @@ const getIngresses = async () => {
 
   data.ingressList = res.items;
   data.pageInfo.total = data.ingressList.length;
-  data.tableData = getTableData(data.pageInfo, data.ingressList);
-};
-
-const searchIngress = async () => {
   data.tableData = searchData(data.pageInfo, data.ingressList);
 };
 
