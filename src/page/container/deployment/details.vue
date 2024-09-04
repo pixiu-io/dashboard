@@ -170,7 +170,7 @@
 
           <el-col>
             <button
-              class="pixiu-two-button2"
+              class="pixiu-two-button"
               style="margin-left: 10px; width: 85px"
               @click="handleBatchDeleteDialog"
             >
