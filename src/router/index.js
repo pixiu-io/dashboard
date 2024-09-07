@@ -23,6 +23,7 @@ import {
   Monitor,
   Node,
   NodeDetail,
+  NodeTerminal,
   NotFound,
   Operator,
   Service,
@@ -161,6 +162,14 @@ const routes = [
               title: 'NodeDetail',
             },
             component: NodeDetail,
+          },
+          {
+            path: 'nodes/terminal',
+            name: 'NodeTerminal',
+            meta: {
+              title: 'NodeTerminal',
+            },
+            component: NodeTerminal,
           },
           {
             path: 'namespaces',

@@ -8,6 +8,66 @@
     :description="'Kubernetes 通过将容器放入在节点（Node）上运行的 Pod 中来执行你的工作负载。 节点可以是一个虚拟机或者物理机器，取决于所在的集群配置。 每个节点包含运行 Pod 所需的服务。'"
   />
   <div style="margin-top: 5px">
+    <el-dialog
+      v-model="showCreateDialog"
+      style="color: #000000; font: 14px"
+      width="580px"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      draggable
+      center
+    >
+      <template #header>
+        <div style="text-align: left; font-weight: bold; padding-left: 5px">远程登录</div>
+      </template>
+      <template #default>
+        <el-form
+          label-position="left"
+          label-width="80px"
+          style="max-width: 90%; margin-left: 6px"
+        >
+          <el-form-item prop="ip">
+            <template #label>
+              <span style="font-size: 13px; color: #191919">端口</span>
+            </template>
+            <el-input v-model="clusterStore.nodeInfo.ip" />
+          </el-form-item>
+
+          <el-form-item prop="auth.password.user">
+            <template #label>
+              <span style="font-size: 13px; color: #191919">用户名</span>
+            </template>
+            <div>{{ clusterStore.nodeInfo.auth.password.user }}</div>
+          </el-form-item>
+          <el-form-item prop="auth.password.password">
+            <template #label>
+              <span style="font-size: 13px; color: #191919">密码</span>
+            </template>
+            <el-input
+              v-model="clusterStore.nodeInfo.auth.password.password"
+              show-password
+              clearable
+              style="width: 56%"
+            />
+          </el-form-item>
+        </el-form>
+      </template>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button class="pixiu-cancel-button" @click="clusterStore.cancelNodeCreate"
+            >取消</el-button
+          >
+          <el-button
+            class="pixiu-small-confirm-button"
+            type="primary"
+            @click="clusterStore.confirm"
+          >
+            确定
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
+
     <el-row>
       <el-col>
         <button class="pixiu-two-button">新建</button>
@@ -150,6 +210,12 @@
                     @click="handleEditLabelDialog(scope.row)"
                   >
                     标签管理
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleTerminalDialog(scope.row)"
+                  >
+                    远程登陆
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
@@ -419,7 +485,7 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, provide } from 'vue';
+import { ref, reactive, getCurrentInstance, onMounted, provide } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
@@ -438,6 +504,7 @@ import { getRawEventList, deleteEvent } from '@/services/kubernetes/eventService
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
+const showCreateDialog = ref(false);
 
 const data = reactive({
   cluster: '',
@@ -542,6 +609,20 @@ const searchNodes = async () => {
 const jumpRoute = (row) => {
   router.push({
     name: 'NodeDetail',
+    query: {
+      cluster: data.cluster,
+      name: row.metadata.name,
+    },
+  });
+};
+
+const handleTerminalDialog = () => {
+  showCreateDialog.value = true;
+};
+
+const jumpTerminalRoute = (row) => {
+  router.push({
+    name: 'NodeTerminal',
     query: {
       cluster: data.cluster,
       name: row.metadata.name,
