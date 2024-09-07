@@ -30,8 +30,8 @@ defineProps({
     default: '',
   },
   style: {
-    type: String,
-    default: '',
+    type: Object,
+    default: () => {},
   },
 });
 </script>
