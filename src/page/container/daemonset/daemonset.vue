@@ -14,17 +14,31 @@
         <el-input
           v-model="data.pageInfo.search.searchInfo"
           placeholder="名称搜索关键字"
-          style="width: 400px; float: right"
+          style="width: 35%; float: right"
           clearable
           @clear="getDaemonsets"
-          @input="searchDaemonsets"
+          @input="getDaemonsets"
         >
           <template #suffix>
-            <el-icon class="el-input__icon" @click="searchDaemonsets">
-              <component :is="'Search'" />
-            </el-icon>
+            <pixiu-icon
+              name="icon-search"
+              style="cursor: pointer"
+              size="15px"
+              type="iconfont"
+              color="#909399"
+              @click="getDaemonsets"
+            />
           </template>
         </el-input>
+
+        <div style="float: right">
+          <el-switch
+            v-model="data.autoRefresh"
+            inline-prompt
+            width="36px"
+            @change="startAutoRefresh"
+          /><span style="font-size: 13px; margin-left: 5px; margin-right: 10px">自动刷新</span>
+        </div>
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -509,7 +523,16 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, onUnmounted, ref, watch, provide } from 'vue';
+import {
+  reactive,
+  getCurrentInstance,
+  onMounted,
+  onUnmounted,
+  onBeforeUnmount,
+  ref,
+  watch,
+  provide,
+} from 'vue';
 import { getTableData, searchData } from '@/utils/utils';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import { getPodsByLabels, getPodLog } from '@/services/kubernetes/podService';
@@ -547,6 +570,9 @@ const editYaml = ref();
 const data = reactive({
   cluster: '',
   namespace: 'default',
+
+  autoRefresh: false,
+  timer: null,
 
   pageInfo: {
     page: 1,
@@ -622,10 +648,8 @@ const data = reactive({
       page: 1,
       limit: 10,
       total: 0,
-      search: {
-        field: 'name',
-        searchInfo: '',
-      },
+      nameSelector: '',
+      labelSelector: '',
     },
   },
 
@@ -647,6 +671,10 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('setItem', handleStorageChange);
+});
+
+onBeforeUnmount(() => {
+  window.clearInterval(data.timer);
 });
 
 const handleStorageChange = (e) => {
@@ -995,17 +1023,28 @@ const jumpRoute = (row) => {
 };
 
 const getDaemonsets = async () => {
-  data.loading = true;
-  const [result, err] = await getDaemonsetList(data.cluster, data.namespace);
+  if (!data.autoRefresh) {
+    data.loading = true;
+  }
+  const [result, err] = await getDaemonsetList(data.cluster, data.namespace, data.pageInfo);
   data.loading = false;
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
 
-  data.daemonsetList = result.items;
-  data.pageInfo.total = data.daemonsetList.length;
-  data.tableData = getTableData(data.pageInfo, data.daemonsetList);
+  data.tableData = result.items;
+  data.pageInfo.total = result.total;
+};
+
+const startAutoRefresh = () => {
+  if (data.autoRefresh) {
+    data.timer = window.setInterval(() => {
+      getDaemonsets();
+    }, 3000);
+  } else {
+    window.clearInterval(data.timer);
+  }
 };
 
 provide('getDaemonsets', getDaemonsets);
