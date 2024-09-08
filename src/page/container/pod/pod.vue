@@ -1117,7 +1117,7 @@ const getPods = async () => {
   if (!data.refresh) {
     data.loading = true;
   }
-  // const [result, err] = await getPodList(data.cluster, data.namespace);
+  // const [result, err] = await getPodList(state.cluster, state.namespace);
   const [result, err] = await getPodListByCache(data.cluster, data.namespace, data.pageInfo);
 
   data.loading = false;
@@ -1125,10 +1125,10 @@ const getPods = async () => {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  // data.podList = result.items;
+  // state.podList = result.items;
   data.total = result.total;
   data.tableData = result.items;
-  // data.tableData = getTableData(data.pageInfo, data.podList);
+  // state.tableData = getTableData(state.pageInfo, state.podList);
 };
 
 //每3s请求一次 getPods()

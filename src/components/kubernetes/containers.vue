@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, reactive, defineAsyncComponent } from 'vue';
+import { ref, reactive, defineAsyncComponent } from 'vue';
 import { Plus } from '@element-plus/icons-vue';
 const Container = defineAsyncComponent(() => import('./container.vue'));
 const editableTabsValue = ref(0);
@@ -67,7 +67,7 @@ const tabRemove = (tabPaneName) => {
 };
 
 const state = reactive({
-  validateRefs: [],
+  verified: true,
   loadFromParent: false,
   currentIndex: 1,
   addIndex: 1,
@@ -111,7 +111,27 @@ const props = defineProps({
   },
 });
 
-defineExpose({});
+const containers = async () => {
+  state.verified = true;
+  const containers = state.containers;
+  //遍历itemRefs
+  for (let index = 0; index < itemRefs.value.length; index++) {
+    // await itemRefs.value[index].validate((valid) => {
+    //   if (!valid) {
+    //     state.verified = false;
+    //   }
+    // });
+    if (!itemRefs.value[index]) continue;
+    const [container, verified] = await itemRefs.value[index].getContainer();
+    state.verified = verified;
+    containers[index] = { ...container };
+  }
+  return [state.containers, state.verified];
+};
+
+defineExpose({
+  containers,
+});
 </script>
 
 <style scoped></style>

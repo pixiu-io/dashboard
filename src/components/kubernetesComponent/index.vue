@@ -36,9 +36,9 @@
             </el-card>
           </el-space>
         </el-checkbox-group>
-        <!-- <el-checkbox-group v-model="data.selectCharts" class="checkbox" @change="onSelect">
+        <!-- <el-checkbox-group v-model="state.selectCharts" class="checkbox" @change="onSelect">
           <el-space wrap>
-            <el-card v-for="chart in data.categoryAppCharts" :key="chart.Name" class="card">
+            <el-card v-for="chart in state.categoryAppCharts" :key="chart.Name" class="card">
               <template #header>
                 <div class="card-header">
                   <el-checkbox :label="chart.Name" :value="chart" />

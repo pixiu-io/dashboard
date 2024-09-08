@@ -77,7 +77,7 @@
             <!-- <div style="margin-top: 20px" />
             <el-form-item label="高性能 eventer">
               <el-switch
-                v-model="data.clusterForm.enable_pixiu_eventer"
+                v-model="state.clusterForm.enable_pixiu_eventer"
                 active-text="启用"
                 inactive-text="关闭"
               />

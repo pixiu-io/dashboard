@@ -15,7 +15,7 @@
           ><span class="breadcrumb-create-style"> 集群 </span>
         </el-breadcrumb-item>
         <el-breadcrumb-item
-          ><span class="breadcrumb-create-style"> {{ data.clusterName }} </span>
+          ><span class="breadcrumb-create-style"> {{ state.clusterName }} </span>
         </el-breadcrumb-item>
         <el-breadcrumb-item
           ><span class="breadcrumb-create-style"> Deployments </span>
@@ -30,16 +30,19 @@
       <el-card class="create-card-style">
         <el-row :gutter="30">
           <el-col :span="22">
-            <el-tabs v-model="data.activeTable" tab-position="left" :before-leave="aggregateInfo">
+            <el-tabs v-model="state.activeTable" tab-position="left" :before-leave="aggregateInfo">
               <el-tab-pane label="基础信息">
                 <Meta
                   ref="metaRef"
-                  :replicas="data.deploymentForm.spec.replicas"
-                  :metadata="data.deploymentForm.metadata"
+                  :replicas="state.deploymentForm.spec.replicas"
+                  :metadata="state.deploymentForm.metadata"
                 />
               </el-tab-pane>
               <el-tab-pane label="容器配置">
-                <Containers :volumes="data.deploymentForm.spec.template.spec.volumes" />
+                <Containers
+                  ref="containersRef"
+                  :volumes="state.deploymentForm.spec.template.spec.volumes"
+                />
               </el-tab-pane>
               <el-tab-pane label="高级选项">Role</el-tab-pane>
             </el-tabs>
@@ -53,20 +56,20 @@
           <el-button
             class="pixiu-confirm-button"
             type="primary"
-            :disabled="data.activeTable === '0'"
+            :disabled="state.activeTable === '0'"
             @click="handlePre"
             >上一步</el-button
           >
           <el-button
             class="pixiu-confirm-button"
             type="primary"
-            :disabled="data.activeTable === '2'"
+            :disabled="state.activeTable === '2'"
             @click="handleNext"
             >下一步</el-button
           >
           <el-button class="pixiu-cancel-button" @click="cancelCreate()">取消</el-button>
           <el-button
-            v-show="data.activeTable === '2'"
+            v-show="state.activeTable === '2'"
             class="pixiu-confirm-button"
             type="primary"
             @click="confirmCreate()"
@@ -77,10 +80,10 @@
     </el-main>
   </div>
   <Yaml
-    v-if="data.yamlVisible"
-    v-model:visible="data.yamlVisible"
+    v-if="state.yamlVisible"
+    v-model:visible="state.yamlVisible"
     title="预览"
-    :yaml="data.deploymentForm"
+    :yaml="state.deploymentForm"
     :read-only="true"
     @confirm="logInfo"
   />
@@ -96,12 +99,9 @@ const Yaml = defineAsyncComponent(() => import('@/components/kubernetes/yaml.vue
 const { proxy } = getCurrentInstance();
 const ruleFormRef = ref();
 
-const rules = {
-  'metadata.name': [{ required: true, message: '请输入 Deployment 名称', trigger: 'blur' }],
-};
-
 const metaRef = ref();
-const data = reactive({
+const containersRef = ref();
+const state = reactive({
   activeTable: '0',
   yamlVisible: false,
   loading: false,
@@ -160,30 +160,41 @@ const handleNext = async () => {
   if (!(await aggregateInfo())) {
     return;
   }
-  let active = parseInt(data.activeTable, 10);
+  let active = parseInt(state.activeTable, 10);
   if (active === 2) {
     return;
   }
   active = active + 1;
-  data.activeTable = active + '';
+  state.activeTable = active + '';
 };
 const handlePre = () => {
-  let active = parseInt(data.activeTable, 10);
+  let active = parseInt(state.activeTable, 10);
   if (active >= 1) {
     active = active - 1;
   }
-  data.activeTable = active + '';
+  state.activeTable = active + '';
 };
 const aggregateInfo = async () => {
-  const [metadata, replicas, verified] = await metaRef.value.getResult();
-  if (!verified) {
-    proxy.$message.error('请正确填写');
-    return false;
+  if (state.activeTable === '0') {
+    const [metadata, replicas, verified] = await metaRef.value.getResult();
+    if (!verified) {
+      proxy.$message.error('请正确填写');
+      return false;
+    }
+    state.deploymentForm.metadata = metadata;
+    state.deploymentForm.spec.replicas = replicas;
+    state.deploymentForm.spec.selector.matchLabels = JSON.parse(JSON.stringify(metadata.labels));
+    state.deploymentForm.spec.template.metadata.labels = JSON.parse(
+      JSON.stringify(metadata.labels),
+    );
+  } else if (state.activeTable === '2') {
+    const [containers, containerVerified] = await containersRef.value.containers();
+    if (!containerVerified) {
+      proxy.$message.error('请正确填写');
+      return false;
+    }
+    state.deploymentForm.spec.template.spec.containers = JSON.parse(JSON.stringify(containers));
   }
-  data.deploymentForm.metadata = metadata;
-  data.deploymentForm.spec.replicas = replicas;
-  data.deploymentForm.spec.selector.matchLabels = JSON.parse(JSON.stringify(metadata.labels));
-  data.deploymentForm.spec.template.metadata.labels = JSON.parse(JSON.stringify(metadata.labels));
   return true;
 };
 const logInfo = (yaml) => {
@@ -191,44 +202,25 @@ const logInfo = (yaml) => {
 };
 const onPreView = async () => {
   if (await aggregateInfo()) {
-    data.yamlVisible = true;
+    state.yamlVisible = true;
   }
 };
 
 const confirmCreate = async () => {
-  ruleFormRef.value.validate(async (valid) => {
-    if (valid) {
-      data.deploymentForm.metadata = data.form.metadata;
-      data.deploymentForm.spec.template.spec.containers = data.form.containers;
-
-      data.deploymentForm.spec.selector.matchLabels['pixiu.io/app'] = data.form.metadata.name;
-      data.deploymentForm.spec.selector.matchLabels['pixiu.io/kind'] = 'deployment';
-      data.deploymentForm.spec.template.metadata.labels =
-        data.deploymentForm.spec.selector.matchLabels;
-
-      // 追加 labels
-      if (data.form.labels.length > 0) {
-        data.deploymentForm.metadata['labels'] = {};
-        for (let item of data.form.labels) {
-          data.deploymentForm.metadata['labels'][item.key] = item.value;
-        }
-      }
-
-      const [result, err] = await createDeployment(
-        data.cluster,
-        data.form.metadata.namespace,
-        data.deploymentForm,
-      );
-      if (err) {
-        proxy.$message.error(err.response.data.message);
-        return;
-      }
-
-      proxy.$message.success(`Deployment ${data.form.metadata.name} 创建成功`);
-
-      backToDeployment();
-    }
-  });
+  if (!(await aggregateInfo())) {
+    return;
+  }
+  const [result, err] = await createDeployment(
+    state.cluster,
+    state.form.metadata.namespace,
+    state.deploymentForm,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(`Deployment ${state.form.metadata.name} 创建成功`);
+  backToDeployment();
 };
 
 const cancelCreate = () => {
@@ -236,70 +228,23 @@ const cancelCreate = () => {
 };
 
 onMounted(() => {
-  data.cloud = proxy.$route.query;
-  data.cluster = data.cloud.cluster;
-  data.clusterName = localStorage.getItem(data.cluster);
-
-  addContainer();
+  state.cloud = proxy.$route.query;
+  state.cluster = state.cloud.cluster;
+  state.clusterName = localStorage.getItem(state.cluster);
 });
-
-const addContainer = () => {
-  data.form.containers.push({
-    name: '',
-    image: '',
-    imagePullPolicy: 'IfNotPresent',
-  });
-};
-
-const deleteContainer = (index) => {
-  if (data.form.containers.length === 1) {
-    proxy.$message.error('至少需要 1 个容器组');
-    return;
-  }
-  data.form.containers.splice(index, 1);
-};
 
 // 回到 deployment 页面
 const backToDeployment = () => {
   proxy.$router.push({
     name: 'Deployment',
-    query: data.cloud,
+    query: state.cloud,
   });
 };
 </script>
 
 <style>
-.box-card {
-  margin-top: 20px;
-}
-
 .deployee-class .el-main {
   background-color: #f3f4f7;
-}
-
-.app-pixiu-line-describe {
-  margin-left: 100px;
-  margin-top: -18px;
-  font-size: 12px;
-  color: #888888;
-}
-
-.font-container {
-  margin-top: -5px;
-  font-weight: bold;
-  font-size: 16px;
-  vertical-align: middle;
-}
-
-.deploy-pixiu-column {
-  font-size: 13px;
-  color: #606266;
-}
-
-.container-line-describe {
-  margin-left: 90px;
-  font-size: 12px;
-  color: #888888;
 }
 
 .deployee-class .el-radio {

@@ -15,7 +15,7 @@
     <span style="margin-left: 16px; font-size: small; color: #adb0bb">云产品</span>
 
     <!-- <el-menu
-      :default-active="data.activeIndex"
+      :default-active="state.activeIndex"
       active-text-color="#ffd04b"
       class="el-menu-class"
       text-color="#ADB0BB"

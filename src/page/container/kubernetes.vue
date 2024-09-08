@@ -29,18 +29,18 @@
               font-weight: bold;
             "
           >
-            <el-tooltip effect="light" placement="bottom" :content="data.clusterContent">
-              <div class="pixiu-ellipsis-style" style="font-size: 14px">{{ data.aliasName }}</div>
+            <el-tooltip effect="light" placement="bottom" :content="state.clusterContent">
+              <div class="pixiu-ellipsis-style" style="font-size: 14px">{{ state.aliasName }}</div>
             </el-tooltip>
           </div>
         </div>
         <div style="font-size: 13px; margin-left: 45px; margin-top: 5px; color: #909399">
-          集群({{ data.cluster }})
+          集群({{ state.cluster }})
         </div> -->
 
         <!-- <div class="cloud-select-container">
-      <el-select v-model="data.cloud.cluster" style="width: 80%" @change="changeClouds">
-        <el-option v-for="item in data.clouds" :key="item.id" :value="item.id" :label="item.id" />
+      <el-select v-model="state.cloud.cluster" style="width: 80%" @change="changeClouds">
+        <el-option v-for="item in state.clouds" :key="item.id" :value="item.id" :label="item.id" />
       </el-select>
     </div> -->
 
@@ -439,7 +439,7 @@ const praseDataToQuery = (data) => {
 };
 
 // watch(
-//   () => data.cloud.cluster,
+//   () => state.cloud.cluster,
 //   (newValue, oldVlue) => {
 
 //   },

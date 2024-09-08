@@ -447,7 +447,7 @@ const getClusterServices = async () => {
     'kubernetes.io/cluster-service=true',
   ]);
   if (err) {
-    // proxy.$message.error(err.response.data.message);
+    // proxy.$message.error(err.response.state.message);
     return;
   }
 };
@@ -475,7 +475,7 @@ const GetNodesAndMetrics = async () => {
 
   const [metrics, err2] = await getNodeMetrics(data.cluster);
   if (err2) {
-    // proxy.$message.error(err.response.data.message);
+    // proxy.$message.error(err.response.state.message);
     return;
   }
 

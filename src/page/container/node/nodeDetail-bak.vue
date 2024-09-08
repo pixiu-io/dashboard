@@ -394,37 +394,37 @@
       <!-- <el-card class="contend-card-container5">
         <div class="big-world-style" style="margin-bottom: 20px">运行环境</div>
         <div
-          v-if="data.nodeObject.metadata"
+          v-if="state.nodeObject.metadata"
           style="margin-top: 8px; width: 100%; border-radius: 0px"
         >
           <el-form-item label="内核版本" class="detail-card-style-form">
             <span class="detail-card-style-form2" style="margin-left: 63px">
-              {{ data.nodeObject.status.nodeInfo.kernelVersion }}
+              {{ state.nodeObject.status.nodeInfo.kernelVersion }}
             </span>
           </el-form-item>
           <el-form-item label="操作系统" class="detail-card-style-form">
             <span class="detail-card-style-form2" style="margin-left: 63px">
-              {{ data.nodeObject.status.nodeInfo.osImage }}
+              {{ state.nodeObject.status.nodeInfo.osImage }}
             </span>
           </el-form-item>
           <el-form-item label="容器运行时" class="detail-card-style-form">
             <span class="detail-card-style-form2" style="margin-left: 50px">
-              {{ data.nodeObject.status.nodeInfo.containerRuntimeVersion }}
+              {{ state.nodeObject.status.nodeInfo.containerRuntimeVersion }}
             </span>
           </el-form-item>
           <el-form-item label="kubelet版本" class="detail-card-style-form">
             <span class="detail-card-style-form2" style="margin-left: 45px">
-              {{ data.nodeObject.status.nodeInfo.kubeletVersion }}
+              {{ state.nodeObject.status.nodeInfo.kubeletVersion }}
             </span>
           </el-form-item>
           <el-form-item label="kubeProxy版本" class="detail-card-style-form">
             <span class="detail-card-style-form2" style="margin-left: 26px">
-              {{ data.nodeObject.status.nodeInfo.kubeProxyVersion }}
+              {{ state.nodeObject.status.nodeInfo.kubeProxyVersion }}
             </span>
           </el-form-item>
           <el-form-item label="podCIDRs" class="detail-card-style-form">
             <span class="detail-card-style-form2" style="margin-left: 55px">
-              {{ data.nodeObject.spec.podCIDR }}
+              {{ state.nodeObject.spec.podCIDR }}
             </span>
           </el-form-item>
         </div>

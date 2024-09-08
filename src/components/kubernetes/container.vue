@@ -1,6 +1,7 @@
 <template>
   <div style="margin-top: 20px">
     <el-form
+      ref="containerRef"
       :model="state.container"
       label-width="100px"
       status-icon
@@ -124,7 +125,7 @@
   </div>
 </template>
 <script setup>
-import { defineAsyncComponent, onMounted, reactive } from 'vue';
+import { defineAsyncComponent, onMounted, reactive, ref } from 'vue';
 
 const Port = defineAsyncComponent(() => import('./port.vue'));
 const Environment = defineAsyncComponent(() => import('./environment.vue'));
@@ -132,7 +133,11 @@ const HealthCheck = defineAsyncComponent(() => import('./healthCheck.vue'));
 const LifeCheck = defineAsyncComponent(() => import('./lifeCheck.vue'));
 const StartCommand = defineAsyncComponent(() => import('./StartCommand.vue'));
 const Volume = defineAsyncComponent(() => import('./volume.vue'));
+
+const containerRef = ref();
+
 const state = reactive({
+  verified: true,
   container: {
     lifecycle: {
       postStart: {},
@@ -152,6 +157,18 @@ const props = defineProps({
   },
 });
 
+const getContainer = async () => {
+  state.verified = true;
+  if (containerRef.value != null) {
+    await containerRef.value.validate((valid) => {
+      state.verified = valid;
+    });
+  }
+  return [state.container, state.verified];
+};
+defineExpose({
+  getContainer,
+});
 onMounted(() => {
   state.container = JSON.parse(JSON.stringify(props.container));
 });

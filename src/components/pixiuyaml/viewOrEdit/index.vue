@@ -42,7 +42,7 @@
     </template>
     <div style="margin-top: -18px"></div>
     <!--    <div class="custom-radio-group">-->
-    <!--      <el-radio-group v-model="data.fromSize" style="margin-top: 4px">-->
+    <!--      <el-radio-group v-model="state.fromSize" style="margin-top: 4px">-->
     <!--        <el-radio-button label="small">小窗</el-radio-button>-->
     <!--        <el-radio-button label="middle">中等</el-radio-button>-->
     <!--        <el-radio-button label="large">全屏</el-radio-button>-->

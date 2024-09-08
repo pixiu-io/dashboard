@@ -285,11 +285,11 @@
       >
         <span class="deploy-detail-info" style="margin-left: 90px">
           <el-select
-            v-model="data.logLine"
+            v-model="state.logLine"
             style="width: 230px; float: right; margin-right: 10px"
             @change="changeLogLine"
           >
-            <el-option v-for="item in data.logLines" :key="item" :value="item" :label="item" />
+            <el-option v-for="item in state.logLines" :key="item" :value="item" :label="item" />
           </el-select>
         </span>
       </el-form-item> -->
@@ -339,7 +339,7 @@
       >
         <span class="deploy-detail-info" style="margin-left: 90px">
           <el-select
-            v-model="data.namespace"
+            v-model="state.namespace"
             style="width: 230px; float: right; margin-right: 10px"
           >
           </el-select>
@@ -349,7 +349,7 @@
       <el-form-item label="类型" class="deployment-info" style="font-size: 15px; margin-left: 8px">
         <span class="deploy-detail-info" style="margin-left: 120px">
           <el-select
-            v-model="data.workloadType"
+            v-model="state.workloadType"
             style="width: 230px; float: right; margin-right: 10px"
           >
           </el-select>
@@ -357,7 +357,7 @@
       </el-form-item>
       <el-form-item label="名称" class="deployment-info" style="font-size: 15px; margin-left: 8px">
         <span class="deploy-detail-info" style="margin-left: 120px">
-          <el-select v-model="data.name" style="width: 230px; float: right; margin-right: 10px">
+          <el-select v-model="state.name" style="width: 230px; float: right; margin-right: 10px">
           </el-select>
         </span>
       </el-form-item>
