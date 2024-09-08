@@ -1,5 +1,5 @@
 <template>
-  <div style="margin-left: 3%; width: 70%">
+  <div style="margin-left: 3%">
     <div>
       <el-tabs v-model="editableTabsValue" :before-leave="tabChange" @tab-remove="tabRemove">
         <el-tab-pane
@@ -16,7 +16,11 @@
               {{ ' 容器 ' }}
             </span>
           </template>
-          <Container :ref="(el) => setItemRef(el, index)" :container="item" />
+          <Container
+            :ref="(el) => setItemRef(el, index)"
+            :container="item"
+            :volumes="props.volumes"
+          />
         </el-tab-pane>
         <el-tab-pane key="CustomBtn" name="CustomBtn" :closable="false">
           <template #label>
@@ -79,6 +83,10 @@ const state = reactive({
       securityContext: {
         privileged: false,
       },
+      lifecycle: {
+        postStart: {},
+        preStop: {},
+      },
     },
   ],
   container: {
@@ -89,10 +97,19 @@ const state = reactive({
     securityContext: {
       privileged: false,
     },
+    lifecycle: {
+      postStart: {},
+      preStop: {},
+    },
   },
 });
 
-const props = defineProps({});
+const props = defineProps({
+  volumes: {
+    type: Array,
+    required: true,
+  },
+});
 
 defineExpose({});
 </script>

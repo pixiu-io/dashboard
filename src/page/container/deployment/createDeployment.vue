@@ -30,7 +30,7 @@
       <el-card class="create-card-style">
         <el-row :gutter="30">
           <el-col :span="22">
-            <el-tabs v-model="data.activeTable" tab-position="left">
+            <el-tabs v-model="data.activeTable" tab-position="left" :before-leave="aggregateInfo">
               <el-tab-pane label="基础信息">
                 <Meta
                   ref="metaRef"
@@ -39,7 +39,7 @@
                 />
               </el-tab-pane>
               <el-tab-pane label="容器配置">
-                <Containers />
+                <Containers :volumes="data.deploymentForm.spec.template.spec.volumes" />
               </el-tab-pane>
               <el-tab-pane label="高级选项">Role</el-tab-pane>
             </el-tabs>
@@ -150,6 +150,7 @@ const data = reactive({
               imagePullPolicy: 'IfNotPresent',
             },
           ],
+          volumes: [],
         },
       },
     },
