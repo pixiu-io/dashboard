@@ -69,15 +69,36 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="status" label="状态" :formatter="runningFormatter">
+        <!-- <el-table-column prop="status" label="状态" :formatter="runningFormatter">
+        </el-table-column> -->
+
+        <el-table-column
+          prop="spec.template.metadata.labels"
+          label="Labels"
+          :formatter="formatterLabels"
+        />
+
+        <el-table-column
+          prop="spec.selector.matchLabels"
+          label="Selector"
+          :formatter="formatterLabels"
+        >
         </el-table-column>
 
-        <el-table-column prop="status" label="就绪/副本/失败">
+        <!-- <el-table-column prop="status" label="就绪/副本/失败">
           <template #default="scope">
             <a style="color: green">{{ scope.row.status.numberReady }}</a
             >/ <a style="color: green">{{ scope.row.status.updatedNumberScheduled }}</a
             >/
             <a style="color: red">{{ scope.row.status.numberUnavailable || 0 }}</a>
+          </template>
+        </el-table-column> -->
+
+        <el-table-column prop="status" label="实例个数(正常/全部)">
+          <template #default="scope">
+            <div style="display: flex">
+              {{ getReady(scope.row) }}
+            </div>
           </template>
         </el-table-column>
 
@@ -95,12 +116,12 @@
           :formatter="formatterTime"
         />
 
-        <el-table-column
+        <!-- <el-table-column
           label="镜像名称"
           prop="spec.template.spec.containers"
           :formatter="formatterImage"
         >
-        </el-table-column>
+        </el-table-column> -->
 
         <el-table-column fixed="right" label="操作" width="150px">
           <template #default="scope">
@@ -550,6 +571,7 @@ import {
   runningFormatter,
   formatterContainerImage,
   formatString,
+  formatterLabels,
 } from '@/utils/formatter';
 import {
   getEventList,
@@ -688,6 +710,10 @@ const handleStorageChange = (e) => {
       getDaemonsets();
     }
   }
+};
+
+const getReady = (row) => {
+  return row.status.currentNumberScheduled + '/' + row.status.desiredNumberScheduled;
 };
 
 const handleMonitorDrawer = (row) => {
