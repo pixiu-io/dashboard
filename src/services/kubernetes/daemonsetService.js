@@ -43,18 +43,21 @@ export const deleteDaemonset = async (cluster, namespace, name) => {
   return [result, err];
 };
 
-export const getDaemonsetList = async (cluster, namespace) => {
-  let url = `/pixiu/proxy/${cluster}/apis/apps/v1/namespaces/${namespace}/daemonsets`;
+export const getDaemonsetList = async (cluster, namespace, params) => {
+  // let url = `/pixiu/proxy/${cluster}/apis/apps/v1/namespaces/${namespace}/daemonsets`;
+  // if (namespace === '全部空间') {
+  //   url = `/pixiu/proxy/${cluster}/apis/apps/v1/daemonsets`;
+  // }
+  let url = `/pixiu/indexer/clusters/${cluster}/resources/daemonset/namespaces/${namespace}`;
   if (namespace === '全部空间') {
-    url = `/pixiu/proxy/${cluster}/apis/apps/v1/daemonsets`;
+    url = `/pixiu/indexer/clusters/${cluster}/resources/daemonset/namespaces/all_namespaces`;
   }
+
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
       url: url,
-      data: {
-        limit: 500,
-      },
+      data: params,
     }),
   );
   return [result, err];
