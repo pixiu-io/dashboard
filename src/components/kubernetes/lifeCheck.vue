@@ -179,7 +179,7 @@ onMounted(() => {
     }, 100);
   }
 });
-const returnLife = () => {
+const getLife = () => {
   const copyData = JSON.parse(JSON.stringify(state));
   if (state.set) {
     switch (activeName.value) {
@@ -208,7 +208,7 @@ const returnLife = () => {
   return { set: state.set, lifeProbe: copyData.lifeProbe };
 };
 defineExpose({
-  returnLife,
+  getLife,
 });
 const schemeType = [
   {

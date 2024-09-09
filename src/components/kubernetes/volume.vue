@@ -581,17 +581,17 @@ onMounted(() => {
   }
 });
 
-const returnVolumeMounts = () => {
+const getVolumeMounts = () => {
   handleVolumeData();
   return state.volumeMount;
 };
 
-const returnVolumes = () => {
+const getVolumes = () => {
   return state.volumes;
 };
 defineExpose({
-  returnVolumeMounts,
-  returnVolumes,
+  getVolumeMounts,
+  getVolumes,
 });
 </script>
 

@@ -41,6 +41,7 @@
               <el-tab-pane label="容器配置">
                 <Containers
                   ref="containersRef"
+                  :containers="state.deploymentForm.spec.template.spec.containers"
                   :volumes="state.deploymentForm.spec.template.spec.volumes"
                 />
               </el-tab-pane>
@@ -97,7 +98,6 @@ const Containers = defineAsyncComponent(() => import('@/components/kubernetes/co
 const Yaml = defineAsyncComponent(() => import('@/components/kubernetes/yaml.vue'));
 
 const { proxy } = getCurrentInstance();
-const ruleFormRef = ref();
 
 const metaRef = ref();
 const containersRef = ref();
@@ -143,11 +143,99 @@ const state = reactive({
           labels: {},
         },
         spec: {
+          serviceAccount: 'default',
           containers: [
             {
               name: '',
               image: '',
               imagePullPolicy: 'IfNotPresent',
+              securityContext: {
+                privileged: false,
+              },
+              env: [],
+              ports: [],
+              startupProbe: {
+                httpGet: {
+                  httpHeaders: [],
+                  scheme: 'HTTP',
+                  port: 0,
+                  path: '',
+                },
+                tcpSocket: {
+                  host: '',
+                  port: 0,
+                },
+                exec: {
+                  command: [''],
+                },
+              },
+              readinessProbe: {
+                httpGet: {
+                  httpHeaders: [],
+                  scheme: 'HTTP',
+                  port: 0,
+                  path: '',
+                },
+                tcpSocket: {
+                  host: '',
+                  port: 0,
+                },
+                exec: {
+                  command: [''],
+                },
+              },
+              lifecycle: {
+                postStart: {},
+                preStop: {},
+              },
+              volumeMounts: [],
+            },
+          ],
+          initContainers: [
+            {
+              name: '',
+              image: '',
+              imagePullPolicy: 'IfNotPresent',
+              securityContext: {
+                privileged: false,
+              },
+              env: [],
+              ports: [],
+              startupProbe: {
+                httpGet: {
+                  httpHeaders: [],
+                  scheme: 'HTTP',
+                  port: 0,
+                  path: '',
+                },
+                tcpSocket: {
+                  host: '',
+                  port: 0,
+                },
+                exec: {
+                  command: [''],
+                },
+              },
+              readinessProbe: {
+                httpGet: {
+                  httpHeaders: [],
+                  scheme: 'HTTP',
+                  port: 0,
+                  path: '',
+                },
+                tcpSocket: {
+                  host: '',
+                  port: 0,
+                },
+                exec: {
+                  command: [''],
+                },
+              },
+              lifecycle: {
+                postStart: {},
+                preStop: {},
+              },
+              volumeMounts: [],
             },
           ],
           volumes: [],
@@ -188,12 +276,18 @@ const aggregateInfo = async () => {
       JSON.stringify(metadata.labels),
     );
   } else if (state.activeTable === '2') {
-    const [containers, containerVerified] = await containersRef.value.containers();
+    const [containers, initContainers, volumes, containerVerified] =
+      await containersRef.value.getContainers();
+    console.log(containers, initContainers, containerVerified);
     if (!containerVerified) {
       proxy.$message.error('请正确填写');
       return false;
     }
     state.deploymentForm.spec.template.spec.containers = JSON.parse(JSON.stringify(containers));
+    state.deploymentForm.spec.template.spec.initContainers = JSON.parse(
+      JSON.stringify(initContainers),
+    );
+    state.deploymentForm.spec.template.spec.volumes = volumes;
   }
   return true;
 };

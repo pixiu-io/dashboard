@@ -114,7 +114,7 @@ onMounted(() => {
   }
 });
 
-const returnStartCommand = () => {
+const getStartCommand = () => {
   if (!state.set) {
     state.k8s.args = [];
     state.k8s.commands = [];
@@ -130,7 +130,7 @@ const returnStartCommand = () => {
 };
 
 defineExpose({
-  returnStartCommand,
+  getStartCommand,
 });
 </script>
 

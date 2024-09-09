@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, defineAsyncComponent } from 'vue';
+import { ref, reactive, defineAsyncComponent, onMounted } from 'vue';
 import { Plus } from '@element-plus/icons-vue';
 const Container = defineAsyncComponent(() => import('./container.vue'));
 const editableTabsValue = ref(0);
@@ -109,28 +109,57 @@ const props = defineProps({
     type: Array,
     required: true,
   },
+  containers: {
+    type: Array,
+    required: true,
+  },
 });
 
-const containers = async () => {
+const getContainer = async () => {
   state.verified = true;
   const containers = state.containers;
+  const vs = [];
   //遍历itemRefs
   for (let index = 0; index < itemRefs.value.length; index++) {
-    // await itemRefs.value[index].validate((valid) => {
-    //   if (!valid) {
-    //     state.verified = false;
-    //   }
-    // });
     if (!itemRefs.value[index]) continue;
-    const [container, verified] = await itemRefs.value[index].getContainer();
+    const [container, volumes, verified] = await itemRefs.value[index].getContainer();
     state.verified = verified;
     containers[index] = { ...container };
+    vs.push(...volumes);
   }
-  return [state.containers, state.verified];
+  state.volumes = vs;
 };
 
+const getContainers = async () => {
+  await getContainer();
+  let containers = [];
+  let initContainers = [];
+
+  let i = 0;
+  while (i < state.containers.length) {
+    const c = state.containers[i];
+    if (c.isInitContainer) {
+      delete c.isInitContainer;
+      initContainers.push(c);
+    } else {
+      delete c.isInitContainer;
+      containers.push(c);
+    }
+    i++;
+  }
+  return [containers, initContainers, state.volumes, state.verified];
+};
 defineExpose({
-  containers,
+  getContainers,
+});
+
+onMounted(() => {
+  if (props.containers) {
+    state.containers = JSON.parse(JSON.stringify(props.containers));
+  }
+  if (props.volumes) {
+    state.volumes = JSON.parse(JSON.stringify(props.volumes));
+  }
 });
 </script>
 

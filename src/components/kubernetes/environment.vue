@@ -142,12 +142,12 @@ onMounted(() => {
     parseEnv(props.env);
   }
 });
-const returnEnvs = () => {
+const getEnvs = () => {
   return buildEnv();
 };
 
 defineExpose({
-  returnEnvs,
+  getEnvs,
 });
 
 const envType = [

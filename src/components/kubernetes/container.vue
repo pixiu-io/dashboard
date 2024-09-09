@@ -47,29 +47,29 @@
       </div>
       <div class="group">
         <div class="right-label">端口设置</div>
-        <Port :ports="state.container.port" />
+        <Port ref="portRef" :ports="state.container.port" />
       </div>
       <div class="group">
         <div class="right-label">环境变量</div>
-        <Environment :env="state.container.env" />
+        <Environment ref="envRef" :env="state.container.env" />
       </div>
       <div class="group">
         <div class="right-label">健康检查</div>
         <div>
           <HealthCheck
-            ref="lifeCheckRef"
+            ref="liveCheckRef"
             :title="'存活检查'"
             :desribe="'用来检查容器是否正常，不正常则重启容器'"
             :check-data="state.container.livenessProbe"
           />
           <HealthCheck
-            ref="lifeCheckRef"
+            ref="readyCheckRef"
             :title="'就绪检查'"
             :desribe="'用来检查容器是否正常，不正常则重启容器'"
             :check-data="state.container.readinessProbe"
           />
           <HealthCheck
-            ref="lifeCheckRef"
+            ref="startCheckRef"
             :title="'启动探测'"
             :desribe="'用来检查容器是否正常，不正常则重启容器'"
             :check-data="state.container.startupProbe"
@@ -112,13 +112,21 @@
       <div class="group">
         <div class="right-label">启动命令</div>
         <div>
-          <StartCommand :args="state.container.arg" :commands="state.container.commands" />
+          <StartCommand
+            ref="startCmdRef"
+            :args="state.container.arg"
+            :commands="state.container.commands"
+          />
         </div>
       </div>
       <div class="group">
         <div class="right-label">数据卷配置</div>
         <div>
-          <Volume :volumes="props.volumes" :volume-mounts="state.container.volumeMounts" />
+          <VolumeMount
+            ref="volumeMountRef"
+            :volumes="props.volumes"
+            :volume-mounts="state.container.volumeMounts"
+          />
         </div>
       </div>
     </el-form>
@@ -132,17 +140,39 @@ const Environment = defineAsyncComponent(() => import('./environment.vue'));
 const HealthCheck = defineAsyncComponent(() => import('./healthCheck.vue'));
 const LifeCheck = defineAsyncComponent(() => import('./lifeCheck.vue'));
 const StartCommand = defineAsyncComponent(() => import('./StartCommand.vue'));
-const Volume = defineAsyncComponent(() => import('./volume.vue'));
+const VolumeMount = defineAsyncComponent(() => import('./volume.vue'));
 
 const containerRef = ref();
+const portRef = ref();
+const envRef = ref();
+const liveCheckRef = ref();
+const readyCheckRef = ref();
+const startCheckRef = ref();
 
+const preLifeRef = ref();
+const postLifeRef = ref();
+
+const startCmdRef = ref();
+const volumeMountRef = ref();
 const state = reactive({
   verified: true,
   container: {
+    name: '',
+    image: '',
+    imagePullPolicy: 'IfNotPresent',
+    securityContext: {
+      privileged: false,
+    },
+    env: [],
+    ports: [],
+    livenessProbe: {},
+    readinessProbe: {},
+    startupProbe: {},
     lifecycle: {
       postStart: {},
       preStop: {},
     },
+    volumeMounts: [],
   },
 });
 
@@ -157,14 +187,84 @@ const props = defineProps({
   },
 });
 
+// 更新存活检查数据
+const getLivenessData = () => {
+  const { set, probe } = liveCheckRef.value.getHealthCheck();
+  if (set) {
+    state.container.livenessProbe = probe;
+  } else {
+    delete state.container.livenessProbe;
+  }
+};
+
+const getReadinessData = () => {
+  const { set, probe } = readyCheckRef.value.getHealthCheck();
+  if (set) {
+    state.container.readinessProbe = probe;
+  } else {
+    delete state.container.readinessProbe;
+  }
+};
+
+const getStartupData = () => {
+  const { set, probe } = startCheckRef.value.getHealthCheck();
+  if (set) {
+    state.container.startupProbe = probe;
+  } else {
+    delete state.container.startupProbe;
+  }
+};
+
+const getPostStart = () => {
+  const { set, lifeProbe } = postLifeRef.value.getLife();
+  if (set) {
+    state.container.lifecycle = {
+      postStart: lifeProbe,
+    };
+  } else {
+    delete state.container.lifecycle?.postStart;
+  }
+};
+
+const getPreStop = () => {
+  const { set, lifeProbe } = preLifeRef.value.getLife();
+  if (set) {
+    state.container.lifecycle = {
+      preStop: lifeProbe,
+    };
+  } else {
+    delete state.container.lifecycle?.preStop;
+  }
+};
+
+const getCommands = () => {
+  const { set, commands, args } = startCmdRef.value.getStartCommand();
+  if (set) {
+    state.container.command = commands;
+    state.container.args = args;
+  } else {
+    delete state.container.command;
+    delete state.container.args;
+  }
+};
 const getContainer = async () => {
   state.verified = true;
+
+  state.container.ports = portRef.value.getPorts();
+  state.container.env = envRef.value.getEnvs();
+  getLivenessData();
+  getStartupData();
+  getReadinessData();
+  getPreStop();
+  getPostStart();
+  getCommands();
+  state.container.volumeMounts = volumeMountRef.value.getVolumeMounts();
   if (containerRef.value != null) {
     await containerRef.value.validate((valid) => {
       state.verified = valid;
     });
   }
-  return [state.container, state.verified];
+  return [state.container, volumeMountRef.value.getVolumes(), state.verified];
 };
 defineExpose({
   getContainer,

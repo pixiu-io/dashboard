@@ -71,12 +71,12 @@ onMounted(() => {
   }
 });
 
-const returnPorts = () => {
+const getPorts = () => {
   return state.ports;
 };
 
 defineExpose({
-  returnPorts,
+  getPorts,
 });
 
 const protocolType = [

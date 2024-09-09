@@ -296,7 +296,7 @@ onMounted(() => {
   }
 });
 
-const returnHealthCheck = () => {
+const getHealthCheck = () => {
   const copyData = JSON.parse(JSON.stringify(state));
   switch (activeName.value) {
     case 'httpGet': {
@@ -319,7 +319,7 @@ const returnHealthCheck = () => {
 };
 
 defineExpose({
-  returnHealthCheck,
+  getHealthCheck,
 });
 
 const schemeType = [
