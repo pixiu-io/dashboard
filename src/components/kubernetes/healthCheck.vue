@@ -32,9 +32,14 @@
     </el-form-item>
     <el-tabs v-if="state.set" v-show="state.show" v-model="activeName" style="margin-left: 100px">
       <el-tab-pane label="Http模式" name="httpGet">
-        <el-form v-show="state.probe.httpGet" :model="state.probe.httpGet" label-width="130px">
+        <el-form
+          v-show="state.probe.httpGet"
+          ref="httpGetRef"
+          :model="state.probe.httpGet"
+          label-width="130px"
+        >
           <el-form-item label="请求方式" prop="scheme">
-            <el-select v-model="state.probe.httpGet.scheme">
+            <el-select v-model="state.probe.httpGet.scheme" style="width: 200px">
               <el-option
                 v-for="item in schemeType"
                 :key="item.label"
@@ -53,7 +58,7 @@
               style="width: 200px"
             />
           </el-form-item>
-          <el-form-item label="Http头">
+          <el-form-item label="Http头" style="margin-bottom: 10px">
             <el-button
               :icon="CirclePlusFilled"
               type="primary"
@@ -65,14 +70,23 @@
             >
           </el-form-item>
           <el-form-item v-for="(item, index) in state.probe.httpGet.httpHeaders" :key="index">
-            <template #label> </template>
-            <el-input v-model="item.name" placeholder="key" size="small" style="width: 100px" />
-            <el-input
-              v-model="item.value"
-              placeholder="value"
-              size="small"
-              style="width: 100px; margin-left: 5px"
-            />
+            <el-form-item
+              :prop="'httpHeaders[' + index + '].name'"
+              :rules="[{ required: true, message: '标签key不能为空', trigger: 'blur' }]"
+            >
+              <el-input v-model="item.name" placeholder="key" size="small" style="width: 100px" />
+            </el-form-item>
+            <el-form-item
+              :prop="'httpHeaders[' + index + '].value'"
+              :rules="[{ required: true, message: '标签value不能为空', trigger: 'blur' }]"
+            >
+              <el-input
+                v-model="item.value"
+                placeholder="value"
+                size="small"
+                style="width: 100px; margin-left: 5px"
+              />
+            </el-form-item>
             <el-button
               :icon="RemoveFilled"
               type="primary"
@@ -171,8 +185,19 @@
         </el-form>
       </el-tab-pane>
       <el-tab-pane label="Exec模式" name="exec">
-        <el-form v-show="state.probe.exec" :model="state.probe.exec" label-width="120px">
-          <el-form-item label="命令">
+        <el-form
+          v-show="state.probe.exec"
+          ref="execRef"
+          status-icon
+          require-asterisk-position="right"
+          :model="state.probe.exec"
+          label-width="120px"
+        >
+          <el-form-item
+            label="命令"
+            prop="command"
+            :rules="[{ required: true, message: '不能为空', trigger: 'blur' }]"
+          >
             <el-input v-model="state.probe.exec.command" size="default" style="width: 200px" />
           </el-form-item>
           <el-form-item label="延迟探测时间(s)">
@@ -222,9 +247,10 @@ import { onMounted, reactive, ref } from 'vue';
 import { CaretBottom, CaretTop } from '@element-plus/icons-vue';
 import { CirclePlusFilled, RemoveFilled } from '@element-plus/icons-vue';
 import { isObjectValueEqual } from '@/utils/utils';
-
+const httpGetRef = ref();
+const execRef = ref();
 const state = reactive({
-  loadFromParent: false,
+  verified: false,
   set: false,
   show: true,
   probe: {
@@ -265,7 +291,7 @@ const props = defineProps({
 });
 
 onMounted(() => {
-  if (props.checkData) {
+  if (!isObjectValueEqual(props.checkData, {})) {
     state.set = true;
     const dataCopy = JSON.parse(JSON.stringify(props.checkData));
     if (dataCopy.httpGet && !isObjectValueEqual(dataCopy.httpGet, state.probe.httpGet)) {
@@ -296,10 +322,18 @@ onMounted(() => {
   }
 });
 
-const getHealthCheck = () => {
+const getHealthCheck = async () => {
+  state.verified = true;
   const copyData = JSON.parse(JSON.stringify(state));
   switch (activeName.value) {
     case 'httpGet': {
+      if (httpGetRef.value) {
+        await httpGetRef.value.validate((valid) => {
+          if (state.verified && !valid) {
+            state.verified = false;
+          }
+        });
+      }
       delete copyData.probe.tcpSocket;
       delete copyData.probe.exec;
       break;
@@ -310,12 +344,19 @@ const getHealthCheck = () => {
       break;
     }
     case 'exec': {
+      if (execRef.value) {
+        await execRef.value.validate((valid) => {
+          if (state.verified && !valid) {
+            state.verified = false;
+          }
+        });
+      }
       delete copyData.probe.httpGet;
       delete copyData.probe.tcpSocket;
       break;
     }
   }
-  return { set: state.set, probe: copyData.probe };
+  return { set: state.set, probe: copyData.probe, verified: state.verified };
 };
 
 defineExpose({
@@ -334,8 +375,4 @@ const schemeType = [
 ];
 </script>
 
-<style scoped>
-.el-form-item {
-  margin-bottom: 10px;
-}
-</style>
+<style scoped></style>

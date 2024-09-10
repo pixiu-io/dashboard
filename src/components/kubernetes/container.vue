@@ -47,7 +47,7 @@
       </div>
       <div class="group">
         <div class="right-label">端口设置</div>
-        <Port ref="portRef" :ports="state.container.port" />
+        <Port ref="portRef" :ports="state.container.ports" />
       </div>
       <div class="group">
         <div class="right-label">环境变量</div>
@@ -114,8 +114,8 @@
         <div>
           <StartCommand
             ref="startCmdRef"
-            :args="state.container.arg"
-            :commands="state.container.commands"
+            :args="state.container.args"
+            :commands="state.container.command"
           />
         </div>
       </div>
@@ -172,6 +172,8 @@ const state = reactive({
       postStart: {},
       preStop: {},
     },
+    command: [],
+    args: [],
     volumeMounts: [],
   },
 });
@@ -187,9 +189,15 @@ const props = defineProps({
   },
 });
 
+const getPorts = async () => {
+  const [ports, verified] = await portRef.value.getPorts();
+  if (state.verified && !verified) state.verified = false;
+  state.container.ports = ports;
+};
 // 更新存活检查数据
-const getLivenessData = () => {
-  const { set, probe } = liveCheckRef.value.getHealthCheck();
+const getLivenessData = async () => {
+  const { set, probe, verified } = await liveCheckRef.value.getHealthCheck();
+  if (state.verified && !verified) state.verified = false;
   if (set) {
     state.container.livenessProbe = probe;
   } else {
@@ -197,8 +205,9 @@ const getLivenessData = () => {
   }
 };
 
-const getReadinessData = () => {
-  const { set, probe } = readyCheckRef.value.getHealthCheck();
+const getReadinessData = async () => {
+  const { set, probe, verified } = await readyCheckRef.value.getHealthCheck();
+  if (state.verified && !verified) state.verified = false;
   if (set) {
     state.container.readinessProbe = probe;
   } else {
@@ -206,8 +215,9 @@ const getReadinessData = () => {
   }
 };
 
-const getStartupData = () => {
-  const { set, probe } = startCheckRef.value.getHealthCheck();
+const getStartupData = async () => {
+  const { set, probe, verified } = await startCheckRef.value.getHealthCheck();
+  if (state.verified && !verified) state.verified = false;
   if (set) {
     state.container.startupProbe = probe;
   } else {
@@ -215,8 +225,9 @@ const getStartupData = () => {
   }
 };
 
-const getPostStart = () => {
-  const { set, lifeProbe } = postLifeRef.value.getLife();
+const getPostStart = async () => {
+  const { set, lifeProbe, verified } = await postLifeRef.value.getLife();
+  if (state.verified && !verified) state.verified = false;
   if (set) {
     state.container.lifecycle = {
       postStart: lifeProbe,
@@ -226,8 +237,9 @@ const getPostStart = () => {
   }
 };
 
-const getPreStop = () => {
-  const { set, lifeProbe } = preLifeRef.value.getLife();
+const getPreStop = async () => {
+  const { set, lifeProbe, verified } = await preLifeRef.value.getLife();
+  if (state.verified && !verified) state.verified = false;
   if (set) {
     state.container.lifecycle = {
       preStop: lifeProbe,
@@ -247,21 +259,22 @@ const getCommands = () => {
     delete state.container.args;
   }
 };
+
 const getContainer = async () => {
   state.verified = true;
 
-  state.container.ports = portRef.value.getPorts();
+  await getPorts();
   state.container.env = envRef.value.getEnvs();
-  getLivenessData();
-  getStartupData();
-  getReadinessData();
-  getPreStop();
-  getPostStart();
+  await getLivenessData();
+  await getStartupData();
+  await getReadinessData();
+  await getPreStop();
+  await getPostStart();
   getCommands();
   state.container.volumeMounts = volumeMountRef.value.getVolumeMounts();
   if (containerRef.value != null) {
     await containerRef.value.validate((valid) => {
-      state.verified = valid;
+      if (state.verified && !valid) state.verified = false;
     });
   }
   return [state.container, volumeMountRef.value.getVolumes(), state.verified];
@@ -278,6 +291,7 @@ onMounted(() => {
 .group {
   display: flex;
   margin-bottom: 10px;
+  background-color: rgb(248, 247, 247);
 }
 
 .group:hover {
@@ -294,7 +308,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-items: center;
-  margin-right: 18px;
+  margin-right: 42px;
   width: 28px;
   font-size: 15px;
   text-align: center;

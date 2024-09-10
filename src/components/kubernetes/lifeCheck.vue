@@ -27,8 +27,11 @@
       <el-tab-pane v-if="state.lifeProbe.httpGet" label="Http模式" name="httpGet">
         <el-form
           v-show="state.lifeProbe.httpGet"
+          ref="httpRef"
           :model="state.lifeProbe.httpGet"
           label-width="120px"
+          require-asterisk-position="right"
+          status-icon
         >
           <el-form-item label="请求方式" prop="scheme">
             <el-select v-model="state.lifeProbe.httpGet.scheme" size="small">
@@ -43,9 +46,15 @@
           <el-form-item label="路径">
             <el-input v-model="state.lifeProbe.httpGet.path" size="small" style="width: 190px" />
           </el-form-item>
-          <el-form-item label="端口">
-            <el-input
+          <el-form-item
+            label="端口"
+            prop="port"
+            :rules="[{ required: true, message: '端口不能为空', trigger: 'blur' }]"
+          >
+            <el-input-number
               v-model.number="state.lifeProbe.httpGet.port"
+              :min="80"
+              :max="65535"
               size="small"
               style="width: 190px"
             />
@@ -82,8 +91,11 @@
       <el-tab-pane v-if="state.lifeProbe.tcpSocket" label="TCP模式" name="tcpSocket">
         <el-form
           v-show="state.lifeProbe.tcpSocket"
+          ref="tcpRef"
           :model="state.lifeProbe.tcpSocket"
           label-width="120px"
+          require-asterisk-position="right"
+          status-icon
         >
           <el-form-item label="请求地址">
             <el-input
@@ -93,18 +105,35 @@
               style="width: 190px"
             />
           </el-form-item>
-          <el-form-item label="端口">
-            <el-input
+          <el-form-item
+            label="端口"
+            prop="port"
+            :rules="[{ required: true, message: '端口不能为空', trigger: 'blur' }]"
+          >
+            <el-input-number
               v-model.number="state.lifeProbe.tcpSocket.port"
               size="small"
+              :min="80"
+              :max="65535"
               style="width: 190px"
             />
           </el-form-item>
         </el-form>
       </el-tab-pane>
       <el-tab-pane label="Exec模式" name="exec">
-        <el-form v-show="state.lifeProbe.exec" :model="state.lifeProbe.exec" label-width="120px">
-          <el-form-item label="命令">
+        <el-form
+          v-show="state.lifeProbe.exec"
+          ref="execRef"
+          :model="state"
+          label-width="120px"
+          require-asterisk-position="right"
+          status-icon
+        >
+          <el-form-item
+            label="命令"
+            prop="command"
+            :rules="[{ required: true, message: '值不能为空', trigger: 'blur' }]"
+          >
             <el-input v-model="state.command" size="small" style="width: 190px" />
           </el-form-item>
         </el-form>
@@ -118,9 +147,12 @@ import { onMounted, reactive, ref } from 'vue';
 import { isObjectValueEqual } from '@/utils/utils';
 import { CirclePlusFilled, RemoveFilled } from '@element-plus/icons-vue';
 import { CaretBottom, CaretTop } from '@element-plus/icons-vue';
+const execRef = ref();
+const httpRef = ref();
+const tcpRef = ref();
 
 const state = reactive({
-  loadFromParent: false,
+  verified: true,
   set: false,
   show: true,
   command: '',
@@ -128,12 +160,12 @@ const state = reactive({
     httpGet: {
       httpHeaders: [],
       scheme: 'HTTP',
-      port: 0,
+      port: 80,
       path: '',
     },
     tcpSocket: {
       host: '',
-      port: 0,
+      port: 80,
     },
     exec: {
       command: [''],
@@ -149,11 +181,7 @@ const props = defineProps({
 });
 
 onMounted(() => {
-  if (
-    props.lifeData &&
-    Object.keys(props.lifeData).length != 0 &&
-    !isObjectValueEqual(props.lifeData, state.lifeProbe)
-  ) {
+  if (!isObjectValueEqual(props.lifeData, {})) {
     state.set = true;
     const dataCopy = JSON.parse(JSON.stringify(props.lifeData));
     if (dataCopy.httpGet && !isObjectValueEqual(dataCopy.httpGet, state.lifeProbe.httpGet)) {
@@ -179,21 +207,43 @@ onMounted(() => {
     }, 100);
   }
 });
-const getLife = () => {
+const getLife = async () => {
+  state.verified = true;
   const copyData = JSON.parse(JSON.stringify(state));
   if (state.set) {
     switch (activeName.value) {
       case 'httpGet': {
+        if (httpRef.value) {
+          await httpRef.value.validate((valid) => {
+            if (state.verified && !valid) {
+              state.verified = false;
+            }
+          });
+        }
         delete copyData.lifeProbe.tcpSocket;
         delete copyData.lifeProbe.exec;
         break;
       }
       case 'tcpSocket': {
+        if (tcpRef.value) {
+          await tcpRef.value.validate((valid) => {
+            if (state.verified && !valid) {
+              state.verified = false;
+            }
+          });
+        }
         delete copyData.lifeProbe.httpGet;
         delete copyData.lifeProbe.exec;
         break;
       }
       case 'exec': {
+        if (execRef.value) {
+          await execRef.value.validate((valid) => {
+            if (state.verified && !valid) {
+              state.verified = false;
+            }
+          });
+        }
         if (state.command.indexOf(',')) {
           copyData.lifeProbe.exec.command = state.command.split(',');
         } else {
@@ -205,7 +255,7 @@ const getLife = () => {
       }
     }
   }
-  return { set: state.set, lifeProbe: copyData.lifeProbe };
+  return { set: state.set, lifeProbe: copyData.lifeProbe, verified: state.verified };
 };
 defineExpose({
   getLife,
@@ -222,4 +272,8 @@ const schemeType = [
 ];
 </script>
 
-<style scoped></style>
+<style scoped>
+.el-form-item {
+  margin-bottom: 15px;
+}
+</style>

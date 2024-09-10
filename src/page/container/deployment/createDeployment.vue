@@ -154,40 +154,15 @@ const state = reactive({
               },
               env: [],
               ports: [],
-              startupProbe: {
-                httpGet: {
-                  httpHeaders: [],
-                  scheme: 'HTTP',
-                  port: 0,
-                  path: '',
-                },
-                tcpSocket: {
-                  host: '',
-                  port: 0,
-                },
-                exec: {
-                  command: [''],
-                },
-              },
-              readinessProbe: {
-                httpGet: {
-                  httpHeaders: [],
-                  scheme: 'HTTP',
-                  port: 0,
-                  path: '',
-                },
-                tcpSocket: {
-                  host: '',
-                  port: 0,
-                },
-                exec: {
-                  command: [''],
-                },
-              },
+              livenessProbe: {},
+              startupProbe: {},
+              readinessProbe: {},
               lifecycle: {
                 postStart: {},
                 preStop: {},
               },
+              command: [],
+              args: [],
               volumeMounts: [],
             },
           ],
