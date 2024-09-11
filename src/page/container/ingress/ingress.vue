@@ -118,6 +118,12 @@
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
+                    @click="handleWhiteListDialog(scope.row)"
+                  >
+                    白名单
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
                     @click="handleDeleteDialog(scope.row)"
                   >
                     删除
@@ -151,6 +157,48 @@
     @confirm="confirm"
     @cancel="cancel"
   ></pixiuDialog>
+
+  <el-dialog
+    :model-value="data.whiteListData.close"
+    style="color: #000000; font: 14px"
+    width="720px"
+    align-center
+    center
+    @close="cancelWhiteList"
+  >
+    <template #header>
+      <div
+        style="
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+          margin-top: 5px;
+          font-size: 14.5px;
+          color: #191919;
+        "
+      >
+        白名单
+      </div>
+    </template>
+
+    <el-card class="app-docs" style="margin-top: -5px; margin-left: 5px; height: 40px">
+      <el-icon
+        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+        ><WarningFilled
+      /></el-icon>
+      <div style="vertical-align: middle; margin-top: -40px">补充点 ingress 白名单的文案</div>
+    </el-card>
+
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-delete-cancel-button" @click="cancelWhiteList">取消</el-button>
+        <el-button type="primary" class="pixiu-delete-confirm-button" @click="confirmWhiteList"
+          >确认</el-button
+        >
+      </span>
+      <div style="margin-bottom: 10px" />
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="jsx">
@@ -212,6 +260,13 @@ const data = reactive({
     objectName: 'Ingress',
     deleteName: '',
   },
+
+  // 白名单数据
+  whiteListData: {
+    close: false,
+    enable: false,
+    allowIps: [],
+  },
 });
 
 onMounted(() => {
@@ -244,6 +299,23 @@ const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.metadata.name;
 };
+
+// 白名单开始
+const handleWhiteListDialog = (row) => {
+  data.whiteListData.close = true;
+};
+
+const cancelWhiteList = () => {
+  data.whiteListData.cancel = false;
+  setTimeout(() => {
+    data.whiteListData.enable = false;
+    data.whiteListData.allowIps = [];
+  }, 100);
+};
+
+const confirmWhiteList = () => {};
+
+// 白名单结束
 
 const confirm = async () => {
   const [result, err] = await deleteIngress(
