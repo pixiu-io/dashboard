@@ -76,17 +76,17 @@ const rules = {
 const getResult = async () => {
   state.verified = true;
   await metaRef.value.validate((valid) => {
-    if (!valid) {
+    if (state.verified && !valid) {
       state.verified = false;
     }
   });
   await labelRef.value.labelRef.validate((valid) => {
-    if (!valid) {
+    if (state.verified && !valid) {
       state.verified = false;
     }
   });
   await annotationRef.value.labelRef.validate((valid) => {
-    if (!valid) {
+    if (state.verified && !valid) {
       state.verified = false;
     }
   });

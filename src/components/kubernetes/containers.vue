@@ -33,11 +33,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, defineAsyncComponent, onMounted } from 'vue';
+import { ref, reactive, defineAsyncComponent, onMounted, getCurrentInstance } from 'vue';
 import { Plus } from '@element-plus/icons-vue';
 const Container = defineAsyncComponent(() => import('./container.vue'));
 const editableTabsValue = ref(0);
 const itemRefs = ref([]);
+const { proxy } = getCurrentInstance();
 
 const setItemRef = (el, index) => {
   if (el) {
@@ -51,13 +52,19 @@ const tabChange = (currentName) => {
   }
 };
 
-const tabAdd = () => {
+const tabAdd = async () => {
+  const [containers, initContainers, volumes, containerVerified] = await getContainers();
+  if (!containerVerified) {
+    proxy.$message.error('请正确填写字段');
+    return;
+  }
   const newTabName = state.containers.length;
-  state.containers.push(state.container);
+  state.containers.push(container);
   editableTabsValue.value = newTabName;
 };
 
 const tabRemove = (tabPaneName) => {
+  console.log('----t', tabPaneName);
   if (state.containers.length <= 1) {
     return false;
   }
@@ -83,27 +90,42 @@ const state = reactive({
       securityContext: {
         privileged: false,
       },
+      env: [],
+      ports: [],
+      livenessProbe: {},
+      startupProbe: {},
+      readinessProbe: {},
       lifecycle: {
         postStart: {},
         preStop: {},
       },
+      command: [],
+      args: [],
+      volumeMounts: [],
     },
   ],
-  container: {
-    isInitContainer: false,
-    name: '',
-    image: '',
-    imagePullPolicy: 'IfNotPresent',
-    securityContext: {
-      privileged: false,
-    },
-    lifecycle: {
-      postStart: {},
-      preStop: {},
-    },
-  },
 });
-
+const container = {
+  isInitContainer: false,
+  name: '',
+  image: '',
+  imagePullPolicy: 'IfNotPresent',
+  securityContext: {
+    privileged: false,
+  },
+  env: [],
+  ports: [],
+  livenessProbe: {},
+  startupProbe: {},
+  readinessProbe: {},
+  lifecycle: {
+    postStart: {},
+    preStop: {},
+  },
+  command: [],
+  args: [],
+  volumeMounts: [],
+};
 const props = defineProps({
   volumes: {
     type: Array,
@@ -111,6 +133,11 @@ const props = defineProps({
   },
   containers: {
     type: Array,
+    required: true,
+  },
+  initContainers: {
+    type: Array,
+    default: () => [],
     required: true,
   },
 });
@@ -123,7 +150,9 @@ const getContainer = async () => {
   for (let index = 0; index < itemRefs.value.length; index++) {
     if (!itemRefs.value[index]) continue;
     const [container, volumes, verified] = await itemRefs.value[index].getContainer();
-    state.verified = verified;
+    if (state.verified && !verified) {
+      state.verified = false;
+    }
     containers[index] = { ...container };
     vs.push(...volumes);
   }
@@ -154,10 +183,23 @@ defineExpose({
 });
 
 onMounted(() => {
-  if (props.containers) {
-    state.containers = JSON.parse(JSON.stringify(props.containers));
+  let containers = [];
+  if (props.initContainers.length > 0) {
+    const tmp = JSON.parse(JSON.stringify(props.initContainers));
+    tmp.forEach((item) => {
+      item.isInitContainer = true;
+    });
+    containers.push(...tmp);
   }
-  if (props.volumes) {
+  if (props.containers.length > 0) {
+    const tmp = JSON.parse(JSON.stringify(props.containers));
+    tmp.forEach((item) => {
+      item.isInitContainer = false;
+    });
+    containers.push(...tmp);
+  }
+  state.containers = containers;
+  if (props.volumes.length > 0) {
     state.volumes = JSON.parse(JSON.stringify(props.volumes));
   }
 });

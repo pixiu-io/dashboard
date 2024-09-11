@@ -30,7 +30,7 @@
       <el-card class="create-card-style">
         <el-row :gutter="30">
           <el-col :span="22">
-            <el-tabs v-model="state.activeTable" tab-position="left" :before-leave="aggregateInfo">
+            <el-tabs v-model="state.activeTable" tab-position="left">
               <el-tab-pane label="基础信息">
                 <Meta
                   ref="metaRef"
@@ -42,6 +42,7 @@
                 <Containers
                   ref="containersRef"
                   :containers="state.deploymentForm.spec.template.spec.containers"
+                  :init-containers="state.deploymentForm.spec.template.spec.initContainers"
                   :volumes="state.deploymentForm.spec.template.spec.volumes"
                 />
               </el-tab-pane>
@@ -166,53 +167,7 @@ const state = reactive({
               volumeMounts: [],
             },
           ],
-          initContainers: [
-            {
-              name: '',
-              image: '',
-              imagePullPolicy: 'IfNotPresent',
-              securityContext: {
-                privileged: false,
-              },
-              env: [],
-              ports: [],
-              startupProbe: {
-                httpGet: {
-                  httpHeaders: [],
-                  scheme: 'HTTP',
-                  port: 0,
-                  path: '',
-                },
-                tcpSocket: {
-                  host: '',
-                  port: 0,
-                },
-                exec: {
-                  command: [''],
-                },
-              },
-              readinessProbe: {
-                httpGet: {
-                  httpHeaders: [],
-                  scheme: 'HTTP',
-                  port: 0,
-                  path: '',
-                },
-                tcpSocket: {
-                  host: '',
-                  port: 0,
-                },
-                exec: {
-                  command: [''],
-                },
-              },
-              lifecycle: {
-                postStart: {},
-                preStop: {},
-              },
-              volumeMounts: [],
-            },
-          ],
+          initContainers: [],
           volumes: [],
         },
       },
@@ -220,31 +175,21 @@ const state = reactive({
   },
 });
 const handleNext = async () => {
-  if (!(await aggregateInfo())) {
-    return;
+  if (await aggregateInfo()) {
+    state.activeTable = Math.min(2, parseInt(state.activeTable, 10) + 1).toString();
   }
-  let active = parseInt(state.activeTable, 10);
-  if (active === 2) {
-    return;
-  }
-  active = active + 1;
-  state.activeTable = active + '';
 };
 const handlePre = () => {
-  let active = parseInt(state.activeTable, 10);
-  if (active >= 1) {
-    active = active - 1;
-  }
-  state.activeTable = active + '';
+  state.activeTable = Math.max(0, parseInt(state.activeTable, 10) - 1).toString();
 };
 const aggregateInfo = async () => {
   if (state.activeTable === '0') {
     const [metadata, replicas, verified] = await metaRef.value.getResult();
     if (!verified) {
-      proxy.$message.error('请正确填写');
+      proxy.$message.error('请正确填写必填项');
       return false;
     }
-    state.deploymentForm.metadata = metadata;
+    state.deploymentForm.metadata = { ...metadata };
     state.deploymentForm.spec.replicas = replicas;
     state.deploymentForm.spec.selector.matchLabels = JSON.parse(JSON.stringify(metadata.labels));
     state.deploymentForm.spec.template.metadata.labels = JSON.parse(
@@ -253,9 +198,8 @@ const aggregateInfo = async () => {
   } else if (state.activeTable === '2') {
     const [containers, initContainers, volumes, containerVerified] =
       await containersRef.value.getContainers();
-    console.log(containers, initContainers, containerVerified);
     if (!containerVerified) {
-      proxy.$message.error('请正确填写');
+      proxy.$message.error('请正确填写必填项');
       return false;
     }
     state.deploymentForm.spec.template.spec.containers = JSON.parse(JSON.stringify(containers));

@@ -278,7 +278,7 @@ const activeName = ref('httpGet');
 const props = defineProps({
   checkData: {
     type: Object,
-    required: true,
+    default: () => {},
   },
   title: {
     type: String,
@@ -292,6 +292,7 @@ const props = defineProps({
 
 onMounted(() => {
   if (!isObjectValueEqual(props.checkData, {})) {
+    console.log('----', props.checkData);
     state.set = true;
     const dataCopy = JSON.parse(JSON.stringify(props.checkData));
     if (dataCopy.httpGet && !isObjectValueEqual(dataCopy.httpGet, state.probe.httpGet)) {

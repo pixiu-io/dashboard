@@ -10,7 +10,7 @@
     >
       <div class="group">
         <div class="right-label">基础信息</div>
-        <div>
+        <div class="context">
           <el-form-item label="初始化容器">
             <el-checkbox
               v-model="state.container.isInitContainer"
@@ -47,15 +47,19 @@
       </div>
       <div class="group">
         <div class="right-label">端口设置</div>
-        <Port ref="portRef" :ports="state.container.ports" />
+        <div class="context">
+          <Port ref="portRef" :ports="state.container.ports" />
+        </div>
       </div>
       <div class="group">
         <div class="right-label">环境变量</div>
-        <Environment ref="envRef" :env="state.container.env" />
+        <div class="context">
+          <Environment ref="envRef" :env="state.container.env" />
+        </div>
       </div>
-      <div class="group">
+      <div v-if="!state.container.isInitContainer" class="group">
         <div class="right-label">健康检查</div>
-        <div>
+        <div class="context">
           <HealthCheck
             ref="liveCheckRef"
             :title="'存活检查'"
@@ -76,9 +80,9 @@
           />
         </div>
       </div>
-      <div class="group">
+      <div v-if="!state.container.isInitContainer" class="group">
         <div class="right-label">生命周期</div>
-        <div>
+        <div class="context">
           <el-form-item label="启动前：">
             <template #label>
               <el-tooltip
@@ -111,7 +115,7 @@
       </div>
       <div class="group">
         <div class="right-label">启动命令</div>
-        <div>
+        <div class="context">
           <StartCommand
             ref="startCmdRef"
             :args="state.container.args"
@@ -121,7 +125,7 @@
       </div>
       <div class="group">
         <div class="right-label">数据卷配置</div>
-        <div>
+        <div class="context">
           <VolumeMount
             ref="volumeMountRef"
             :volumes="props.volumes"
@@ -134,6 +138,7 @@
 </template>
 <script setup>
 import { defineAsyncComponent, onMounted, reactive, ref } from 'vue';
+import { isObjectValueEqual } from '@/utils/utils';
 
 const Port = defineAsyncComponent(() => import('./port.vue'));
 const Environment = defineAsyncComponent(() => import('./environment.vue'));
@@ -157,6 +162,7 @@ const volumeMountRef = ref();
 const state = reactive({
   verified: true,
   container: {
+    isInitContainer: false,
     name: '',
     image: '',
     imagePullPolicy: 'IfNotPresent',
@@ -190,12 +196,14 @@ const props = defineProps({
 });
 
 const getPorts = async () => {
+  if (!portRef.value) return;
   const [ports, verified] = await portRef.value.getPorts();
   if (state.verified && !verified) state.verified = false;
   state.container.ports = ports;
 };
 // 更新存活检查数据
 const getLivenessData = async () => {
+  if (!liveCheckRef.value) return;
   const { set, probe, verified } = await liveCheckRef.value.getHealthCheck();
   if (state.verified && !verified) state.verified = false;
   if (set) {
@@ -206,6 +214,7 @@ const getLivenessData = async () => {
 };
 
 const getReadinessData = async () => {
+  if (!readyCheckRef.value) return;
   const { set, probe, verified } = await readyCheckRef.value.getHealthCheck();
   if (state.verified && !verified) state.verified = false;
   if (set) {
@@ -216,6 +225,7 @@ const getReadinessData = async () => {
 };
 
 const getStartupData = async () => {
+  if (!startCheckRef.value) return;
   const { set, probe, verified } = await startCheckRef.value.getHealthCheck();
   if (state.verified && !verified) state.verified = false;
   if (set) {
@@ -226,6 +236,7 @@ const getStartupData = async () => {
 };
 
 const getPostStart = async () => {
+  if (!postLifeRef.value) return;
   const { set, lifeProbe, verified } = await postLifeRef.value.getLife();
   if (state.verified && !verified) state.verified = false;
   if (set) {
@@ -233,11 +244,12 @@ const getPostStart = async () => {
       postStart: lifeProbe,
     };
   } else {
-    delete state.container.lifecycle?.postStart;
+    delete state.container.lifecycle.postStart;
   }
 };
 
 const getPreStop = async () => {
+  if (!preLifeRef.value) return;
   const { set, lifeProbe, verified } = await preLifeRef.value.getLife();
   if (state.verified && !verified) state.verified = false;
   if (set) {
@@ -245,12 +257,14 @@ const getPreStop = async () => {
       preStop: lifeProbe,
     };
   } else {
-    delete state.container.lifecycle?.preStop;
+    delete state.container.lifecycle.preStop;
   }
 };
 
-const getCommands = () => {
-  const { set, commands, args } = startCmdRef.value.getStartCommand();
+const getCommands = async () => {
+  if (!startCmdRef.value) return;
+  const { set, commands, args, verified } = await startCmdRef.value.getStartCommand();
+  if (state.verified && !verified) state.verified = false;
   if (set) {
     state.container.command = commands;
     state.container.args = args;
@@ -262,22 +276,33 @@ const getCommands = () => {
 
 const getContainer = async () => {
   state.verified = true;
-
   await getPorts();
-  state.container.env = envRef.value.getEnvs();
+  if (envRef.value) state.container.env = envRef.value.getEnvs();
   await getLivenessData();
   await getStartupData();
   await getReadinessData();
   await getPreStop();
   await getPostStart();
-  getCommands();
-  state.container.volumeMounts = volumeMountRef.value.getVolumeMounts();
-  if (containerRef.value != null) {
+  await getCommands();
+
+  if (volumeMountRef.value) state.container.volumeMounts = volumeMountRef.value.getVolumeMounts();
+  if (containerRef.value) {
     await containerRef.value.validate((valid) => {
       if (state.verified && !valid) state.verified = false;
     });
   }
-  return [state.container, volumeMountRef.value.getVolumes(), state.verified];
+  let volumes = [];
+  if (volumeMountRef.value) {
+    volumes = volumeMountRef.value.getVolumes();
+  }
+  // TODO 优化
+  if (state.container.isInitContainer) {
+    delete state.container.lifecycle;
+    delete state.container.livenessProbe;
+    delete state.container.readinessProbe;
+    delete state.container.startupProbe;
+  }
+  return [state.container, volumes, state.verified];
 };
 defineExpose({
   getContainer,
@@ -315,5 +340,8 @@ onMounted(() => {
   color: white;
   padding-top: 10px;
   padding-bottom: 10px;
+}
+.context {
+  margin-top: 10px;
 }
 </style>

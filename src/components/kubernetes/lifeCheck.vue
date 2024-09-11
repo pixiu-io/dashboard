@@ -176,7 +176,7 @@ const activeName = ref('httpGet');
 const props = defineProps({
   lifeData: {
     type: Object,
-    required: true,
+    default: () => {},
   },
 });
 
@@ -202,9 +202,6 @@ onMounted(() => {
       });
       if (str != state.command) state.command = str;
     }
-    setTimeout(() => {
-      state.loadFromParent = false;
-    }, 100);
   }
 });
 const getLife = async () => {
