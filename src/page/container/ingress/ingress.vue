@@ -88,34 +88,43 @@
         >
         </el-table-column>
 
-        <el-table-column fixed="right" label="操作" width="170px">
+        <el-table-column fixed="right" label="操作" width="150px">
           <template #default="scope">
             <el-button
               size="small"
               type="text"
-              style="margin-right: -20px; margin-left: -10px; color: #006eff"
+              style="margin-right: -25px; margin-left: -10px; color: #006eff"
               @click="editIngress(scope.row)"
             >
               设置
             </el-button>
 
-            <el-button
-              type="text"
-              size="small"
-              style="margin-right: -25px; margin-left: 8px; color: #006eff"
-              @click="handleDeleteDialog(scope.row)"
-            >
-              删除
+            <el-button type="text" size="small" style="margin-right: -2px; color: #006eff">
+              事件
             </el-button>
 
-            <el-button
-              type="text"
-              size="small"
-              style="margin-right: 1px; color: #006eff"
-              @click="handleEditYamlDialog(scope.row)"
-            >
-              YAML 设置
-            </el-button>
+            <el-dropdown>
+              <span class="el-dropdown-link">
+                更多
+                <pixiu-icon name="icon-xiala" size="12px" type="iconfont" color="#006eff" />
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu class="dropdown-buttons">
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleEditYamlDialog(scope.row)"
+                  >
+                    编辑YAML
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleDeleteDialog(scope.row)"
+                  >
+                    删除
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </template>
         </el-table-column>
 
