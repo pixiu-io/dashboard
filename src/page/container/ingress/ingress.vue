@@ -306,14 +306,16 @@ const handleWhiteListDialog = (row) => {
 };
 
 const cancelWhiteList = () => {
-  data.whiteListData.cancel = false;
+  data.whiteListData.close = false;
   setTimeout(() => {
     data.whiteListData.enable = false;
     data.whiteListData.allowIps = [];
   }, 100);
 };
 
-const confirmWhiteList = () => {};
+const confirmWhiteList = () => {
+  cancelWhiteList();
+};
 
 // 白名单结束
 
