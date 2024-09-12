@@ -193,7 +193,7 @@
       <template #label>
         <span style="margin-left: 8px; font-size: 13px; color: #191919">启用</span>
       </template>
-      <el-switch v-model="data.whiteListData.enable" style="margin-left: 20px" inline-prompt />
+      <el-switch v-model="data.whiteListData.enable" style="margin-left: 15px" inline-prompt />
     </el-form-item>
 
     <el-form-item v-if="data.whiteListData.enable">
@@ -202,7 +202,7 @@
       </template>
       <el-input
         v-model="data.whiteListData.ipList"
-        style="margin-left: 10px; width: 90%"
+        style="margin-left: 5px; width: 90%"
         type="textarea"
         :autosize="data.whiteListData.autosize"
       />
