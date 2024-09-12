@@ -189,6 +189,25 @@
       <div style="vertical-align: middle; margin-top: -40px">补充点 ingress 白名单的文案</div>
     </el-card>
 
+    <el-form-item>
+      <template #label>
+        <span style="margin-left: 8px; font-size: 13px; color: #191919">启用</span>
+      </template>
+      <el-switch v-model="data.whiteListData.enable" style="margin-left: 20px" inline-prompt />
+    </el-form-item>
+
+    <el-form-item v-if="data.whiteListData.enable">
+      <template #label>
+        <span style="margin-left: 8px; font-size: 13px; color: #191919">放通IP</span>
+      </template>
+      <el-input
+        v-model="data.whiteListData.ipList"
+        style="margin-left: 10px; width: 90%"
+        type="textarea"
+        :autosize="data.whiteListData.autosize"
+      />
+    </el-form-item>
+
     <template #footer>
       <span class="dialog-footer">
         <el-button class="pixiu-delete-cancel-button" @click="cancelWhiteList">取消</el-button>
@@ -266,6 +285,10 @@ const data = reactive({
     close: false,
     enable: false,
     allowIps: [],
+    ipList: '',
+    autosize: {
+      minRows: 5,
+    },
   },
 });
 
