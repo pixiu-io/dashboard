@@ -146,14 +146,14 @@
             </template>
             <span
               v-if="
-                data.nodeObject.status &&
-                data.nodeObject.status.nodeInfo &&
-                data.nodeObject.status.nodeInfo.kubeProxyVersion
+                state.nodeObject.status &&
+                state.nodeObject.status.nodeInfo &&
+                state.nodeObject.status.nodeInfo.kubeProxyVersion
               "
               class="detail-card-style-form2"
               style="margin-left: 72px"
             >
-              {{ data.nodeObject.status.nodeInfo.kubeProxyVersion }}
+              {{ state.nodeObject.status.nodeInfo.kubeProxyVersion }}
             </span>
           </el-form-item> -->
 

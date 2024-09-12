@@ -173,7 +173,7 @@
             </el-form-item>
 
             <!-- <el-form-item label="会话保持" style="margin-top: 20px">
-              <el-switch v-model="data.Session" inline-prompt width="40px" />
+              <el-switch v-model="state.Session" inline-prompt width="40px" />
             </el-form-item> -->
 
             <div style="margin-top: 30px" />

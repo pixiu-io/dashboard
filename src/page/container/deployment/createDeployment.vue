@@ -15,7 +15,7 @@
           ><span class="breadcrumb-create-style"> 集群 </span>
         </el-breadcrumb-item>
         <el-breadcrumb-item
-          ><span class="breadcrumb-create-style"> {{ data.clusterName }} </span>
+          ><span class="breadcrumb-create-style"> {{ state.clusterName }} </span>
         </el-breadcrumb-item>
         <el-breadcrumb-item
           ><span class="breadcrumb-create-style"> Deployments </span>
@@ -27,180 +27,84 @@
     </div>
 
     <el-main>
-      <div class="app-pixiu-content-card">
-        <el-card class="create-card-style">
-          <el-form
-            ref="ruleFormRef"
-            label-position="left"
-            require-asterisk-position="right"
-            label-width="100px"
-            :rules="rules"
-            status-icon
-            :model="data.form"
-            style="margin-left: 3%; width: 70%"
-          >
-            <div style="margin-top: 20px" />
-            <el-form-item label="名称" prop="metadata.name" style="width: 500px">
-              <el-input v-model="data.form.metadata.name" />
-              <div class="app-pixiu-line-describe2">
-                最长63个字符，只能包含小写字母、数字及分隔符("-")
-              </div>
-            </el-form-item>
-
-            <el-form-item label="命名空间" style="width: 300px">
-              <div class="namespace-select-container">
-                <el-select v-model="data.form.metadata.namespace" @change="changeNamespace">
-                  <el-option
-                    v-for="item in data.namespaces"
-                    :key="item"
-                    :value="item"
-                    :label="item"
-                  />
-                </el-select>
-              </div>
-            </el-form-item>
-
-            <el-form-item label="Labels" style="margin-top: 10px">
-              <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button>
-            </el-form-item>
-            <div style="margin-top: -15px"></div>
-            <el-form-item
-              v-for="(item, index) in data.form.labels"
-              :key="index"
-              class="labels-item-style"
-            >
-              <el-form-item
-                :prop="'labels[' + index + '].key'"
-                :rules="[{ required: true, message: '标签键不能为空', trigger: 'blur' }]"
-              >
-                <el-input v-model="item.key" placeholder="标签键" style="width: 280px" />
-              </el-form-item>
-
-              <div style="margin-right: 10px; margin-left: 10px">=</div>
-
-              <el-form-item
-                :prop="'labels[' + index + '].value'"
-                :rules="[{ required: true, message: '标签值不能为空', trigger: 'blur' }]"
-              >
-                <el-input v-model="item.value" placeholder="标签值" style="width: 280px" />
-              </el-form-item>
-
-              <div
-                style="float: right; cursor: pointer; margin-left: 10px"
-                @click="deleteLabel(index)"
-              >
-                <pixiu-icon
-                  name="icon-shanchu"
-                  size="14px"
-                  type="iconfont"
-                  style="margin-top: 10px; margin-left: 4px"
-                  color="#909399"
+      <el-card class="create-card-style">
+        <el-row :gutter="30">
+          <el-col :span="22">
+            <el-tabs v-model="state.activeTable" tab-position="left">
+              <el-tab-pane label="基础信息">
+                <Meta
+                  ref="metaRef"
+                  :replicas="state.deploymentForm.spec.replicas"
+                  :metadata="state.deploymentForm.metadata"
                 />
-              </div>
-            </el-form-item>
-
-            <div class="app-pixiu-line-describe" style="margin-top: -5px">
-              标签键值以字母、数字开头和结尾, 且只能包含字母、数字及分隔符.
-            </div>
-
-            <el-form-item label="容器配置" style="margin-top: 20px">
-              <el-button type="text" class="app-action-btn" @click="addContainer"
-                >增加容器</el-button
-              >
-            </el-form-item>
-            <div style="margin-top: -15px"></div>
-            <el-form-item
-              v-for="(item, index) in data.form.containers"
-              :key="index"
-              style="margin-top: -25px"
-            >
-              <el-card
-                style="
-                  width: 80%;
-                  height: 185px;
-                  background-color: #f2f2f2;
-                  margin-top: 20px;
-                  border-radius: 0px;
-                "
-              >
-                <div style="float: right; cursor: pointer" @click="deleteContainer(index)">
-                  <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
-                </div>
-
-                <el-form-item
-                  :prop="'containers[' + index + '].name'"
-                  :rules="[{ required: true, message: '容器名不能为空', trigger: 'blur' }]"
-                  >容器名称
-                  <el-input
-                    v-model="item.name"
-                    class="deploy-pixiu-incard"
-                    style="margin-left: 30px"
-                  />
-                </el-form-item>
-
-                <el-form-item
-                  style="margin-top: 10px"
-                  :prop="'containers[' + index + '].image'"
-                  :rules="[{ required: true, message: '镜像不能为空', trigger: 'blur' }]"
-                  >镜像
-                  <el-input
-                    v-model="item.image"
-                    style="margin-left: 58px"
-                    class="deploy-pixiu-incard"
-                  />
-                </el-form-item>
-
-                <el-col style="margin-top: 10px" class="deploy-pixiu-column"
-                  >拉取策略
-                  <el-radio-group v-model="item.imagePullPolicy" style="margin-left: 30px">
-                    <el-radio-button label="IfNotPresent">IfNotPresent</el-radio-button>
-                    <el-radio-button label="Always">Always</el-radio-button>
-                    <el-radio-button label="Never">Never</el-radio-button>
-                  </el-radio-group>
-                  <div class="container-line-describe">
-                    设置镜像拉取策略，默认使用 IfNotPresent 策略
-                  </div>
-                </el-col>
-              </el-card>
-            </el-form-item>
-
-            <el-form-item label="实例数量" style="margin-top: 20px">
-              <el-input-number
-                v-model="data.deploymentForm.spec.replicas"
-                style="margin-top: 8px"
-                :min="0"
-                size="small"
-                @change="handleChange"
-            /></el-form-item>
-            <div class="app-pixiu-line-describe" style="margin-top: -10px">Deployment 副本设置</div>
-
-            <div style="margin-top: 30px" />
-            <el-form-item style="margin-left: 30%">
-              <el-button class="pixiu-cancel-button" @click="cancelCreate()">取消</el-button>
-              <el-button class="pixiu-confirm-button" type="primary" @click="comfirmCreate()"
-                >确定</el-button
-              >
-            </el-form-item>
-          </el-form>
-        </el-card>
-      </div>
+              </el-tab-pane>
+              <el-tab-pane label="容器配置">
+                <Containers
+                  ref="containersRef"
+                  :containers="state.deploymentForm.spec.template.spec.containers"
+                  :init-containers="state.deploymentForm.spec.template.spec.initContainers"
+                  :volumes="state.deploymentForm.spec.template.spec.volumes"
+                />
+              </el-tab-pane>
+              <el-tab-pane label="高级选项">Role</el-tab-pane>
+            </el-tabs>
+          </el-col>
+          <el-col :span="2">
+            <el-button link type="primary" @click="onPreView">预览yaml</el-button>
+          </el-col>
+        </el-row>
+        <div style="margin-top: 30px" />
+        <el-form-item style="margin-left: 30%">
+          <el-button
+            class="pixiu-confirm-button"
+            type="primary"
+            :disabled="state.activeTable === '0'"
+            @click="handlePre"
+            >上一步</el-button
+          >
+          <el-button
+            class="pixiu-confirm-button"
+            type="primary"
+            :disabled="state.activeTable === '2'"
+            @click="handleNext"
+            >下一步</el-button
+          >
+          <el-button class="pixiu-cancel-button" @click="cancelCreate()">取消</el-button>
+          <el-button
+            v-show="state.activeTable === '2'"
+            class="pixiu-confirm-button"
+            type="primary"
+            @click="confirmCreate()"
+            >确定</el-button
+          >
+        </el-form-item>
+      </el-card>
     </el-main>
   </div>
+  <Yaml
+    v-if="state.yamlVisible"
+    v-model:visible="state.yamlVisible"
+    title="预览"
+    :yaml="state.deploymentForm"
+    :read-only="true"
+    @confirm="logInfo"
+  />
 </template>
 
 <script setup>
-import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
-import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
+import { reactive, getCurrentInstance, onMounted, ref, defineAsyncComponent } from 'vue';
 import { createDeployment } from '@/services/kubernetes/deploymentService';
+const Meta = defineAsyncComponent(() => import('@/components/kubernetes/meta.vue'));
+const Containers = defineAsyncComponent(() => import('@/components/kubernetes/containers.vue'));
+const Yaml = defineAsyncComponent(() => import('@/components/kubernetes/yaml.vue'));
 
 const { proxy } = getCurrentInstance();
-const ruleFormRef = ref();
 
-const rules = {
-  'metadata.name': [{ required: true, message: '请输入 Deployment 名称', trigger: 'blur' }],
-};
-
-const data = reactive({
+const metaRef = ref();
+const containersRef = ref();
+const state = reactive({
+  activeTable: '0',
+  yamlVisible: false,
   loading: false,
   cluster: '',
   clusterName: '',
@@ -227,6 +131,8 @@ const data = reactive({
     metadata: {
       name: '',
       namespace: 'default',
+      labels: {},
+      annotations: {},
     },
     spec: {
       replicas: 1,
@@ -238,51 +144,96 @@ const data = reactive({
           labels: {},
         },
         spec: {
-          containers: [],
+          serviceAccount: 'default',
+          containers: [
+            {
+              name: '',
+              image: '',
+              imagePullPolicy: 'IfNotPresent',
+              securityContext: {
+                privileged: false,
+              },
+              env: [],
+              ports: [],
+              livenessProbe: {},
+              startupProbe: {},
+              readinessProbe: {},
+              lifecycle: {
+                postStart: {},
+                preStop: {},
+              },
+              command: [],
+              args: [],
+              volumeMounts: [],
+            },
+          ],
+          initContainers: [],
+          volumes: [],
         },
       },
     },
   },
 });
-
-const handleChange = (value) => {
-  data.deploymentForm.spec.replicas = value;
+const handleNext = async () => {
+  if (await aggregateInfo()) {
+    state.activeTable = Math.min(2, parseInt(state.activeTable, 10) + 1).toString();
+  }
+};
+const handlePre = () => {
+  state.activeTable = Math.max(0, parseInt(state.activeTable, 10) - 1).toString();
+};
+const aggregateInfo = async () => {
+  if (state.activeTable === '0') {
+    const [metadata, replicas, verified] = await metaRef.value.getResult();
+    if (!verified) {
+      proxy.$message.error('请正确填写必填项');
+      return false;
+    }
+    state.deploymentForm.metadata = { ...metadata };
+    state.deploymentForm.spec.replicas = replicas;
+    state.deploymentForm.spec.selector.matchLabels = JSON.parse(JSON.stringify(metadata.labels));
+    state.deploymentForm.spec.template.metadata.labels = JSON.parse(
+      JSON.stringify(metadata.labels),
+    );
+  } else if (state.activeTable === '2') {
+    const [containers, initContainers, volumes, containerVerified] =
+      await containersRef.value.getContainers();
+    if (!containerVerified) {
+      proxy.$message.error('请正确填写必填项');
+      return false;
+    }
+    state.deploymentForm.spec.template.spec.containers = JSON.parse(JSON.stringify(containers));
+    state.deploymentForm.spec.template.spec.initContainers = JSON.parse(
+      JSON.stringify(initContainers),
+    );
+    state.deploymentForm.spec.template.spec.volumes = volumes;
+  }
+  return true;
+};
+const logInfo = (yaml) => {
+  console.log(yaml);
+};
+const onPreView = async () => {
+  if (await aggregateInfo()) {
+    state.yamlVisible = true;
+  }
 };
 
-const comfirmCreate = async () => {
-  ruleFormRef.value.validate(async (valid) => {
-    if (valid) {
-      data.deploymentForm.metadata = data.form.metadata;
-      data.deploymentForm.spec.template.spec.containers = data.form.containers;
-
-      data.deploymentForm.spec.selector.matchLabels['pixiu.io/app'] = data.form.metadata.name;
-      data.deploymentForm.spec.selector.matchLabels['pixiu.io/kind'] = 'deployment';
-      data.deploymentForm.spec.template.metadata.labels =
-        data.deploymentForm.spec.selector.matchLabels;
-
-      // 追加 labels
-      if (data.form.labels.length > 0) {
-        data.deploymentForm.metadata['labels'] = {};
-        for (let item of data.form.labels) {
-          data.deploymentForm.metadata['labels'][item.key] = item.value;
-        }
-      }
-
-      const [result, err] = await createDeployment(
-        data.cluster,
-        data.form.metadata.namespace,
-        data.deploymentForm,
-      );
-      if (err) {
-        proxy.$message.error(err.response.data.message);
-        return;
-      }
-
-      proxy.$message.success(`Deployment ${data.form.metadata.name} 创建成功`);
-
-      backToDeployment();
-    }
-  });
+const confirmCreate = async () => {
+  if (!(await aggregateInfo())) {
+    return;
+  }
+  const [result, err] = await createDeployment(
+    state.cluster,
+    state.form.metadata.namespace,
+    state.deploymentForm,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(`Deployment ${state.form.metadata.name} 创建成功`);
+  backToDeployment();
 };
 
 const cancelCreate = () => {
@@ -290,96 +241,23 @@ const cancelCreate = () => {
 };
 
 onMounted(() => {
-  data.cloud = proxy.$route.query;
-  data.cluster = data.cloud.cluster;
-  data.clusterName = localStorage.getItem(data.cluster);
-
-  addContainer();
-  getNamespaceList();
+  state.cloud = proxy.$route.query;
+  state.cluster = state.cloud.cluster;
+  state.clusterName = localStorage.getItem(state.cluster);
 });
-
-const changeNamespace = async (val) => {
-  localStorage.setItem('namespace', val);
-  data.deploymentForm.metadata.namespace = val;
-};
-
-const getNamespaceList = async () => {
-  const [result, err] = await getNamespaceNames(data.cluster);
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-  data.namespaces = result;
-};
-
-const addLabel = () => {
-  data.form.labels.push({
-    key: '',
-    value: '',
-  });
-};
-
-const deleteLabel = (index) => {
-  data.form.labels.splice(index, 1);
-};
-
-const addContainer = () => {
-  data.form.containers.push({
-    name: '',
-    image: '',
-    imagePullPolicy: 'IfNotPresent',
-  });
-};
-
-const deleteContainer = (index) => {
-  if (data.form.containers.length === 1) {
-    proxy.$message.error('至少需要 1 个容器组');
-    return;
-  }
-  data.form.containers.splice(index, 1);
-};
 
 // 回到 deployment 页面
 const backToDeployment = () => {
   proxy.$router.push({
     name: 'Deployment',
-    query: data.cloud,
+    query: state.cloud,
   });
 };
 </script>
 
 <style>
-.box-card {
-  margin-top: 20px;
-}
-
 .deployee-class .el-main {
   background-color: #f3f4f7;
-}
-
-.app-pixiu-line-describe {
-  margin-left: 100px;
-  margin-top: -18px;
-  font-size: 12px;
-  color: #888888;
-}
-
-.font-container {
-  margin-top: -5px;
-  font-weight: bold;
-  font-size: 16px;
-  vertical-align: middle;
-}
-
-.deploy-pixiu-column {
-  font-size: 13px;
-  color: #606266;
-}
-
-.container-line-describe {
-  margin-left: 90px;
-  font-size: 12px;
-  color: #888888;
 }
 
 .deployee-class .el-radio {

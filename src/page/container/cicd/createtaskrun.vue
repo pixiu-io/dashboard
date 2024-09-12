@@ -138,7 +138,7 @@
                 <el-form-item class="deploy-pixiu-column" prop="taskRef.name"
                   >Task名称
                   <!--                  <el-input-->
-                  <!--                    v-model="data.form.taskRef.name"-->
+                  <!--                    v-model="state.form.taskRef.name"-->
                   <!--                    class="deploy-pixiu-incard"-->
                   <!--                    style="margin-left: 30px"-->
                   <!--                  />-->

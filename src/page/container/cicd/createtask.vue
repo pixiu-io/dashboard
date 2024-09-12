@@ -315,10 +315,10 @@ const confirm = async () => {
       }
 
       // 追加 annotations
-      // if (data.form.params.length > 0) {
-      //   data.objectForm.spec['annotations'] = {};
-      //   for (let item of data.form.annotations) {
-      //     data.objectForm.metadata['annotations'][item.key] = item.value;
+      // if (state.form.params.length > 0) {
+      //   state.objectForm.spec['annotations'] = {};
+      //   for (let item of state.form.annotations) {
+      //     state.objectForm.metadata['annotations'][item.key] = item.value;
       //   }
       // }
 

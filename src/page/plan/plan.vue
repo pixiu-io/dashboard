@@ -625,7 +625,7 @@ const openTaskDrawer = async () => {
 //       }
 //       const uint8Array = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
 //       let decodedString = decoder.decode(uint8Array, { stream: true });
-//       data.taskLog.log += decodedString;
+//       state.taskLog.log += decodedString;
 //     } catch (e) {
 //       break;
 //     }

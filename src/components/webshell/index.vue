@@ -78,7 +78,7 @@ const initTerm = () => {
   let _data = data; //一定要重新定义一个this，不然this指向会出问题
   //onData方法用于定义输入的动作
   data.term.onData(function (key) {
-    // 这里key值是输入的值，数据格式就是后端定义的 {"operation":"stdin","data":"ls"}
+    // 这里key值是输入的值，数据格式就是后端定义的 {"operation":"stdin","state":"ls"}
     let msgOrder = {
       operation: 'stdin',
       data: key,
