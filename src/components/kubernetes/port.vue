@@ -18,6 +18,7 @@
       :rules="rules"
       :model="state"
       status-icon
+      require-asterisk-position="right"
       style="margin-left: 100px"
     >
       <div v-for="(item, index) in state.ports" :key="index">

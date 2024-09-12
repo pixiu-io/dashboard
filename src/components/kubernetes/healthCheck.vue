@@ -291,8 +291,7 @@ const props = defineProps({
 });
 
 onMounted(() => {
-  if (!isObjectValueEqual(props.checkData, {})) {
-    console.log('----', props.checkData);
+  if (props.checkData && !isObjectValueEqual(props.checkData, {})) {
     state.set = true;
     const dataCopy = JSON.parse(JSON.stringify(props.checkData));
     if (dataCopy.httpGet && !isObjectValueEqual(dataCopy.httpGet, state.probe.httpGet)) {

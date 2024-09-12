@@ -19,9 +19,13 @@
       :cell-style="{ padding: '10px' }"
       :header-cell-style="{ padding: '5px' }"
     >
-      <el-table-column label="类型" width="130">
+      <el-table-column label="类型" width="140">
         <template #default="scope">
-          <el-select v-model="scope.row.type" size="small">
+          <el-select
+            v-model="scope.row.type"
+            size="small"
+            @change="(val) => handleTypeChange(val, scope.$index)"
+          >
             <el-option
               v-for="item in envType"
               :key="item.type"
@@ -37,23 +41,96 @@
           <el-input v-model="scope.row.name" size="small" />
         </template>
       </el-table-column>
-      <el-table-column label="变量/变量引用" width="350">
+      <el-table-column label="变量/变量引用" width="380">
         <template #default="scope">
-          <el-input v-model="scope.row.value" size="small" style="width: 120px" />
-          <el-input
-            v-if="scope.row.type !== 'custom'"
-            v-model="scope.row.otherValue"
-            size="small"
-            style="width: 120px"
-          />
-          <el-button
-            icon="RemoveFilled"
-            type="primary"
-            size="small"
-            text
-            style="margin-left: 10px"
-            @click="state.env.splice(scope.$index, 1)"
-          ></el-button>
+          <div style="display: flex">
+            <div v-if="scope.row.type === 'configMapKeyRef'" style="display: flex">
+              <el-select
+                v-model="scope.row.value"
+                style="width: 120px"
+                size="small"
+                :loading="state.loading"
+                show-overflow-tooltip
+                @change="handleSubItems(scope.row, scope.$index)"
+              >
+                <el-option
+                  v-for="item in state.configMapData"
+                  :key="item.metadata.name"
+                  :label="item.metadata.name"
+                  :value="item.metadata.name"
+                />
+              </el-select>
+              <el-select
+                v-model="scope.row.otherValue"
+                size="small"
+                show-overflow-tooltip
+                style="margin-left: 10px; width: 120px"
+              >
+                <el-option
+                  v-for="(item, key, index) in state.keyValData"
+                  :key="index"
+                  :value="key"
+                  :label="key"
+                >
+                  {{ key }}
+                </el-option>
+              </el-select>
+            </div>
+            <div v-else-if="scope.row.type === 'secretKeyRef'" style="display: flex">
+              <el-select
+                v-model="scope.row.value"
+                style="width: 120px"
+                size="small"
+                :loading="state.loading"
+                show-overflow-tooltip
+                @change="handleSubItems(scope.row, scope.$index)"
+              >
+                <el-option
+                  v-for="item in state.secretData"
+                  :key="item.metadata.name"
+                  :label="item.metadata.name"
+                  :value="item.metadata.name"
+                />
+              </el-select>
+              <el-select
+                v-model="scope.row.otherValue"
+                size="small"
+                show-overflow-tooltip
+                style="margin-left: 10px; width: 120px"
+              >
+                <el-option
+                  v-for="(item, key, index) in state.keyValData"
+                  :key="index"
+                  :value="key"
+                  :label="key"
+                >
+                  {{ key }}
+                </el-option>
+              </el-select>
+            </div>
+            <div v-else>
+              <el-input
+                v-if="scope.row.type !== 'fieldRef'"
+                v-model="scope.row.value"
+                size="small"
+                style="width: 120px; margin-right: 10px"
+              />
+              <el-input
+                v-if="scope.row.type !== 'custom'"
+                v-model="scope.row.otherValue"
+                size="small"
+                style="width: 120px"
+              />
+            </div>
+            <el-button
+              icon="RemoveFilled"
+              type="primary"
+              size="small"
+              text
+              style="margin-left: 10px"
+              @click="state.env.splice(scope.$index, 1)"
+            ></el-button>
+          </div>
         </template>
       </el-table-column>
     </el-table>
@@ -61,9 +138,15 @@
 </template>
 
 <script setup>
-import { onMounted, reactive } from 'vue';
+import { getCurrentInstance, onMounted, reactive } from 'vue';
+import { getSecretList } from '@/services/kubernetes/secretService';
+import { getConfigmapList } from '@/services/kubernetes/configmapService';
+import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 
+const { proxy } = getCurrentInstance();
 const state = reactive({
+  cluster: '',
+  namespace: '',
   env: [
     {
       name: '',
@@ -72,6 +155,11 @@ const state = reactive({
       type: '',
     },
   ],
+  configMapData: [],
+  secretData: [],
+  items: [],
+  keyValData: {},
+  index: 0,
 });
 
 const props = defineProps({
@@ -81,6 +169,53 @@ const props = defineProps({
   },
 });
 
+// 从接口获取configMap数据
+const getConfigMap = async () => {
+  const [result, err] = await getConfigmapList(state.cluster, state.namespace);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  state.configMapData = result.items;
+};
+
+// 从接口获取secret数据
+const getSecret = async () => {
+  const [result, err] = await getSecretList(state.cluster, state.namespace);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  state.secretData = result.items;
+};
+const handleTypeChange = (type, index) => {
+  // 切换type类型时初始化不同的值
+  switch (type) {
+    case 'secretKeyRef':
+      getSecret();
+      break;
+    case 'configMapKeyRef':
+      getConfigMap();
+      break;
+  }
+};
+const handleSubItems = (config, index) => {
+  if (config.type === 'configMapKeyRef') {
+    state.configMapData.forEach((item) => {
+      if (item.metadata.name === config.value) {
+        state.keyValData = item.data;
+      }
+    });
+    state.index = index;
+  } else if (config.type === 'secretKeyRef') {
+    state.secretData.forEach((item) => {
+      if (item.metadata.name === config.value) {
+        state.keyValData = item.data;
+      }
+    });
+    state.index = index;
+  }
+};
 const buildEnv = () => {
   const envData = [];
   const envTup = state.env;
@@ -138,6 +273,9 @@ const parseEnv = (envs) => {
   });
 };
 onMounted(() => {
+  state.cluster = proxy.$route.query.cluster;
+  state.cloud = proxy.$route.query;
+  state.namespace = getLocalNamespace();
   if (props.env) {
     parseEnv(props.env);
   }

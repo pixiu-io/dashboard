@@ -30,7 +30,7 @@
       <el-card class="create-card-style">
         <el-row :gutter="30">
           <el-col :span="22">
-            <el-tabs v-model="state.activeTable" tab-position="left">
+            <el-tabs v-model="state.activeTable" tab-position="left" :before-leave="aggregateInfo">
               <el-tab-pane label="基础信息">
                 <Meta
                   ref="metaRef"
@@ -46,7 +46,7 @@
                   :volumes="state.deploymentForm.spec.template.spec.volumes"
                 />
               </el-tab-pane>
-              <el-tab-pane label="高级选项">Role</el-tab-pane>
+              <el-tab-pane label="高级选项">高级选项-待开发</el-tab-pane>
             </el-tabs>
           </el-col>
           <el-col :span="2">
