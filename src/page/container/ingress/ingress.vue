@@ -193,19 +193,63 @@
       <template #label>
         <span style="margin-left: 8px; font-size: 13px; color: #191919">启用</span>
       </template>
-      <el-switch v-model="data.whiteListData.enable" style="margin-left: 15px" inline-prompt />
+      <el-switch
+        v-model="data.whiteListData.enable"
+        style="margin-left: 15px"
+        inline-prompt
+        @change="changeSwitch"
+      />
     </el-form-item>
 
     <el-form-item v-if="data.whiteListData.enable">
       <template #label>
         <span style="margin-left: 8px; font-size: 13px; color: #191919">放通IP</span>
       </template>
-      <el-input
-        v-model="data.whiteListData.ipList"
-        style="margin-left: 5px; width: 90%"
-        type="textarea"
-        :autosize="data.whiteListData.autosize"
-      />
+      <div style="width: 80%">
+        <div
+          v-if="data.whiteListData.editable === true"
+          style="display: flex; flex-direction: column; width: 100%"
+        >
+          <el-input
+            ref="ipInput"
+            v-model="data.whiteListData.ipList"
+            style="margin-left: 5px; width: 90%"
+            type="textarea"
+            :autosize="data.whiteListData.autosize"
+            @keyup.enter="handleInputConfirm"
+            @blur="handleInputConfirm"
+            @focus="
+              vaildator = true;
+              errorMessage = '';
+              clearStyle();
+            "
+          />
+          <span
+            v-if="vaildator === false"
+            style="
+              color: var(--el-color-danger);
+              font-size: 12px;
+              line-height: 12px;
+              margin-left: 5px;
+              margin-top: 2px;
+            "
+            >{{ errorMessage }}</span
+          >
+        </div>
+        <el-space
+          v-else
+          style="border: 1px solid #dcdfe6; margin-top: 10px; padding: 5px; width: 80%"
+          @click="enableEdit"
+        >
+          <el-tag
+            v-for="(ip, index) in data.whiteListData.allowIps"
+            :key="index"
+            closable
+            @close="handleClose(index)"
+            >{{ ip }}</el-tag
+          >
+        </el-space>
+      </div>
     </el-form-item>
 
     <template #footer>
@@ -229,7 +273,7 @@ import {
   formatterAddress,
   formatterNamespace,
 } from '@/utils/formatter';
-import { reactive, getCurrentInstance, onMounted, ref, onUnmounted } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref, onUnmounted, nextTick } from 'vue';
 import jsYaml from 'js-yaml';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import {
@@ -247,6 +291,9 @@ import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 const { proxy } = getCurrentInstance();
 const router = useRouter();
 const editYaml = ref();
+const ipInput = ref(null);
+const vaildator = ref(true);
+const errorMessage = ref('');
 
 const data = reactive({
   cluster: '',
@@ -282,6 +329,7 @@ const data = reactive({
 
   // 白名单数据
   whiteListData: {
+    editable: true,
     close: false,
     enable: false,
     allowIps: [],
@@ -304,6 +352,103 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('setItem', handleStorageChange);
 });
+
+const changeSwitch = (value) => {
+  if (value) {
+    vaildator.value = true;
+    errorMessage.value = '';
+    data.whiteListData.allowIps = [];
+    data.whiteListData.ipList = '';
+    data.whiteListData.editable = true;
+    nextTick(() => {
+      if (ipInput.value) {
+        ipInput.value.focus();
+      }
+    });
+  }
+};
+
+const handleInputConfirm = () => {
+  if (data.whiteListData.ipList.trim() === '') {
+    vaildator.value = false;
+    errorMessage.value = '请输入IP地址';
+    nextTick(() => {
+      if (ipInput.value) {
+        ipInput.value.textarea.style.boxShadow =
+          '0 0 0 1px var(--el-color-danger,var(--el-color-danger)) inset';
+      }
+    });
+    return;
+  }
+  if (!checkIp()) {
+    console.log('进入异常');
+    vaildator.value = false;
+    errorMessage.value = '存在不正确的ip格式请检查';
+    nextTick(() => {
+      if (ipInput.value) {
+        ipInput.value.textarea.style.boxShadow =
+          '0 0 0 1px var(--el-color-danger,var(--el-color-danger)) inset';
+        // ipInput.value.focus();
+      }
+    });
+    return;
+  }
+  data.whiteListData.editable = false;
+  data.whiteListData.allowIps = data.whiteListData.ipList
+    .split(',')
+    .filter((item) => item.trim() !== '');
+};
+
+const checkIp = () => {
+  let flag = true;
+  data.whiteListData.ipList
+    .split(',')
+    .filter((item) => item.trim() !== '')
+    .forEach((item) => {
+      // 出现不满足的返回false
+      if (
+        !/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(
+          item,
+        )
+      ) {
+        flag = false;
+      }
+    });
+  return flag;
+};
+
+const clearStyle = () => {
+  nextTick(() => {
+    if (ipInput.value) {
+      vaildator.value = false;
+      ipInput.value.textarea.style.boxShadow = '';
+    }
+  });
+};
+
+const handleClose = (index) => {
+  data.whiteListData.allowIps.splice(index, 1);
+  nextTick(() => {
+    data.whiteListData.ipList = data.whiteListData.allowIps.join(',');
+    if (data.whiteListData.ipList.trim() === '') {
+      data.whiteListData.editable = true;
+      nextTick(() => {
+        if (ipInput.value) {
+          ipInput.value.focus();
+        }
+      });
+    }
+  });
+};
+
+const enableEdit = () => {
+  data.whiteListData.editable = true;
+  nextTick(() => {
+    if (ipInput.value) {
+      ipInput.value.focus();
+    }
+  });
+};
 
 const handleStorageChange = (e) => {
   if (e.storageArea === localStorage) {
