@@ -216,7 +216,7 @@
             style="margin-left: 5px; width: 90%"
             type="textarea"
             :autosize="data.whiteListData.autosize"
-            @keyup.enter="handleInputConfirm"
+            @keydown.enter="handleEnter"
             @blur="handleInputConfirm"
             @focus="
               vaildator = true;
@@ -366,6 +366,11 @@ const changeSwitch = (value) => {
       }
     });
   }
+};
+
+const handleEnter = (e) => {
+  e.preventDefault(); // 阻止默认的回车换行行为
+  handleInputConfirm();
 };
 
 const handleInputConfirm = () => {
