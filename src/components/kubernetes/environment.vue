@@ -10,151 +10,193 @@
         >新增</el-button
       >
     </el-form-item>
-
-    <el-table
-      v-show="state.env.length !== 0"
+    <el-form
       ref="envRef"
-      :data="state.env"
-      style="font-size: 13px; margin-left: 100px"
-      :cell-style="{ padding: '10px' }"
-      :header-cell-style="{ padding: '5px' }"
+      :model="state"
+      status-icon
+      label-position="left"
+      require-asterisk-position="right"
     >
-      <el-table-column label="类型" width="140">
-        <template #default="scope">
-          <el-select
-            v-model="scope.row.type"
-            size="small"
-            @change="(val) => handleTypeChange(val, scope.$index)"
-          >
-            <el-option
-              v-for="item in envType"
-              :key="item.type"
-              :label="item.type"
-              :value="item.value"
-            />
-          </el-select>
-        </template>
-      </el-table-column>
+      <el-table
+        v-show="state.env.length !== 0"
+        :data="state.env"
+        style="font-size: 13px; margin-left: 100px"
+        :cell-style="{ padding: '10px' }"
+        :header-cell-style="{ padding: '5px' }"
+      >
+        <el-table-column label="类型" width="140">
+          <template #default="scope">
+            <el-form-item>
+              <el-select
+                v-model="scope.row.type"
+                size="small"
+                @change="(val) => handleTypeChange(val, scope.$index)"
+              >
+                <el-option
+                  v-for="item in envType"
+                  :key="item.type"
+                  :label="item.type"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
+          </template>
+        </el-table-column>
 
-      <el-table-column label="变量名称" width="180">
-        <template #default="scope">
-          <el-input v-model="scope.row.name" size="small" />
-        </template>
-      </el-table-column>
-      <el-table-column label="变量/变量引用" width="380">
-        <template #default="scope">
-          <div style="display: flex">
-            <div v-if="scope.row.type === 'configMapKeyRef'" style="display: flex">
-              <el-select
-                v-model="scope.row.value"
-                style="width: 120px"
-                size="small"
-                :loading="state.loading"
-                show-overflow-tooltip
-                @change="handleSubItems(scope.row, scope.$index)"
-              >
-                <el-option
-                  v-for="item in state.configMapData"
-                  :key="item.metadata.name"
-                  :label="item.metadata.name"
-                  :value="item.metadata.name"
-                />
-              </el-select>
-              <el-select
-                v-model="scope.row.otherValue"
-                size="small"
-                show-overflow-tooltip
-                style="margin-left: 10px; width: 120px"
-              >
-                <el-option
-                  v-for="(item, key, index) in state.keyValData"
-                  :key="index"
-                  :value="key"
-                  :label="key"
+        <el-table-column label="变量名称" width="180">
+          <template #default="scope">
+            <el-form-item
+              :prop="'env.' + scope.$index + '.name'"
+              :rules="[{ required: true, message: '变量名不能为空', trigger: 'blur' }]"
+            >
+              <el-input v-model="scope.row.name" size="small" />
+            </el-form-item>
+          </template>
+        </el-table-column>
+        <el-table-column label="变量/变量引用" width="380">
+          <template #default="scope">
+            <div style="display: flex">
+              <div v-if="scope.row.type === 'configMapKeyRef'" style="display: flex">
+                <el-form-item
+                  :prop="'env.' + scope.$index + '.value'"
+                  :rules="[{ required: true, message: '不能为空', trigger: 'blur' }]"
                 >
-                  {{ key }}
-                </el-option>
-              </el-select>
-            </div>
-            <div v-else-if="scope.row.type === 'secretKeyRef'" style="display: flex">
-              <el-select
-                v-model="scope.row.value"
-                style="width: 120px"
-                size="small"
-                :loading="state.loading"
-                show-overflow-tooltip
-                @change="handleSubItems(scope.row, scope.$index)"
-              >
-                <el-option
-                  v-for="item in state.secretData"
-                  :key="item.metadata.name"
-                  :label="item.metadata.name"
-                  :value="item.metadata.name"
-                />
-              </el-select>
-              <el-select
-                v-model="scope.row.otherValue"
-                size="small"
-                show-overflow-tooltip
-                style="margin-left: 10px; width: 120px"
-              >
-                <el-option
-                  v-for="(item, key, index) in state.keyValData"
-                  :key="index"
-                  :value="key"
-                  :label="key"
+                  <el-select
+                    v-model="scope.row.value"
+                    style="width: 120px"
+                    size="small"
+                    :loading="state.loading"
+                    show-overflow-tooltip
+                    @change="handleSubItems(scope.row, scope.$index)"
+                  >
+                    <el-option
+                      v-for="item in state.configMapData"
+                      :key="item.metadata.name"
+                      :label="item.metadata.name"
+                      :value="item.metadata.name"
+                    />
+                  </el-select>
+                </el-form-item>
+                <el-form-item
+                  :prop="'env.' + scope.$index + '.otherValue'"
+                  :rules="[{ required: true, message: '不能为空', trigger: 'blur' }]"
                 >
-                  {{ key }}
-                </el-option>
-              </el-select>
-            </div>
-            <div v-else>
-              <el-input
-                v-if="scope.row.type !== 'fieldRef'"
-                v-model="scope.row.value"
+                  <el-select
+                    v-model="scope.row.otherValue"
+                    size="small"
+                    show-overflow-tooltip
+                    style="margin-left: 10px; width: 120px"
+                  >
+                    <el-option
+                      v-for="(item, key, index) in state.keyValData"
+                      :key="index"
+                      :value="key"
+                      :label="key"
+                    >
+                      {{ key }}
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </div>
+              <div v-else-if="scope.row.type === 'secretKeyRef'" style="display: flex">
+                <el-form-item
+                  :prop="'env.' + scope.$index + '.value'"
+                  :rules="[{ required: true, message: '不能为空', trigger: 'blur' }]"
+                >
+                  <el-select
+                    v-model="scope.row.value"
+                    style="width: 120px"
+                    size="small"
+                    :loading="state.loading"
+                    show-overflow-tooltip
+                    @change="handleSubItems(scope.row, scope.$index)"
+                  >
+                    <el-option
+                      v-for="item in state.secretData"
+                      :key="item.metadata.name"
+                      :label="item.metadata.name"
+                      :value="item.metadata.name"
+                    />
+                  </el-select>
+                </el-form-item>
+                <el-form-item
+                  :prop="'env.' + scope.$index + '.otherValue'"
+                  :rules="[{ required: true, message: '不能为空', trigger: 'blur' }]"
+                >
+                  <el-select
+                    v-model="scope.row.otherValue"
+                    size="small"
+                    show-overflow-tooltip
+                    style="margin-left: 10px; width: 120px"
+                  >
+                    <el-option
+                      v-for="(item, key, index) in state.keyValData"
+                      :key="index"
+                      :value="key"
+                      :label="key"
+                    >
+                      {{ key }}
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </div>
+              <div v-else>
+                <div style="display: flex">
+                  <el-form-item
+                    v-if="scope.row.type !== 'fieldRef'"
+                    :prop="'env.' + scope.$index + '.value'"
+                    :rules="[{ required: true, message: '不能为空', trigger: 'blur' }]"
+                  >
+                    <el-input
+                      v-model="scope.row.value"
+                      :placeholder="scope.row.type === 'resourceFieldRef' ? 'containerName' : ''"
+                      size="small"
+                      style="width: 120px; margin-right: 10px"
+                    />
+                  </el-form-item>
+                  <el-form-item
+                    v-if="scope.row.type !== 'custom'"
+                    :prop="'env.' + scope.$index + '.otherValue'"
+                    :rules="[{ required: true, message: '不能为空', trigger: 'blur' }]"
+                  >
+                    <el-input
+                      v-model="scope.row.otherValue"
+                      :placeholder="scope.row.type === 'fieldRef' ? 'fieldPath' : 'resource'"
+                      size="small"
+                      style="width: 120px"
+                    />
+                  </el-form-item>
+                </div>
+              </div>
+              <el-button
+                icon="RemoveFilled"
+                type="primary"
                 size="small"
-                style="width: 120px; margin-right: 10px"
-              />
-              <el-input
-                v-if="scope.row.type !== 'custom'"
-                v-model="scope.row.otherValue"
-                size="small"
-                style="width: 120px"
-              />
+                text
+                style="margin-left: 10px"
+                @click="state.env.splice(scope.$index, 1)"
+              ></el-button>
             </div>
-            <el-button
-              icon="RemoveFilled"
-              type="primary"
-              size="small"
-              text
-              style="margin-left: 10px"
-              @click="state.env.splice(scope.$index, 1)"
-            ></el-button>
-          </div>
-        </template>
-      </el-table-column>
-    </el-table>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-form>
   </div>
 </template>
 
 <script setup>
-import { getCurrentInstance, onMounted, reactive } from 'vue';
+import { getCurrentInstance, onMounted, reactive, ref } from 'vue';
 import { getSecretList } from '@/services/kubernetes/secretService';
 import { getConfigmapList } from '@/services/kubernetes/configmapService';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 
+const envRef = ref();
 const { proxy } = getCurrentInstance();
 const state = reactive({
   cluster: '',
   namespace: '',
-  env: [
-    {
-      name: '',
-      value: '',
-      otherValue: '',
-      type: '',
-    },
-  ],
+  verified: true,
+  env: [],
   configMapData: [],
   secretData: [],
   items: [],
@@ -165,7 +207,7 @@ const state = reactive({
 const props = defineProps({
   env: {
     type: Array,
-    required: true,
+    default: () => [],
   },
 });
 
@@ -215,8 +257,17 @@ const handleSubItems = (config, index) => {
     });
     state.index = index;
   }
+  state.env[index].otherValue = '';
 };
-const buildEnv = () => {
+const getEnvs = async () => {
+  state.verified = true;
+  if (envRef.value) {
+    await envRef.value.validate((valid) => {
+      if (state.verified && !valid) {
+        state.verified = false;
+      }
+    });
+  }
   const envData = [];
   const envTup = state.env;
   for (let i = 0; i < envTup.length; i++) {
@@ -245,7 +296,7 @@ const buildEnv = () => {
     };
     envData.push(envVar);
   }
-  return envData;
+  return [envData, state.verified];
 };
 
 const parseEnv = (envs) => {
@@ -276,13 +327,10 @@ onMounted(() => {
   state.cluster = proxy.$route.query.cluster;
   state.cloud = proxy.$route.query;
   state.namespace = getLocalNamespace();
-  if (props.env) {
+  if (props.env && props.env.length > 0) {
     parseEnv(props.env);
   }
 });
-const getEnvs = () => {
-  return buildEnv();
-};
 
 defineExpose({
   getEnvs,
@@ -312,4 +360,8 @@ const envType = [
 ];
 </script>
 
-<style scoped></style>
+<style scoped>
+.el-form-item {
+  margin-bottom: 13px;
+}
+</style>

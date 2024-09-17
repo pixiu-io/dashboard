@@ -43,6 +43,38 @@
               <div class="pixiu-describe">设置镜像拉取策略，默认使用 IfNotPresent 策略</div>
             </div>
           </el-form-item>
+          <el-form-item>
+            <template #label>
+              <el-tooltip
+                class="box-item"
+                effect="light"
+                content="<div>默认情况下，容器是不可以访问宿主上的任何设备；特权容器则</div><div> 被授权访问宿主上所有设备，享有宿主上运行的进程的所有访问权限</div>"
+                placement="top-start"
+                raw-content
+              >
+                容器启动项
+              </el-tooltip>
+            </template>
+            <el-checkbox v-model="state.container.stdin" label="stdin" />
+            <el-checkbox v-model="state.container.tty" label="tty" />
+          </el-form-item>
+          <el-form-item>
+            <template #label>
+              <el-tooltip
+                class="box-item"
+                effect="light"
+                content="<div>默认情况下，容器是不可以访问宿主上的任何设备；特权容器则</div><div> 被授权访问宿主上所有设备，享有宿主上运行的进程的所有访问权限</div>"
+                placement="top-start"
+                raw-content
+              >
+                特权容器
+              </el-tooltip>
+            </template>
+            <el-checkbox
+              v-if="state.container.securityContext"
+              v-model="state.container.securityContext.privileged"
+            />
+          </el-form-item>
         </div>
       </div>
       <div class="group">
@@ -83,7 +115,7 @@
       <div v-if="!state.container.isInitContainer" class="group">
         <div class="right-label">生命周期</div>
         <div class="context">
-          <el-form-item label="启动前：">
+          <el-form-item>
             <template #label>
               <el-tooltip
                 class="box-item"
@@ -92,12 +124,12 @@
                 placement="top-start"
                 raw-content
               >
-                启动前：
+                启动前
               </el-tooltip>
             </template>
             <LifeCheck ref="preLifeRef" :life-data="state.container.lifecycle.postStart" />
           </el-form-item>
-          <el-form-item label="停止前：">
+          <el-form-item>
             <template #label>
               <el-tooltip
                 class="box-item"
@@ -106,7 +138,7 @@
                 placement="top-start"
                 raw-content
               >
-                停止前：
+                停止前
               </el-tooltip>
             </template>
             <LifeCheck ref="postLifeRef" :life-data="state.container.lifecycle.preStop" />
@@ -169,6 +201,8 @@ const state = reactive({
     securityContext: {
       privileged: false,
     },
+    stdin: false,
+    tty: false,
     env: [],
     ports: [],
     livenessProbe: {},
@@ -199,7 +233,11 @@ const getPorts = async () => {
   if (!portRef.value) return;
   const [ports, verified] = await portRef.value.getPorts();
   if (state.verified && !verified) state.verified = false;
-  state.container.ports = ports;
+  if (ports.length > 0) {
+    state.container.ports = ports;
+  } else {
+    delete state.container.ports;
+  }
 };
 // 更新存活检查数据
 const getLivenessData = async () => {
@@ -274,10 +312,24 @@ const getCommands = async () => {
   }
 };
 
+const getEnv = async () => {
+  if (!envRef.value) return;
+  const [envs, verified] = await envRef.value.getEnvs();
+  if (state.verified && !verified) {
+    state.verified = false;
+  } else {
+    if (envs.length > 0) {
+      state.container.env = envs;
+    } else {
+      delete state.container.env;
+    }
+  }
+};
+
 const getContainer = async () => {
   state.verified = true;
   await getPorts();
-  if (envRef.value) state.container.env = envRef.value.getEnvs();
+  await getEnv();
   await getLivenessData();
   await getStartupData();
   await getReadinessData();

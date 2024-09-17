@@ -63,7 +63,7 @@ const state = reactive({
 const props = defineProps({
   ports: {
     type: Array,
-    required: true,
+    default: () => [],
   },
 });
 
@@ -116,7 +116,7 @@ const pushPort = () => {
 };
 
 onMounted(() => {
-  if (props.ports) {
+  if (props.ports && props.ports.length > 0) {
     state.ports = JSON.parse(JSON.stringify(props.ports));
   }
 });

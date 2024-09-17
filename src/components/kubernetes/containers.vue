@@ -85,6 +85,8 @@ const state = reactive({
       securityContext: {
         privileged: false,
       },
+      stdin: false,
+      tty: false,
       env: [],
       ports: [],
       livenessProbe: {},
