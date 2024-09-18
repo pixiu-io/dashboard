@@ -295,7 +295,6 @@ const dialogRef = ref();
 const state = reactive({
   cluster: '',
   namespace: '',
-  loadFromParent: false,
   tmpData: {},
   index: 0,
   keyValData: {},

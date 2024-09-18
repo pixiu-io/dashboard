@@ -9,14 +9,11 @@
           :closable="state.containers.length != 1"
         >
           <template #label>
-            <span v-if="item.isInitContainer" class="custom-tabs-label">
-              {{ ' init容器 ' }}
-            </span>
-            <span v-else class="custom-tabs-label">
-              {{ ' 容器 ' }}
+            <span class="custom-tabs-label">
+              {{ item.isInitContainer ? 'init容器' : '容器' }}
             </span>
           </template>
-          <Container
+          <ContainerDiv
             :ref="(el) => setItemRef(el, index)"
             :container="item"
             :volumes="props.volumes"
@@ -35,7 +32,7 @@
 <script setup lang="ts">
 import { ref, reactive, defineAsyncComponent, onMounted, getCurrentInstance } from 'vue';
 import { Plus } from '@element-plus/icons-vue';
-const Container = defineAsyncComponent(() => import('./container.vue'));
+const ContainerDiv = defineAsyncComponent(() => import('./container.vue'));
 const editableTabsValue = ref(0);
 const itemRefs = ref([]);
 const { proxy } = getCurrentInstance();
@@ -64,7 +61,6 @@ const tabAdd = async () => {
 };
 
 const tabRemove = (tabPaneName) => {
-  console.log('----t', tabPaneName);
   if (state.containers.length <= 1) {
     return false;
   }
@@ -75,7 +71,6 @@ const tabRemove = (tabPaneName) => {
 
 const state = reactive({
   verified: true,
-  loadFromParent: false,
   currentIndex: 1,
   addIndex: 1,
   tabIndex: 1,
@@ -90,6 +85,8 @@ const state = reactive({
       securityContext: {
         privileged: false,
       },
+      stdin: false,
+      tty: false,
       env: [],
       ports: [],
       livenessProbe: {},

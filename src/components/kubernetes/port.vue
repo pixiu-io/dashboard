@@ -18,6 +18,7 @@
       :rules="rules"
       :model="state"
       status-icon
+      require-asterisk-position="right"
       style="margin-left: 100px"
     >
       <div v-for="(item, index) in state.ports" :key="index">
@@ -62,7 +63,7 @@ const state = reactive({
 const props = defineProps({
   ports: {
     type: Array,
-    required: true,
+    default: () => [],
   },
 });
 
@@ -115,7 +116,7 @@ const pushPort = () => {
 };
 
 onMounted(() => {
-  if (props.ports) {
+  if (props.ports && props.ports.length > 0) {
     state.ports = JSON.parse(JSON.stringify(props.ports));
   }
 });

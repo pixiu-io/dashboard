@@ -30,7 +30,7 @@
       <el-card class="create-card-style">
         <el-row :gutter="30">
           <el-col :span="22">
-            <el-tabs v-model="state.activeTable" tab-position="left">
+            <el-tabs v-model="state.activeTable" tab-position="left" :before-leave="aggregateInfo">
               <el-tab-pane label="基础信息">
                 <Meta
                   ref="metaRef"
@@ -46,7 +46,7 @@
                   :volumes="state.deploymentForm.spec.template.spec.volumes"
                 />
               </el-tab-pane>
-              <el-tab-pane label="高级选项">Role</el-tab-pane>
+              <el-tab-pane label="高级选项"><Advance /></el-tab-pane>
             </el-tabs>
           </el-col>
           <el-col :span="2">
@@ -97,7 +97,7 @@ import { createDeployment } from '@/services/kubernetes/deploymentService';
 const Meta = defineAsyncComponent(() => import('@/components/kubernetes/meta.vue'));
 const Containers = defineAsyncComponent(() => import('@/components/kubernetes/containers.vue'));
 const Yaml = defineAsyncComponent(() => import('@/components/kubernetes/yaml.vue'));
-
+const Advance = defineAsyncComponent(() => import('@/components/kubernetes/advance.vue'));
 const { proxy } = getCurrentInstance();
 
 const metaRef = ref();
@@ -153,6 +153,8 @@ const state = reactive({
               securityContext: {
                 privileged: false,
               },
+              stdin: false,
+              tty: false,
               env: [],
               ports: [],
               livenessProbe: {},
