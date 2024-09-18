@@ -64,7 +64,7 @@ const tabRemove = (tabPaneName) => {
   if (state.containers.length <= 1) {
     return false;
   }
-  const tabs = state.containers;
+  const tabs = JSON.parse(JSON.stringify(state.containers));
   state.containers = tabs.filter((_tab, index) => index !== tabPaneName);
   editableTabsValue.value = state.containers.length - 1;
 };
@@ -110,6 +110,8 @@ const container = {
   securityContext: {
     privileged: false,
   },
+  stdin: false,
+  tty: false,
   env: [],
   ports: [],
   livenessProbe: {},
@@ -141,7 +143,7 @@ const props = defineProps({
 
 const getContainer = async () => {
   state.verified = true;
-  const containers = state.containers;
+  const containers = JSON.parse(JSON.stringify(state.containers));
   const vs = [];
   //遍历itemRefs
   for (let index = 0; index < itemRefs.value.length; index++) {
@@ -154,16 +156,17 @@ const getContainer = async () => {
     vs.push(...volumes);
   }
   state.volumes = vs;
+  return containers;
 };
 
 const getContainers = async () => {
-  await getContainer();
+  const cs = await getContainer();
   let containers = [];
   let initContainers = [];
 
   let i = 0;
-  while (i < state.containers.length) {
-    const c = state.containers[i];
+  while (i < cs.length) {
+    const c = cs[i];
     if (c.isInitContainer) {
       delete c.isInitContainer;
       initContainers.push(c);

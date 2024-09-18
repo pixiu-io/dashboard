@@ -87,7 +87,6 @@
     title="预览"
     :yaml="state.deploymentForm"
     :read-only="true"
-    @confirm="logInfo"
   />
 </template>
 
@@ -211,9 +210,6 @@ const aggregateInfo = async () => {
     state.deploymentForm.spec.template.spec.volumes = volumes;
   }
   return true;
-};
-const logInfo = (yaml) => {
-  console.log(yaml);
 };
 const onPreView = async () => {
   if (await aggregateInfo()) {
