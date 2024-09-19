@@ -490,34 +490,43 @@ const cancelWhiteList = () => {
 };
 
 const confirmWhiteList = async () => {
+  let patchData;
+
   if (data.whiteListData.enable) {
-    let snippet = ['|'];
+    let snippet = [];
     for (let ip of data.whiteListData.allowIps) {
       snippet.push('allow ' + ip + ';');
     }
     snippet.push('deny all;');
+    patchData = {
+      metadata: {
+        annotations: {
+          'nginx.ingress.kubernetes.io/server-snippet': snippet.join('\n'),
+        },
+      },
+    };
   } else {
-    const patchData = {
+    patchData = {
       metadata: {
         annotations: {
           'nginx.ingress.kubernetes.io/server-snippet': null,
         },
       },
     };
-
-    const [res, err] = await patchIngress(
-      data.cluster,
-      data.whiteListData.namespace,
-      data.whiteListData.name,
-      patchData,
-    );
-    if (err) {
-      proxy.$notify.error(err.response.data.message);
-      return;
-    }
-    proxy.$notify.success('白名单设置完成');
-    cancelWhiteList();
   }
+  const [res, err] = await patchIngress(
+    data.cluster,
+    data.whiteListData.namespace,
+    data.whiteListData.name,
+    patchData,
+  );
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  proxy.$notify.success('白名单设置完成');
+  cancelWhiteList();
 };
 // 白名单结束
 
