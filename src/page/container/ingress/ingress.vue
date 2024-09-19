@@ -510,6 +510,8 @@ const confirmWhiteList = async () => {
       proxy.$notify.error(err.response.data.message);
       return;
     }
+    proxy.$notify.success('白名单设置完成');
+    cancelWhiteList();
   }
 };
 // 白名单结束
