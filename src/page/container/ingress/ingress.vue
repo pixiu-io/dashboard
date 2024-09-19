@@ -1,9 +1,4 @@
 <template>
-  <!-- <div class="title-card-container2">
-    <div style="flex-grow: 1">
-      <PiXiuYaml :refresh="getIngresses"></PiXiuYaml>
-    </div>
-  </div> -->
   <Description
     :description="'Ingress 是 Kubernetes 中用来定义 Kubernetes 服务访问的规则的资源。它定义了从集群外部到集群内服务的访问方式，包括协议、端口、路径等。'"
   />
@@ -281,6 +276,7 @@ import {
   updateIngress,
   getIngress,
   deleteIngress,
+  patchIngress,
 } from '@/services/kubernetes/ingressService';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Description from '@/components/description/index.vue';
@@ -337,6 +333,8 @@ const data = reactive({
     autosize: {
       minRows: 5,
     },
+    namespace: '',
+    name: '',
   },
 });
 
@@ -475,6 +473,9 @@ const handleDeleteDialog = (row) => {
 
 // 白名单开始
 const handleWhiteListDialog = (row) => {
+  data.whiteListData.namespace = row.metadata.namespace;
+  data.whiteListData.name = row.metadata.name;
+
   data.whiteListData.close = true;
 };
 
@@ -483,13 +484,34 @@ const cancelWhiteList = () => {
   setTimeout(() => {
     data.whiteListData.enable = false;
     data.whiteListData.allowIps = [];
+    data.whiteListData.namespace = '';
+    data.whiteListData.name = '';
   }, 100);
 };
 
-const confirmWhiteList = () => {
-  cancelWhiteList();
-};
+const confirmWhiteList = async () => {
+  if (data.whiteListData.enable) {
+  } else {
+    const patchData = {
+      metadata: {
+        annotations: {
+          'nginx.ingress.kubernetes.io/server-snippet': null,
+        },
+      },
+    };
 
+    const [res, err] = await patchIngress(
+      data.cluster,
+      data.whiteListData.namespace,
+      data.whiteListData.name,
+      patchData,
+    );
+    if (err) {
+      proxy.$notify.error(err.response.data.message);
+      return;
+    }
+  }
+};
 // 白名单结束
 
 const confirm = async () => {
