@@ -384,7 +384,6 @@ const handleInputConfirm = () => {
     return;
   }
   if (!checkIp()) {
-    console.log('进入异常');
     vaildator.value = false;
     errorMessage.value = '存在不正确的ip格式请检查';
     nextTick(() => {
