@@ -491,6 +491,11 @@ const cancelWhiteList = () => {
 
 const confirmWhiteList = async () => {
   if (data.whiteListData.enable) {
+    let snippet = ['|'];
+    for (let ip of data.whiteListData.allowIps) {
+      snippet.push('allow ' + ip + ';');
+    }
+    snippet.push('deny all;');
   } else {
     const patchData = {
       metadata: {
