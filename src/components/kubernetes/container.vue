@@ -326,8 +326,22 @@ const getEnv = async () => {
   }
 };
 
+const getVolumeMount = async () => {
+  if (!volumeMountRef.value) return;
+  const [volumeMount, verified] = await volumeMountRef.value.getVolumeMounts();
+  if (state.verified && !verified) {
+    state.verified = false;
+  } else {
+    state.container.volumeMounts = volumeMount;
+  }
+};
 const getContainer = async () => {
   state.verified = true;
+  if (containerRef.value) {
+    await containerRef.value.validate((valid) => {
+      if (state.verified && !valid) state.verified = false;
+    });
+  }
   await getPorts();
   await getEnv();
   await getLivenessData();
@@ -336,13 +350,8 @@ const getContainer = async () => {
   await getPreStop();
   await getPostStart();
   await getCommands();
+  await getVolumeMount();
 
-  if (volumeMountRef.value) state.container.volumeMounts = volumeMountRef.value.getVolumeMounts();
-  if (containerRef.value) {
-    await containerRef.value.validate((valid) => {
-      if (state.verified && !valid) state.verified = false;
-    });
-  }
   let volumes = [];
   if (volumeMountRef.value) {
     volumes = volumeMountRef.value.getVolumes();

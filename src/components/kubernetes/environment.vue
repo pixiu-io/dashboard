@@ -59,7 +59,7 @@
               <div v-if="scope.row.type === 'configMapKeyRef'" style="display: flex">
                 <el-form-item
                   :prop="'env.' + scope.$index + '.value'"
-                  :rules="[{ required: true, message: '不能为空', trigger: 'blur' }]"
+                  :rules="[{ required: true, message: '不能为空', trigger: 'change' }]"
                 >
                   <el-select
                     v-model="scope.row.value"
@@ -79,7 +79,7 @@
                 </el-form-item>
                 <el-form-item
                   :prop="'env.' + scope.$index + '.otherValue'"
-                  :rules="[{ required: true, message: '不能为空', trigger: 'blur' }]"
+                  :rules="[{ required: true, message: '不能为空', trigger: 'change' }]"
                 >
                   <el-select
                     v-model="scope.row.otherValue"
@@ -101,7 +101,7 @@
               <div v-else-if="scope.row.type === 'secretKeyRef'" style="display: flex">
                 <el-form-item
                   :prop="'env.' + scope.$index + '.value'"
-                  :rules="[{ required: true, message: '不能为空', trigger: 'blur' }]"
+                  :rules="[{ required: true, message: '不能为空', trigger: 'change' }]"
                 >
                   <el-select
                     v-model="scope.row.value"
@@ -121,7 +121,7 @@
                 </el-form-item>
                 <el-form-item
                   :prop="'env.' + scope.$index + '.otherValue'"
-                  :rules="[{ required: true, message: '不能为空', trigger: 'blur' }]"
+                  :rules="[{ required: true, message: '不能为空', trigger: 'change' }]"
                 >
                   <el-select
                     v-model="scope.row.otherValue"

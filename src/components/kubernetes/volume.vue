@@ -44,168 +44,212 @@
       >
     </el-form-item>
     <el-form-item label-width="100">
-      <el-table
-        v-show="state.volumeData.length !== 0 && state.show"
-        :data="state.volumeData"
-        style="width: 100%; font-size: 12px"
-        :cell-style="{ padding: '0,5px' }"
-        :row-style="{ padding: '2px' }"
-        :header-cell-style="{ padding: '5px' }"
-        :header-row-style="{ padding: '5px' }"
+      <el-form
+        ref="volumeRef"
+        :model="state"
+        status-icon
+        label-position="left"
+        require-asterisk-position="right"
       >
-        <el-table-column prop="" label="类型" width="130">
-          <template #default="scope">
-            <el-select
-              v-model="scope.row.type"
-              size="small"
-              @change="(val) => handleTypeChange(val, scope.$index)"
-            >
-              <el-option
-                v-for="item in state.typeList"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </template>
-        </el-table-column>
+        <el-table
+          v-show="state.volumeData.length !== 0 && state.show"
+          :data="state.volumeData"
+          style="width: 100%; font-size: 12px"
+          :cell-style="{ padding: '0,5px' }"
+          :row-style="{ padding: '2px' }"
+          :header-cell-style="{ padding: '5px' }"
+          :header-row-style="{ padding: '5px' }"
+        >
+          <el-table-column prop="" label="类型" width="130">
+            <template #default="scope">
+              <el-form-item>
+                <el-select
+                  v-model="scope.row.type"
+                  size="small"
+                  @change="(val) => handleTypeChange(val, scope.$index)"
+                >
+                  <el-option
+                    v-for="item in state.typeList"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  />
+                </el-select>
+              </el-form-item>
+            </template>
+          </el-table-column>
 
-        <el-table-column prop="name" label="名称" width="150">
-          <template #default="scope">
-            <el-input v-model="scope.row.name" size="small" />
-          </template>
-        </el-table-column>
-        <el-table-column prop="" label="挂载源" width="200">
-          <template #default="scope">
-            <el-input
-              v-if="scope.row.type === 'hostPath' && scope.row.hostPath"
-              v-model="scope.row.hostPath.path"
-              size="small"
-              placeholder="主机路径：/tmp"
-            />
-            <div v-if="scope.row.type === 'persistentVolumeClaim'" style="display: flex">
-              <el-select
-                v-model="scope.row.persistentVolumeClaim.claimName"
-                size="small"
-                :loading="state.loading"
-                show-overflow-tooltip
-                @click="getPvc"
+          <el-table-column label="名称" width="150">
+            <template #default="scope">
+              <el-form-item
+                :prop="'volumeData.' + scope.$index + '.name'"
+                :rules="[{ required: true, message: '不能为空', trigger: 'blur' }]"
               >
-                <el-option
-                  v-for="item in state.pvcdata"
-                  :key="item.metadata.uid"
-                  :label="item.metadata.name"
-                  :value="item.metadata.name"
-                />
-              </el-select>
-            </div>
-            <div v-if="scope.row.type === 'configMap'" style="display: flex">
-              <el-select
-                v-model="scope.row.configMap.name"
-                size="small"
-                :loading="state.loading"
-                show-overflow-tooltip
-                @click="getConfigMap()"
+                <el-input v-model="scope.row.name" size="small" />
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column label="挂载源" width="200">
+            <template #default="scope">
+              <el-form-item
+                v-if="scope.row.type === 'persistentVolumeClaim'"
+                :prop="'volumeData.' + scope.$index + '.persistentVolumeClaim.claimName'"
+                :rules="[{ required: true, message: '不能为空', trigger: 'change' }]"
               >
-                <el-option
-                  v-for="item in state.configMapData"
-                  :key="item.metadata.name"
-                  :label="item.metadata.name"
-                  :value="item.metadata.name"
+                <el-select
+                  v-model="scope.row.persistentVolumeClaim.claimName"
+                  size="small"
+                  style="width: 175px"
+                  :loading="state.loading"
+                  @click="getPvc"
+                >
+                  <el-option
+                    v-for="item in state.pvcdata"
+                    :key="item.metadata.uid"
+                    :label="item.metadata.name"
+                    :value="item.metadata.name"
+                  />
+                </el-select>
+              </el-form-item>
+              <div v-else-if="scope.row.type === 'configMap'" style="display: flex">
+                <el-form-item
+                  :prop="'volumeData.' + scope.$index + '.configMap.name'"
+                  :rules="[{ required: true, message: '不能为空', trigger: 'change' }]"
+                >
+                  <el-select
+                    v-model="scope.row.configMap.name"
+                    size="small"
+                    style="width: 175px"
+                    :loading="state.loading"
+                    show-overflow-tooltip
+                    @click="getConfigMap()"
+                  >
+                    <el-option
+                      v-for="item in state.configMapData"
+                      :key="item.metadata.name"
+                      :label="item.metadata.name"
+                      :value="item.metadata.name"
+                    />
+                  </el-select>
+                </el-form-item>
+                <el-button
+                  text
+                  type="primary"
+                  size="small"
+                  style="margin-left: 3px"
+                  @click="openDialog(scope.row, scope.$index)"
+                >
+                  <el-tooltip placement="top" effect="light">
+                    <template #content>
+                      <div
+                        v-for="(item, index) in scope.row.configMap.items"
+                        :key="index"
+                        style="display: flex; justify-content: space-between; width: 280px"
+                      >
+                        <span>Key : {{ item.key }}</span>
+                        <span>Path: {{ item.path }}</span>
+                      </div>
+                    </template>
+                    高级
+                  </el-tooltip>
+                </el-button>
+              </div>
+              <div v-else-if="scope.row.type === 'secret'" style="display: flex">
+                <el-form-item
+                  :prop="'volumeData.' + scope.$index + '.secret.secretName'"
+                  :rules="[{ required: true, message: '不能为空', trigger: 'change' }]"
+                >
+                  <el-select
+                    v-model="scope.row.secret.secretName"
+                    size="small"
+                    style="width: 175px"
+                    :loading="state.loading"
+                    show-overflow-tooltip
+                    @click="getSecret"
+                  >
+                    <el-option
+                      v-for="item in state.secretData"
+                      :key="item.metadata.name"
+                      :label="item.metadata.name"
+                      :value="item.metadata.name"
+                    />
+                  </el-select>
+                </el-form-item>
+                <el-button
+                  text
+                  type="primary"
+                  size="small"
+                  style="margin-left: 3px"
+                  @click="openDialog(scope.row, scope.$index)"
+                >
+                  <el-tooltip placement="top" effect="dark">
+                    <template #content>
+                      <div
+                        v-for="(item, index) in scope.row.secret.items"
+                        :key="index"
+                        style="display: flex; justify-content: space-between; width: 280px"
+                      >
+                        <span>Key : {{ item.key }}</span>
+                        <span>Path: {{ item.path }}</span>
+                      </div>
+                    </template>
+                    高级
+                  </el-tooltip>
+                </el-button>
+              </div>
+              <span v-else-if="scope.row.type === 'tmp'">临时目录</span>
+              <el-form-item
+                v-else
+                :prop="'volumeData.' + scope.$index + '.hostPath.path'"
+                :rules="[{ required: true, message: '不能为空', trigger: 'blur' }]"
+              >
+                <el-input
+                  v-if="scope.row.type === 'hostPath' && scope.row.hostPath"
+                  v-model="scope.row.hostPath.path"
+                  size="small"
+                  placeholder="主机路径：/tmp"
                 />
-              </el-select>
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column label="容器挂载路径" width="150">
+            <template #default="scope">
+              <el-form-item
+                :prop="'volumeData.' + scope.$index + '.volumeMountData.mountPath'"
+                :rules="[{ required: true, message: '不能为空', trigger: 'blur' }]"
+              >
+                <el-input
+                  v-model="scope.row.volumeMountData.mountPath"
+                  size="small"
+                  placeholder="容器路径：/app"
+                />
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column label="容器子路径" width="120">
+            <template #default="scope">
+              <el-form-item>
+                <el-input
+                  v-model="scope.row.volumeMountData.subPath"
+                  size="small"
+                  placeholder="默认为空"
+                />
+              </el-form-item>
+            </template>
+          </el-table-column>
+          <el-table-column>
+            <template #default="scope">
               <el-button
+                icon="RemoveFilled"
+                type="danger"
+                size="small"
                 text
-                type="primary"
-                size="small"
-                style="margin-left: 3px"
-                @click="openDialog(scope.row, scope.$index)"
-              >
-                <el-tooltip placement="top" effect="light">
-                  <template #content>
-                    <div
-                      v-for="(item, index) in scope.row.configMap.items"
-                      :key="index"
-                      style="display: flex; justify-content: space-between; width: 280px"
-                    >
-                      <span>Key : {{ item.key }}</span>
-                      <span>Path: {{ item.path }}</span>
-                    </div>
-                  </template>
-                  高级
-                </el-tooltip>
-              </el-button>
-            </div>
-            <div v-if="scope.row.type === 'secret'" style="display: flex">
-              <el-select
-                v-model="scope.row.secret.secretName"
-                size="small"
-                :loading="state.loading"
-                show-overflow-tooltip
-                @click="getSecret"
-              >
-                <el-option
-                  v-for="item in state.secretData"
-                  :key="item.metadata.name"
-                  :label="item.metadata.name"
-                  :value="item.metadata.name"
-                />
-              </el-select>
-              <el-button
-                text
-                type="primary"
-                size="small"
-                style="margin-left: 3px"
-                @click="openDialog(scope.row, scope.$index)"
-              >
-                <el-tooltip placement="top" effect="dark">
-                  <template #content>
-                    <div
-                      v-for="(item, index) in scope.row.secret.items"
-                      :key="index"
-                      style="display: flex; justify-content: space-between; width: 280px"
-                    >
-                      <span>Key : {{ item.key }}</span>
-                      <span>Path: {{ item.path }}</span>
-                    </div>
-                  </template>
-                  高级
-                </el-tooltip>
-              </el-button>
-            </div>
-            <span v-if="scope.row.type === 'tmp'">临时目录</span>
-          </template>
-        </el-table-column>
-        <el-table-column prop="mountPath" label="容器挂载路径" width="150">
-          <template #default="scope">
-            <el-input
-              v-model="scope.row.volumeMountData.mountPath"
-              size="small"
-              placeholder="容器路径：/app"
-            />
-          </template>
-        </el-table-column>
-        <el-table-column prop="subPath" label="容器子路径" width="120">
-          <template #default="scope">
-            <el-input
-              v-model="scope.row.volumeMountData.subPath"
-              size="small"
-              placeholder="默认为空"
-            />
-          </template>
-        </el-table-column>
-        <el-table-column>
-          <template #default="scope">
-            <el-button
-              icon="RemoveFilled"
-              type="danger"
-              size="small"
-              text
-              @click="state.volumeData.splice(scope.$index, 1)"
-            ></el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+                @click="state.volumeData.splice(scope.$index, 1)"
+              ></el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-form>
     </el-form-item>
     <el-dialog
       v-if="dialogFormVisible"
@@ -291,11 +335,13 @@ const { proxy } = getCurrentInstance();
 const uuid = jsPlumb.jsPlumbUtil.uuid;
 const dialogFormVisible = ref(false);
 const dialogRef = ref();
+const volumeRef = ref();
 
 const state = reactive({
   cluster: '',
   namespace: '',
   tmpData: {},
+  verified: true,
   index: 0,
   keyValData: {},
   set: false,
@@ -416,7 +462,15 @@ const handleConfirm = () => {
 };
 
 // 转换volumeData 为k8s所需类型的数据
-const handleVolumeData = () => {
+const getVolumeMounts = async () => {
+  state.verified = true;
+  if (volumeRef.value) {
+    await volumeRef.value.validate((valid) => {
+      if (state.verified && !valid) {
+        state.verified = false;
+      }
+    });
+  }
   const tmpVolume = [];
   const tempVolumeMount = [];
 
@@ -463,6 +517,8 @@ const handleVolumeData = () => {
   state.volumeMount = tempVolumeMount;
   state.tmpVolumes = tmpVolume;
   state.volumes = tmpVolume;
+
+  return [state.volumeMount, state.verified];
 };
 
 // 添加volumeData数据
@@ -580,11 +636,6 @@ onMounted(() => {
   }
 });
 
-const getVolumeMounts = () => {
-  handleVolumeData();
-  return state.volumeMount;
-};
-
 const getVolumes = () => {
   return state.volumes;
 };
@@ -594,4 +645,9 @@ defineExpose({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.el-form-item {
+  margin-bottom: 13px;
+  margin-top: 13px;
+}
+</style>
