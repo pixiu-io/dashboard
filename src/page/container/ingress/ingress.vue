@@ -1,9 +1,4 @@
 <template>
-  <!-- <div class="title-card-container2">
-    <div style="flex-grow: 1">
-      <PiXiuYaml :refresh="getIngresses"></PiXiuYaml>
-    </div>
-  </div> -->
   <Description
     :description="'Ingress 是 Kubernetes 中用来定义 Kubernetes 服务访问的规则的资源。它定义了从集群外部到集群内服务的访问方式，包括协议、端口、路径等。'"
   />
@@ -88,34 +83,49 @@
         >
         </el-table-column>
 
-        <el-table-column fixed="right" label="操作" width="170px">
+        <el-table-column fixed="right" label="操作" width="150px">
           <template #default="scope">
             <el-button
               size="small"
               type="text"
-              style="margin-right: -20px; margin-left: -10px; color: #006eff"
+              style="margin-right: -25px; margin-left: -10px; color: #006eff"
               @click="editIngress(scope.row)"
             >
               设置
             </el-button>
 
-            <el-button
-              type="text"
-              size="small"
-              style="margin-right: -25px; margin-left: 8px; color: #006eff"
-              @click="handleDeleteDialog(scope.row)"
-            >
-              删除
+            <el-button type="text" size="small" style="margin-right: -2px; color: #006eff">
+              事件
             </el-button>
 
-            <el-button
-              type="text"
-              size="small"
-              style="margin-right: 1px; color: #006eff"
-              @click="handleEditYamlDialog(scope.row)"
-            >
-              YAML 设置
-            </el-button>
+            <el-dropdown>
+              <span class="el-dropdown-link">
+                更多
+                <pixiu-icon name="icon-xiala" size="12px" type="iconfont" color="#006eff" />
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu class="dropdown-buttons">
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleEditYamlDialog(scope.row)"
+                  >
+                    编辑YAML
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleWhiteListDialog(scope.row)"
+                  >
+                    白名单
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleDeleteDialog(scope.row)"
+                  >
+                    删除
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </template>
         </el-table-column>
 
@@ -142,6 +152,111 @@
     @confirm="confirm"
     @cancel="cancel"
   ></pixiuDialog>
+
+  <el-dialog
+    :model-value="data.whiteListData.close"
+    style="color: #000000; font: 14px"
+    width="720px"
+    align-center
+    center
+    @close="cancelWhiteList"
+  >
+    <template #header>
+      <div
+        style="
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+          margin-top: 5px;
+          font-size: 14.5px;
+          color: #191919;
+        "
+      >
+        白名单
+      </div>
+    </template>
+
+    <el-card class="app-docs" style="margin-top: -5px; margin-left: 5px; height: 40px">
+      <el-icon
+        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+        ><WarningFilled
+      /></el-icon>
+      <div style="vertical-align: middle; margin-top: -40px">补充点 ingress 白名单的文案</div>
+    </el-card>
+
+    <el-form-item>
+      <template #label>
+        <span style="margin-left: 8px; font-size: 13px; color: #191919">启用</span>
+      </template>
+      <el-switch
+        v-model="data.whiteListData.enable"
+        style="margin-left: 15px"
+        inline-prompt
+        @change="changeSwitch"
+      />
+    </el-form-item>
+
+    <el-form-item v-if="data.whiteListData.enable">
+      <template #label>
+        <span style="margin-left: 8px; font-size: 13px; color: #191919">放通IP</span>
+      </template>
+      <div style="width: 80%">
+        <div
+          v-if="data.whiteListData.editable === true"
+          style="display: flex; flex-direction: column; width: 100%"
+        >
+          <el-input
+            ref="ipInput"
+            v-model="data.whiteListData.ipList"
+            style="margin-left: 5px; width: 90%"
+            type="textarea"
+            :autosize="data.whiteListData.autosize"
+            @keydown.enter="handleEnter"
+            @blur="handleInputConfirm"
+            @focus="
+              vaildator = true;
+              errorMessage = '';
+              clearStyle();
+            "
+          />
+          <span
+            v-if="vaildator === false"
+            style="
+              color: var(--el-color-danger);
+              font-size: 12px;
+              line-height: 12px;
+              margin-left: 5px;
+              margin-top: 2px;
+            "
+            >{{ errorMessage }}</span
+          >
+        </div>
+        <el-space
+          v-else
+          style="border: 1px solid #dcdfe6; margin-top: 10px; padding: 5px; width: 80%"
+          @click="enableEdit"
+        >
+          <el-tag
+            v-for="(ip, index) in data.whiteListData.allowIps"
+            :key="index"
+            closable
+            @close="handleClose(index)"
+            >{{ ip }}</el-tag
+          >
+        </el-space>
+      </div>
+    </el-form-item>
+
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-delete-cancel-button" @click="cancelWhiteList">取消</el-button>
+        <el-button type="primary" class="pixiu-delete-confirm-button" @click="confirmWhiteList"
+          >确认</el-button
+        >
+      </span>
+      <div style="margin-bottom: 10px" />
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="jsx">
@@ -153,7 +268,7 @@ import {
   formatterAddress,
   formatterNamespace,
 } from '@/utils/formatter';
-import { reactive, getCurrentInstance, onMounted, ref, onUnmounted } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref, onUnmounted, nextTick } from 'vue';
 import jsYaml from 'js-yaml';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import {
@@ -161,6 +276,7 @@ import {
   updateIngress,
   getIngress,
   deleteIngress,
+  patchIngress,
 } from '@/services/kubernetes/ingressService';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Description from '@/components/description/index.vue';
@@ -171,6 +287,9 @@ import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 const { proxy } = getCurrentInstance();
 const router = useRouter();
 const editYaml = ref();
+const ipInput = ref(null);
+const vaildator = ref(true);
+const errorMessage = ref('');
 
 const data = reactive({
   cluster: '',
@@ -203,6 +322,20 @@ const data = reactive({
     objectName: 'Ingress',
     deleteName: '',
   },
+
+  // 白名单数据
+  whiteListData: {
+    editable: true,
+    close: false,
+    enable: false,
+    allowIps: [],
+    ipList: '',
+    autosize: {
+      minRows: 5,
+    },
+    namespace: '',
+    name: '',
+  },
 });
 
 onMounted(() => {
@@ -217,6 +350,107 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('setItem', handleStorageChange);
 });
+
+const changeSwitch = (value) => {
+  if (value) {
+    vaildator.value = true;
+    errorMessage.value = '';
+    data.whiteListData.allowIps = [];
+    data.whiteListData.ipList = '';
+    data.whiteListData.editable = true;
+    nextTick(() => {
+      if (ipInput.value) {
+        ipInput.value.focus();
+      }
+    });
+  }
+};
+
+const handleEnter = (e) => {
+  e.preventDefault(); // 阻止默认的回车换行行为
+  handleInputConfirm();
+};
+
+const handleInputConfirm = () => {
+  if (data.whiteListData.ipList.trim() === '') {
+    vaildator.value = false;
+    errorMessage.value = '请输入IP地址';
+    nextTick(() => {
+      if (ipInput.value) {
+        ipInput.value.textarea.style.boxShadow =
+          '0 0 0 1px var(--el-color-danger,var(--el-color-danger)) inset';
+      }
+    });
+    return;
+  }
+  if (!checkIp()) {
+    vaildator.value = false;
+    errorMessage.value = '存在不正确的ip格式请检查';
+    nextTick(() => {
+      if (ipInput.value) {
+        ipInput.value.textarea.style.boxShadow =
+          '0 0 0 1px var(--el-color-danger,var(--el-color-danger)) inset';
+        // ipInput.value.focus();
+      }
+    });
+    return;
+  }
+  data.whiteListData.editable = false;
+  data.whiteListData.allowIps = data.whiteListData.ipList
+    .split(',')
+    .filter((item) => item.trim() !== '');
+};
+
+const checkIp = () => {
+  let flag = true;
+  data.whiteListData.ipList
+    .split(',')
+    .filter((item) => item.trim() !== '')
+    .forEach((item) => {
+      // 出现不满足的返回false
+      if (
+        !/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(
+          item,
+        )
+      ) {
+        flag = false;
+      }
+    });
+  return flag;
+};
+
+const clearStyle = () => {
+  nextTick(() => {
+    if (ipInput.value) {
+      vaildator.value = false;
+      ipInput.value.textarea.style.boxShadow = '';
+    }
+  });
+};
+
+const handleClose = (index) => {
+  data.whiteListData.allowIps.splice(index, 1);
+  nextTick(() => {
+    data.whiteListData.ipList = data.whiteListData.allowIps.join(',');
+    if (data.whiteListData.ipList.trim() === '') {
+      data.whiteListData.editable = true;
+      nextTick(() => {
+        if (ipInput.value) {
+          ipInput.value.focus();
+        }
+      });
+    }
+  });
+};
+
+const enableEdit = () => {
+  data.whiteListData.editable = true;
+  nextTick(() => {
+    if (ipInput.value) {
+      ipInput.value.focus();
+    }
+  });
+};
 
 const handleStorageChange = (e) => {
   if (e.storageArea === localStorage) {
@@ -235,6 +469,65 @@ const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.metadata.name;
 };
+
+// 白名单开始
+const handleWhiteListDialog = (row) => {
+  data.whiteListData.namespace = row.metadata.namespace;
+  data.whiteListData.name = row.metadata.name;
+
+  data.whiteListData.close = true;
+};
+
+const cancelWhiteList = () => {
+  data.whiteListData.close = false;
+  setTimeout(() => {
+    data.whiteListData.enable = false;
+    data.whiteListData.allowIps = [];
+    data.whiteListData.namespace = '';
+    data.whiteListData.name = '';
+  }, 100);
+};
+
+const confirmWhiteList = async () => {
+  let patchData;
+
+  if (data.whiteListData.enable) {
+    let snippet = [];
+    for (let ip of data.whiteListData.allowIps) {
+      snippet.push('allow ' + ip + ';');
+    }
+    snippet.push('deny all;');
+    patchData = {
+      metadata: {
+        annotations: {
+          'nginx.ingress.kubernetes.io/server-snippet': snippet.join('\n'),
+        },
+      },
+    };
+  } else {
+    patchData = {
+      metadata: {
+        annotations: {
+          'nginx.ingress.kubernetes.io/server-snippet': null,
+        },
+      },
+    };
+  }
+  const [res, err] = await patchIngress(
+    data.cluster,
+    data.whiteListData.namespace,
+    data.whiteListData.name,
+    patchData,
+  );
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  proxy.$notify.success('白名单设置完成');
+  cancelWhiteList();
+};
+// 白名单结束
 
 const confirm = async () => {
   const [result, err] = await deleteIngress(
