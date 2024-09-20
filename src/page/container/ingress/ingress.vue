@@ -200,7 +200,7 @@
       <template #label>
         <span style="margin-left: 8px; font-size: 13px; color: #191919">放通IP</span>
       </template>
-      <div style="width: 80%">
+      <div style="width: 100%">
         <div
           v-if="data.whiteListData.editable === true"
           style="display: flex; flex-direction: column; width: 100%"
@@ -233,7 +233,7 @@
         </div>
         <el-space
           v-else
-          style="border: 1px solid #dcdfe6; margin-top: 10px; padding: 5px; width: 80%"
+          style="border: 1px solid #dcdfe6; margin-top: 10px; padding: 5px; width: 90%"
           @click="enableEdit"
         >
           <el-tag
