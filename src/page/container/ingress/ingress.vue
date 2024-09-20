@@ -530,6 +530,13 @@ const confirmWhiteList = async () => {
       },
     };
   }
+
+  if (data.whiteListData.enable) {
+    if (data.whiteListData.ipList === '') {
+      return;
+    }
+  }
+
   const [res, err] = await patchIngress(
     data.cluster,
     data.whiteListData.namespace,
