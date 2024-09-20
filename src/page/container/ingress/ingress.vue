@@ -530,6 +530,15 @@ const confirmWhiteList = async () => {
       },
     };
   }
+
+  if (data.whiteListData.enable) {
+    console.log('data.whiteListData.allowIps', data.whiteListData.allowIps);
+    if (data.whiteListData.allowIps.length === 0) {
+      proxy.$notify.error('请输入IP地址');
+      return;
+    }
+  }
+
   const [res, err] = await patchIngress(
     data.cluster,
     data.whiteListData.namespace,
