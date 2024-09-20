@@ -200,7 +200,7 @@
       <template #label>
         <span style="margin-left: 8px; font-size: 13px; color: #191919">放通IP</span>
       </template>
-      <div style="width: 80%">
+      <div style="width: 100%">
         <div
           v-if="data.whiteListData.editable === true"
           style="display: flex; flex-direction: column; width: 100%"
@@ -233,7 +233,7 @@
         </div>
         <el-space
           v-else
-          style="border: 1px solid #dcdfe6; margin-top: 10px; padding: 5px; width: 80%"
+          style="border: 1px solid #dcdfe6; margin-top: 10px; padding: 5px; width: 90%"
           @click="enableEdit"
         >
           <el-tag
@@ -475,6 +475,22 @@ const handleWhiteListDialog = (row) => {
   data.whiteListData.namespace = row.metadata.namespace;
   data.whiteListData.name = row.metadata.name;
 
+  if (row.metadata.annotations) {
+    const snippet = row.metadata.annotations['nginx.ingress.kubernetes.io/server-snippet'];
+    if (snippet) {
+      data.whiteListData.enable = true;
+      data.whiteListData.allowIps = [];
+
+      let parts = snippet.split('\n');
+      parts.pop();
+      for (let p of parts) {
+        const result = p.slice(0, -1);
+        data.whiteListData.allowIps.push(result.split('allow ').join(''));
+        data.whiteListData.ipList = data.whiteListData.allowIps.join(',');
+      }
+    }
+  }
+
   data.whiteListData.close = true;
 };
 
@@ -482,6 +498,7 @@ const cancelWhiteList = () => {
   data.whiteListData.close = false;
   setTimeout(() => {
     data.whiteListData.enable = false;
+    data.whiteListData.ipList = '';
     data.whiteListData.allowIps = [];
     data.whiteListData.namespace = '';
     data.whiteListData.name = '';
@@ -526,6 +543,7 @@ const confirmWhiteList = async () => {
 
   proxy.$notify.success('白名单设置完成');
   cancelWhiteList();
+  getIngresses();
 };
 // 白名单结束
 
