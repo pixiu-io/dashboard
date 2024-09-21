@@ -59,3 +59,19 @@ export const getIngress = async (cluster, namespace, name) => {
   );
   return [result, err];
 };
+
+export const patchIngress = async (cluster, namespace, name, data) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'patch',
+      url: `/pixiu/proxy/${cluster}/apis/networking.k8s.io/v1/namespaces/${namespace}/ingresses/${name}`,
+      data: data,
+      config: {
+        headers: {
+          'Content-Type': 'application/merge-patch+json',
+        },
+      },
+    }),
+  );
+  return [result, err];
+};
