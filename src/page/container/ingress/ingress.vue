@@ -181,7 +181,10 @@
         style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
         ><WarningFilled
       /></el-icon>
-      <div style="vertical-align: middle; margin-top: -40px">补充点 ingress 白名单的文案</div>
+      <div style="vertical-align: middle; margin-top: -40px">
+        白名单用于限制固定 IP 访问此 Ingress 路由规则，默认为关闭状态（当前版本目前仅兼容
+        ingress-nginx 注解）
+      </div>
     </el-card>
 
     <el-form-item>
