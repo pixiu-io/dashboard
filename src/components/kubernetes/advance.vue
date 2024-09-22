@@ -64,7 +64,7 @@
                 <div v-if="state.strategy.type === 'RollingUpdate'">
                   <el-form-item
                     label="不可用Pod最大数量"
-                    class="nested-item"
+                    label-width="150"
                     prop="strategy.rollingUpdate.maxSurge"
                     :rules="[{ required: true, message: '不能为空', trigger: 'blur' }]"
                   >
@@ -77,7 +77,7 @@
                   </el-form-item>
                   <el-form-item
                     label="超过期望的Pod数量"
-                    class="nested-item"
+                    label-width="150"
                     prop="strategy.rollingUpdate.maxUnavailable"
                     :rules="[{ required: true, message: '不能为空', trigger: 'blur' }]"
                   >
