@@ -46,7 +46,9 @@
                   :volumes="state.deploymentForm.spec.template.spec.volumes"
                 />
               </el-tab-pane>
-              <el-tab-pane label="高级选项"><Advance /></el-tab-pane>
+              <el-tab-pane label="高级选项"
+                ><Advance ref="advanceRef" :strategy="state.deploymentForm.spec.strategy"
+              /></el-tab-pane>
             </el-tabs>
           </el-col>
           <el-col :span="2">
@@ -101,6 +103,7 @@ const { proxy } = getCurrentInstance();
 
 const metaRef = ref();
 const containersRef = ref();
+const advanceRef = ref();
 const state = reactive({
   activeTable: '0',
   yamlVisible: false,
@@ -137,6 +140,13 @@ const state = reactive({
       replicas: 1,
       selector: {
         matchLabels: {},
+      },
+      strategy: {
+        rollingUpdate: {
+          maxSurge: '25%',
+          maxUnavailable: '25%',
+        },
+        type: 'RollingUpdate',
       },
       template: {
         metadata: {
@@ -245,6 +255,14 @@ const aggregateInfo = async (checkAll = false) => {
       JSON.stringify(initContainers),
     );
     state.deploymentForm.spec.template.spec.volumes = volumes;
+  }
+  if (state.activeTable === '2' || checkAll) {
+    const [strategy, verified] = await advanceRef.value.getAdvanceInfo();
+    if (!verified) {
+      proxy.$message.error('请正确填写必填项');
+      return false;
+    }
+    state.deploymentForm.spec.strategy = JSON.parse(JSON.stringify(strategy));
   }
   return true;
 };

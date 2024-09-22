@@ -1,7 +1,9 @@
 <template>
   <div style="margin-top: 20px; margin-left: 20px">
     <el-form
+      ref="advanceRef"
       label-width="100px"
+      :model="state"
       status-icon
       label-position="left"
       require-asterisk-position="right"
@@ -21,6 +23,78 @@
       <div class="group">
         <div class="right-label">调度设置</div>
         <div class="context">
+          <el-form-item label="升级策略">
+            <div>
+              <div>
+                <el-checkbox v-model="state.set" label="开启" size="small" />
+                <el-button
+                  v-if="state.show"
+                  v-show="state.set"
+                  type="info"
+                  text
+                  icon="CaretTop"
+                  size="small"
+                  style="margin-left: 30px"
+                  @click="state.show = !state.show"
+                  >隐藏</el-button
+                >
+                <el-button
+                  v-else
+                  v-show="state.set"
+                  type="info"
+                  text
+                  icon="CaretBottom"
+                  size="small"
+                  style="margin-left: 30px"
+                  @click="state.show = !state.show"
+                  >展开</el-button
+                >
+              </div>
+              <div v-show="state.set && state.show">
+                <el-form-item>
+                  <el-radio-group v-model="state.strategy.type">
+                    <el-radio-button label="滚动升级" value="RollingUpdate" size="small" />
+                    <el-radio-button
+                      label="替换升级"
+                      value="Recreate"
+                      size="small"
+                    /> </el-radio-group
+                ></el-form-item>
+
+                <div v-if="state.strategy.type === 'RollingUpdate'">
+                  <el-form-item
+                    label="不可用Pod最大数量"
+                    class="nested-item"
+                    prop="strategy.rollingUpdate.maxSurge"
+                    :rules="[{ required: true, message: '不能为空', trigger: 'blur' }]"
+                  >
+                    <el-input
+                      v-model="state.strategy.rollingUpdate.maxSurge"
+                      size="small"
+                      style="width: 100px; margin-right: 20px"
+                    />
+                    <div class="pixiu-describe">可以是个数例如：5 ; 可以是填百分比，例如：25%</div>
+                  </el-form-item>
+                  <el-form-item
+                    label="超过期望的Pod数量"
+                    class="nested-item"
+                    prop="strategy.rollingUpdate.maxUnavailable"
+                    :rules="[{ required: true, message: '不能为空', trigger: 'blur' }]"
+                  >
+                    <el-input
+                      v-model="state.strategy.rollingUpdate.maxUnavailable"
+                      size="small"
+                      style="width: 100px; margin-right: 20px"
+                    />
+                    <div class="pixiu-describe">可以是个数例如：5 ; 可以是填百分比，例如：25%</div>
+                  </el-form-item>
+                </div>
+                <div v-else>
+                  <div class="pixiu-describe">在创建新 Pod 之前，所有现有的 Pod 会被杀死</div>
+                </div>
+              </div>
+            </div>
+          </el-form-item>
           <el-form-item label="节点亲和性">TODO</el-form-item>
           <el-form-item label="应用亲和性">TODO</el-form-item>
           <el-form-item label="应用反亲和性">TODO</el-form-item>
@@ -31,7 +105,52 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { onMounted, reactive, ref } from 'vue';
+import { isObjectValueEqual } from '@/utils/utils';
+
+const advanceRef = ref();
+const state = reactive({
+  set: false,
+  show: true,
+  verified: false,
+  strategy: {
+    rollingUpdate: {
+      maxSurge: '25%',
+      maxUnavailable: '25%',
+    },
+    type: 'RollingUpdate',
+  },
+});
+
+const props = defineProps({
+  strategy: {
+    type: Object,
+    default: () => {},
+  },
+});
+
+onMounted(() => {
+  if (props.strategy && !isObjectValueEqual(props.strategy, {})) {
+    state.strategy = JSON.parse(JSON.stringify(props.strategy));
+    state.set = true;
+  }
+});
+
+const getAdvanceInfo = async () => {
+  state.verified = true;
+  await advanceRef.value.validate((valid) => {
+    if (state.verified && !valid) {
+      state.verified = false;
+    }
+  });
+  return [state.strategy, state.verified];
+};
+
+defineExpose({
+  getAdvanceInfo,
+});
+</script>
 
 <style scoped>
 .group {
@@ -64,5 +183,8 @@
 }
 .context {
   margin-top: 10px;
+}
+.el-form-item {
+  margin-bottom: 15px;
 }
 </style>
