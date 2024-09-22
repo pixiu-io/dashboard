@@ -156,6 +156,7 @@ const state = reactive({
               tty: false,
               env: [],
               ports: [],
+              resources: {},
               livenessProbe: {},
               startupProbe: {},
               readinessProbe: {},
