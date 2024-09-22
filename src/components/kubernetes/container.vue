@@ -43,6 +43,94 @@
               <div class="pixiu-describe">设置镜像拉取策略，默认使用 IfNotPresent 策略</div>
             </div>
           </el-form-item>
+
+          <el-form-item>
+            <template #label>
+              <div style="display: flex; align-items: center">
+                资源配置
+                <el-tooltip
+                  class="box-item"
+                  effect="light"
+                  content="<div>即为该应用预留资源额度，包括CPU和内存两种资源，即容器独占该资源，</div><div> 防止因资源不足而被其他服务或进程争夺资源，导致应用不可用</div>"
+                  placement="top-start"
+                  raw-content
+                >
+                  <el-icon size="13px" color="#181a18" style="margin-left: 3px">
+                    <InfoFilled />
+                  </el-icon>
+                </el-tooltip></div
+            ></template>
+            <el-button
+              v-if="!state.resourceSet"
+              icon="Edit"
+              type="primary"
+              size="small"
+              text
+              style="padding-left: 0"
+              @click="setResource"
+              >配置</el-button
+            >
+            <el-button
+              v-else
+              icon="Delete"
+              type="primary"
+              size="small"
+              text
+              style="padding-left: 0"
+              @click="cancelResource"
+              >取消配置</el-button
+            >
+          </el-form-item>
+          <div v-if="state.resourceSet">
+            <el-form-item v-if="state.container.resources">
+              <div>
+                <div v-if="state.container.resources.requests">
+                  <span>所需资源： CPU</span>
+                  <el-input
+                    v-model="state.container.resources.requests.cpu"
+                    placeholder="如：10m"
+                    size="small"
+                    class="limit"
+                  />
+                  <span> Core</span>
+                  <el-divider direction="vertical" />
+                  <a>内存</a>
+                  <el-input
+                    v-model="state.container.resources.requests.memory"
+                    placeholder="如：300Mi"
+                    size="small"
+                    class="limit"
+                  />
+                </div>
+                <div class="pixiu-describe">
+                  建议根据实际使用情况设置，防止由于资源约束而无法调度或引发内存不足(OOM)错误
+                </div>
+
+                <div v-if="state.container.resources.limits">
+                  <span>资源限制： CPU</span>
+                  <el-input
+                    v-model="state.container.resources.limits.cpu"
+                    placeholder="如：10m"
+                    size="small"
+                    class="limit"
+                  />
+                  <span> Core</span>
+                  <el-divider direction="vertical" />
+                  <a>内存</a>
+                  <el-input
+                    v-model="state.container.resources.limits.memory"
+                    placeholder="如：500Mi"
+                    size="small"
+                    class="limit"
+                  />
+                </div>
+                <div class="pixiu-describe">
+                  建议根据实际使用情况设置，防止因资源不足导致应用不可用
+                </div>
+              </div>
+            </el-form-item>
+          </div>
+
           <el-form-item>
             <template #label>
               <el-tooltip
@@ -171,6 +259,7 @@
 <script setup>
 import { defineAsyncComponent, onMounted, reactive, ref } from 'vue';
 import { isObjectValueEqual } from '@/utils/utils';
+import { InfoFilled } from '@element-plus/icons-vue';
 
 const Port = defineAsyncComponent(() => import('./port.vue'));
 const Environment = defineAsyncComponent(() => import('./environment.vue'));
@@ -192,6 +281,7 @@ const postLifeRef = ref();
 const startCmdRef = ref();
 const volumeMountRef = ref();
 const state = reactive({
+  resourceSet: false,
   verified: true,
   container: {
     isInitContainer: false,
@@ -205,6 +295,16 @@ const state = reactive({
     tty: false,
     env: [],
     ports: [],
+    resources: {
+      limits: {
+        memory: '',
+        cpu: '',
+      },
+      requests: {
+        memory: '',
+        cpu: '',
+      },
+    },
     livenessProbe: {},
     readinessProbe: {},
     startupProbe: {},
@@ -228,6 +328,25 @@ const props = defineProps({
     required: true,
   },
 });
+
+const setResource = () => {
+  state.resourceSet = !state.resourceSet;
+  state.container.resources = {
+    limits: {
+      cpu: '',
+      memory: '',
+    },
+    requests: {
+      cpu: '',
+      memory: '',
+    },
+  };
+};
+
+const cancelResource = () => {
+  state.resourceSet = !state.resourceSet;
+  delete state.container.resources;
+};
 
 const getPorts = async () => {
   if (!portRef.value) return;
@@ -370,6 +489,9 @@ defineExpose({
 });
 onMounted(() => {
   state.container = JSON.parse(JSON.stringify(props.container));
+  if (!isObjectValueEqual(state.container.resources, {})) {
+    state.resourceSet = true;
+  }
 });
 </script>
 
@@ -404,5 +526,9 @@ onMounted(() => {
 }
 .context {
   margin-top: 10px;
+}
+.limit {
+  margin-left: 10px;
+  width: 90px;
 }
 </style>
