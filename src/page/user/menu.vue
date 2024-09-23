@@ -446,4 +446,13 @@ const getMenusByMenuType = async () => {
   background-color: #fff;
   cursor: pointer;
 }
+
+.header-docs {
+  text-align: left;
+  font-weight: bold;
+  padding-left: 5px;
+  margin-top: 5px;
+  font-size: 14.5px;
+  color: #191919;
+}
 </style>

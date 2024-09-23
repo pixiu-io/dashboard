@@ -151,21 +151,10 @@
     center
   >
     <template #header>
-      <div
-        style="
-          text-align: left;
-          font-weight: bold;
-          padding-left: 5px;
-          margin-top: 5px;
-          font-size: 14.5px;
-          color: #191919;
-        "
-      >
-        配额管理
-      </div>
+      <div class="header-docs">配额管理</div>
     </template>
 
-    <el-card class="app-docs" style="margin-top: -10px; height: 40px">
+    <el-card class="app-docs" style="margin-top: -0px; height: 40px; margin-left: 5px">
       <el-icon
         style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
         ><WarningFilled
@@ -175,7 +164,7 @@
       </div>
     </el-card>
 
-    <div style="margin-top: -25px" />
+    <div style="margin-top: -10px" />
 
     <template #footer>
       <span class="dialog-footer">
