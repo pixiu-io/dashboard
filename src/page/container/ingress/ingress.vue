@@ -324,6 +324,7 @@ const data = reactive({
     close: false,
     objectName: 'Ingress',
     deleteName: '',
+    deleteNamespace: '',
   },
 
   // 白名单数据
@@ -350,6 +351,7 @@ onMounted(() => {
 
   getIngresses();
 });
+
 onUnmounted(() => {
   window.removeEventListener('setItem', handleStorageChange);
 });
@@ -471,6 +473,7 @@ const handleStorageChange = (e) => {
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.metadata.name;
+  data.deleteDialog.deleteNamespace = row.metadata.namespace;
 };
 
 // 白名单开始
@@ -560,7 +563,7 @@ const confirmWhiteList = async () => {
 const confirm = async () => {
   const [result, err] = await deleteIngress(
     data.cluster,
-    data.namespace,
+    data.deleteDialog.deleteNamespace,
     data.deleteDialog.deleteName,
   );
   if (err) {
@@ -583,6 +586,7 @@ const clean = () => {
   data.deleteDialog.close = false;
   setTimeout(() => {
     data.deleteDialog.deleteName = '';
+    data.deleteDialog.deleteNamespace = '';
   }, 100);
 };
 
