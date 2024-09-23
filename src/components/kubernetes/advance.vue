@@ -53,14 +53,18 @@
               <div v-show="state.set && state.show">
                 <el-form-item>
                   <el-radio-group v-model="state.strategy.type">
-                    <el-radio-button label="滚动升级" value="RollingUpdate" size="small" />
+                    <el-radio-button
+                      label="滚动升级"
+                      value="RollingUpdate"
+                      size="small"
+                      @click="onChange"
+                    />
                     <el-radio-button
                       label="替换升级"
                       value="Recreate"
                       size="small"
                     /> </el-radio-group
                 ></el-form-item>
-
                 <div v-if="state.strategy.type === 'RollingUpdate'">
                   <el-form-item
                     label="不可用Pod最大数量"
@@ -130,6 +134,16 @@ const props = defineProps({
   },
 });
 
+const onChange = () => {
+  state.strategy = {
+    rollingUpdate: {
+      maxSurge: '25%',
+      maxUnavailable: '25%',
+    },
+    type: 'RollingUpdate',
+  };
+};
+
 onMounted(() => {
   if (props.strategy && !isObjectValueEqual(props.strategy, {})) {
     state.strategy = JSON.parse(JSON.stringify(props.strategy));
@@ -139,11 +153,18 @@ onMounted(() => {
 
 const getAdvanceInfo = async () => {
   state.verified = true;
+  if (!state.set) {
+    return [{}, true];
+  }
   await advanceRef.value.validate((valid) => {
     if (state.verified && !valid) {
       state.verified = false;
     }
   });
+
+  if (state.strategy.type === 'Recreate') {
+    delete state.strategy.rollingUpdate;
+  }
   return [state.strategy, state.verified];
 };
 

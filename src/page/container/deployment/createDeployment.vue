@@ -141,13 +141,7 @@ const state = reactive({
       selector: {
         matchLabels: {},
       },
-      strategy: {
-        rollingUpdate: {
-          maxSurge: '25%',
-          maxUnavailable: '25%',
-        },
-        type: 'RollingUpdate',
-      },
+      strategy: {},
       template: {
         metadata: {
           labels: {},
@@ -189,33 +183,7 @@ const state = reactive({
 const change = ref(false);
 const onHandleChange = async (activeName, oldActiveName) => {
   if (!change.value && activeName < oldActiveName) return;
-  if (oldActiveName === '0') {
-    const [metadata, replicas, verified] = await metaRef.value.getResult();
-    if (!verified) {
-      proxy.$message.error('请正确填写必填项');
-      return false;
-    }
-    state.deploymentForm.metadata = { ...metadata };
-    state.deploymentForm.spec.replicas = replicas;
-    state.deploymentForm.spec.selector.matchLabels = JSON.parse(JSON.stringify(metadata.labels));
-    state.deploymentForm.spec.template.metadata.labels = JSON.parse(
-      JSON.stringify(metadata.labels),
-    );
-  } else if (oldActiveName === '1') {
-    const [containers, initContainers, volumes, containerVerified] =
-      await containersRef.value.getContainers();
-    if (!containerVerified) {
-      proxy.$message.error('请正确填写必填项');
-      return false;
-    }
-    state.deploymentForm.spec.template.spec.containers = JSON.parse(JSON.stringify(containers));
-    state.deploymentForm.spec.template.spec.initContainers = JSON.parse(
-      JSON.stringify(initContainers),
-    );
-    state.deploymentForm.spec.template.spec.volumes = volumes;
-  }
-
-  return true;
+  return await aggregateInfo(oldActiveName);
 };
 const handleNext = async () => {
   if (await aggregateInfo(false)) {
@@ -228,8 +196,8 @@ const handlePre = () => {
   state.activeTable = Math.max(0, parseInt(state.activeTable, 10) - 1).toString();
 };
 
-const aggregateInfo = async (checkAll = false) => {
-  if (state.activeTable === '0' || checkAll) {
+const aggregateInfo = async (activeName, checkAll = false) => {
+  if (activeName === '0' || checkAll) {
     const [metadata, replicas, verified] = await metaRef.value.getResult();
     if (!verified) {
       proxy.$message.error('请正确填写必填项');
@@ -243,7 +211,7 @@ const aggregateInfo = async (checkAll = false) => {
       JSON.stringify(metadata.labels),
     );
   }
-  if (state.activeTable === '1' || checkAll) {
+  if (activeName === '1' || checkAll) {
     const [containers, initContainers, volumes, containerVerified] =
       await containersRef.value.getContainers();
     if (!containerVerified) {
@@ -256,7 +224,7 @@ const aggregateInfo = async (checkAll = false) => {
     );
     state.deploymentForm.spec.template.spec.volumes = volumes;
   }
-  if (state.activeTable === '2' || checkAll) {
+  if (activeName === '2' || checkAll) {
     const [strategy, verified] = await advanceRef.value.getAdvanceInfo();
     if (!verified) {
       proxy.$message.error('请正确填写必填项');
@@ -267,13 +235,13 @@ const aggregateInfo = async (checkAll = false) => {
   return true;
 };
 const onPreView = async () => {
-  if (await aggregateInfo(true)) {
+  if (await aggregateInfo(state.activeTable)) {
     state.yamlVisible = true;
   }
 };
 
 const confirmCreate = async () => {
-  if (!(await aggregateInfo(true))) {
+  if (!(await aggregateInfo(state.activeTable, true))) {
     return;
   }
   const [result, err] = await createDeployment(
