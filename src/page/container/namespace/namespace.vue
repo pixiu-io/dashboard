@@ -166,6 +166,20 @@
 
     <div style="margin-top: -10px" />
 
+    <el-table
+      :data="data.quota2Data"
+      stripe
+      style="margin-top: 2px"
+      header-row-class-name="pixiu-table-header"
+      :cell-style="{
+        'font-size': '12px',
+        color: '#191919',
+      }"
+    >
+      <el-table-column prop="name" label="应用资源" width="280px"> </el-table-column>
+      <el-table-column prop="image" label="配额"> </el-table-column>
+    </el-table>
+
     <template #footer>
       <span class="dialog-footer">
         <el-button class="pixiu-delete-cancel-button" @click="cancelQuota">取消</el-button>
@@ -236,6 +250,8 @@ const data = reactive({
     close: false,
     name: '',
   },
+
+  quota2Data: [],
 });
 
 onMounted(() => {
