@@ -1,6 +1,6 @@
 <template>
   <Description
-    :description="'Ingress 是 Kubernetes 中用来定义 Kubernetes 服务访问的规则的资源。它定义了从集群外部到集群内服务的访问方式，包括协议、端口、路径等。'"
+    :description="'Ingress 是服务访问的规则的资源。它定义了从集群外部到集群内服务的访问方式，包括协议、端口、路径等。'"
   />
   <div style="margin-top: 5px">
     <el-row>
@@ -74,7 +74,7 @@
         >
         </el-table-column>
 
-        <el-table-column prop="status" label="地址" :formatter="formatterAddress"></el-table-column>
+        <el-table-column label="地址" :formatter="formatterAddress"></el-table-column>
 
         <el-table-column
           label="创建时间"
