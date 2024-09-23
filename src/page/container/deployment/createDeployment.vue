@@ -186,7 +186,7 @@ const onHandleChange = async (activeName, oldActiveName) => {
   return await aggregateInfo(oldActiveName);
 };
 const handleNext = async () => {
-  if (await aggregateInfo(false)) {
+  if (await aggregateInfo(state.activeTable, false)) {
     change.value = true;
     state.activeTable = Math.min(2, parseInt(state.activeTable, 10) + 1).toString();
     change.value = false;

@@ -102,7 +102,7 @@
           <el-form-item label="节点亲和性">TODO</el-form-item>
           <el-form-item label="应用亲和性">TODO</el-form-item>
           <el-form-item label="应用反亲和性">TODO</el-form-item>
-          <el-form-item label="调度容忍">TODO</el-form-item>
+          <el-form-item label="调度容忍"><Toleration /></el-form-item>
         </div>
       </div>
     </el-form>
@@ -110,9 +110,10 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue';
+import { defineAsyncComponent, onMounted, reactive, ref } from 'vue';
 import { isObjectValueEqual } from '@/utils/utils';
 
+const Toleration = defineAsyncComponent(() => import('./tolerations.vue'));
 const advanceRef = ref();
 const state = reactive({
   set: false,
