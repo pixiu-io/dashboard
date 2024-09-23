@@ -169,7 +169,7 @@
     <el-table
       :data="data.quota2Data"
       stripe
-      style="margin-top: 2px"
+      style="margin-top: 2px; margin-left: 8px"
       header-row-class-name="pixiu-table-header"
       :cell-style="{
         'font-size': '12px',
@@ -177,7 +177,7 @@
       }"
     >
       <el-table-column prop="name" label="应用资源" width="280px"> </el-table-column>
-      <el-table-column prop="image" label="配额"> </el-table-column>
+      <el-table-column prop="value" label="配额"> </el-table-column>
     </el-table>
 
     <template #footer>
@@ -251,7 +251,16 @@ const data = reactive({
     name: '',
   },
 
-  quota2Data: [],
+  quota2Data: [
+    {
+      name: 'CPU(核)',
+      value: '',
+    },
+    {
+      name: '内存(MiB)',
+      value: '',
+    },
+  ],
 });
 
 onMounted(() => {
