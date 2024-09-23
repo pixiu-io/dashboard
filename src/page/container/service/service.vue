@@ -192,6 +192,7 @@ const data = reactive({
     close: false,
     objectName: 'Service',
     deleteName: '',
+    deleteNamespace: '',
   },
 });
 
@@ -225,12 +226,13 @@ const handleStorageChange = (e) => {
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.metadata.name;
+  data.deleteDialog.deleteNamespace = row.metadata.namespace;
 };
 
 const confirm = async () => {
   const [result, err] = await deleteService(
     data.cluster,
-    data.namespace,
+    data.deleteDialog.deleteNamespace,
     data.deleteDialog.deleteName,
   );
   if (err) {
@@ -253,6 +255,7 @@ const clean = () => {
   data.deleteDialog.close = false;
   setTimeout(() => {
     data.deleteDialog.deleteName = '';
+    data.deleteDialog.deleteNamespace = '';
   }, 100);
 };
 
