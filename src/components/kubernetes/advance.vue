@@ -102,7 +102,9 @@
           <el-form-item label="节点亲和性">TODO</el-form-item>
           <el-form-item label="应用亲和性">TODO</el-form-item>
           <el-form-item label="应用反亲和性">TODO</el-form-item>
-          <el-form-item label="调度容忍"><Toleration /></el-form-item>
+          <el-form-item label="调度容忍"
+            ><Toleration ref="tolerationRef" :tolerations="tolerations"
+          /></el-form-item>
         </div>
       </div>
     </el-form>
@@ -115,6 +117,8 @@ import { isObjectValueEqual } from '@/utils/utils';
 
 const Toleration = defineAsyncComponent(() => import('./tolerations.vue'));
 const advanceRef = ref();
+const tolerationRef = ref();
+
 const state = reactive({
   set: false,
   show: true,
@@ -132,6 +136,10 @@ const props = defineProps({
   strategy: {
     type: Object,
     default: () => {},
+  },
+  tolerations: {
+    type: Array,
+    default: () => [],
   },
 });
 
@@ -154,8 +162,13 @@ onMounted(() => {
 
 const getAdvanceInfo = async () => {
   state.verified = true;
+  const [toleratrions, verified] = await tolerationRef.value.getTolerations();
+  if (state.verified && !verified) {
+    state.verified = false;
+  }
+
   if (!state.set) {
-    return [{}, true];
+    return [{}, state.verified, toleratrions];
   }
   await advanceRef.value.validate((valid) => {
     if (state.verified && !valid) {
@@ -166,7 +179,8 @@ const getAdvanceInfo = async () => {
   if (state.strategy.type === 'Recreate') {
     delete state.strategy.rollingUpdate;
   }
-  return [state.strategy, state.verified];
+
+  return [state.strategy, state.verified, toleratrions];
 };
 
 defineExpose({

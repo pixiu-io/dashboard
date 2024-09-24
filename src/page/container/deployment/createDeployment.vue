@@ -47,7 +47,10 @@
                 />
               </el-tab-pane>
               <el-tab-pane label="高级选项"
-                ><Advance ref="advanceRef" :strategy="state.deploymentForm.spec.strategy"
+                ><Advance
+                  ref="advanceRef"
+                  :strategy="state.deploymentForm.spec.strategy"
+                  :tolerations="state.deploymentForm.spec.template.spec.tolerations"
               /></el-tab-pane>
             </el-tabs>
           </el-col>
@@ -147,6 +150,7 @@ const state = reactive({
           labels: {},
         },
         spec: {
+          tolerations: [],
           serviceAccount: 'default',
           containers: [
             {
@@ -225,12 +229,13 @@ const aggregateInfo = async (activeName, checkAll = false) => {
     state.deploymentForm.spec.template.spec.volumes = volumes;
   }
   if (activeName === '2' || checkAll) {
-    const [strategy, verified] = await advanceRef.value.getAdvanceInfo();
+    const [strategy, verified, tolerations] = await advanceRef.value.getAdvanceInfo();
     if (!verified) {
       proxy.$message.error('请正确填写必填项');
       return false;
     }
     state.deploymentForm.spec.strategy = JSON.parse(JSON.stringify(strategy));
+    state.deploymentForm.spec.template.spec.tolerations = JSON.parse(JSON.stringify(tolerations));
   }
   return true;
 };
