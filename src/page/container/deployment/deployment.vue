@@ -257,21 +257,10 @@
     @close="cancelImageFunc"
   >
     <template #header>
-      <div
-        style="
-          text-align: left;
-          font-weight: bold;
-          padding-left: 5px;
-          margin-top: 5px;
-          font-size: 14.5px;
-          color: #191919;
-        "
-      >
-        镜像列表
-      </div>
+      <div class="header-docs">镜像列表</div>
     </template>
 
-    <el-card class="app-docs" style="margin-top: -10px; height: 40px">
+    <el-card class="app-docs" style="margin-top: -0px; height: 40px; margin-left: 5px">
       <el-icon
         style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
         ><WarningFilled
@@ -286,7 +275,7 @@
       v-loading="data.imageData.loading"
       :data="data.imageData.images"
       stripe
-      style="margin-top: 2px"
+      style="margin-top: 2px; margin-left: 8px"
       header-row-class-name="pixiu-table-header"
       :cell-style="{
         'font-size': '12px',

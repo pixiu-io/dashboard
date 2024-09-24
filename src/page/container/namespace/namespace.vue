@@ -146,7 +146,7 @@
   <el-dialog
     :model-value="data.quotaData.close"
     style="color: #191919; font: 14px"
-    width="530px"
+    width="45%"
     align-center
     center
   >
@@ -163,7 +163,6 @@
         配额可以限制命名空间下的资源使用，支持以命名空间为粒度的资源划分。
       </div>
     </el-card>
-
     <div style="margin-top: -10px" />
 
     <el-table
@@ -176,7 +175,7 @@
         color: '#191919',
       }"
     >
-      <el-table-column prop="name" label="应用资源" width="280px"> </el-table-column>
+      <el-table-column prop="name" label="应用资源"> </el-table-column>
       <el-table-column prop="value" label="配额"> </el-table-column>
     </el-table>
 
@@ -258,6 +257,26 @@ const data = reactive({
     },
     {
       name: '内存(MiB)',
+      value: '',
+    },
+    {
+      name: '无状态负载 Deployment',
+      value: '',
+    },
+    {
+      name: '有状态负载 StatefulSet',
+      value: '',
+    },
+    {
+      name: '普通任务 Job',
+      value: '',
+    },
+    {
+      name: '定时任务 CronJob',
+      value: '',
+    },
+    {
+      name: '容器组 Pod',
       value: '',
     },
   ],
