@@ -214,6 +214,7 @@ import {
   getNamespaceList,
   getNamespace,
   deleteNamespace,
+  getQuotaList,
 } from '@/services/kubernetes/namespaceService';
 import { getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
@@ -293,8 +294,17 @@ onMounted(() => {
   getNamespaces();
 });
 
-const handleQuotaDialog = (row) => {
+const handleQuotaDialog = async (row) => {
   data.quotaData.namespaceName = row.metadata.name;
+
+  const [quotas, err] = await getQuotaList(data.cluster, row.metadata.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+  if (quotas.items.length !== 0) {
+    const quota = quotas.items[0];
+  }
 
   data.quotaData.close = true;
 };

@@ -75,3 +75,14 @@ export const getLocalNamespace = () => {
 
   return 'default';
 };
+
+export const getQuotaList = async (cluster, namespace) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: `/pixiu/proxy/${cluster}/api/v1/namespaces/${namespace}/resourcequotas`,
+      data: { limit: 1 },
+    }),
+  );
+  return [result, err];
+};
