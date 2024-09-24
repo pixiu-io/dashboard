@@ -146,7 +146,7 @@
   <el-dialog
     :model-value="data.quotaData.close"
     style="color: #191919; font: 14px"
-    width="45%"
+    width="42%"
     align-center
     center
   >
@@ -166,7 +166,7 @@
     <div style="margin-top: -10px" />
 
     <el-table
-      :data="data.quota2Data"
+      :data="data.quotaData.data"
       stripe
       style="margin-top: 2px; margin-left: 8px"
       header-row-class-name="pixiu-table-header"
@@ -175,8 +175,14 @@
         color: '#191919',
       }"
     >
-      <el-table-column prop="name" label="应用资源"> </el-table-column>
-      <el-table-column prop="value" label="配额"> </el-table-column>
+      <el-table-column prop="name" label="应用资源">
+        <template #default="scope"> {{ scope.row.name }} </template>
+      </el-table-column>
+      <el-table-column prop="value" label="配额">
+        <template #default="scope">
+          <el-input-number v-model="scope.row.value" size="small" />
+        </template>
+      </el-table-column>
     </el-table>
 
     <template #footer>
@@ -247,39 +253,38 @@ const data = reactive({
 
   quotaData: {
     close: false,
-    name: '',
+    namespaceName: '',
+    data: [
+      {
+        name: 'CPU(核)',
+        value: '不限制',
+      },
+      {
+        name: '内存(MiB)',
+        value: '不限制',
+      },
+      {
+        name: '无状态负载 Deployment',
+        value: '不限制',
+      },
+      {
+        name: '有状态负载 StatefulSet',
+        value: '不限制',
+      },
+      {
+        name: '普通任务 Job',
+        value: '不限制',
+      },
+      {
+        name: '定时任务 CronJob',
+        value: '不限制',
+      },
+      {
+        name: '容器组 Pod',
+        value: '不限制',
+      },
+    ],
   },
-
-  quota2Data: [
-    {
-      name: 'CPU(核)',
-      value: '',
-    },
-    {
-      name: '内存(MiB)',
-      value: '',
-    },
-    {
-      name: '无状态负载 Deployment',
-      value: '',
-    },
-    {
-      name: '有状态负载 StatefulSet',
-      value: '',
-    },
-    {
-      name: '普通任务 Job',
-      value: '',
-    },
-    {
-      name: '定时任务 CronJob',
-      value: '',
-    },
-    {
-      name: '容器组 Pod',
-      value: '',
-    },
-  ],
 });
 
 onMounted(() => {
@@ -289,17 +294,47 @@ onMounted(() => {
 });
 
 const handleQuotaDialog = (row) => {
-  data.quotaData.name = row.metadata.name;
+  data.quotaData.namespaceName = row.metadata.name;
+
   data.quotaData.close = true;
 };
 
 const cancelQuota = () => {
   data.quotaData.close = false;
-  data.quotaData.name = '';
+  setTimeout(() => {
+    data.quotaData.data = [
+      {
+        name: 'CPU(核)',
+        value: '不限制',
+      },
+      {
+        name: '内存(MiB)',
+        value: '不限制',
+      },
+      {
+        name: '无状态负载 Deployment',
+        value: '不限制',
+      },
+      {
+        name: '有状态负载 StatefulSet',
+        value: '不限制',
+      },
+      {
+        name: '普通任务 Job',
+        value: '不限制',
+      },
+      {
+        name: '定时任务 CronJob',
+        value: '不限制',
+      },
+      {
+        name: '容器组 Pod',
+        value: '不限制',
+      },
+    ];
+  }, 100);
 };
-const confirmQuota = () => {
-  data.quotaData.close = false;
-};
+const confirmQuota = () => {};
 
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
