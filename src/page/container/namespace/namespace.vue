@@ -267,6 +267,7 @@ const data = reactive({
   quotaData: {
     close: false,
     exists: false,
+    name: '',
     namespaceName: '',
     data: [
       {
@@ -308,18 +309,20 @@ onMounted(() => {
 });
 
 const handleQuotaDialog = async (row) => {
-  data.quotaData.namespaceName = row.metadata.name;
-
   const [quotas, err] = await getQuotaList(data.cluster, row.metadata.name);
   if (err) {
     proxy.$notify.error(err.response.data.message);
     return;
   }
+
   if (quotas.items.length !== 0) {
     data.quotaData.exists = true;
-    initQuotaData(quotas.items[0]);
+    const quota = quotas.items[0];
+    data.quotaData.name = quota.name;
+    initQuotaData(quota);
   }
 
+  data.quotaData.namespaceName = row.metadata.name;
   data.quotaData.close = true;
 };
 
@@ -372,6 +375,9 @@ const initQuotaData = (quota) => {
 };
 
 const initQuotaForm = (ds) => {
+  data.quotaForm.name = ds.name;
+  data.quotaData.namespace = ds.namespaceName;
+
   for (let d of ds) {
     if (d.name === 'CPU(核)') {
       if (d.value !== null && d.value !== 0) {
@@ -458,8 +464,20 @@ const cleanQuota = () => {
   };
 };
 
-const confirmQuota = () => {
+const confirmQuota = async () => {
   initQuotaForm(data.quotaData.data);
+
+  // 更新
+  if (data.quotaData.exists) {
+    // 如果已经存在，且均为空，则删除 quota，否则更新 hard 属性
+  } else {
+    // 创建
+    const [quotas, err] = await createQuota(data.cluster, data.quotaForm.namespace, data.quotaForm);
+    if (err) {
+      proxy.$notify.error(err.response.data.message);
+      return;
+    }
+  }
 };
 
 const handleDeleteDialog = (row) => {
