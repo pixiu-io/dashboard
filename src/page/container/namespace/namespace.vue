@@ -180,7 +180,7 @@
       </el-table-column>
       <el-table-column prop="value" label="配额">
         <template #default="scope">
-          <el-input-number v-model="scope.row.value" size="small" />
+          <el-input-number v-model="scope.row.value" size="small" :min="0" style="width: 115px" />
         </template>
       </el-table-column>
     </el-table>
@@ -252,8 +252,18 @@ const data = reactive({
     deleteName: '',
   },
 
+  quotaForm: {
+    metadata: {
+      name: '',
+      namespace: '',
+    },
+    spec: {
+      hard: {},
+    },
+  },
   quotaData: {
     close: false,
+    exists: false,
     namespaceName: '',
     data: [
       {
@@ -261,7 +271,7 @@ const data = reactive({
         value: '不限制',
       },
       {
-        name: '内存(MiB)',
+        name: '内存(GiB)',
         value: '不限制',
       },
       {
@@ -303,7 +313,8 @@ const handleQuotaDialog = async (row) => {
     return;
   }
   if (quotas.items.length !== 0) {
-    const quota = quotas.items[0];
+    data.quotaData.exists = true;
+    initQuotaData(quotas.items[0]);
   }
 
   data.quotaData.close = true;
@@ -312,13 +323,103 @@ const handleQuotaDialog = async (row) => {
 const cancelQuota = () => {
   data.quotaData.close = false;
   setTimeout(() => {
-    data.quotaData.data = [
+    cleanQuota();
+  }, 100);
+};
+
+const initQuotaData = (quota) => {
+  const hard = quota.spec.hard;
+  for (let d of data.quotaData.data) {
+    if (d.name === 'CPU(核)') {
+      if (hard['limits.cpu']) {
+        d.value = hard['limits.cpu'];
+      }
+    }
+    if (d.name === '内存(GiB)') {
+      if (hard['limits.memory']) {
+        d.value = hard['limits.memory'];
+      }
+    }
+    if (d.name === '无状态负载 Deployment') {
+      if (hard['deployments']) {
+        d.value = hard['deployments'];
+      }
+    }
+    if (d.name === '有状态负载 StatefulSet') {
+      if (hard['statefulsets']) {
+        d.value = hard['statefulsets'];
+      }
+    }
+    if (d.name === '普通任务 Job') {
+      if (hard['jobs']) {
+        d.value = hard['jobs'];
+      }
+    }
+    if (d.name === '定时任务 CronJob') {
+      if (hard['cronjobs']) {
+        d.value = hard['cronjobs'];
+      }
+    }
+    if (d.name === '容器组 Pod') {
+      if (hard['pods']) {
+        d.value = hard['pods'];
+      }
+    }
+  }
+};
+
+const initQuotaForm = (ds) => {
+  for (let d of ds) {
+    if (d.name === 'CPU(核)') {
+      if (d.value !== null && d.value !== 0) {
+        data.quotaForm.spec.hard['limits.cpu'] = d.value;
+      }
+    }
+    if (d.name === '内存(GiB)') {
+      if (d.value !== null && d.value !== 0) {
+        data.quotaForm.spec.hard['limits.memory'] = d.value + 'Gi';
+      }
+    }
+    if (d.name === '无状态负载 Deployment') {
+      if (d.value !== null && d.value !== 0) {
+        data.quotaForm.spec.hard['deployments'] = d.value;
+      }
+    }
+    if (d.name === '有状态负载 StatefulSet') {
+      if (d.value !== null && d.value !== 0) {
+        data.quotaForm.spec.hard['statefulsets'] = d.value;
+      }
+    }
+    if (d.name === '普通任务 Job') {
+      if (d.value !== null && d.value !== 0) {
+        data.quotaForm.spec.hard['jobs'] = d.value;
+      }
+    }
+    if (d.name === '定时任务 CronJob') {
+      if (d.value !== null && d.value !== 0) {
+        data.quotaForm.spec.hard['cronjobs'] = d.value;
+      }
+    }
+    if (d.name === '容器组 Pod') {
+      if (d.value !== null && d.value !== 0) {
+        data.quotaForm.spec.hard['pods'] = d.value;
+      }
+    }
+  }
+};
+
+const cleanQuota = () => {
+  data.quotaData = {
+    close: false,
+    exists: false,
+    namespaceName: '',
+    data: [
       {
         name: 'CPU(核)',
         value: '不限制',
       },
       {
-        name: '内存(MiB)',
+        name: '内存(GiB)',
         value: '不限制',
       },
       {
@@ -341,10 +442,22 @@ const cancelQuota = () => {
         name: '容器组 Pod',
         value: '不限制',
       },
-    ];
-  }, 100);
+    ],
+  };
+  data.quotaForm = {
+    metadata: {
+      name: '',
+      namespace: '',
+    },
+    spec: {
+      hard: {},
+    },
+  };
 };
-const confirmQuota = () => {};
+
+const confirmQuota = () => {
+  initQuotaForm(data.quotaData.data);
+};
 
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
@@ -382,22 +495,6 @@ const onChange = (v) => {
 
   if (data.pageInfo.search.searchInfo !== '') {
     searchNamespace();
-  }
-};
-
-const { toClipboard } = useClipboard();
-const copy = async (val) => {
-  try {
-    await toClipboard(val.metadata.name);
-    ElMessage({
-      type: 'success',
-      message: '已复制',
-    });
-  } catch (e) {
-    ElMessage({
-      type: 'error',
-      message: e.valueOf().toString(),
-    });
   }
 };
 
