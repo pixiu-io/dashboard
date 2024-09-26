@@ -215,6 +215,9 @@ import {
   getNamespace,
   deleteNamespace,
   getQuotaList,
+  patchQuota,
+  deleteQuota,
+  createQuota,
 } from '@/services/kubernetes/namespaceService';
 import { getTableData, searchData } from '@/utils/utils';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
