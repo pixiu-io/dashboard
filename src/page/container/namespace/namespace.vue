@@ -209,8 +209,6 @@
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
-import useClipboard from 'vue-clipboard3';
-import { ElMessage, ElMessageBox } from 'element-plus';
 import {
   getNamespaceList,
   getNamespace,
@@ -266,36 +264,37 @@ const data = reactive({
   quotaData: {
     close: false,
     exists: false,
+    needDelete: true,
     name: '',
     namespaceName: '',
     data: [
       {
         name: 'CPU(核)',
-        value: '不限制',
+        value: null,
       },
       {
         name: '内存(GiB)',
-        value: '不限制',
+        value: null,
       },
       {
         name: '无状态负载 Deployment',
-        value: '不限制',
+        value: null,
       },
       {
         name: '有状态负载 StatefulSet',
-        value: '不限制',
+        value: null,
       },
       {
         name: '普通任务 Job',
-        value: '不限制',
+        value: null,
       },
       {
         name: '定时任务 CronJob',
-        value: '不限制',
+        value: null,
       },
       {
         name: '容器组 Pod',
-        value: '不限制',
+        value: null,
       },
     ],
   },
@@ -374,47 +373,57 @@ const initQuotaData = (quota) => {
 };
 
 const getQuotaNameForNamespace = (ns) => {
-  return 'pixiu-' + quotaData.namespaceName + '-quota';
+  return 'pixiu-' + ns + '-quota';
 };
 
 const initQuotaForm = (quotaData) => {
   data.quotaForm.metadata.name = getQuotaNameForNamespace(quotaData.namespaceName);
   data.quotaForm.metadata.namespace = quotaData.namespaceName;
 
+  // 默认设置成true，根据直接情况修改
+  data.quotaData.needDelete = true;
+
   for (let d of quotaData.data) {
     if (d.name === 'CPU(核)') {
       if (d.value !== null && d.value !== 0) {
         data.quotaForm.spec.hard['limits.cpu'] = d.value;
+        data.quotaData.needDelete = false;
       }
     }
     if (d.name === '内存(GiB)') {
       if (d.value !== null && d.value !== 0) {
         data.quotaForm.spec.hard['limits.memory'] = d.value + 'Gi';
+        data.quotaData.needDelete = false;
       }
     }
     if (d.name === '无状态负载 Deployment') {
       if (d.value !== null && d.value !== 0) {
         data.quotaForm.spec.hard['deployments'] = d.value;
+        data.quotaData.needDelete = false;
       }
     }
     if (d.name === '有状态负载 StatefulSet') {
       if (d.value !== null && d.value !== 0) {
         data.quotaForm.spec.hard['statefulsets'] = d.value;
+        data.quotaData.needDelete = false;
       }
     }
     if (d.name === '普通任务 Job') {
       if (d.value !== null && d.value !== 0) {
         data.quotaForm.spec.hard['jobs'] = d.value;
+        data.quotaData.needDelete = false;
       }
     }
     if (d.name === '定时任务 CronJob') {
       if (d.value !== null && d.value !== 0) {
         data.quotaForm.spec.hard['cronjobs'] = d.value;
+        data.quotaData.needDelete = false;
       }
     }
     if (d.name === '容器组 Pod') {
       if (d.value !== null && d.value !== 0) {
         data.quotaForm.spec.hard['pods'] = d.value;
+        data.quotaData.needDelete = false;
       }
     }
   }
@@ -424,35 +433,36 @@ const cleanQuota = () => {
   data.quotaData = {
     close: false,
     exists: false,
+    needDelete: true,
     namespaceName: '',
     data: [
       {
         name: 'CPU(核)',
-        value: '不限制',
+        value: null,
       },
       {
         name: '内存(GiB)',
-        value: '不限制',
+        value: null,
       },
       {
         name: '无状态负载 Deployment',
-        value: '不限制',
+        value: null,
       },
       {
         name: '有状态负载 StatefulSet',
-        value: '不限制',
+        value: null,
       },
       {
         name: '普通任务 Job',
-        value: '不限制',
+        value: null,
       },
       {
         name: '定时任务 CronJob',
-        value: '不限制',
+        value: null,
       },
       {
         name: '容器组 Pod',
-        value: '不限制',
+        value: null,
       },
     ],
   };
@@ -472,18 +482,34 @@ const confirmQuota = async () => {
 
   // 更新
   if (data.quotaData.exists) {
-    console.log('data.quotaForm', data.quotaForm);
-    // 如果已经存在，且均为空，则删除 quota，否则更新 hard 属性
+    if (data.quotaData.needDelete) {
+      // 删除
+      const [result, err] = await deleteQuota(
+        data.cluster,
+        data.quotaForm.metadata.namespace,
+        data.quotaForm.metadata.name,
+      );
+      if (err) {
+        proxy.$notify.error(err.response.data.message);
+        return;
+      }
+    } else {
+      // 更新
+    }
   } else {
-    // 创建
-    const [quotas, err] = await createQuota(
-      data.cluster,
-      data.quotaForm.metadata.namespace,
-      data.quotaForm,
-    );
-    if (err) {
-      proxy.$notify.error(err.response.data.message);
+    if (data.quotaData.needDelete) {
+      cleanQuota();
       return;
+    } else {
+      const [quotas, err] = await createQuota(
+        data.cluster,
+        data.quotaForm.metadata.namespace,
+        data.quotaForm,
+      );
+      if (err) {
+        proxy.$notify.error(err.response.data.message);
+        return;
+      }
     }
   }
 
