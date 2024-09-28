@@ -149,6 +149,7 @@
     width="42%"
     align-center
     center
+    @close="cleanQuota"
   >
     <template #header>
       <div class="header-docs">配额管理</div>
@@ -220,13 +221,11 @@ import {
   createQuota,
 } from '@/services/kubernetes/namespaceService';
 import { getTableData, searchData } from '@/utils/utils';
-import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Description from '@/components/description/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { formatterTime, formatterIcon, formatterLabelsBackup2 } from '@/utils/formatter';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
-import { updateSecret } from '@/services/kubernetes/secretService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -374,11 +373,15 @@ const initQuotaData = (quota) => {
   }
 };
 
-const initQuotaForm = (ds) => {
-  data.quotaForm.name = ds.name;
-  data.quotaData.namespace = ds.namespaceName;
+const getQuotaNameForNamespace = (ns) => {
+  return 'pixiu-' + quotaData.namespaceName + '-quota';
+};
 
-  for (let d of ds) {
+const initQuotaForm = (quotaData) => {
+  data.quotaForm.metadata.name = getQuotaNameForNamespace(quotaData.namespaceName);
+  data.quotaForm.metadata.namespace = quotaData.namespaceName;
+
+  for (let d of quotaData.data) {
     if (d.name === 'CPU(核)') {
       if (d.value !== null && d.value !== 0) {
         data.quotaForm.spec.hard['limits.cpu'] = d.value;
@@ -465,19 +468,27 @@ const cleanQuota = () => {
 };
 
 const confirmQuota = async () => {
-  initQuotaForm(data.quotaData.data);
+  initQuotaForm(data.quotaData);
 
   // 更新
   if (data.quotaData.exists) {
+    console.log('data.quotaForm', data.quotaForm);
     // 如果已经存在，且均为空，则删除 quota，否则更新 hard 属性
   } else {
     // 创建
-    const [quotas, err] = await createQuota(data.cluster, data.quotaForm.namespace, data.quotaForm);
+    const [quotas, err] = await createQuota(
+      data.cluster,
+      data.quotaForm.metadata.namespace,
+      data.quotaForm,
+    );
     if (err) {
       proxy.$notify.error(err.response.data.message);
       return;
     }
   }
+
+  cleanQuota();
+  proxy.$notify.success(`Namespace(${data.quotaForm.metadata.namespace}) 配额设置成功`);
 };
 
 const handleDeleteDialog = (row) => {
