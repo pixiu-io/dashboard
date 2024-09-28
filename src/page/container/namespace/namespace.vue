@@ -146,26 +146,16 @@
   <el-dialog
     :model-value="data.quotaData.close"
     style="color: #191919; font: 14px"
-    width="530px"
+    width="42%"
     align-center
     center
+    @close="cleanQuota"
   >
     <template #header>
-      <div
-        style="
-          text-align: left;
-          font-weight: bold;
-          padding-left: 5px;
-          margin-top: 5px;
-          font-size: 14.5px;
-          color: #191919;
-        "
-      >
-        配额管理
-      </div>
+      <div class="header-docs">配额管理</div>
     </template>
 
-    <el-card class="app-docs" style="margin-top: -10px; height: 40px">
+    <el-card class="app-docs" style="margin-top: -0px; height: 40px; margin-left: 5px">
       <el-icon
         style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
         ><WarningFilled
@@ -174,8 +164,27 @@
         配额可以限制命名空间下的资源使用，支持以命名空间为粒度的资源划分。
       </div>
     </el-card>
+    <div style="margin-top: -10px" />
 
-    <div style="margin-top: -25px" />
+    <el-table
+      :data="data.quotaData.data"
+      stripe
+      style="margin-top: 2px; margin-left: 8px"
+      header-row-class-name="pixiu-table-header"
+      :cell-style="{
+        'font-size': '12px',
+        color: '#191919',
+      }"
+    >
+      <el-table-column prop="name" label="应用资源">
+        <template #default="scope"> {{ scope.row.name }} </template>
+      </el-table-column>
+      <el-table-column prop="value" label="配额">
+        <template #default="scope">
+          <el-input-number v-model="scope.row.value" size="small" :min="0" style="width: 115px" />
+        </template>
+      </el-table-column>
+    </el-table>
 
     <template #footer>
       <span class="dialog-footer">
@@ -200,21 +209,21 @@
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted } from 'vue';
-import useClipboard from 'vue-clipboard3';
-import { ElMessage, ElMessageBox } from 'element-plus';
 import {
   getNamespaceList,
   getNamespace,
   deleteNamespace,
+  getQuotaList,
+  patchQuota,
+  deleteQuota,
+  createQuota,
 } from '@/services/kubernetes/namespaceService';
 import { getTableData, searchData } from '@/utils/utils';
-import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Description from '@/components/description/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { formatterTime, formatterIcon, formatterLabelsBackup2 } from '@/utils/formatter';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
-import { updateSecret } from '@/services/kubernetes/secretService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -243,9 +252,52 @@ const data = reactive({
     deleteName: '',
   },
 
+  quotaForm: {
+    metadata: {
+      name: '',
+      namespace: '',
+    },
+    spec: {
+      hard: {},
+    },
+  },
   quotaData: {
     close: false,
+    exists: false,
+    needDelete: true,
     name: '',
+    namespaceName: '',
+    oldSpec: {},
+    data: [
+      {
+        name: 'CPU(核)',
+        value: null,
+      },
+      {
+        name: '内存(GiB)',
+        value: null,
+      },
+      {
+        name: '无状态负载 Deployment',
+        value: null,
+      },
+      {
+        name: '有状态负载 StatefulSet',
+        value: null,
+      },
+      {
+        name: '普通任务 Job',
+        value: null,
+      },
+      {
+        name: '定时任务 CronJob',
+        value: null,
+      },
+      {
+        name: '容器组 Pod',
+        value: null,
+      },
+    ],
   },
 });
 
@@ -255,17 +307,238 @@ onMounted(() => {
   getNamespaces();
 });
 
-const handleQuotaDialog = (row) => {
-  data.quotaData.name = row.metadata.name;
+const handleQuotaDialog = async (row) => {
+  const [quotas, err] = await getQuotaList(data.cluster, row.metadata.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  if (quotas.items.length !== 0) {
+    data.quotaData.exists = true;
+    const quota = quotas.items[0];
+    data.quotaData.name = quota.name;
+    data.quotaData.oldSpec = quota.spec;
+    initQuotaData(quota);
+  }
+
+  data.quotaData.namespaceName = row.metadata.name;
   data.quotaData.close = true;
 };
 
 const cancelQuota = () => {
   data.quotaData.close = false;
-  data.quotaData.name = '';
+  setTimeout(() => {
+    cleanQuota();
+  }, 100);
 };
-const confirmQuota = () => {
-  data.quotaData.close = false;
+
+const initQuotaData = (quota) => {
+  const hard = quota.spec.hard;
+  for (let d of data.quotaData.data) {
+    if (d.name === 'CPU(核)') {
+      if (hard['limits.cpu']) {
+        d.value = hard['limits.cpu'];
+      }
+    }
+    if (d.name === '内存(GiB)') {
+      if (hard['limits.memory']) {
+        d.value = hard['limits.memory'];
+      }
+    }
+    if (d.name === '无状态负载 Deployment') {
+      if (hard['deployments']) {
+        d.value = hard['deployments'];
+      }
+    }
+    if (d.name === '有状态负载 StatefulSet') {
+      if (hard['statefulsets']) {
+        d.value = hard['statefulsets'];
+      }
+    }
+    if (d.name === '普通任务 Job') {
+      if (hard['jobs']) {
+        d.value = hard['jobs'];
+      }
+    }
+    if (d.name === '定时任务 CronJob') {
+      if (hard['cronjobs']) {
+        d.value = hard['cronjobs'];
+      }
+    }
+    if (d.name === '容器组 Pod') {
+      if (hard['pods']) {
+        d.value = hard['pods'];
+      }
+    }
+  }
+};
+
+const getQuotaNameForNamespace = (ns) => {
+  return 'pixiu-' + ns + '-quota';
+};
+
+const initQuotaForm = (quotaData) => {
+  data.quotaForm.metadata.name = getQuotaNameForNamespace(quotaData.namespaceName);
+  data.quotaForm.metadata.namespace = quotaData.namespaceName;
+
+  // 默认设置成true，根据直接情况修改
+  data.quotaData.needDelete = true;
+
+  for (let d of quotaData.data) {
+    if (d.name === 'CPU(核)') {
+      if (d.value !== null && d.value !== 0) {
+        data.quotaForm.spec.hard['limits.cpu'] = d.value;
+        data.quotaData.needDelete = false;
+      }
+    }
+    if (d.name === '内存(GiB)') {
+      if (d.value !== null && d.value !== 0) {
+        data.quotaForm.spec.hard['limits.memory'] = d.value + 'Gi';
+        data.quotaData.needDelete = false;
+      }
+    }
+    if (d.name === '无状态负载 Deployment') {
+      if (d.value !== null && d.value !== 0) {
+        data.quotaForm.spec.hard['deployments'] = d.value;
+        data.quotaData.needDelete = false;
+      }
+    }
+    if (d.name === '有状态负载 StatefulSet') {
+      if (d.value !== null && d.value !== 0) {
+        data.quotaForm.spec.hard['statefulsets'] = d.value;
+        data.quotaData.needDelete = false;
+      }
+    }
+    if (d.name === '普通任务 Job') {
+      if (d.value !== null && d.value !== 0) {
+        data.quotaForm.spec.hard['jobs'] = d.value;
+        data.quotaData.needDelete = false;
+      }
+    }
+    if (d.name === '定时任务 CronJob') {
+      if (d.value !== null && d.value !== 0) {
+        data.quotaForm.spec.hard['cronjobs'] = d.value;
+        data.quotaData.needDelete = false;
+      }
+    }
+    if (d.name === '容器组 Pod') {
+      if (d.value !== null && d.value !== 0) {
+        data.quotaForm.spec.hard['pods'] = d.value;
+        data.quotaData.needDelete = false;
+      }
+    }
+  }
+};
+
+const cleanQuota = () => {
+  data.quotaData = {
+    close: false,
+    exists: false,
+    needDelete: true,
+    oldSpec: {},
+    namespaceName: '',
+    data: [
+      {
+        name: 'CPU(核)',
+        value: null,
+      },
+      {
+        name: '内存(GiB)',
+        value: null,
+      },
+      {
+        name: '无状态负载 Deployment',
+        value: null,
+      },
+      {
+        name: '有状态负载 StatefulSet',
+        value: null,
+      },
+      {
+        name: '普通任务 Job',
+        value: null,
+      },
+      {
+        name: '定时任务 CronJob',
+        value: null,
+      },
+      {
+        name: '容器组 Pod',
+        value: null,
+      },
+    ],
+  };
+  data.quotaForm = {
+    metadata: {
+      name: '',
+      namespace: '',
+    },
+    spec: {
+      hard: {},
+    },
+  };
+};
+
+const confirmQuota = async () => {
+  initQuotaForm(data.quotaData);
+
+  // 更新
+  if (data.quotaData.exists) {
+    if (data.quotaData.needDelete) {
+      // 删除
+      const [result, err] = await deleteQuota(
+        data.cluster,
+        data.quotaForm.metadata.namespace,
+        data.quotaForm.metadata.name,
+      );
+      if (err) {
+        proxy.$notify.error(err.response.data.message);
+        return;
+      }
+    } else {
+      // 更新
+      for (let key in data.quotaData.oldSpec.hard) {
+        if (!data.quotaForm.spec.hard[key]) {
+          data.quotaForm.spec.hard[key] = null;
+        }
+      }
+
+      const patchData = {
+        spec: {
+          hard: data.quotaForm.spec.hard,
+        },
+      };
+      const [result, err] = await patchQuota(
+        data.cluster,
+        data.quotaForm.metadata.namespace,
+        data.quotaForm.metadata.name,
+        patchData,
+      );
+      if (err) {
+        proxy.$notify.error(err.response.data.message);
+        return;
+      }
+    }
+  } else {
+    if (data.quotaData.needDelete) {
+      cleanQuota();
+      return;
+    } else {
+      const [result, err] = await createQuota(
+        data.cluster,
+        data.quotaForm.metadata.namespace,
+        data.quotaForm,
+      );
+      if (err) {
+        proxy.$notify.error(err.response.data.message);
+        return;
+      }
+    }
+  }
+
+  proxy.$notify.success(`命名空间配额设置成功`);
+  cleanQuota();
 };
 
 const handleDeleteDialog = (row) => {
@@ -304,22 +577,6 @@ const onChange = (v) => {
 
   if (data.pageInfo.search.searchInfo !== '') {
     searchNamespace();
-  }
-};
-
-const { toClipboard } = useClipboard();
-const copy = async (val) => {
-  try {
-    await toClipboard(val.metadata.name);
-    ElMessage({
-      type: 'success',
-      message: '已复制',
-    });
-  } catch (e) {
-    ElMessage({
-      type: 'error',
-      message: e.valueOf().toString(),
-    });
   }
 };
 
