@@ -267,6 +267,7 @@ const data = reactive({
     needDelete: true,
     name: '',
     namespaceName: '',
+    oldSpec: {},
     data: [
       {
         name: 'CPU(核)',
@@ -317,6 +318,7 @@ const handleQuotaDialog = async (row) => {
     data.quotaData.exists = true;
     const quota = quotas.items[0];
     data.quotaData.name = quota.name;
+    data.quotaData.oldSpec = quota.spec;
     initQuotaData(quota);
   }
 
@@ -434,6 +436,7 @@ const cleanQuota = () => {
     close: false,
     exists: false,
     needDelete: true,
+    oldSpec: {},
     namespaceName: '',
     data: [
       {
@@ -495,13 +498,34 @@ const confirmQuota = async () => {
       }
     } else {
       // 更新
+      for (let key in data.quotaData.oldSpec.hard) {
+        if (!data.quotaForm.spec.hard[key]) {
+          data.quotaForm.spec.hard[key] = null;
+        }
+      }
+
+      const patchData = {
+        spec: {
+          hard: data.quotaForm.spec.hard,
+        },
+      };
+      const [result, err] = await patchQuota(
+        data.cluster,
+        data.quotaForm.metadata.namespace,
+        data.quotaForm.metadata.name,
+        patchData,
+      );
+      if (err) {
+        proxy.$notify.error(err.response.data.message);
+        return;
+      }
     }
   } else {
     if (data.quotaData.needDelete) {
       cleanQuota();
       return;
     } else {
-      const [quotas, err] = await createQuota(
+      const [result, err] = await createQuota(
         data.cluster,
         data.quotaForm.metadata.namespace,
         data.quotaForm,
@@ -513,8 +537,8 @@ const confirmQuota = async () => {
     }
   }
 
+  proxy.$notify.success(`命名空间配额设置成功`);
   cleanQuota();
-  proxy.$notify.success(`Namespace(${data.quotaForm.metadata.namespace}) 配额设置成功`);
 };
 
 const handleDeleteDialog = (row) => {
