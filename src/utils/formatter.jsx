@@ -356,8 +356,10 @@ const formatterNodeStatus = (row, column, cellValue) => {
   let status = '已停止';
   for (let condition of cellValue.conditions) {
     if (condition.type === "Ready") {
-      status = "运行中"
-      break
+      if (condition.status === "True") {
+        status = "运行中"
+        break
+      }
     }
   }
 
