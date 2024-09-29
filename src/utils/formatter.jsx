@@ -372,10 +372,10 @@ const runningFormatter = (row, column, cellValue) => {
     <div style="display: flex">
       <div>
         <pixiu-icon
-          name={workloadStatus[status].name}
+          name={runningStatus[status].name}
           size="12px"
           type="iconfont"
-          color={workloadStatus[status].color}
+          color={runningStatus[status].color}
         />
       </div>
       <div style="margin-left: 6px"> {status}</div>
@@ -536,7 +536,7 @@ const formatterContainerImage = (row, column, cellValue) => {
 
 export { formatterContainerImage };
 
-const workloadStatus = {
+const runningStatus = {
   运行中: {
     name: 'icon-circle-dot',
     color: '#28C65A', // 绿色
