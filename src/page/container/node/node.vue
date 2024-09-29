@@ -80,7 +80,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="状态" prop="status" :formatter="runningFormatter">
+        <el-table-column label="状态" prop="status" :formatter="formatterNodeStatus">
         </el-table-column>
 
         <!--
@@ -429,7 +429,7 @@ import Pagination from '@/components/pagination/index.vue';
 import { getNodeList, patchNode, getNode, drainNode } from '@/services/kubernetes/nodeService';
 import {
   formatterTime,
-  runningFormatter,
+  formatterNodeStatus,
   formatString,
   formatNodeRole,
   formatNodeIp,
