@@ -202,7 +202,6 @@ import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref, onUnmounted } from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData } from '@/utils/utils';
-import PixiuTag from '@/components/pixiuTag/index.vue';
 import {
   formatterImage,
   formatterLabels,
@@ -210,21 +209,14 @@ import {
   formatterNamespace,
 } from '@/utils/formatter';
 
-import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
-import {
-  getDeploymentList,
-  getDeployment,
-  updateDeployment,
-  deleteDeployment,
-} from '@/services/kubernetes/deploymentService';
+import { getCronJobList } from '@/services/kubernetes/cronjobService';
 import Description from '@/components/description/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 
 const { proxy } = getCurrentInstance();
-const router = useRouter();
 const editYaml = ref();
 
 const data = reactive({
@@ -268,7 +260,6 @@ onMounted(() => {
 
   // 启动 localstorage 缓存监听，用于检测命名空间是否发生了变化
   window.addEventListener('setItem', handleStorageChange);
-
   getCronJobs();
 });
 
@@ -306,8 +297,8 @@ const confirm = async () => {
   }
   proxy.$message.success(`Deployment(${data.deleteDialog.deleteName}) 删除成功`);
 
+  getCronJobs();
   clean();
-  await getCronJobs();
 };
 
 const cancel = () => {
@@ -362,30 +353,9 @@ const confirmEditYaml = async () => {
   await getCronJobs();
 };
 
-const createDeployment = () => {
-  const url = `/deployments/createDeployment?cluster=${data.cluster}`;
-  router.push(url);
-};
-
-const editDeployment = (row) => {
-  const url = `/deployments/editDeployment?cluster=${data.cluster}&name=${row.metadata.name}`;
-  router.push(url);
-};
-
-const jumpRoute = (row) => {
-  router.push({
-    name: 'DeploymentDetail',
-    query: {
-      cluster: data.cluster,
-      namespace: data.namespace,
-      name: row.metadata.name,
-    },
-  });
-};
-
 const getCronJobs = async () => {
   data.loading = true;
-  const [result, err] = await getDeploymentList(data.cluster, data.namespace);
+  const [result, err] = await getCronJobList(data.cluster, data.namespace);
   data.loading = false;
   if (err) {
     proxy.$message.error(err.response.data.message);
@@ -402,15 +372,6 @@ const changeNamespace = async (val) => {
   data.namespace = val;
 
   getCronJobs();
-};
-
-const getNamespaces = async () => {
-  const [result, err] = await getNamespaceNames(data.cluster);
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-  data.namespaces = result;
 };
 
 const handleDeploymentScaleDialog = (row) => {
