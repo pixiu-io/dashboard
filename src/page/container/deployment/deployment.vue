@@ -235,7 +235,7 @@
       </el-form-item>
     </el-form>
 
-    <div style="margin-top: -25px"></div>
+    <div style="margin-top: -10px"></div>
     <template #footer>
       <span class="dialog-footer">
         <el-button class="pixiu-small-cancel-button" @click="closeDeploymentScaleDialog"
@@ -664,6 +664,7 @@ const data = reactive({
   deploymentReplicasDialog: false,
   deploymentRepcliasFrom: {
     name: '',
+    namespace: '',
     origin: '',
     target: 0,
   },
@@ -1167,17 +1168,22 @@ const searchDeployments = async () => {
 
 const handleDeploymentScaleDialog = (row) => {
   data.deploymentRepcliasFrom.name = row.metadata.name;
+  data.deploymentRepcliasFrom.namespace = row.metadata.namespace;
   data.deploymentRepcliasFrom.target = '';
   data.deploymentRepcliasFrom.origin = row.spec.replicas;
+
   data.deploymentReplicasDialog = true;
 };
 
 const closeDeploymentScaleDialog = (row) => {
   data.deploymentReplicasDialog = false;
 
-  data.deploymentRepcliasFrom.name = '';
-  data.deploymentRepcliasFrom.origin = '';
-  data.deploymentRepcliasFrom.target = 0;
+  setTimeout(() => {
+    data.deploymentRepcliasFrom.name = '';
+    data.deploymentRepcliasFrom.namespace = '';
+    data.deploymentRepcliasFrom.origin = '';
+    data.deploymentRepcliasFrom.target = 0;
+  }, 1000);
 };
 
 const confirmDeploymentScale = async () => {
@@ -1189,7 +1195,7 @@ const confirmDeploymentScale = async () => {
 
   const [result, err] = await patchDeployment(
     data.cluster,
-    data.namespace,
+    data.deploymentRepcliasFrom.namespace,
     data.deploymentRepcliasFrom.name,
     patchData,
   );
