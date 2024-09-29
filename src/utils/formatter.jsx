@@ -352,6 +352,31 @@ const formatterNamespace = (row, column, cellValue) => {
 };
 export { formatterNamespace };
 
+const formatterNodeStatus = (row, column, cellValue) => {
+  let status = '已停止';
+  for (let condition of cellValue.conditions) {
+    if (condition.type === "Ready") {
+      status = "运行中"
+      break
+    }
+  }
+
+  return (
+    <div style="display: flex">
+      <div>
+        <pixiu-icon
+          name={runningStatus[status].name}
+          size="12px"
+          type="iconfont"
+          color={runningStatus[status].color}
+        />
+      </div>
+      <div style="margin-left: 6px"> {status}</div>
+    </div>
+  );
+}
+export { formatterNodeStatus };
+
 const runningFormatter = (row, column, cellValue) => {
   let status = '运行中';
   let availableReplicas = cellValue.availableReplicas;
