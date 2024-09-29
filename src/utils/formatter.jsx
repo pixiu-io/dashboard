@@ -543,7 +543,7 @@ const runningStatus = {
   },
   更新中: {
     name: 'icon-circle-dot',
-    color: '#FFFF00', // 黄色
+    color: '#E0992C', // 黄色
   },
   已停止: {
     name: 'icon-circle-dot',
