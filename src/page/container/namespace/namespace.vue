@@ -351,28 +351,28 @@ const initQuotaData = (quota) => {
       }
     }
     if (d.name === '无状态负载 Deployment') {
-      if (hard['deployments']) {
-        d.value = hard['deployments'];
+      if (hard['count/deployments.apps']) {
+        d.value = hard['count/deployments.apps'];
       }
     }
     if (d.name === '有状态负载 StatefulSet') {
-      if (hard['statefulsets']) {
-        d.value = hard['statefulsets'];
+      if (hard['count/statefulsets.apps']) {
+        d.value = hard['count/statefulsets.apps'];
       }
     }
     if (d.name === '普通任务 Job') {
-      if (hard['jobs']) {
-        d.value = hard['jobs'];
+      if (hard['count/jobs.batch']) {
+        d.value = hard['count/jobs.batch'];
       }
     }
     if (d.name === '定时任务 CronJob') {
-      if (hard['cronjobs']) {
-        d.value = hard['cronjobs'];
+      if (hard['count/cronjobs.batch']) {
+        d.value = hard['count/cronjobs.batch'];
       }
     }
     if (d.name === '容器组 Pod') {
-      if (hard['pods']) {
-        d.value = hard['pods'];
+      if (hard['count/pods']) {
+        d.value = hard['count/pods'];
       }
     }
   }
@@ -405,32 +405,32 @@ const initQuotaForm = (quotaData) => {
     }
     if (d.name === '无状态负载 Deployment') {
       if (d.value !== null && d.value !== 0) {
-        newHard['deployments'] = d.value;
+        newHard['count/deployments.apps'] = d.value;
         data.quotaData.needDelete = false;
       }
     }
 
     if (d.name === '有状态负载 StatefulSet') {
       if (d.value !== null && d.value !== 0) {
-        newHard['statefulsets'] = d.value;
+        newHard['count/statefulsets.apps'] = d.value;
         data.quotaData.needDelete = false;
       }
     }
     if (d.name === '普通任务 Job') {
       if (d.value !== null && d.value !== 0) {
-        newHard['jobs'] = d.value;
+        newHard['count/jobs.batch'] = d.value;
         data.quotaData.needDelete = false;
       }
     }
     if (d.name === '定时任务 CronJob') {
       if (d.value !== null && d.value !== 0) {
-        newHard['cronjobs'] = d.value;
+        newHard['count/cronjobs.batch'] = d.value;
         data.quotaData.needDelete = false;
       }
     }
     if (d.name === '容器组 Pod') {
       if (d.value !== null && d.value !== 0) {
-        newHard['pods'] = d.value;
+        newHard['count/pods'] = d.value;
         data.quotaData.needDelete = false;
       }
     }
