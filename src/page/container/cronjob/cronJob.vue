@@ -5,7 +5,7 @@
     </div>
   </div> -->
   <Description
-    :description="'CronJob 比 Job 更强大，可以定时执行任务，且可以设置多个任务并行执行，其他特性与 Job 相同。'"
+    :description="'定时任务（CronJob）管理基于时间的任务（Job），可用于运行周期性任务或重复性任务'"
   />
   <div style="margin-top: 5px">
     <el-row>
