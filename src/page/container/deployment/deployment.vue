@@ -84,8 +84,7 @@
         >
         </el-table-column> -->
 
-        <el-table-column prop="status" label="状态" :formatter="runningFormatter">
-        </el-table-column>
+        <el-table-column prop="spec" label="状态" :formatter="runningFormatter"> </el-table-column>
 
         <el-table-column prop="status" label="实例个数(正常/全部)">
           <template #default="scope">

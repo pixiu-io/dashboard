@@ -354,6 +354,9 @@ export { formatterNamespace };
 
 const runningFormatter = (row, column, cellValue) => {
   const status = '运行中';
+
+  console.log("cellValue", cellValue)
+
   return (
     <div style="display: flex">
       <div>
@@ -526,6 +529,14 @@ const runningStatus = {
   运行中: {
     name: 'icon-circle-dot',
     color: '#28C65A', // 绿色
+  },
+  更新中: {
+    icon: 'icon-circle-dot',
+    color: '#FFFF00', // 黄色
+  },
+  已停止: {
+    icon: 'icon-circle-dot',
+    color: '#86929D', // 黄色
   },
   集群异常: {
     name: 'icon-yichang',
