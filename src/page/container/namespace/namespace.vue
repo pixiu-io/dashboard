@@ -343,32 +343,36 @@ const initQuotaData = (quota) => {
     }
     if (d.name === '内存(GiB)') {
       if (hard['limits.memory']) {
-        d.value = hard['limits.memory'];
+        if (hard['limits.memory'].includes('Gi')) {
+          d.value = hard['limits.memory'].split('Gi')[0];
+        } else {
+          d.value = hard['limits.memory'];
+        }
       }
     }
     if (d.name === '无状态负载 Deployment') {
-      if (hard['deployments']) {
-        d.value = hard['deployments'];
+      if (hard['count/deployments.apps']) {
+        d.value = hard['count/deployments.apps'];
       }
     }
     if (d.name === '有状态负载 StatefulSet') {
-      if (hard['statefulsets']) {
-        d.value = hard['statefulsets'];
+      if (hard['count/statefulsets.apps']) {
+        d.value = hard['count/statefulsets.apps'];
       }
     }
     if (d.name === '普通任务 Job') {
-      if (hard['jobs']) {
-        d.value = hard['jobs'];
+      if (hard['count/jobs.batch']) {
+        d.value = hard['count/jobs.batch'];
       }
     }
     if (d.name === '定时任务 CronJob') {
-      if (hard['cronjobs']) {
-        d.value = hard['cronjobs'];
+      if (hard['count/cronjobs.batch']) {
+        d.value = hard['count/cronjobs.batch'];
       }
     }
     if (d.name === '容器组 Pod') {
-      if (hard['pods']) {
-        d.value = hard['pods'];
+      if (hard['count/pods']) {
+        d.value = hard['count/pods'];
       }
     }
   }
@@ -384,51 +388,54 @@ const initQuotaForm = (quotaData) => {
 
   // 默认设置成true，根据直接情况修改
   data.quotaData.needDelete = true;
+  let newHard = {};
 
   for (let d of quotaData.data) {
     if (d.name === 'CPU(核)') {
       if (d.value !== null && d.value !== 0) {
-        data.quotaForm.spec.hard['limits.cpu'] = d.value;
+        newHard['limits.cpu'] = d.value;
         data.quotaData.needDelete = false;
       }
     }
     if (d.name === '内存(GiB)') {
       if (d.value !== null && d.value !== 0) {
-        data.quotaForm.spec.hard['limits.memory'] = d.value + 'Gi';
+        newHard['limits.memory'] = d.value + 'Gi';
         data.quotaData.needDelete = false;
       }
     }
     if (d.name === '无状态负载 Deployment') {
       if (d.value !== null && d.value !== 0) {
-        data.quotaForm.spec.hard['deployments'] = d.value;
+        newHard['count/deployments.apps'] = d.value;
         data.quotaData.needDelete = false;
       }
     }
+
     if (d.name === '有状态负载 StatefulSet') {
       if (d.value !== null && d.value !== 0) {
-        data.quotaForm.spec.hard['statefulsets'] = d.value;
+        newHard['count/statefulsets.apps'] = d.value;
         data.quotaData.needDelete = false;
       }
     }
     if (d.name === '普通任务 Job') {
       if (d.value !== null && d.value !== 0) {
-        data.quotaForm.spec.hard['jobs'] = d.value;
+        newHard['count/jobs.batch'] = d.value;
         data.quotaData.needDelete = false;
       }
     }
     if (d.name === '定时任务 CronJob') {
       if (d.value !== null && d.value !== 0) {
-        data.quotaForm.spec.hard['cronjobs'] = d.value;
+        newHard['count/cronjobs.batch'] = d.value;
         data.quotaData.needDelete = false;
       }
     }
     if (d.name === '容器组 Pod') {
       if (d.value !== null && d.value !== 0) {
-        data.quotaForm.spec.hard['pods'] = d.value;
+        newHard['count/pods'] = d.value;
         data.quotaData.needDelete = false;
       }
     }
   }
+  data.quotaForm.spec.hard = newHard;
 };
 
 const cleanQuota = () => {
@@ -504,6 +511,7 @@ const confirmQuota = async () => {
         }
       }
 
+      // 更新最新属性，移除老的值
       const patchData = {
         spec: {
           hard: data.quotaForm.spec.hard,
