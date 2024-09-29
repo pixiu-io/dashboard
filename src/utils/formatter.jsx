@@ -353,18 +353,29 @@ const formatterNamespace = (row, column, cellValue) => {
 export { formatterNamespace };
 
 const runningFormatter = (row, column, cellValue) => {
-  const status = '运行中';
+  let status = '运行中';
+  let availableReplicas = cellValue.availableReplicas;
+  if (availableReplicas === undefined) {
+    availableReplicas = 0;
+  }
+  let replicas = row.spec.replicas
 
-  console.log("cellValue", cellValue)
+  if (availableReplicas !== replicas) {
+    status = "更新中"
+  } else {
+    if (replicas === 0 && availableReplicas === 0) {
+      status = "已停止"
+    }
+  }
 
   return (
     <div style="display: flex">
       <div>
         <pixiu-icon
-          name={runningStatus[status].name}
+          name={workloadStatus[status].name}
           size="12px"
           type="iconfont"
-          color={runningStatus[status].color}
+          color={workloadStatus[status].color}
         />
       </div>
       <div style="margin-left: 6px"> {status}</div>
@@ -525,33 +536,33 @@ const formatterContainerImage = (row, column, cellValue) => {
 
 export { formatterContainerImage };
 
-const runningStatus = {
+const workloadStatus = {
   运行中: {
     name: 'icon-circle-dot',
     color: '#28C65A', // 绿色
   },
   更新中: {
-    icon: 'icon-circle-dot',
+    name: 'icon-circle-dot',
     color: '#FFFF00', // 黄色
   },
   已停止: {
-    icon: 'icon-circle-dot',
-    color: '#86929D', // 黄色
+    name: 'icon-circle-dot',
+    color: '#86929D', // 黑色
   },
   集群异常: {
     name: 'icon-yichang',
     color: '#FF0000', // 红色
   },
   构建中: {
-    icon: 'icon-dlf-shujuhugoujian',
+    name: 'icon-dlf-shujuhugoujian',
     color: '#0000FF', // 蓝色
   },
   删除中: {
-    icon: 'icon-shanchu',
+    name: 'icon-shanchu',
     color: '#FF00FF', // 牡丹红
   },
   等待构建: {
-    icon: 'icon-icon-',
+    name: 'icon-icon-',
     color: '#FFFF00', // 黄色
   },
 };
