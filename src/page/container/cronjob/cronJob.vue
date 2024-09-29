@@ -1,9 +1,4 @@
 <template>
-  <!-- <div class="title-card-container2">
-    <div style="flex-grow: 1">
-      <PiXiuYaml :refresh="getCronJobs"></PiXiuYaml>
-    </div>
-  </div> -->
   <Description
     :description="'定时任务（CronJob）管理基于时间的任务（Job），可用于运行周期性任务或重复性任务'"
   />
@@ -147,47 +142,6 @@
     </el-card>
   </div>
 
-  <el-dialog
-    :model-value="data.deploymentReplicasDialog"
-    style="color: #000000; font: 14px"
-    width="500px"
-    center
-    @close="closeDeploymentScaleDialog"
-  >
-    <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">调整副本配置</div>
-    </template>
-
-    <el-form label-width="100px" style="max-width: 300px">
-      <el-form-item label="原副本数">
-        <el-input v-model="data.deploymentRepcliasFrom.origin" disabled />
-      </el-form-item>
-      <el-form-item label="新副本数">
-        <el-input v-model="data.deploymentRepcliasFrom.target" placeholder="请输入新副本数" />
-      </el-form-item>
-    </el-form>
-
-    <div style="margin-top: -18px"></div>
-
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button class="pixiu-small-cancel-button" @click="closeDeploymentScaleDialog"
-          >取消</el-button
-        >
-        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmDeploymentScale"
-          >确认</el-button
-        >
-      </span>
-    </template>
-  </el-dialog>
-
-  <PiXiuViewOrEdit
-    :yaml-dialog="data.editYamlDialog"
-    title="编辑Yaml"
-    :yaml="data.yaml"
-    :read-only="false"
-    :refresh="getCronJobs"
-  ></PiXiuViewOrEdit>
   <pixiuDialog
     :close-event="data.deleteDialog.close"
     :object-name="data.deleteDialog.objectName"
