@@ -1183,7 +1183,7 @@ const closeDeploymentScaleDialog = (row) => {
     data.deploymentRepcliasFrom.namespace = '';
     data.deploymentRepcliasFrom.origin = '';
     data.deploymentRepcliasFrom.target = 0;
-  }, 1000);
+  }, 100);
 };
 
 const confirmDeploymentScale = async () => {
