@@ -57,15 +57,10 @@
           </template>
         </el-table-column>
 
-        <el-table-column
-          v-if="data.namespace === '全部空间'"
-          prop="metadata.namespace"
-          label="命名空间"
-          :formatter="formatterNamespace"
-        >
-        </el-table-column>
+        <el-table-column prop="spec.schedule" label="Schedule" />
+        <el-table-column prop="spec.suspend" label="Suspend" />
 
-        <el-table-column
+        <!-- <el-table-column
           prop="spec.template.metadata.labels"
           label="Labels"
           :formatter="formatterLabels"
@@ -76,36 +71,36 @@
           label="Selector"
           :formatter="formatterLabels"
         >
-        </el-table-column>
-
-        <el-table-column prop="status" label="Pod状态" :formatter="formatterPodStatus">
-        </el-table-column>
+        </el-table-column> -->
 
         <el-table-column
-          label="镜像"
-          prop="spec.template.spec.containers"
-          :formatter="formatterImage"
+          v-if="data.namespace === '全部空间'"
+          prop="metadata.namespace"
+          label="命名空间"
+          :formatter="formatterNamespace"
         >
         </el-table-column>
 
-        <el-table-column fixed="right" label="操作" width="180">
+        <el-table-column
+          prop="metadata.creationTimestamp"
+          label="创建时间"
+          sortable
+          :formatter="formatterTime"
+        />
+
+        <el-table-column fixed="right" label="操作" width="150px">
           <template #default="scope">
             <el-button
               size="small"
               type="text"
-              style="margin-right: -20px; margin-left: -10px; color: #006eff"
+              style="margin-right: -25px; margin-left: -10px; color: #006eff"
               @click="editDeployment(scope.row)"
             >
               编辑
             </el-button>
 
-            <el-button
-              type="text"
-              size="small"
-              style="margin-right: 1px; color: #006eff"
-              @click="handleDeploymentScaleDialog(scope.row)"
-            >
-              调整副本数
+            <el-button size="small" type="text" style="margin-right: -2px; color: #006eff">
+              暂停
             </el-button>
 
             <el-dropdown>
@@ -117,15 +112,15 @@
                 <el-dropdown-menu class="dropdown-buttons">
                   <el-dropdown-item
                     class="dropdown-item-buttons"
-                    @click="handleDeleteDialog(scope.row)"
+                    @click="handleEditYamlDialog(scope.row)"
                   >
-                    删除
+                    编辑YAML
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
-                    @click="handleEditYamlDialog(scope.row)"
+                    @click="handleDeleteDialog(scope.row)"
                   >
-                    编辑yaml
+                    删除
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
@@ -156,19 +151,13 @@ import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref, onUnmounted } from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData } from '@/utils/utils';
-import {
-  formatterImage,
-  formatterLabels,
-  formatterPodStatus,
-  formatterNamespace,
-} from '@/utils/formatter';
+import { formatterLabels, formatterNamespace, formatterTime } from '@/utils/formatter';
 
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import { getCronJobList } from '@/services/kubernetes/cronjobService';
 import Description from '@/components/description/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
-import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 
 const { proxy } = getCurrentInstance();
 const editYaml = ref();
@@ -185,15 +174,6 @@ const data = reactive({
   },
   tableData: [],
   loading: false,
-
-  deploymentList: [],
-
-  deploymentReplicasDialog: false,
-  deploymentRepcliasFrom: {
-    name: '',
-    origin: '',
-    target: 0,
-  },
 
   // yaml相关属性
   yaml: '',
@@ -321,48 +301,11 @@ const getCronJobs = async () => {
   data.tableData = getTableData(data.pageInfo, data.deploymentList);
 };
 
-const changeNamespace = async (val) => {
-  localStorage.setItem('namespace', val);
-  data.namespace = val;
-
-  getCronJobs();
-};
-
 const handleDeploymentScaleDialog = (row) => {
   data.deploymentRepcliasFrom.name = row.metadata.name;
   data.deploymentRepcliasFrom.target = '';
   data.deploymentRepcliasFrom.origin = row.spec.replicas;
   data.deploymentReplicasDialog = true;
-};
-
-const closeDeploymentScaleDialog = (row) => {
-  data.deploymentReplicasDialog = false;
-
-  data.deploymentRepcliasFrom.name = '';
-  data.deploymentRepcliasFrom.origin = '';
-  data.deploymentRepcliasFrom.target = 0;
-};
-
-const confirmDeploymentScale = async () => {
-  try {
-    const res = await proxy.$http({
-      method: 'patch',
-      url: `/pixiu/proxy/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${data.deploymentRepcliasFrom.name}/scale`,
-      data: {
-        spec: {
-          replicas: Number(data.deploymentRepcliasFrom.target),
-        },
-      },
-      config: {
-        headers: {
-          'Content-Type': 'application/merge-patch+json',
-        },
-      },
-    });
-
-    getCronJobs();
-    closeDeploymentScaleDialog();
-  } catch (error) {}
 };
 </script>
 
