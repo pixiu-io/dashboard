@@ -545,3 +545,14 @@
 .namespace-select-container {
   flex: 1;
 }
+
+.table-item-left1-buttom {
+  margin-right: -25px;
+  margin-left: -10px;
+  color: #006eff;
+}
+
+.table-item-left2-buttom {
+  margin-right: -2px;
+  color: #006eff;
+}

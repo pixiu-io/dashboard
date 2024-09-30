@@ -100,15 +100,13 @@
             <el-button
               size="small"
               type="text"
-              style="margin-right: -25px; margin-left: -10px; color: #006eff"
-              @click="editDeployment(scope.row)"
+              class="table-item-left1-buttom"
+              @click="editCronJob(scope.row)"
             >
               编辑
             </el-button>
 
-            <el-button size="small" type="text" style="margin-right: -2px; color: #006eff">
-              暂停
-            </el-button>
+            <el-button size="small" type="text" class="table-item-left2-buttom"> 暂停 </el-button>
 
             <el-dropdown>
               <span class="el-dropdown-link">
