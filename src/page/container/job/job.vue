@@ -75,14 +75,8 @@
         >
         </el-table-column> -->
 
-        <!-- <el-table-column prop="spec.parallelism" label="并行度"></el-table-column>
-        <el-table-column prop="spec.backoffLimit" label="重复次数"></el-table-column> -->
-
-        <el-table-column
-          prop="status"
-          label="执行时间"
-          :formatter="formatterJobDuration"
-        ></el-table-column>
+        <!-- <el-table-column prop="spec.parallelism" label="并行度"></el-table-column> -->
+        <!-- <el-table-column prop="spec.backoffLimit" label="重复次数"></el-table-column> -->
 
         <el-table-column
           prop="status"
@@ -121,6 +115,12 @@
                     @click="handleEditYamlDialog(scope.row)"
                   >
                     编辑YAML
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleDeleteDialog(scope.row)"
+                  >
+                    重新运行
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"

@@ -143,6 +143,7 @@
                   >
                     编辑YAML
                   </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons"> 修改定时计划 </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
                     @click="handleDeleteDialog(scope.row)"
