@@ -44,7 +44,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="30" />
-        <el-table-column prop="metadata.name" sortable label="名称">
+        <el-table-column prop="metadata.name" sortable label="实例名称">
           <template #default="scope">
             <el-link
               class="global-table-world"
@@ -72,6 +72,13 @@
           :formatter="formatterLabels"
         >
         </el-table-column> -->
+
+        <el-table-column
+          prop="status.lastScheduleTime"
+          label="上次执行时间"
+          sortable
+          :formatter="formatterTime"
+        />
 
         <el-table-column
           v-if="data.namespace === '全部空间'"
