@@ -112,7 +112,7 @@
             </el-button>
 
             <el-button
-              v-if="scope.row.spec.suspend === false"
+              v-if="scope.row.spec.suspend !== false"
               size="small"
               type="text"
               class="table-item-left2-buttom"
@@ -121,7 +121,7 @@
               启动
             </el-button>
             <el-button
-              v-if="scope.row.spec.suspend !== false"
+              v-if="scope.row.spec.suspend === false"
               size="small"
               type="text"
               class="table-item-left2-buttom"

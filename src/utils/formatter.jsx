@@ -697,7 +697,7 @@ export { formatterJobStatus };
 
 const formatterCronJobStatus = (row, column, cellValue) => {
   let status = '运行中';
-  if (cellValue.suspend === false) {
+  if (cellValue.suspend === true) {
     status = "已暂停"
   }
 
