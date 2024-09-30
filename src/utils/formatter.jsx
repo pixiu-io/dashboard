@@ -576,6 +576,14 @@ const runningStatus = {
     name: 'icon-circle-dot',
     color: '#86929D', // 黑色
   },
+  已完成: {
+    name: 'icon-circle-dot',
+    color: '#808080', // 灰色
+  },
+  已暂停: {
+    name: 'icon-circle-dot',
+    color: '#808080', // 灰色
+  },
   集群异常: {
     name: 'icon-yichang',
     color: '#FF0000', // 红色
@@ -672,3 +680,74 @@ const formatterClusterNode = (row, column, cellValue) => {
   );
 };
 export { formatterClusterNode };
+
+const formatterJobStatus = (row, column, cellValue) => {
+  let status = '运行中';
+  for (let condition of cellValue.conditions) {
+    if (condition.type === "Complete") {
+      if (condition.status === "True") {
+        status = "已完成"
+        }
+      }
+  }
+
+  return parseStatus(status)
+};
+export { formatterJobStatus };
+
+const formatterCronJobStatus = (row, column, cellValue) => {
+  let status = '运行中';
+  if (cellValue.suspend === false) {
+    status = "已暂停"
+  }
+
+  return parseStatus(status)
+};
+export { formatterCronJobStatus };
+
+const parseStatus = (s) => {
+  return (
+    <div style="display: flex">
+      <div>
+        <pixiu-icon
+          name={runningStatus[s].name}
+          size="12px"
+          type="iconfont"
+          color={runningStatus[s].color}
+        />
+      </div>
+      <div style="margin-left: 6px"> {s}</div>
+    </div>
+  );
+}
+
+const formatterJobDuration = (row, column, cellValue) => {
+  return calculateTimeDuration(cellValue.startTime, cellValue.completionTime)
+}
+export { formatterJobDuration };
+
+// 计算时间，直接得出最后的值，
+// 5s => 5秒
+// 65s => 1分5秒
+const calculateTimeDuration = (startTime, endTime) => {
+  const start = new Date(startTime)
+  const end = new Date(endTime)
+
+  const duration = end - start
+  var seconds = Math.floor((duration / 1000) % 60),
+      minutes = Math.floor((duration / (1000 * 60)) % 60),
+      hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+
+  let result = []
+  if (hours !== 0) {
+      result.push(hours + "时")
+  }
+  if (minutes !== 0) {
+      result.push(minutes + "分")
+  }
+  if (seconds !== 0) {
+      result.push(seconds + "秒")
+  }
+
+  return result.join(" ")
+}

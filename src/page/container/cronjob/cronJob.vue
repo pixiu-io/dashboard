@@ -1,11 +1,6 @@
 <template>
-  <!-- <div class="title-card-container2">
-    <div style="flex-grow: 1">
-      <PiXiuYaml :refresh="getCronJobs"></PiXiuYaml>
-    </div>
-  </div> -->
   <Description
-    :description="'CronJob 比 Job 更强大，可以定时执行任务，且可以设置多个任务并行执行，其他特性与 Job 相同。'"
+    :description="'定时任务（CronJob）管理基于时间的任务（Job），可用于运行周期性任务或重复性任务'"
   />
   <div style="margin-top: 5px">
     <el-row>
@@ -49,7 +44,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="30" />
-        <el-table-column prop="metadata.name" sortable label="名称">
+        <el-table-column prop="metadata.name" sortable label="实例名称">
           <template #default="scope">
             <el-link
               class="global-table-world"
@@ -63,14 +58,14 @@
         </el-table-column>
 
         <el-table-column
-          v-if="data.namespace === '全部空间'"
-          prop="metadata.namespace"
-          label="命名空间"
-          :formatter="formatterNamespace"
-        >
-        </el-table-column>
+          prop="spec"
+          label="状态"
+          :formatter="formatterCronJobStatus"
+        ></el-table-column>
 
-        <el-table-column
+        <el-table-column prop="spec.schedule" label="定时计划" />
+
+        <!-- <el-table-column
           prop="spec.template.metadata.labels"
           label="Labels"
           :formatter="formatterLabels"
@@ -81,36 +76,58 @@
           label="Selector"
           :formatter="formatterLabels"
         >
-        </el-table-column>
-
-        <el-table-column prop="status" label="Pod状态" :formatter="formatterPodStatus">
-        </el-table-column>
+        </el-table-column> -->
 
         <el-table-column
-          label="镜像"
-          prop="spec.template.spec.containers"
-          :formatter="formatterImage"
+          prop="status.lastScheduleTime"
+          label="上次执行时间"
+          sortable
+          :formatter="formatterTime"
+        />
+
+        <el-table-column
+          v-if="data.namespace === '全部空间'"
+          prop="metadata.namespace"
+          label="命名空间"
+          :formatter="formatterNamespace"
         >
         </el-table-column>
 
-        <el-table-column fixed="right" label="操作" width="180">
+        <el-table-column
+          prop="metadata.creationTimestamp"
+          label="创建时间"
+          sortable
+          :formatter="formatterTime"
+        />
+
+        <el-table-column fixed="right" label="操作" width="150px">
           <template #default="scope">
             <el-button
               size="small"
               type="text"
-              style="margin-right: -20px; margin-left: -10px; color: #006eff"
-              @click="editDeployment(scope.row)"
+              class="table-item-left1-buttom"
+              @click="editCronJob(scope.row)"
             >
               编辑
             </el-button>
 
             <el-button
-              type="text"
+              v-if="scope.row.spec.suspend === false"
               size="small"
-              style="margin-right: 1px; color: #006eff"
-              @click="handleDeploymentScaleDialog(scope.row)"
+              type="text"
+              class="table-item-left2-buttom"
+              @click="changeCronJobSuspend(scope.row)"
             >
-              调整副本数
+              启动
+            </el-button>
+            <el-button
+              v-if="scope.row.spec.suspend !== false"
+              size="small"
+              type="text"
+              class="table-item-left2-buttom"
+              @click="changeCronJobSuspend(scope.row)"
+            >
+              暂停
             </el-button>
 
             <el-dropdown>
@@ -122,15 +139,16 @@
                 <el-dropdown-menu class="dropdown-buttons">
                   <el-dropdown-item
                     class="dropdown-item-buttons"
+                    @click="handleEditYamlDialog(scope.row)"
+                  >
+                    编辑YAML
+                  </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons"> 修改定时计划 </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
                     @click="handleDeleteDialog(scope.row)"
                   >
                     删除
-                  </el-dropdown-item>
-                  <el-dropdown-item
-                    class="dropdown-item-buttons"
-                    @click="handleEditYamlDialog(scope.row)"
-                  >
-                    编辑yaml
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
@@ -147,47 +165,6 @@
     </el-card>
   </div>
 
-  <el-dialog
-    :model-value="data.deploymentReplicasDialog"
-    style="color: #000000; font: 14px"
-    width="500px"
-    center
-    @close="closeDeploymentScaleDialog"
-  >
-    <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">调整副本配置</div>
-    </template>
-
-    <el-form label-width="100px" style="max-width: 300px">
-      <el-form-item label="原副本数">
-        <el-input v-model="data.deploymentRepcliasFrom.origin" disabled />
-      </el-form-item>
-      <el-form-item label="新副本数">
-        <el-input v-model="data.deploymentRepcliasFrom.target" placeholder="请输入新副本数" />
-      </el-form-item>
-    </el-form>
-
-    <div style="margin-top: -18px"></div>
-
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button class="pixiu-small-cancel-button" @click="closeDeploymentScaleDialog"
-          >取消</el-button
-        >
-        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmDeploymentScale"
-          >确认</el-button
-        >
-      </span>
-    </template>
-  </el-dialog>
-
-  <PiXiuViewOrEdit
-    :yaml-dialog="data.editYamlDialog"
-    title="编辑Yaml"
-    :yaml="data.yaml"
-    :read-only="false"
-    :refresh="getCronJobs"
-  ></PiXiuViewOrEdit>
   <pixiuDialog
     :close-event="data.deleteDialog.close"
     :object-name="data.deleteDialog.objectName"
@@ -202,29 +179,21 @@ import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref, onUnmounted } from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData } from '@/utils/utils';
-import PixiuTag from '@/components/pixiuTag/index.vue';
 import {
-  formatterImage,
   formatterLabels,
-  formatterPodStatus,
   formatterNamespace,
+  formatterTime,
+  formatterCronJobStatus,
 } from '@/utils/formatter';
 
-import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
-import {
-  getDeploymentList,
-  getDeployment,
-  updateDeployment,
-  deleteDeployment,
-} from '@/services/kubernetes/deploymentService';
+import { getCronJobList } from '@/services/kubernetes/cronjobService';
 import Description from '@/components/description/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
-import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
+import { patchCronJob } from '../../../services/kubernetes/cronjobService';
 
 const { proxy } = getCurrentInstance();
-const router = useRouter();
 const editYaml = ref();
 
 const data = reactive({
@@ -240,14 +209,7 @@ const data = reactive({
   tableData: [],
   loading: false,
 
-  deploymentList: [],
-
-  deploymentReplicasDialog: false,
-  deploymentRepcliasFrom: {
-    name: '',
-    origin: '',
-    target: 0,
-  },
+  noLoading: false,
 
   // yaml相关属性
   yaml: '',
@@ -268,7 +230,6 @@ onMounted(() => {
 
   // 启动 localstorage 缓存监听，用于检测命名空间是否发生了变化
   window.addEventListener('setItem', handleStorageChange);
-
   getCronJobs();
 });
 
@@ -306,8 +267,8 @@ const confirm = async () => {
   }
   proxy.$message.success(`Deployment(${data.deleteDialog.deleteName}) 删除成功`);
 
+  getCronJobs();
   clean();
-  await getCronJobs();
 };
 
 const cancel = () => {
@@ -328,6 +289,29 @@ const onChange = (v) => {
   data.tableData = getTableData(data.pageInfo, data.deploymentList);
 };
 
+const changeCronJobSuspend = async (row) => {
+  const patchData = {
+    spec: {
+      suspend: !row.spec.suspend,
+    },
+  };
+
+  const [result, err] = await patchCronJob(
+    data.cluster,
+    row.metadata.namespace,
+    row.metadata.name,
+    patchData,
+  );
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.noLoading = true;
+  getCronJobs();
+  data.noLoading = false;
+};
+
 const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
   const [result, err] = await getDeployment(data.cluster, data.namespace, data.yamlName);
@@ -339,53 +323,12 @@ const handleEditYamlDialog = async (row) => {
   data.editYamlDialog = true;
 };
 
-const closeEditYamlDialog = (row) => {
-  data.yaml = '';
-  data.yamlName = '';
-  data.editYamlDialog = false;
-};
-
-const confirmEditYaml = async () => {
-  const yamlData = jsYaml.load(editYaml.value.code);
-  const [result, err] = await updateDeployment(
-    data.cluster,
-    data.namespace,
-    data.yamlName,
-    yamlData,
-  );
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-  proxy.$message.success(`Deployment(${data.yamlName}) YAML 更新成功`);
-  closeEditYamlDialog();
-  await getCronJobs();
-};
-
-const createDeployment = () => {
-  const url = `/deployments/createDeployment?cluster=${data.cluster}`;
-  router.push(url);
-};
-
-const editDeployment = (row) => {
-  const url = `/deployments/editDeployment?cluster=${data.cluster}&name=${row.metadata.name}`;
-  router.push(url);
-};
-
-const jumpRoute = (row) => {
-  router.push({
-    name: 'DeploymentDetail',
-    query: {
-      cluster: data.cluster,
-      namespace: data.namespace,
-      name: row.metadata.name,
-    },
-  });
-};
-
 const getCronJobs = async () => {
-  data.loading = true;
-  const [result, err] = await getDeploymentList(data.cluster, data.namespace);
+  if (!data.noLoading) {
+    data.loading = true;
+  }
+
+  const [result, err] = await getCronJobList(data.cluster, data.namespace);
   data.loading = false;
   if (err) {
     proxy.$message.error(err.response.data.message);
@@ -396,76 +339,6 @@ const getCronJobs = async () => {
   data.pageInfo.total = data.deploymentList.length;
   data.tableData = getTableData(data.pageInfo, data.deploymentList);
 };
-
-const changeNamespace = async (val) => {
-  localStorage.setItem('namespace', val);
-  data.namespace = val;
-
-  getCronJobs();
-};
-
-const getNamespaces = async () => {
-  const [result, err] = await getNamespaceNames(data.cluster);
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-  data.namespaces = result;
-};
-
-const handleDeploymentScaleDialog = (row) => {
-  data.deploymentRepcliasFrom.name = row.metadata.name;
-  data.deploymentRepcliasFrom.target = '';
-  data.deploymentRepcliasFrom.origin = row.spec.replicas;
-  data.deploymentReplicasDialog = true;
-};
-
-const closeDeploymentScaleDialog = (row) => {
-  data.deploymentReplicasDialog = false;
-
-  data.deploymentRepcliasFrom.name = '';
-  data.deploymentRepcliasFrom.origin = '';
-  data.deploymentRepcliasFrom.target = 0;
-};
-
-const confirmDeploymentScale = async () => {
-  try {
-    const res = await proxy.$http({
-      method: 'patch',
-      url: `/pixiu/proxy/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${data.deploymentRepcliasFrom.name}/scale`,
-      data: {
-        spec: {
-          replicas: Number(data.deploymentRepcliasFrom.target),
-        },
-      },
-      config: {
-        headers: {
-          'Content-Type': 'application/merge-patch+json',
-        },
-      },
-    });
-
-    getCronJobs();
-    closeDeploymentScaleDialog();
-  } catch (error) {}
-};
 </script>
 
-<style scoped="scoped">
-.font-container {
-  margin-top: -5px;
-  font-weight: bold;
-  font-size: 16px;
-  vertical-align: middle;
-}
-
-.namespace-container {
-  font-size: 14px;
-  margin-top: -2px;
-  /* margin-left: 10px; */
-  margin-right: -60px;
-  color: #4c4e58;
-  height: 20px;
-  padding: 10px;
-}
-</style>
+<style scoped="scoped"></style>

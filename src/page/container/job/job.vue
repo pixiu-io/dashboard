@@ -1,9 +1,4 @@
 <template>
-  <!-- <div class="title-card-container2">
-    <div style="flex-grow: 1">
-      <PiXiuYaml :refresh="getJobs"></PiXiuYaml>
-    </div>
-  </div> -->
   <Description
     :description="'Job 是 Kubernetes 中用于批量执行一组容器的工作流。它可以定义多个容器，并按照顺序执行。当一个容器失败时，Job 会自动重启容器。Job 还可以设置重启策略，以便在失败时自动重试。'"
   />
@@ -48,7 +43,7 @@
       >
         <el-table-column type="selection" width="30" />
 
-        <el-table-column prop="metadata.name" sortable label="名称">
+        <el-table-column prop="metadata.name" sortable label="任务名称">
           <template #default="scope">
             <el-link
               class="global-table-world"
@@ -62,14 +57,12 @@
         </el-table-column>
 
         <el-table-column
-          v-if="data.namespace === '全部空间'"
-          prop="metadata.namespace"
-          label="命名空间"
-          :formatter="formatterNamespace"
-        >
-        </el-table-column>
+          prop="status"
+          label="状态"
+          :formatter="formatterJobStatus"
+        ></el-table-column>
 
-        <el-table-column
+        <!-- <el-table-column
           prop="spec.template.metadata.labels"
           label="Labels"
           :formatter="formatterLabels"
@@ -80,39 +73,69 @@
           label="Selector"
           :formatter="formatterLabels"
         >
-        </el-table-column>
+        </el-table-column> -->
 
-        <el-table-column prop="spec.parallelism" label="并行度"></el-table-column>
-        <el-table-column prop="spec.backoffLimit" label="重复次数"></el-table-column>
+        <!-- <el-table-column prop="spec.parallelism" label="并行度"></el-table-column> -->
+        <!-- <el-table-column prop="spec.backoffLimit" label="重复次数"></el-table-column> -->
 
         <el-table-column
-          prop="spec.template.spec.containers"
-          label="Request/Limits"
-          :formatter="formatterStatus"
-          width="120px"
+          prop="status"
+          label="执行时间"
+          :formatter="formatterJobDuration"
+        ></el-table-column>
+
+        <el-table-column
+          v-if="data.namespace === '全部空间'"
+          prop="metadata.namespace"
+          label="命名空间"
+          :formatter="formatterNamespace"
         >
         </el-table-column>
-        <el-table-column fixed="right" label="操作" width="180">
+
+        <el-table-column
+          prop="metadata.creationTimestamp"
+          label="创建时间"
+          sortable
+          :formatter="formatterTime"
+        />
+
+        <el-table-column fixed="right" label="操作" width="150px">
           <template #default="scope">
-            <el-button
-              type="text"
-              size="small"
-              style="margin-right: 1px; color: #006eff"
-              @click="handleEditYamlDialog(scope.row)"
-            >
-              编辑yaml
-            </el-button>
-            <el-button
-              link
-              type="text"
-              size="small"
-              style="margin-right: 1px; margin-left: -2px; color: #006eff"
-              @click="handleDeleteDialog(scope.row)"
-            >
-              删除
-            </el-button>
+            <el-button type="text" size="small" class="table-item-left1-buttom"> 待定1 </el-button>
+            <el-button type="text" size="small" class="table-item-left2-buttom"> 待定2 </el-button>
+            <el-dropdown>
+              <span class="el-dropdown-link">
+                更多
+                <pixiu-icon name="icon-xiala" size="12px" type="iconfont" color="#006eff" />
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu class="dropdown-buttons">
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleEditYamlDialog(scope.row)"
+                  >
+                    编辑YAML
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleDeleteDialog(scope.row)"
+                  >
+                    重新运行
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleDeleteDialog(scope.row)"
+                  >
+                    删除
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </template>
         </el-table-column>
+        <template #empty>
+          <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
+        </template>
       </el-table>
 
       <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
@@ -140,28 +163,28 @@ import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData } from '@/utils/utils';
-import PixiuTag from '@/components/pixiuTag/index.vue';
-import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import { getJobList, getJob, deleteJob, updateJob } from '@/services/kubernetes/jobService';
 import Description from '@/components/description/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import {
-  formatterImage,
   formatterLabels,
-  formatterReady,
   formatterNamespace,
+  formatterTime,
+  formatterJobStatus,
+  formatterJobDuration,
 } from '@/utils/formatter';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
-const editYaml = ref();
 
 const data = reactive({
   cluster: '',
   namespace: 'default',
+
+  loading: false,
 
   pageInfo: {
     page: 1,
@@ -170,7 +193,6 @@ const data = reactive({
     total: 0,
   },
   tableData: [],
-  loading: false,
   jobList: [],
 
   // yaml相关属性
@@ -181,7 +203,7 @@ const data = reactive({
   // 删除对象属性
   deleteDialog: {
     close: false,
-    objectName: 'job',
+    objectName: '任务',
     deleteName: '',
   },
 });
@@ -203,7 +225,6 @@ const handleStorageChange = (e) => {
         return;
       }
       data.namespace = e.newValue;
-      // 监控到切换命名空间之后，重新获取 workload 列表
       getJobs();
     }
   }
@@ -222,8 +243,8 @@ const confirm = async () => {
   }
   proxy.$message.success(`Job(${data.deleteDialog.deleteName}) 删除成功`);
 
+  getJobs();
   clean();
-  await getJobs();
 };
 
 const cancel = () => {
@@ -255,39 +276,12 @@ const handleEditYamlDialog = async (row) => {
   data.editYamlDialog = true;
 };
 
-const closeEditYamlDialog = (row) => {
-  data.yaml = '';
-  data.yamlName = '';
-  data.editYamlDialog = false;
-};
-
-const confirmEditYaml = async () => {
-  const yamlData = jsYaml.load(editYaml.value.code);
-  const [result, err] = await updateJob(data.cluster, data.namespace, data.yamlName, yamlData);
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-  proxy.$message.success(`Job(${data.yamlName}) YAML 更新成功`);
-  closeEditYamlDialog();
-  await getJobs();
-};
-
 const createJob = () => {
   const url = `/job/createJob?cluster=${data.cluster}`;
   router.push(url);
 };
 
-const jumpRoute = (row) => {
-  router.push({
-    name: 'DeploymentDetail',
-    query: {
-      cluster: data.cluster,
-      namespace: data.namespace,
-      name: row.metadata.name,
-    },
-  });
-};
+const jumpRoute = (row) => {};
 
 const getJobs = async () => {
   data.loading = true;
@@ -302,35 +296,6 @@ const getJobs = async () => {
   data.pageInfo.total = data.jobList.length;
   data.tableData = getTableData(data.pageInfo, data.jobList);
 };
-
-const formatterStatus = (row, column, cellValue) => {
-  let availableReplicas = cellValue.availableReplicas;
-  if (availableReplicas === undefined) {
-    availableReplicas = 0;
-  }
-  return (
-    <div>
-      {availableReplicas}/{row.spec.replicas}
-    </div>
-  );
-};
 </script>
 
-<style scoped="scoped">
-.font-container {
-  margin-top: -5px;
-  font-weight: bold;
-  font-size: 16px;
-  vertical-align: middle;
-}
-
-.namespace-container {
-  font-size: 14px;
-  margin-top: -2px;
-  /* margin-left: 10px; */
-  margin-right: -60px;
-  color: #4c4e58;
-  height: 20px;
-  padding: 10px;
-}
-</style>
+<style scoped="scoped"></style>
