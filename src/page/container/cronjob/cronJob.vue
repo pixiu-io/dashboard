@@ -112,7 +112,7 @@
             </el-button>
 
             <el-button
-              v-if="scope.row.spec.suspend === false"
+              v-if="scope.row.spec.suspend !== false"
               size="small"
               type="text"
               class="table-item-left2-buttom"
@@ -121,7 +121,7 @@
               启动
             </el-button>
             <el-button
-              v-if="scope.row.spec.suspend !== false"
+              v-if="scope.row.spec.suspend === false"
               size="small"
               type="text"
               class="table-item-left2-buttom"
@@ -187,7 +187,7 @@ import {
 } from '@/utils/formatter';
 
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
-import { getCronJobList } from '@/services/kubernetes/cronjobService';
+import { getCronJobList, deleteCronJob } from '@/services/kubernetes/cronjobService';
 import Description from '@/components/description/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
@@ -219,8 +219,9 @@ const data = reactive({
   // 删除对象属性
   deleteDialog: {
     close: false,
-    objectName: 'Deployment',
+    objectName: '定时任务',
     deleteName: '',
+    deleteNamespace: '',
   },
 });
 
@@ -253,19 +254,20 @@ const handleStorageChange = (e) => {
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.metadata.name;
+  data.deleteDialog.deleteNamespace = row.metadata.namespace;
 };
 
 const confirm = async () => {
-  const [result, err] = await deleteDeployment(
+  const [result, err] = await deleteCronJob(
     data.cluster,
-    data.namespace,
+    data.deleteDialog.deleteNamespace,
     data.deleteDialog.deleteName,
   );
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  proxy.$message.success(`Deployment(${data.deleteDialog.deleteName}) 删除成功`);
+  proxy.$message.success(`定时任务(${data.deleteDialog.deleteName}) 删除成功`);
 
   getCronJobs();
   clean();
@@ -277,8 +279,10 @@ const cancel = () => {
 
 const clean = () => {
   data.deleteDialog.close = false;
+
   setTimeout(() => {
     data.deleteDialog.deleteName = '';
+    data.deleteDialog.deleteNamespace = '';
   }, 100);
 };
 

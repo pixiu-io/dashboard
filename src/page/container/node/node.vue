@@ -151,6 +151,7 @@
                   >
                     标签管理
                   </el-dropdown-item>
+                  <el-dropdown-item class="dropdown-item-buttons"> 远程登录 </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
                     @click="handleDrainDialog(scope.row)"
