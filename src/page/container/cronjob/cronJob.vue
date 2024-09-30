@@ -269,29 +269,6 @@ const handleEditYamlDialog = async (row) => {
   data.editYamlDialog = true;
 };
 
-const closeEditYamlDialog = (row) => {
-  data.yaml = '';
-  data.yamlName = '';
-  data.editYamlDialog = false;
-};
-
-const confirmEditYaml = async () => {
-  const yamlData = jsYaml.load(editYaml.value.code);
-  const [result, err] = await updateDeployment(
-    data.cluster,
-    data.namespace,
-    data.yamlName,
-    yamlData,
-  );
-  if (err) {
-    proxy.$message.error(err.response.data.message);
-    return;
-  }
-  proxy.$message.success(`Deployment(${data.yamlName}) YAML 更新成功`);
-  closeEditYamlDialog();
-  await getCronJobs();
-};
-
 const getCronJobs = async () => {
   data.loading = true;
   const [result, err] = await getCronJobList(data.cluster, data.namespace);
@@ -304,13 +281,6 @@ const getCronJobs = async () => {
   data.deploymentList = result.items;
   data.pageInfo.total = data.deploymentList.length;
   data.tableData = getTableData(data.pageInfo, data.deploymentList);
-};
-
-const handleDeploymentScaleDialog = (row) => {
-  data.deploymentRepcliasFrom.name = row.metadata.name;
-  data.deploymentRepcliasFrom.target = '';
-  data.deploymentRepcliasFrom.origin = row.spec.replicas;
-  data.deploymentReplicasDialog = true;
 };
 </script>
 
