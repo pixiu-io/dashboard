@@ -127,6 +127,9 @@
             </el-dropdown>
           </template>
         </el-table-column>
+        <template #empty>
+          <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
+        </template>
       </el-table>
 
       <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>

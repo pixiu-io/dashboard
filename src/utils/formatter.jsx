@@ -707,5 +707,19 @@ const parseStatus = (s) => {
   );
 }
 
-const formatterJobDuration = (row, column, cellValue) => { }
+const formatterJobDuration = (row, column, cellValue) => {
+  return calculateTimeDuration(cellValue.startTime, cellValue.completionTime)
+}
 export { formatterJobDuration };
+
+// 计算时间，直接得出最后的值，
+// 5s => 5秒
+// 65s => 1分5秒
+const calculateTimeDuration = (startTime, endTime) => {
+  const start = new Date(startTime)
+  const end = new Date(endTime)
+
+  const second = (end - start) / 1000
+
+  return second + "秒"
+}
