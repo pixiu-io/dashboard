@@ -719,7 +719,21 @@ const calculateTimeDuration = (startTime, endTime) => {
   const start = new Date(startTime)
   const end = new Date(endTime)
 
-  const second = (end - start) / 1000
+  const duration = end - start
+  var seconds = Math.floor((duration / 1000) % 60),
+      minutes = Math.floor((duration / (1000 * 60)) % 60),
+      hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
 
-  return second + "秒"
+  let result = []
+  if (hours !== 0) {
+      result.push(hours + "时")
+  }
+  if (minutes !== 0) {
+      result.push(minutes + "分")
+  }
+  if (seconds !== 0) {
+      result.push(seconds + "秒")
+  }
+
+  return result.join(" ")
 }
