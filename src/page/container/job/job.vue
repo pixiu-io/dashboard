@@ -56,7 +56,11 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="spec" label="状态"></el-table-column>
+        <el-table-column
+          prop="status"
+          label="状态"
+          :formatter="formatterJobStatus"
+        ></el-table-column>
 
         <!-- <el-table-column
           prop="spec.template.metadata.labels"
@@ -71,8 +75,14 @@
         >
         </el-table-column> -->
 
-        <el-table-column prop="spec.parallelism" label="并行度"></el-table-column>
-        <el-table-column prop="spec.backoffLimit" label="重复次数"></el-table-column>
+        <!-- <el-table-column prop="spec.parallelism" label="并行度"></el-table-column>
+        <el-table-column prop="spec.backoffLimit" label="重复次数"></el-table-column> -->
+
+        <el-table-column
+          prop="status"
+          label="执行时间"
+          :formatter="formatterJobDuration"
+        ></el-table-column>
 
         <el-table-column
           v-if="data.namespace === '全部空间'"
@@ -91,10 +101,8 @@
 
         <el-table-column fixed="right" label="操作" width="150px">
           <template #default="scope">
-            <el-button type="text" size="small" class="table-item-left1-buttom"> 待定 </el-button>
-            <el-button link type="text" size="small" class="table-item-left2-buttom">
-              待定
-            </el-button>
+            <el-button type="text" size="small" class="table-item-left1-buttom"> 待定1 </el-button>
+            <el-button type="text" size="small" class="table-item-left2-buttom"> 待定2 </el-button>
             <el-dropdown>
               <span class="el-dropdown-link">
                 更多
@@ -151,7 +159,13 @@ import { getJobList, getJob, deleteJob, updateJob } from '@/services/kubernetes/
 import Description from '@/components/description/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
-import { formatterLabels, formatterNamespace, formatterTime } from '@/utils/formatter';
+import {
+  formatterLabels,
+  formatterNamespace,
+  formatterTime,
+  formatterJobStatus,
+  formatterJobDuration,
+} from '@/utils/formatter';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 
 const { proxy } = getCurrentInstance();
@@ -258,16 +272,7 @@ const createJob = () => {
   router.push(url);
 };
 
-const jumpRoute = (row) => {
-  router.push({
-    name: 'DeploymentDetail',
-    query: {
-      cluster: data.cluster,
-      namespace: data.namespace,
-      name: row.metadata.name,
-    },
-  });
-};
+const jumpRoute = (row) => {};
 
 const getJobs = async () => {
   data.loading = true;

@@ -576,6 +576,10 @@ const runningStatus = {
     name: 'icon-circle-dot',
     color: '#86929D', // 黑色
   },
+  已完成: {
+    name: 'icon-circle-dot',
+    color: '#808080', // 灰色
+  },
   集群异常: {
     name: 'icon-yichang',
     color: '#FF0000', // 红色
@@ -672,3 +676,36 @@ const formatterClusterNode = (row, column, cellValue) => {
   );
 };
 export { formatterClusterNode };
+
+const formatterJobStatus = (row, column, cellValue) => {
+  let status = '运行中';
+  for (let condition of cellValue.conditions) {
+    if (condition.type === "Complete") {
+      if (condition.status === "True") {
+        status = "已完成"
+        }
+      }
+  }
+
+  return parseStatus(status)
+};
+export { formatterJobStatus };
+
+const parseStatus = (s) => {
+  return (
+    <div style="display: flex">
+      <div>
+        <pixiu-icon
+          name={runningStatus[s].name}
+          size="12px"
+          type="iconfont"
+          color={runningStatus[s].color}
+        />
+      </div>
+      <div style="margin-left: 6px"> {s}</div>
+    </div>
+  );
+}
+
+const formatterJobDuration = (row, column, cellValue) => { }
+export { formatterJobDuration };
