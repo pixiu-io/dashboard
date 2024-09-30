@@ -5,7 +5,7 @@
   <div style="margin-top: 5px">
     <el-row>
       <el-col>
-        <button class="pixiu-two-button" @click="createDeployment">新建</button>
+        <button class="pixiu-two-button" @click="handleCreateDialog">新建</button>
         <button class="pixiu-two-button2" style="margin-left: 10px" @click="getCronJobs">
           刷新
         </button>
@@ -165,6 +165,33 @@
     </el-card>
   </div>
 
+  <el-dialog :model-value="data.cronJobData.close" style="color: #000000; font: 14px" width="65%">
+    <template #header>
+      <div
+        style="
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+          margin-top: 5px;
+          font-size: 14.5px;
+          color: #191919;
+        "
+      >
+        创建定时任务
+      </div>
+    </template>
+
+    <div style="height: 420px" />
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-delete-cancel-button" @click="cancelCreate">取消</el-button>
+        <el-button type="primary" class="pixiu-delete-confirm-button" @click="confirmCreate"
+          >确认</el-button
+        >
+      </span>
+    </template>
+  </el-dialog>
+
   <pixiuDialog
     :close-event="data.deleteDialog.close"
     :object-name="data.deleteDialog.objectName"
@@ -216,6 +243,11 @@ const data = reactive({
   yamlName: '',
   editYamlDialog: false,
 
+  cronJobData: {
+    close: false,
+  },
+  cronJobForm: {},
+
   // 删除对象属性
   deleteDialog: {
     close: false,
@@ -250,6 +282,14 @@ const handleStorageChange = (e) => {
     }
   }
 };
+
+const handleCreateDialog = (row) => {
+  data.cronJobData.close = true;
+};
+
+const confirmCreate = () => {};
+
+const cancelCreate = () => {};
 
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
