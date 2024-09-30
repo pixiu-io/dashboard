@@ -85,6 +85,12 @@
         ></el-table-column>
 
         <el-table-column
+          prop="status"
+          label="执行时间"
+          :formatter="formatterJobDuration"
+        ></el-table-column>
+
+        <el-table-column
           v-if="data.namespace === '全部空间'"
           prop="metadata.namespace"
           label="命名空间"

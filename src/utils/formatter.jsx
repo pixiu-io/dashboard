@@ -580,6 +580,10 @@ const runningStatus = {
     name: 'icon-circle-dot',
     color: '#808080', // 灰色
   },
+  已暂停: {
+    name: 'icon-circle-dot',
+    color: '#808080', // 灰色
+  },
   集群异常: {
     name: 'icon-yichang',
     color: '#FF0000', // 红色
@@ -690,6 +694,16 @@ const formatterJobStatus = (row, column, cellValue) => {
   return parseStatus(status)
 };
 export { formatterJobStatus };
+
+const formatterCronJobStatus = (row, column, cellValue) => {
+  let status = '运行中';
+  if (cellValue.suspend === false) {
+    status = "已暂停"
+  }
+
+  return parseStatus(status)
+};
+export { formatterCronJobStatus };
 
 const parseStatus = (s) => {
   return (

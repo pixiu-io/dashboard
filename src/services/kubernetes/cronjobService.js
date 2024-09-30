@@ -17,3 +17,20 @@ export const getCronJobList = async (cluster, namespace) => {
   );
   return [result, err];
 };
+
+export const patchCronJob = async (cluster, namespace, name, data) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'patch',
+      url: `/pixiu/proxy/${cluster}/apis/batch/v1/namespaces/${namespace}/cronjobs/${name}`,
+      data: data,
+      config: {
+        headers: {
+          'Content-Type': 'application/merge-patch+json',
+        },
+      },
+    }),
+  );
+
+  return [result, err];
+};

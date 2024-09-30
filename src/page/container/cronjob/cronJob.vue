@@ -57,8 +57,13 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="spec.schedule" label="Schedule" />
-        <el-table-column prop="spec.suspend" label="Suspend" />
+        <el-table-column
+          prop="spec"
+          label="状态"
+          :formatter="formatterCronJobStatus"
+        ></el-table-column>
+
+        <el-table-column prop="spec.schedule" label="定时计划" />
 
         <!-- <el-table-column
           prop="spec.template.metadata.labels"
@@ -106,7 +111,24 @@
               编辑
             </el-button>
 
-            <el-button size="small" type="text" class="table-item-left2-buttom"> 暂停 </el-button>
+            <el-button
+              v-if="scope.row.spec.suspend === false"
+              size="small"
+              type="text"
+              class="table-item-left2-buttom"
+              @click="changeCronJobSuspend(scope.row)"
+            >
+              启动
+            </el-button>
+            <el-button
+              v-if="scope.row.spec.suspend !== false"
+              size="small"
+              type="text"
+              class="table-item-left2-buttom"
+              @click="changeCronJobSuspend(scope.row)"
+            >
+              暂停
+            </el-button>
 
             <el-dropdown>
               <span class="el-dropdown-link">
@@ -156,13 +178,19 @@ import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref, onUnmounted } from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData } from '@/utils/utils';
-import { formatterLabels, formatterNamespace, formatterTime } from '@/utils/formatter';
+import {
+  formatterLabels,
+  formatterNamespace,
+  formatterTime,
+  formatterCronJobStatus,
+} from '@/utils/formatter';
 
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import { getCronJobList } from '@/services/kubernetes/cronjobService';
 import Description from '@/components/description/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
+import { patchCronJob } from '../../../services/kubernetes/cronjobService';
 
 const { proxy } = getCurrentInstance();
 const editYaml = ref();
@@ -179,6 +207,8 @@ const data = reactive({
   },
   tableData: [],
   loading: false,
+
+  noLoading: false,
 
   // yaml相关属性
   yaml: '',
@@ -258,6 +288,29 @@ const onChange = (v) => {
   data.tableData = getTableData(data.pageInfo, data.deploymentList);
 };
 
+const changeCronJobSuspend = async (row) => {
+  const patchData = {
+    spec: {
+      suspend: !row.spec.suspend,
+    },
+  };
+
+  const [result, err] = await patchCronJob(
+    data.cluster,
+    row.metadata.namespace,
+    row.metadata.name,
+    patchData,
+  );
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.noLoading = true;
+  getCronJobs();
+  data.noLoading = false;
+};
+
 const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
   const [result, err] = await getDeployment(data.cluster, data.namespace, data.yamlName);
@@ -270,7 +323,10 @@ const handleEditYamlDialog = async (row) => {
 };
 
 const getCronJobs = async () => {
-  data.loading = true;
+  if (!data.noLoading) {
+    data.loading = true;
+  }
+
   const [result, err] = await getCronJobList(data.cluster, data.namespace);
   data.loading = false;
   if (err) {
