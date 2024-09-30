@@ -205,6 +205,7 @@ const data = reactive({
     close: false,
     objectName: '任务',
     deleteName: '',
+    deleteNamespace: '',
   },
 });
 
@@ -233,15 +234,20 @@ const handleStorageChange = (e) => {
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.metadata.name;
+  data.deleteDialog.deleteNamespace = row.metadata.namespace;
 };
 
 const confirm = async () => {
-  const [result, err] = await deleteJob(data.cluster, data.namespace, data.deleteDialog.deleteName);
+  const [result, err] = await deleteJob(
+    data.cluster,
+    data.deleteDialog.deleteNamespace,
+    data.deleteDialog.deleteName,
+  );
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  proxy.$message.success(`Job(${data.deleteDialog.deleteName}) 删除成功`);
+  proxy.$message.success(`任务(${data.deleteDialog.deleteName}) 删除成功`);
 
   getJobs();
   clean();
@@ -255,6 +261,7 @@ const clean = () => {
   data.deleteDialog.close = false;
   setTimeout(() => {
     data.deleteDialog.deleteName = '';
+    data.deleteDialog.deleteNamespace = '';
   }, 100);
 };
 
