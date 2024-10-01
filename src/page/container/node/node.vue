@@ -145,6 +145,9 @@
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
+                  <el-dropdown-item class="dropdown-item-buttons" @click="viewYaml(scope.row)">
+                    查看YAML
+                  </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
                     @click="handleEditLabelDialog(scope.row)"
@@ -158,16 +161,12 @@
                     <div v-if="scope.row.spec.unschedulable">开启调度</div>
                     <div v-else>禁止调度</div>
                   </el-dropdown-item>
-
                   <el-dropdown-item class="dropdown-item-buttons"> 远程登录 </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
                     @click="handleDrainDialog(scope.row)"
                   >
                     清空节点
-                  </el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons" @click="viewYaml(scope.row)">
-                    查看YAML
                   </el-dropdown-item>
                   <el-dropdown-item class="dropdown-item-buttons"> 删除 </el-dropdown-item>
                 </el-dropdown-menu>
