@@ -728,7 +728,6 @@ const formatterJobDuration = (row, column, cellValue) => {
 }
 export { formatterJobDuration };
 
-
 // 计算时间，直接得出最后的值，
 // 5s => 5秒
 // 65s => 1分5秒
