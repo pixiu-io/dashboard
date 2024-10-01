@@ -581,6 +581,10 @@ const runningStatus = {
     name: 'icon-circle-dot',
     color: '#E0992C', // 黄色
   },
+  未执行: {
+    name: 'icon-circle-dot',
+    color: '#E0992C', // 黄色
+  },
 };
 
 const formatterNodeAuthType = (row, column, cellValue) => {
@@ -663,6 +667,13 @@ const formatterClusterNode = (row, column, cellValue) => {
 export { formatterClusterNode };
 
 const formatterJobStatus = (row, column, cellValue) => {
+  if (!cellValue.conditions) {
+    if (cellValue.startTime) {
+      return parseStatus("运行中")
+    }
+    return parseStatus("未执行")
+  }
+
   let status = '运行中';
   for (let condition of cellValue.conditions) {
     if (condition.type === "Complete") {
@@ -703,6 +714,16 @@ const parseStatus = (s) => {
 }
 
 const formatterJobDuration = (row, column, cellValue) => {
+  // 未开始
+  if (!cellValue.startTime) {
+    return ""
+  }
+  // 已开始但未结束
+  if (!cellValue.completionTime) {
+    var now =new Date();
+    return calculateTimeDuration(cellValue.startTime, now)
+  }
+
   return calculateTimeDuration(cellValue.startTime, cellValue.completionTime)
 }
 export { formatterJobDuration };
@@ -721,14 +742,14 @@ const calculateTimeDuration = (startTime, endTime) => {
 
   let result = []
   if (hours !== 0) {
-      result.push(hours + "时")
+      result.push(hours + "h")
   }
   if (minutes !== 0) {
-      result.push(minutes + "分")
+      result.push(minutes + "m")
   }
   if (seconds !== 0) {
-      result.push(seconds + "秒")
+      result.push(seconds + "s")
   }
 
-  return result.join(" ")
+  return result.join("")
 }
