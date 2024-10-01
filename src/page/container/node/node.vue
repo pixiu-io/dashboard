@@ -97,7 +97,7 @@
           :formatter="formatString"
         >
         </el-table-column>
-
+        <!--
         <el-table-column label="可调度">
           <template #default="scope">
             <el-switch
@@ -105,11 +105,11 @@
               inline-prompt
               style="--el-switch-on-color: #ff4949; --el-switch-off-color: #13ce66"
               size="small"
-              @change="changeScheduleStatus(scope.row)"
+              @change="changeNodeSchedule(scope.row)"
             >
             </el-switch>
           </template>
-        </el-table-column>
+        </el-table-column> -->
 
         <el-table-column
           label="创建时间"
@@ -123,7 +123,7 @@
             <el-button
               size="small"
               type="text"
-              style="margin-right: -26px; margin-left: -10px; color: #006eff"
+              class="table-item-left1-buttom"
               @click="handleMonitorDrawer(scope.row)"
             >
               监控
@@ -132,7 +132,7 @@
             <el-button
               type="text"
               size="small"
-              style="color: #006eff"
+              class="table-item-left2-buttom"
               @click="handleEventDrawer(scope.row)"
             >
               事件
@@ -151,6 +151,21 @@
                   >
                     标签管理
                   </el-dropdown-item>
+                  <el-dropdown-item
+                    v-if="scope.row.spec.unschedulable === true"
+                    class="dropdown-item-buttons"
+                    @click="changeNodeSchedule(scope.row)"
+                  >
+                    开启调度
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    v-if="scope.row.spec.unschedulable === false"
+                    class="dropdown-item-buttons"
+                    @click="changeNodeSchedule(scope.row)"
+                  >
+                    禁止调度
+                  </el-dropdown-item>
+
                   <el-dropdown-item class="dropdown-item-buttons"> 远程登录 </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
@@ -445,6 +460,9 @@ const data = reactive({
 
   drawerWidth: '70%',
 
+  loading: false,
+  noLoading: false,
+
   pageInfo: {
     page: 1,
     query: '',
@@ -456,7 +474,7 @@ const data = reactive({
     },
   },
   tableData: [],
-  loading: false,
+
   yamlDialog: false,
   yaml: '',
   nodeList: [],
@@ -522,7 +540,10 @@ const onChange = (v) => {
 };
 
 const getNodes = async () => {
-  data.loading = true;
+  if (!data.noLoading) {
+    data.loading = true;
+  }
+
   const [res, err] = await getNodeList(data.cluster);
   data.loading = false;
   if (err) {
@@ -550,18 +571,20 @@ const jumpRoute = (row) => {
   });
 };
 
-const changeScheduleStatus = async (row) => {
-  const scheduleStatus = row.spec.unschedulable;
-  let patchData = {
+const changeNodeSchedule = async (row) => {
+  const patchData = {
     spec: {
-      unschedulable: scheduleStatus,
+      unschedulable: !row.spec.unschedulable,
     },
   };
-  const [res, err] = await patchNode(data.cluster, row.metadata.name, patchData);
+  const [result, err] = await patchNode(data.cluster, row.metadata.name, patchData);
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
+  data.noLoading = true;
+  getNodes();
+  data.noLoading = false;
 };
 
 const handleMonitorDrawer = (row) => {
@@ -647,42 +670,6 @@ const deleteEventsInBatch = async () => {
 };
 
 // 事件函数结束
-
-const cordon = (row) => {
-  if (row.spec.unschedulable === true) {
-    return;
-  }
-
-  ElMessageBox.confirm('关闭 ' + row.metadata.name + ' 节点调度. 是否继续?', '节点调度', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-    draggable: true,
-  })
-    .then(async () => {
-      const res = await proxy.$http({
-        method: 'patch',
-        data: {
-          spec: {
-            unschedulable: true,
-          },
-        },
-        url: `/pixiu/proxy/${data.cluster}/api/v1/nodes/${row.metadata.name}`,
-        config: {
-          headers: {
-            'Content-Type': 'application/strategic-merge-patch+json',
-          },
-        },
-      });
-      ElMessage({
-        type: 'success',
-        message: '已关闭 ' + row.metadata.name + ' 节点调度',
-      });
-
-      getNodes();
-    })
-    .catch(() => {});
-};
 
 const handleDrainDialog = async (row) => {
   data.drainData.close = true;
