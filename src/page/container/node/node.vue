@@ -447,7 +447,9 @@
         style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
         ><WarningFilled
       /></el-icon>
-      <div style="vertical-align: middle; margin-top: -40px">基于 WebShell 提供登陆容器的功能</div>
+      <div style="vertical-align: middle; margin-top: -40px">
+        基于 WebShell 提供 ssh 登陆虚拟机的功能
+      </div>
     </el-card>
 
     <el-form>
