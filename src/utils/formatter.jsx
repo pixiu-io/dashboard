@@ -720,8 +720,8 @@ const formatterJobDuration = (row, column, cellValue) => {
   }
   // 已开始但未结束
   if (!cellValue.completionTime) {
-    // todo
-    return "-"
+    var now =new Date();
+    return calculateTimeDuration(cellValue.startTime, now)
   }
 
   return calculateTimeDuration(cellValue.startTime, cellValue.completionTime)
@@ -743,14 +743,14 @@ const calculateTimeDuration = (startTime, endTime) => {
 
   let result = []
   if (hours !== 0) {
-      result.push(hours + "时")
+      result.push(hours + "h")
   }
   if (minutes !== 0) {
-      result.push(minutes + "分")
+      result.push(minutes + "m")
   }
   if (seconds !== 0) {
-      result.push(seconds + "秒")
+      result.push(seconds + "s")
   }
 
-  return result.join(" ")
+  return result.join("")
 }
