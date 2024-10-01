@@ -158,18 +158,7 @@
 
   <el-dialog :model-value="data.cronJobData.close" style="color: #000000; font: 14px" width="65%">
     <template #header>
-      <div
-        style="
-          text-align: left;
-          font-weight: bold;
-          padding-left: 5px;
-          margin-top: 5px;
-          font-size: 14.5px;
-          color: #191919;
-        "
-      >
-        创建定时任务
-      </div>
+      <div class="dialog-header-style">创建定时任务</div>
     </template>
 
     <div style="height: 420px" />
