@@ -581,6 +581,10 @@ const runningStatus = {
     name: 'icon-circle-dot',
     color: '#E0992C', // 黄色
   },
+  未执行: {
+    name: 'icon-circle-dot',
+    color: '#E0992C', // 黄色
+  },
 };
 
 const formatterNodeAuthType = (row, column, cellValue) => {
@@ -663,6 +667,13 @@ const formatterClusterNode = (row, column, cellValue) => {
 export { formatterClusterNode };
 
 const formatterJobStatus = (row, column, cellValue) => {
+  if (!cellValue.conditions) {
+    if (cellValue.startTime) {
+      return parseStatus("运行中")
+    }
+    return parseStatus("未执行")
+  }
+
   let status = '运行中';
   for (let condition of cellValue.conditions) {
     if (condition.type === "Complete") {
@@ -703,9 +714,20 @@ const parseStatus = (s) => {
 }
 
 const formatterJobDuration = (row, column, cellValue) => {
+  // 未开始
+  if (!cellValue.startTime) {
+    return ""
+  }
+  // 已开始但未结束
+  if (!cellValue.completionTime) {
+    // todo
+    return "-"
+  }
+
   return calculateTimeDuration(cellValue.startTime, cellValue.completionTime)
 }
 export { formatterJobDuration };
+
 
 // 计算时间，直接得出最后的值，
 // 5s => 5秒
