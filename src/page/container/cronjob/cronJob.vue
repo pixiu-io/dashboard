@@ -112,22 +112,13 @@
             </el-button>
 
             <el-button
-              v-if="scope.row.spec.suspend !== false"
               size="small"
               type="text"
               class="table-item-left2-buttom"
               @click="changeCronJobSuspend(scope.row)"
             >
-              启动
-            </el-button>
-            <el-button
-              v-if="scope.row.spec.suspend === false"
-              size="small"
-              type="text"
-              class="table-item-left2-buttom"
-              @click="changeCronJobSuspend(scope.row)"
-            >
-              暂停
+              <div v-if="scope.row.spec.suspend">启动</div>
+              <div v-else>暂停</div>
             </el-button>
 
             <el-dropdown>

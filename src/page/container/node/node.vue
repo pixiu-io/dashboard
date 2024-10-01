@@ -152,18 +152,11 @@
                     标签管理
                   </el-dropdown-item>
                   <el-dropdown-item
-                    v-if="scope.row.spec.unschedulable === ture"
                     class="dropdown-item-buttons"
                     @click="changeNodeSchedule(scope.row)"
                   >
-                    开启调度
-                  </el-dropdown-item>
-                  <el-dropdown-item
-                    v-if="scope.row.spec.unschedulable !== true"
-                    class="dropdown-item-buttons"
-                    @click="changeNodeSchedule(scope.row)"
-                  >
-                    禁止调度
+                    <div v-if="scope.row.spec.unschedulable">开启调度</div>
+                    <div v-else>禁止调度</div>
                   </el-dropdown-item>
 
                   <el-dropdown-item class="dropdown-item-buttons"> 远程登录 </el-dropdown-item>
@@ -549,7 +542,7 @@ const getNodes = async () => {
     return;
   }
 
-  data.nodeList = res.items;
+  data.nodeList = result.items;
   data.pageInfo.total = data.nodeList.length;
   data.tableData = getTableData(data.pageInfo, data.nodeList);
 };
