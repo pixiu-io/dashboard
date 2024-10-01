@@ -97,7 +97,7 @@
           :formatter="formatString"
         >
         </el-table-column>
-
+        <!--
         <el-table-column label="可调度">
           <template #default="scope">
             <el-switch
@@ -105,11 +105,11 @@
               inline-prompt
               style="--el-switch-on-color: #ff4949; --el-switch-off-color: #13ce66"
               size="small"
-              @change="changeScheduleStatus(scope.row)"
+              @change="changeNodeSchedule(scope.row)"
             >
             </el-switch>
           </template>
-        </el-table-column>
+        </el-table-column> -->
 
         <el-table-column
           label="创建时间"
@@ -123,7 +123,7 @@
             <el-button
               size="small"
               type="text"
-              style="margin-right: -26px; margin-left: -10px; color: #006eff"
+              class="table-item-left1-buttom"
               @click="handleMonitorDrawer(scope.row)"
             >
               监控
@@ -132,7 +132,7 @@
             <el-button
               type="text"
               size="small"
-              style="color: #006eff"
+              class="table-item-left2-buttom"
               @click="handleEventDrawer(scope.row)"
             >
               事件
@@ -145,11 +145,21 @@
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
+                  <el-dropdown-item class="dropdown-item-buttons" @click="viewYaml(scope.row)">
+                    查看YAML
+                  </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
                     @click="handleEditLabelDialog(scope.row)"
                   >
                     标签管理
+                  </el-dropdown-item>
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="changeNodeSchedule(scope.row)"
+                  >
+                    <div v-if="scope.row.spec.unschedulable">开启调度</div>
+                    <div v-else>禁止调度</div>
                   </el-dropdown-item>
                   <el-dropdown-item class="dropdown-item-buttons"> 远程登录 </el-dropdown-item>
                   <el-dropdown-item
@@ -157,9 +167,6 @@
                     @click="handleDrainDialog(scope.row)"
                   >
                     清空节点
-                  </el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons" @click="viewYaml(scope.row)">
-                    查看YAML
                   </el-dropdown-item>
                   <el-dropdown-item class="dropdown-item-buttons"> 删除 </el-dropdown-item>
                 </el-dropdown-menu>
@@ -421,9 +428,7 @@
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, provide } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
 import { getTableData, searchData } from '@/utils/utils';
-import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Description from '@/components/description/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import Pagination from '@/components/pagination/index.vue';
@@ -443,7 +448,8 @@ const router = useRouter();
 const data = reactive({
   cluster: '',
 
-  drawerWidth: '70%',
+  loading: false,
+  noLoading: false,
 
   pageInfo: {
     page: 1,
@@ -455,8 +461,11 @@ const data = reactive({
       searchInfo: '',
     },
   },
+
+  drawerWidth: '70%',
+
   tableData: [],
-  loading: false,
+
   yamlDialog: false,
   yaml: '',
   nodeList: [],
@@ -522,15 +531,17 @@ const onChange = (v) => {
 };
 
 const getNodes = async () => {
-  data.loading = true;
-  const [res, err] = await getNodeList(data.cluster);
+  if (!data.noLoading) {
+    data.loading = true;
+  }
+  const [result, err] = await getNodeList(data.cluster);
   data.loading = false;
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
 
-  data.nodeList = res.items;
+  data.nodeList = result.items;
   data.pageInfo.total = data.nodeList.length;
   data.tableData = getTableData(data.pageInfo, data.nodeList);
 };
@@ -550,18 +561,20 @@ const jumpRoute = (row) => {
   });
 };
 
-const changeScheduleStatus = async (row) => {
-  const scheduleStatus = row.spec.unschedulable;
-  let patchData = {
+const changeNodeSchedule = async (row) => {
+  const patchData = {
     spec: {
-      unschedulable: scheduleStatus,
+      unschedulable: !row.spec.unschedulable,
     },
   };
-  const [res, err] = await patchNode(data.cluster, row.metadata.name, patchData);
+  const [result, err] = await patchNode(data.cluster, row.metadata.name, patchData);
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
+  data.noLoading = true;
+  getNodes();
+  data.noLoading = false;
 };
 
 const handleMonitorDrawer = (row) => {
@@ -647,42 +660,6 @@ const deleteEventsInBatch = async () => {
 };
 
 // 事件函数结束
-
-const cordon = (row) => {
-  if (row.spec.unschedulable === true) {
-    return;
-  }
-
-  ElMessageBox.confirm('关闭 ' + row.metadata.name + ' 节点调度. 是否继续?', '节点调度', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-    draggable: true,
-  })
-    .then(async () => {
-      const res = await proxy.$http({
-        method: 'patch',
-        data: {
-          spec: {
-            unschedulable: true,
-          },
-        },
-        url: `/pixiu/proxy/${data.cluster}/api/v1/nodes/${row.metadata.name}`,
-        config: {
-          headers: {
-            'Content-Type': 'application/strategic-merge-patch+json',
-          },
-        },
-      });
-      ElMessage({
-        type: 'success',
-        message: '已关闭 ' + row.metadata.name + ' 节点调度',
-      });
-
-      getNodes();
-    })
-    .catch(() => {});
-};
 
 const handleDrainDialog = async (row) => {
   data.drainData.close = true;

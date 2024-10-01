@@ -362,20 +362,13 @@ const formatterNodeStatus = (row, column, cellValue) => {
       }
     }
   }
+  if (status === "运行中") {
+    if (row.spec.unschedulable) {
+      status = "禁止调度"
+    }
+  }
 
-  return (
-    <div style="display: flex">
-      <div>
-        <pixiu-icon
-          name={runningStatus[status].name}
-          size="12px"
-          type="iconfont"
-          color={runningStatus[status].color}
-        />
-      </div>
-      <div style="margin-left: 6px"> {status}</div>
-    </div>
-  );
+  return parseStatus(status)
 }
 export { formatterNodeStatus };
 
@@ -584,21 +577,9 @@ const runningStatus = {
     name: 'icon-circle-dot',
     color: '#808080', // 灰色
   },
-  集群异常: {
-    name: 'icon-yichang',
-    color: '#FF0000', // 红色
-  },
-  构建中: {
-    name: 'icon-dlf-shujuhugoujian',
-    color: '#0000FF', // 蓝色
-  },
-  删除中: {
-    name: 'icon-shanchu',
-    color: '#FF00FF', // 牡丹红
-  },
-  等待构建: {
-    name: 'icon-icon-',
-    color: '#FFFF00', // 黄色
+  禁止调度: {
+    name: 'icon-circle-dot',
+    color: '#E0992C', // 黄色
   },
 };
 
