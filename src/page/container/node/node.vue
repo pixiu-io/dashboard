@@ -152,14 +152,14 @@
                     标签管理
                   </el-dropdown-item>
                   <el-dropdown-item
-                    v-if="scope.row.spec.unschedulable === true"
+                    v-if="scope.row.spec.unschedulable === ture"
                     class="dropdown-item-buttons"
                     @click="changeNodeSchedule(scope.row)"
                   >
                     开启调度
                   </el-dropdown-item>
                   <el-dropdown-item
-                    v-if="scope.row.spec.unschedulable === false"
+                    v-if="scope.row.spec.unschedulable !== true"
                     class="dropdown-item-buttons"
                     @click="changeNodeSchedule(scope.row)"
                   >
@@ -436,9 +436,7 @@
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, provide } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
 import { getTableData, searchData } from '@/utils/utils';
-import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Description from '@/components/description/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import Pagination from '@/components/pagination/index.vue';
@@ -458,8 +456,6 @@ const router = useRouter();
 const data = reactive({
   cluster: '',
 
-  drawerWidth: '70%',
-
   loading: false,
   noLoading: false,
 
@@ -473,6 +469,9 @@ const data = reactive({
       searchInfo: '',
     },
   },
+
+  drawerWidth: '70%',
+
   tableData: [],
 
   yamlDialog: false,
@@ -543,8 +542,7 @@ const getNodes = async () => {
   if (!data.noLoading) {
     data.loading = true;
   }
-
-  const [res, err] = await getNodeList(data.cluster);
+  const [result, err] = await getNodeList(data.cluster);
   data.loading = false;
   if (err) {
     proxy.$message.error(err.response.data.message);
