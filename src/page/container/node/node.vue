@@ -455,6 +455,13 @@
     <el-form>
       <el-form-item>
         <template #label>
+          <span class="dialog-label-key-style">IP地址</span>
+        </template>
+
+        <el-radio-group v-model="data.remoteLogin.ip" style="margin-left: 15px"> </el-radio-group>
+      </el-form-item>
+      <el-form-item>
+        <template #label>
           <span class="dialog-label-key-style">Command</span>
         </template>
 
@@ -579,6 +586,7 @@ const data = reactive({
 
   remoteLogin: {
     close: false,
+    ip: '',
     command: '/bin/sh',
   },
 });
