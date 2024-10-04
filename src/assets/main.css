@@ -556,3 +556,21 @@
   margin-right: -2px;
   color: #006eff;
 }
+
+.dialog-header-style {
+  text-align: left;
+  font-weight: bold;
+  padding-left: 0px;
+  margin-top: 5px;
+  font-size: 14.5px;
+  color: #191919;
+}
+
+.dialog-label-key-style {
+  font-size: 13px;
+  color: #191919;
+}
+
+.dialog-label-value-style {
+  font-size: 13px"
+}
