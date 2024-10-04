@@ -118,7 +118,7 @@
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="dropdown-item-buttons"
-                    @click="handleDeleteDialog(scope.row)"
+                    @click="handleReRunJob(scope.row)"
                   >
                     重新运行
                   </el-dropdown-item>
@@ -164,7 +164,13 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData } from '@/utils/utils';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
-import { getJobList, getJob, deleteJob, updateJob } from '@/services/kubernetes/jobService';
+import {
+  getJobList,
+  getJob,
+  deleteJob,
+  updateJob,
+  reRunJob,
+} from '@/services/kubernetes/jobService';
 import Description from '@/components/description/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
@@ -185,6 +191,7 @@ const data = reactive({
   namespace: 'default',
 
   loading: false,
+  noLoading: false,
 
   pageInfo: {
     page: 1,
@@ -229,6 +236,14 @@ const handleStorageChange = (e) => {
       getJobs();
     }
   }
+};
+
+const handleReRunJob = (row) => {
+  reRunJob(data.cluster, row.metadata.namespace, row.metadata.name, row.metadata.resourceVersion);
+
+  data.noLoading = true;
+  getJobs();
+  data.noLoading = false;
 };
 
 const handleDeleteDialog = (row) => {
@@ -291,7 +306,9 @@ const createJob = () => {
 const jumpRoute = (row) => {};
 
 const getJobs = async () => {
-  data.loading = true;
+  if (!data.noLoading) {
+    data.loading = true;
+  }
   const [result, err] = await getJobList(data.cluster, data.namespace);
   data.loading = false;
   if (err) {

@@ -43,6 +43,16 @@ export const deleteJob = async (cluster, namespace, name) => {
   return [result, err];
 };
 
+export const reRunJob = async (cluster, namespace, name, resourceVersion) => {
+  const [result] = await awaitWrap(
+    http({
+      method: 'post',
+      url: `/pixiu/kubeproxy/clusters/${cluster}/namespaces/${namespace}/jobs/${name}?resourceVersion=${resourceVersion}&action=rerun`,
+    }),
+  );
+  return [result];
+};
+
 export const getJobList = async (cluster, namespace) => {
   let url = `/pixiu/proxy/${cluster}/apis/batch/v1/namespaces/${namespace}/jobs`;
   if (namespace === '全部空间') {
