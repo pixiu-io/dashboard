@@ -238,8 +238,13 @@ const handleStorageChange = (e) => {
   }
 };
 
-const handleReRunJob = (row) => {
-  reRunJob(data.cluster, row.metadata.namespace, row.metadata.name, row.metadata.resourceVersion);
+const handleReRunJob = async (row) => {
+  await reRunJob(
+    data.cluster,
+    row.metadata.namespace,
+    row.metadata.name,
+    row.metadata.resourceVersion,
+  );
 
   data.noLoading = true;
   getJobs();
