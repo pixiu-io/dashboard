@@ -197,9 +197,11 @@
     </el-steps>
 
     <el-form :label-position="labelPosition" style="margin-top: 20px">
-      <el-form-item label="名称" style="width: 50%">
-        <el-input v-model="data.cronJobForm.name" />
-      </el-form-item>
+      <div v-if="data.active == 0">
+        <el-form-item label="名称" style="width: 50%">
+          <el-input v-model="data.cronJobForm.name" />
+        </el-form-item>
+      </div>
     </el-form>
 
     <div style="height: 420px" />
@@ -353,7 +355,7 @@ const confirmCreate = () => {
 
 const cancelCreate = () => {
   data.cronJobData.close = false;
-  console.log('active.value', data.active);
+  data.active = 0;
 };
 // 创建结束
 
