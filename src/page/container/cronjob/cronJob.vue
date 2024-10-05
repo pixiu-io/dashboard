@@ -156,7 +156,14 @@
     </el-card>
   </div>
 
-  <el-dialog :model-value="data.cronJobData.close" style="color: #000000; font: 14px" width="65%">
+  <el-dialog
+    :model-value="data.cronJobData.close"
+    style="color: #000000; font: 14px"
+    align-center
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
+    @close="cancelCreate"
+  >
     <template #header>
       <div class="dialog-header-style">创建定时任务</div>
     </template>
@@ -265,11 +272,16 @@ const handleStorageChange = (e) => {
 
 const handleCreateDialog = (row) => {
   data.cronJobData.close = true;
+  console.log('ddddd');
 };
 
-const confirmCreate = () => {};
+const confirmCreate = () => {
+  data.cronJobData.close = false;
+};
 
-const cancelCreate = () => {};
+const cancelCreate = () => {
+  data.cronJobData.close = false;
+};
 
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
