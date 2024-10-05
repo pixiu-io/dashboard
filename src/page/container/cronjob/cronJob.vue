@@ -229,10 +229,49 @@
           <el-button
             class="table-inline-btn"
             style="margin-left: -8px; margin-right: -20px; cursor: pointer"
-            @click="addLabel"
+            @click="openAdvanceOption"
             >高级设置</el-button
           >
         </el-form-item>
+
+        <div v-if="data.cronJobAdvanceOption === true">
+          <el-form-item>
+            <template #label>
+              <span class="form-item-key-style">最大启动延后时间</span>
+            </template>
+          </el-form-item>
+
+          <el-form-item>
+            <template #label>
+              <span class="form-item-key-style">成功任务保留数量</span>
+            </template>
+          </el-form-item>
+
+          <el-form-item>
+            <template #label>
+              <span class="form-item-key-style">失败任务保留数量 </span>
+            </template>
+          </el-form-item>
+
+          <el-form-item>
+            <template #label>
+              <span class="form-item-key-style">并发策略 </span>
+            </template>
+            <span style="margin-left: 40px">
+              <el-select
+                v-model="data.cronJobForm.namespace"
+                style="width: 210px; float: right; margin-right: 10px"
+              >
+                <el-option
+                  v-for="item in data.namespaces"
+                  :key="item"
+                  :value="item"
+                  :label="item"
+                />
+              </el-select>
+            </span>
+          </el-form-item>
+        </div>
       </div>
     </el-form>
 
@@ -318,6 +357,7 @@ const data = reactive({
   cronJobData: {
     close: false,
   },
+  cronJobAdvanceOption: false,
   active: 0,
   namespaces: [],
   cronJobForm: {
@@ -378,6 +418,10 @@ const lastStep = () => {
 
 const handleCreateDialog = (row) => {
   data.cronJobData.close = true;
+};
+
+const openAdvanceOption = () => {
+  data.cronJobAdvanceOption = !data.cronJobAdvanceOption;
 };
 
 const confirmCreate = () => {
