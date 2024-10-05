@@ -208,14 +208,14 @@
         <el-button class="pixiu-delete-cancel-button" @click="cancelCreate">取消</el-button>
 
         <el-button
-          v-if="data.active !== 0"
+          v-if="data.active > 0"
           type="primary"
           class="pixiu-delete-cancel-button"
           @click="lastStep"
           >上一步</el-button
         >
         <el-button
-          v-if="data.active !== 4"
+          v-if="data.active < 4"
           type="primary"
           class="pixiu-delete-confirm-button"
           @click="nextStep"
@@ -336,18 +336,11 @@ const handleStorageChange = (e) => {
 
 // 创建开始
 const nextStep = () => {
-  if (data.active == 4) {
-    return;
-  }
-  data.active++;
+  if (data.active++ >= 4) data.active = 4;
 };
 
 const lastStep = () => {
-  if ((data.active = 0)) {
-    return;
-  }
-
-  data.active--;
+  if (data.active-- <= 0) data.active = 0;
 };
 
 const handleCreateDialog = (row) => {
