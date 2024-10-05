@@ -158,21 +158,74 @@
 
   <el-dialog
     :model-value="data.cronJobData.close"
-    style="color: #000000; font: 14px"
-    align-center
     :close-on-click-modal="false"
     :close-on-press-escape="false"
+    style="color: #000000; font: 14px"
     @close="cancelCreate"
   >
     <template #header>
       <div class="dialog-header-style">创建定时任务</div>
     </template>
+    <div style="margin-top: 5px"></div>
+
+    <el-steps style="max-width: 100%" :active="data.active" finish-status="success">
+      <el-step>
+        <template #title>
+          <span style="margin-left: 2px; font-size: 13px; color: #191919">基本信息 </span>
+        </template>
+      </el-step>
+      <el-step>
+        <template #title>
+          <span style="margin-left: 2px; font-size: 13px; color: #191919">策略设置 </span>
+        </template>
+      </el-step>
+      <el-step>
+        <template #title>
+          <span style="margin-left: 2px; font-size: 13px; color: #191919">容器组设置 </span>
+        </template>
+      </el-step>
+      <el-step>
+        <template #title>
+          <span style="margin-left: 2px; font-size: 13px; color: #191919">存储设置 </span>
+        </template>
+      </el-step>
+      <el-step>
+        <template #title>
+          <span style="margin-left: 2px; font-size: 13px; color: #191919">高级属性 </span>
+        </template>
+      </el-step>
+    </el-steps>
+
+    <el-form :label-position="labelPosition" style="margin-top: 20px">
+      <el-form-item label="名称" style="width: 50%">
+        <el-input v-model="data.cronJobForm.name" />
+      </el-form-item>
+    </el-form>
 
     <div style="height: 420px" />
     <template #footer>
       <span class="dialog-footer">
         <el-button class="pixiu-delete-cancel-button" @click="cancelCreate">取消</el-button>
-        <el-button type="primary" class="pixiu-delete-confirm-button" @click="confirmCreate"
+
+        <el-button
+          v-if="data.active !== 0"
+          type="primary"
+          class="pixiu-delete-cancel-button"
+          @click="lastStep"
+          >上一步</el-button
+        >
+        <el-button
+          v-if="data.active !== 4"
+          type="primary"
+          class="pixiu-delete-confirm-button"
+          @click="nextStep"
+          >下一步</el-button
+        >
+        <el-button
+          v-if="data.active === 4"
+          type="primary"
+          class="pixiu-delete-confirm-button"
+          @click="confirmCreate"
           >确认</el-button
         >
       </span>
@@ -233,7 +286,18 @@ const data = reactive({
   cronJobData: {
     close: false,
   },
-  cronJobForm: {},
+  active: 0,
+  cronJobForm: {
+    metadata: {
+      name: '',
+      namespace: '',
+    },
+    spec: {
+      jobTemplate: {},
+      schedule: '',
+      suspend: false,
+    },
+  },
 
   // 删除对象属性
   deleteDialog: {
@@ -270,9 +334,24 @@ const handleStorageChange = (e) => {
   }
 };
 
+// 创建开始
+const nextStep = () => {
+  if (data.active == 4) {
+    return;
+  }
+  data.active++;
+};
+
+const lastStep = () => {
+  if ((data.active = 0)) {
+    return;
+  }
+
+  data.active--;
+};
+
 const handleCreateDialog = (row) => {
   data.cronJobData.close = true;
-  console.log('ddddd');
 };
 
 const confirmCreate = () => {
@@ -281,7 +360,9 @@ const confirmCreate = () => {
 
 const cancelCreate = () => {
   data.cronJobData.close = false;
+  console.log('active.value', data.active);
 };
+// 创建结束
 
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
