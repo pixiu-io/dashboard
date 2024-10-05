@@ -574,3 +574,9 @@
 .dialog-label-value-style {
   font-size: 13px;
 }
+
+.form-item-key-style {
+  margin-left: 8px;
+  font-size: 13px;
+  color: #191919;
+}

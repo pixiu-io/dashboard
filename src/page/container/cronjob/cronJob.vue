@@ -171,40 +171,71 @@
     <el-steps style="max-width: 100%" :active="data.active" finish-status="success">
       <el-step>
         <template #title>
-          <span style="margin-left: 2px; font-size: 13px; color: #191919">基本信息 </span>
+          <span style="margin-left: 2px; font-size: 14px; color: #191919">基本信息 </span>
         </template>
       </el-step>
       <el-step>
         <template #title>
-          <span style="margin-left: 2px; font-size: 13px; color: #191919">策略设置 </span>
+          <span style="margin-left: 2px; font-size: 14px; color: #191919">策略设置 </span>
         </template>
       </el-step>
       <el-step>
         <template #title>
-          <span style="margin-left: 2px; font-size: 13px; color: #191919">容器组设置 </span>
+          <span style="margin-left: 2px; font-size: 14px; color: #191919">容器组设置 </span>
         </template>
       </el-step>
       <el-step>
         <template #title>
-          <span style="margin-left: 2px; font-size: 13px; color: #191919">存储设置 </span>
+          <span style="margin-left: 2px; font-size: 14px; color: #191919">存储设置 </span>
         </template>
       </el-step>
       <el-step>
         <template #title>
-          <span style="margin-left: 2px; font-size: 13px; color: #191919">高级属性 </span>
+          <span style="margin-left: 2px; font-size: 14px; color: #191919">高级属性 </span>
         </template>
       </el-step>
     </el-steps>
 
     <el-form :label-position="labelPosition" style="margin-top: 20px">
       <div v-if="data.active == 0">
-        <el-form-item label="名称" style="width: 50%">
+        <el-form-item>
+          <template #label>
+            <span class="form-item-key-style">名称 </span>
+          </template>
           <el-input v-model="data.cronJobForm.name" />
+        </el-form-item>
+
+        <el-form-item>
+          <template #label>
+            <span class="form-item-key-style">命名空间 </span>
+          </template>
+          <span style="margin-left: 40px">
+            <el-select
+              v-model="data.cronJobForm.namespace"
+              style="width: 210px; float: right; margin-right: 10px"
+            >
+              <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
+            </el-select>
+          </span>
+        </el-form-item>
+
+        <el-form-item>
+          <template #label>
+            <span class="form-item-key-style">描述</span>
+          </template>
+        </el-form-item>
+
+        <el-form-item>
+          <el-button
+            class="table-inline-btn"
+            style="margin-left: -8px; margin-right: -20px; cursor: pointer"
+            @click="addLabel"
+            >高级设置</el-button
+          >
         </el-form-item>
       </div>
     </el-form>
 
-    <div style="height: 420px" />
     <template #footer>
       <span class="dialog-footer">
         <el-button class="pixiu-delete-cancel-button" @click="cancelCreate">取消</el-button>
@@ -254,7 +285,6 @@ import {
   formatterTime,
   formatterCronJobStatus,
 } from '@/utils/formatter';
-
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import { getCronJobList, deleteCronJob } from '@/services/kubernetes/cronjobService';
 import Description from '@/components/description/index.vue';
@@ -289,6 +319,7 @@ const data = reactive({
     close: false,
   },
   active: 0,
+  namespaces: [],
   cronJobForm: {
     metadata: {
       name: '',
