@@ -334,7 +334,16 @@
           </template>
           <el-checkbox v-model="data.cronJobData.choiceNode" />
         </el-form-item>
-        <div v-if="data.cronJobData.choiceNode">ddd</div>
+        <div class="dialog-describe-style">
+          分配 Pod 到特定的节点。支持使用标签选择节点和手动指定节点。
+        </div>
+        <div v-if="data.cronJobData.choiceNode">
+          <el-form-item label>
+            <template #label>
+              <span class="form-item-key-style">xxx</span>
+            </template>
+          </el-form-item>
+        </div>
       </div>
     </el-form>
 
