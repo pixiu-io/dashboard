@@ -181,7 +181,7 @@
       </el-step>
       <el-step>
         <template #title>
-          <span style="margin-left: 2px; font-size: 14px; color: #191919">容器组设置 </span>
+          <span style="margin-left: 2px; font-size: 14px; color: #191919">容器设置 </span>
         </template>
       </el-step>
       <el-step>
@@ -191,7 +191,7 @@
       </el-step>
       <el-step>
         <template #title>
-          <span style="margin-left: 2px; font-size: 14px; color: #191919">高级属性 </span>
+          <span style="margin-left: 2px; font-size: 14px; color: #191919">高级选项 </span>
         </template>
       </el-step>
     </el-steps>
@@ -202,7 +202,7 @@
           <template #label>
             <span class="form-item-key-style">名称 </span>
           </template>
-          <el-input v-model="data.cronJobForm.name" />
+          <el-input v-model="data.cronJobForm.name" style="width: 50%" />
         </el-form-item>
 
         <el-form-item>
@@ -221,7 +221,45 @@
 
         <el-form-item>
           <template #label>
+            <span class="form-item-key-style">定时计划</span>
+          </template>
+          <el-input v-model="data.cronJobForm.spec.schedule" style="width: 30%" />
+        </el-form-item>
+
+        <el-form-item>
+          <template #label>
             <span class="form-item-key-style">描述</span>
+          </template>
+          <el-input
+            v-model="data.cronJobForm.description"
+            style="width: 70%"
+            type="textarea"
+            :autosize="data.autosize"
+          />
+        </el-form-item>
+      </div>
+
+      <div v-if="data.active == 1">
+        <el-form-item>
+          <template #label>
+            <span class="form-item-key-style">最大重试次数</span>
+          </template>
+        </el-form-item>
+
+        <el-form-item>
+          <template #label>
+            <span class="form-item-key-style">最大运行时间 </span>
+          </template>
+        </el-form-item>
+
+        <el-form-item>
+          <template #label>
+            <span class="form-item-key-style">容器组完成数量 </span>
+          </template>
+        </el-form-item>
+        <el-form-item>
+          <template #label>
+            <span class="form-item-key-style">并行容器组数量 </span>
           </template>
         </el-form-item>
 
@@ -233,24 +271,35 @@
             >高级设置</el-button
           >
         </el-form-item>
-
-        <div v-if="data.cronJobAdvanceOption === true">
+        <div v-if="data.cronJobAdvanceOptions.enable === true">
           <el-form-item>
             <template #label>
               <span class="form-item-key-style">最大启动延后时间</span>
             </template>
+            <el-input
+              v-model="data.cronJobAdvanceOptions.startingDeadlineSeconds"
+              style="width: 30%"
+            />
           </el-form-item>
 
           <el-form-item>
             <template #label>
               <span class="form-item-key-style">成功任务保留数量</span>
             </template>
+            <el-input
+              v-model="data.cronJobAdvanceOptions.successfulJobsHistoryLimit"
+              style="width: 30%"
+            />
           </el-form-item>
 
           <el-form-item>
             <template #label>
               <span class="form-item-key-style">失败任务保留数量 </span>
             </template>
+            <el-input
+              v-model="data.cronJobAdvanceOptions.failedJobsHistoryLimit"
+              style="width: 30%"
+            />
           </el-form-item>
 
           <el-form-item>
@@ -259,11 +308,11 @@
             </template>
             <span style="margin-left: 40px">
               <el-select
-                v-model="data.cronJobForm.namespace"
+                v-model="data.cronJobAdvanceOptions.concurrencyPolicy"
                 style="width: 210px; float: right; margin-right: 10px"
               >
                 <el-option
-                  v-for="item in data.namespaces"
+                  v-for="item in data.cronJobAdvanceOptions.concurrencyPolicies"
                   :key="item"
                   :value="item"
                   :label="item"
@@ -272,6 +321,20 @@
             </span>
           </el-form-item>
         </div>
+      </div>
+
+      <div v-if="data.active == 2"></div>
+
+      <div v-if="data.active == 3">TODO 存储设置</div>
+
+      <div v-if="data.active == 4">
+        <el-form-item label>
+          <template #label>
+            <span class="form-item-key-style">选择节点</span>
+          </template>
+          <el-checkbox v-model="data.cronJobData.choiceNode" />
+        </el-form-item>
+        <div v-if="data.cronJobData.choiceNode">ddd</div>
       </div>
     </el-form>
 
@@ -324,15 +387,25 @@ import {
   formatterTime,
   formatterCronJobStatus,
 } from '@/utils/formatter';
-import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
-import { getCronJobList, deleteCronJob } from '@/services/kubernetes/cronjobService';
+import { getLocalNamespace, getNamespaceList } from '@/services/kubernetes/namespaceService';
+import { getCronJobList, deleteCronJob, patchCronJob } from '@/services/kubernetes/cronjobService';
 import Description from '@/components/description/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
-import { patchCronJob } from '../../../services/kubernetes/cronjobService';
 
 const { proxy } = getCurrentInstance();
 const editYaml = ref();
+
+const container = reactive({
+  name: '',
+  image: '',
+  command: [],
+  args: [],
+  imagePullPolicy: 'IfNotPresent',
+  env: [],
+  ports: [],
+  resources: {},
+});
 
 const data = reactive({
   cluster: '',
@@ -345,9 +418,13 @@ const data = reactive({
     total: 0,
   },
   tableData: [],
-  loading: false,
 
+  loading: false,
   noLoading: false,
+
+  autosize: {
+    minRows: 5,
+  },
 
   // yaml相关属性
   yaml: '',
@@ -356,8 +433,16 @@ const data = reactive({
 
   cronJobData: {
     close: false,
+    choiceNode: false,
   },
-  cronJobAdvanceOption: false,
+  cronJobAdvanceOptions: {
+    enable: false,
+    concurrencyPolicy: 'Allow',
+    concurrencyPolicies: ['Allow'],
+    successfulJobsHistoryLimit: '',
+    failedJobsHistoryLimit: '',
+    startingDeadlineSeconds: '',
+  },
   active: 0,
   namespaces: [],
   cronJobForm: {
@@ -417,11 +502,12 @@ const lastStep = () => {
 };
 
 const handleCreateDialog = (row) => {
+  getNamespaces();
   data.cronJobData.close = true;
 };
 
 const openAdvanceOption = () => {
-  data.cronJobAdvanceOption = !data.cronJobAdvanceOption;
+  data.cronJobAdvanceOptions.enable = !data.cronJobAdvanceOptions.enable;
 };
 
 const confirmCreate = () => {
@@ -431,6 +517,18 @@ const confirmCreate = () => {
 const cancelCreate = () => {
   data.cronJobData.close = false;
   data.active = 0;
+};
+
+const getNamespaces = async () => {
+  const [result, err] = await getNamespaceList(data.cluster);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  data.namespaces = [];
+  for (let ns of result.items) {
+    data.namespaces.push(ns.metadata.name);
+  }
 };
 // 创建结束
 
