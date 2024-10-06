@@ -337,11 +337,35 @@
         <div class="dialog-describe-style">
           分配 Pod 到特定的节点。支持使用标签选择节点和手动指定节点。
         </div>
+
         <div v-if="data.cronJobData.choiceNode">
-          <el-form-item label>
-            <template #label>
-              <span class="form-item-key-style">xxx</span>
-            </template>
+          <div style="margin-top: 25px"></div>
+          <el-form-item
+            v-for="(item, index) in data.labelData.labels"
+            :key="index"
+            style="margin-top: -10px"
+          >
+            <el-form-item prop="item.key">
+              <el-input v-model="item.key" style="width: 300px; margin-left: 10px" />
+            </el-form-item>
+            <div>
+              <el-input v-model="item.value" style="width: 300px; margin-left: 20px" />
+            </div>
+            <div
+              class="table-inline-btn"
+              style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
+              @click="deleteLabel(index)"
+            >
+              删除
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              class="table-inline-btn"
+              style="margin-left: -5px; margin-right: -20px; margin-top: -15px; cursor: pointer"
+              @click="addLabel"
+              >+ 添加</el-button
+            >
           </el-form-item>
         </div>
       </div>
@@ -435,6 +459,11 @@ const data = reactive({
     minRows: 5,
   },
 
+  selectNodes: [],
+  labelData: {
+    labels: [],
+  },
+
   // yaml相关属性
   yaml: '',
   yamlName: '',
@@ -502,6 +531,14 @@ const handleStorageChange = (e) => {
 };
 
 // 创建开始
+const addLabel = () => {
+  data.labelData.labels.push({ key: '', value: '' });
+};
+
+const deleteLabel = (index) => {
+  data.labelData.labels.splice(index, 1);
+};
+
 const nextStep = () => {
   if (data.active++ >= 4) data.active = 4;
 };
