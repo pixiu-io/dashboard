@@ -206,14 +206,24 @@
           <template #label>
             <span class="form-item-key-style">名称 </span>
           </template>
-          <el-input v-model="data.cronJobForm.name" style="width: 50%" />
+          <el-input
+            v-model="data.cronJobForm.name"
+            class="form-item-key-style"
+            style="margin-left: 30px; width: 45%"
+          />
+        </el-form-item>
+
+        <el-form-item>
+          <div class="dialog-describe-style" style="margin-left: 78px">
+            只能包含小写字母、数字和连字符（-），必须以小写字母或数字开头和结尾，最长 63 个字符。
+          </div>
         </el-form-item>
 
         <el-form-item>
           <template #label>
             <span class="form-item-key-style">命名空间 </span>
           </template>
-          <span style="margin-left: 40px">
+          <span style="margin-left: 4px">
             <el-select
               v-model="data.cronJobForm.namespace"
               style="width: 210px; float: right; margin-right: 10px"
@@ -222,12 +232,22 @@
             </el-select>
           </span>
         </el-form-item>
+        <el-form-item>
+          <div class="dialog-describe-style" style="margin-left: 78px">
+            命名空间用于对定时任务分为相互隔离的组。
+          </div>
+        </el-form-item>
 
         <el-form-item>
           <template #label>
             <span class="form-item-key-style">定时计划</span>
           </template>
           <el-input v-model="data.cronJobForm.spec.schedule" style="width: 30%" />
+        </el-form-item>
+        <el-form-item>
+          <div class="dialog-describe-style" style="margin-left: 76px">
+            为定时任务设置定时计划。格式 * * * * *
+          </div>
         </el-form-item>
 
         <el-form-item>
@@ -236,7 +256,7 @@
           </template>
           <el-input
             v-model="data.cronJobForm.description"
-            style="width: 70%"
+            style="margin-left: 30px; margin-top: 5px; width: 60%"
             type="textarea"
             :autosize="data.autosize"
           />
