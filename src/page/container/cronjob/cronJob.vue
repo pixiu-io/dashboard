@@ -362,12 +362,27 @@
           <el-form-item>
             <el-button
               class="table-inline-btn"
-              style="margin-left: -5px; margin-right: -20px; margin-top: -15px; cursor: pointer"
+              style="
+                margin-left: -5px;
+                margin-right: -20px;
+                margin-top: -15px;
+                margin-bottom: -15px;
+                cursor: pointer;
+              "
               @click="addNodeSelectLabel"
               >+ 添加</el-button
             >
           </el-form-item>
         </div>
+
+        <div style="margin-top: 15px"></div>
+        <el-form-item label>
+          <template #label>
+            <span class="form-item-key-style">添加元数据</span>
+          </template>
+          <el-checkbox v-model="data.cronJobData.enableMetadata" @change="metaChange" />
+        </el-form-item>
+        <div class="dialog-describe-style">为定时任务添加标签和注解数据</div>
       </div>
     </el-form>
 
@@ -466,8 +481,13 @@ const data = reactive({
 
   cronJobData: {
     close: false,
+    // 选择节点配置
     choiceNode: false,
     nodeSelectLabels: [],
+    // 添加元数据
+    enableMetadata: false,
+    labels: [],
+    annotations: [],
   },
   cronJobAdvanceOptions: {
     enable: false,
