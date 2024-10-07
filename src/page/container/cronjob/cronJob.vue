@@ -810,6 +810,7 @@ const lastStep = () => {
 
 const handleCreateDialog = (row) => {
   getNamespaces();
+  addContainer();
   data.cronJobData.close = true;
 };
 
