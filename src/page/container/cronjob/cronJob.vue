@@ -347,7 +347,73 @@
         </div>
       </div>
 
-      <div v-if="data.active == 2"></div>
+      <div v-if="data.active == 2">
+        <el-form-item label>
+          <template #label>
+            <span class="form-item-key-style">容器配置</span>
+          </template>
+          <el-button
+            type="text"
+            class="app-action-btn"
+            style="margin-top: 1px"
+            @click="addContainer"
+            >+增加容器</el-button
+          >
+        </el-form-item>
+        <div class="dialog-describe-style" style="margin-left: 50px; margin-bottom: -12px">
+          设置容器的镜像、名称、类型和计算资源。
+        </div>
+
+        <el-form-item
+          v-for="(item, index) in data.cronJobData.containers"
+          :key="index"
+          style="margin-left: 50px"
+        >
+          <div style="width: 95%; background-color: #f2f2f2; margin-top: 20px; border-radius: 0px">
+            <div
+              style="float: right; cursor: pointer; margin-top: 10px; margin-right: 15px"
+              @click="deleteContainer(index)"
+            >
+              <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
+            </div>
+
+            <div style="margin-top: 18px"></div>
+            <el-form-item label>
+              <template #label>
+                <span class="form-item-key-style">容器名称</span>
+              </template>
+              <el-input v-model="item.name" style="margin-left: 10px; width: 45%" />
+            </el-form-item>
+
+            <el-form-item label style="margin-top: 10px">
+              <template #label>
+                <span class="form-item-key-style">镜像</span>
+              </template>
+              <el-input v-model="item.image" style="margin-left: 36px; width: 42%" />
+            </el-form-item>
+
+            <el-form-item label style="margin-top: 10px">
+              <template #label>
+                <span class="form-item-key-style">拉取策略</span>
+              </template>
+              <span style="margin-left: 10px">
+                <el-select
+                  v-model="item.imagePullPolicy"
+                  style="width: 150px; float: right; margin-right: 10px"
+                >
+                  <el-option
+                    v-for="item in data.cronJobData.imagePullPolicies"
+                    :key="item"
+                    :value="item"
+                    :label="item"
+                  />
+                </el-select>
+              </span>
+            </el-form-item>
+            <div class="container-line-describe">设置镜像拉取策略，默认使用 IfNotPresent 策略</div>
+          </div>
+        </el-form-item>
+      </div>
 
       <div v-if="data.active == 3">TODO 存储设置</div>
 
@@ -433,6 +499,7 @@
               删除
             </div>
           </el-form-item>
+
           <el-form-item>
             <el-button
               class="table-inline-btn"
@@ -593,6 +660,9 @@ const data = reactive({
     enableMetadata: false,
     labels: [],
     annotations: [],
+    // 容器配置
+    containers: [],
+    imagePullPolicies: ['IfNotPresent', 'Always', 'Never'],
   },
   cronJobAdvanceOptions: {
     enable: false,
@@ -602,7 +672,7 @@ const data = reactive({
     failedJobsHistoryLimit: '',
     startingDeadlineSeconds: '',
   },
-  active: 0,
+  active: 2,
   namespaces: [],
   cronJobForm: {
     metadata: {
@@ -693,6 +763,18 @@ const addAnnotation = () => {
 
 const deleteAnnotation = (index) => {
   data.cronJobData.annotations.splice(index, 1);
+};
+
+const addContainer = () => {
+  data.cronJobData.containers.push({
+    name: '',
+    image: '',
+    imagePullPolicy: 'IfNotPresent',
+  });
+};
+
+const deleteContainer = (index) => {
+  data.cronJobData.containers.splice(index, 1);
 };
 
 const nextStep = () => {
