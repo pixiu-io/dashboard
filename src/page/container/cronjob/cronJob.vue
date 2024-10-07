@@ -332,7 +332,7 @@
           <template #label>
             <span class="form-item-key-style">选择节点</span>
           </template>
-          <el-checkbox v-model="data.cronJobData.choiceNode" />
+          <el-checkbox v-model="data.cronJobData.choiceNode" @change="nodeChange" />
         </el-form-item>
         <div class="dialog-describe-style">
           分配 Pod 到特定的节点。支持使用标签选择节点和手动指定节点。
@@ -341,7 +341,7 @@
         <div v-if="data.cronJobData.choiceNode">
           <div style="margin-top: 25px"></div>
           <el-form-item
-            v-for="(item, index) in data.labelData.labels"
+            v-for="(item, index) in data.cronJobData.nodeSelectLabels"
             :key="index"
             style="margin-top: -10px"
           >
@@ -354,7 +354,7 @@
             <div
               class="table-inline-btn"
               style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
-              @click="deleteLabel(index)"
+              @click="deleteNodeSelectLabel(index)"
             >
               删除
             </div>
@@ -363,7 +363,7 @@
             <el-button
               class="table-inline-btn"
               style="margin-left: -5px; margin-right: -20px; margin-top: -15px; cursor: pointer"
-              @click="addLabel"
+              @click="addNodeSelectLabel"
               >+ 添加</el-button
             >
           </el-form-item>
@@ -459,11 +459,6 @@ const data = reactive({
     minRows: 5,
   },
 
-  selectNodes: [],
-  labelData: {
-    labels: [],
-  },
-
   // yaml相关属性
   yaml: '',
   yamlName: '',
@@ -472,6 +467,7 @@ const data = reactive({
   cronJobData: {
     close: false,
     choiceNode: false,
+    nodeSelectLabels: [],
   },
   cronJobAdvanceOptions: {
     enable: false,
@@ -531,12 +527,20 @@ const handleStorageChange = (e) => {
 };
 
 // 创建开始
-const addLabel = () => {
-  data.labelData.labels.push({ key: '', value: '' });
+const nodeChange = () => {
+  if (data.cronJobData.choiceNode) {
+    if (data.cronJobData.nodeSelectLabels.length === 0) {
+      addNodeSelectLabel();
+    }
+  }
 };
 
-const deleteLabel = (index) => {
-  data.labelData.labels.splice(index, 1);
+const addNodeSelectLabel = () => {
+  data.cronJobData.nodeSelectLabels.push({ key: '', value: '' });
+};
+
+const deleteNodeSelectLabel = (index) => {
+  data.cronJobData.nodeSelectLabels.splice(index, 1);
 };
 
 const nextStep = () => {
