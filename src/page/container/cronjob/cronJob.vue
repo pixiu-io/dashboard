@@ -416,12 +416,21 @@
               <template #label>
                 <span
                   class="form-item-key-style"
-                  style="cursor: pointer; color: #006eff"
-                  @click="openContainerAdvanceOption"
+                  style="cursor: pointer; color: #006eff; font-size: 12px"
+                  @click="openContainerAdvanceOption(item)"
                   >高级设置</span
                 >
               </template>
             </el-form-item>
+
+            <div v-if="item.advance">
+              <el-form-item label>
+                <template #label>
+                  <span class="form-item-key-style">资源</span>
+                </template>
+                TODO
+              </el-form-item>
+            </div>
           </div>
         </el-form-item>
       </div>
@@ -781,6 +790,7 @@ const addContainer = () => {
     name: '',
     image: '',
     imagePullPolicy: 'IfNotPresent',
+    advance: false,
   });
 };
 
@@ -803,6 +813,10 @@ const handleCreateDialog = (row) => {
 
 const openAdvanceOption = () => {
   data.cronJobAdvanceOptions.enable = !data.cronJobAdvanceOptions.enable;
+};
+
+const openContainerAdvanceOption = (item) => {
+  item.advance = !item.advance;
 };
 
 const confirmCreate = () => {
