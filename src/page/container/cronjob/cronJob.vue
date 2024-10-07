@@ -875,12 +875,61 @@ const confirmCreate = async () => {
     proxy.$message.error(err.response.data.message);
     return;
   }
+
   proxy.$message.success(`定时任务(${data.cronJobForm.metadata.name}) 创建成功`);
+  cancelCreate();
+  getCronJobs();
 };
 
 const cancelCreate = () => {
   data.cronJobData.close = false;
   data.active = 0;
+
+  setTimeout(() => {
+    data.active = 0;
+    data.cronJobData = {
+      close: false,
+      // 选择节点配置
+      choiceNode: false,
+      nodeSelectLabels: [],
+      // 添加元数据
+      enableMetadata: false,
+      labels: [],
+      annotations: [],
+      // 容器配置
+      containers: [],
+      imagePullPolicies: ['IfNotPresent', 'Always', 'Never'],
+    };
+
+    data.cronJobAdvanceOptions = {
+      enable: false,
+      concurrencyPolicy: 'Allow',
+      concurrencyPolicies: ['Allow'],
+      successfulJobsHistoryLimit: '',
+      failedJobsHistoryLimit: '',
+      startingDeadlineSeconds: '',
+    };
+    data.namespaces = [];
+    data.cronJobForm = {
+      metadata: {
+        name: '',
+        namespace: '',
+      },
+      spec: {
+        jobTemplate: {
+          spec: {
+            template: {
+              spec: {
+                restartPolicy: 'OnFailure',
+              },
+            },
+          },
+        },
+        schedule: '',
+        suspend: false,
+      },
+    };
+  }, 100);
 };
 
 const getNamespaces = async () => {
