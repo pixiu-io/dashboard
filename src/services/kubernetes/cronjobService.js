@@ -18,6 +18,17 @@ export const getCronJobList = async (cluster, namespace) => {
   return [result, err];
 };
 
+export const createCronJob = async (cluster, namespace, data) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'post',
+      url: `/pixiu/proxy/${cluster}/apis/batch/v1/namespaces/${namespace}/cronjobs`,
+      data: data,
+    }),
+  );
+  return [result, err];
+};
+
 export const deleteCronJob = async (cluster, namespace, name) => {
   const [err, result] = await awaitWrap(
     http({

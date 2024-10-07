@@ -207,7 +207,7 @@
             <span class="form-item-key-style">名称 </span>
           </template>
           <el-input
-            v-model="data.cronJobForm.name"
+            v-model="data.cronJobForm.metadata.name"
             class="form-item-key-style"
             style="margin-left: 30px; width: 45%"
           />
@@ -225,7 +225,7 @@
           </template>
           <span style="margin-left: 4px">
             <el-select
-              v-model="data.cronJobForm.namespace"
+              v-model="data.cronJobForm.metadata.namespace"
               style="width: 210px; float: right; margin-right: 10px"
             >
               <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
@@ -628,7 +628,12 @@ import {
   formatterCronJobStatus,
 } from '@/utils/formatter';
 import { getLocalNamespace, getNamespaceList } from '@/services/kubernetes/namespaceService';
-import { getCronJobList, deleteCronJob, patchCronJob } from '@/services/kubernetes/cronjobService';
+import {
+  createCronJob,
+  getCronJobList,
+  deleteCronJob,
+  patchCronJob,
+} from '@/services/kubernetes/cronjobService';
 import Description from '@/components/description/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
@@ -692,7 +697,9 @@ const data = reactive({
       jobTemplate: {
         spec: {
           template: {
-            spec: {},
+            spec: {
+              restartPolicy: 'OnFailure',
+            },
           },
         },
       },
@@ -814,7 +821,7 @@ const openContainerAdvanceOption = (item) => {
   item.advance = !item.advance;
 };
 
-const confirmCreate = () => {
+const confirmCreate = async () => {
   // 添加元数据
   if (data.cronJobData.enableMetadata) {
     if (data.cronJobData.labels.length !== 0) {
@@ -844,7 +851,6 @@ const confirmCreate = () => {
     if (container.advance) {
       // TODO
     }
-
     containers.push(c);
   }
   data.cronJobForm.spec.jobTemplate.spec.template.spec['containers'] = containers;
@@ -860,6 +866,16 @@ const confirmCreate = () => {
 
   console.log(data.cronJobForm);
   // data.cronJobData.close = false;
+  const [result, err] = await createCronJob(
+    data.cluster,
+    data.cronJobForm.metadata.namespace,
+    data.cronJobForm,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(`定时任务(${data.cronJobForm.metadata.name}) 创建成功`);
 };
 
 const cancelCreate = () => {
