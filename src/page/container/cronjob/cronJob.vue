@@ -168,7 +168,11 @@
     </template>
     <div style="margin-top: 5px"></div>
 
-    <el-steps style="max-width: 100%" :active="data.active" finish-status="success">
+    <el-steps
+      style="max-width: 100%; margin-left: 6px"
+      :active="data.active"
+      finish-status="success"
+    >
       <el-step>
         <template #title>
           <span style="margin-left: 2px; font-size: 14px; color: #191919">基本信息 </span>
