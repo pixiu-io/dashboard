@@ -242,7 +242,7 @@
           <template #label>
             <span class="form-item-key-style">定时计划</span>
           </template>
-          <el-input v-model="data.cronJobForm.spec.schedule" style="width: 30%" />
+          <el-input v-model="data.cronJobForm.spec.schedule" style="margin-left: 5px; width: 30%" />
         </el-form-item>
         <el-form-item>
           <div class="dialog-describe-style" style="margin-left: 76px">
