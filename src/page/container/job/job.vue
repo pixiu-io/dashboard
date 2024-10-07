@@ -101,8 +101,8 @@
 
         <el-table-column fixed="right" label="操作" width="150px">
           <template #default="scope">
-            <el-button type="text" size="small" class="table-item-left1-buttom"> 待定1 </el-button>
-            <el-button type="text" size="small" class="table-item-left2-buttom"> 待定2 </el-button>
+            <el-button type="text" size="small" class="table-item-left1-buttom"> 编辑 </el-button>
+            <el-button type="text" size="small" class="table-item-left2-buttom"> 事件 </el-button>
             <el-dropdown>
               <span class="el-dropdown-link">
                 更多

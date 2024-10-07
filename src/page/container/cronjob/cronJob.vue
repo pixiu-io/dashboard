@@ -156,16 +156,451 @@
     </el-card>
   </div>
 
-  <el-dialog :model-value="data.cronJobData.close" style="color: #000000; font: 14px" width="65%">
+  <el-dialog
+    :model-value="data.cronJobData.close"
+    :close-on-click-modal="false"
+    :close-on-press-escape="false"
+    style="color: #000000; font: 14px"
+    @close="cancelCreate"
+  >
     <template #header>
       <div class="dialog-header-style">创建定时任务</div>
     </template>
+    <div style="margin-top: 5px"></div>
 
-    <div style="height: 420px" />
+    <el-steps
+      style="max-width: 100%; margin-left: 6px"
+      :active="data.active"
+      finish-status="success"
+    >
+      <el-step>
+        <template #title>
+          <span style="margin-left: 2px; font-size: 14px; color: #191919">基本信息 </span>
+        </template>
+      </el-step>
+      <el-step>
+        <template #title>
+          <span style="margin-left: 2px; font-size: 14px; color: #191919">策略设置 </span>
+        </template>
+      </el-step>
+      <el-step>
+        <template #title>
+          <span style="margin-left: 2px; font-size: 14px; color: #191919">容器设置 </span>
+        </template>
+      </el-step>
+      <el-step>
+        <template #title>
+          <span style="margin-left: 2px; font-size: 14px; color: #191919">存储设置 </span>
+        </template>
+      </el-step>
+      <el-step>
+        <template #title>
+          <span style="margin-left: 2px; font-size: 14px; color: #191919">高级选项 </span>
+        </template>
+      </el-step>
+    </el-steps>
+
+    <el-form :label-position="labelPosition" style="margin-top: 20px">
+      <div v-if="data.active == 0">
+        <el-form-item>
+          <template #label>
+            <span class="form-item-key-style">名称 </span>
+          </template>
+          <el-input
+            v-model="data.cronJobForm.name"
+            class="form-item-key-style"
+            style="margin-left: 30px; width: 45%"
+          />
+        </el-form-item>
+
+        <el-form-item>
+          <div class="dialog-describe-style" style="margin-left: 78px">
+            只能包含小写字母、数字和连字符（-），必须以小写字母或数字开头和结尾，最长 63 个字符。
+          </div>
+        </el-form-item>
+
+        <el-form-item>
+          <template #label>
+            <span class="form-item-key-style">命名空间 </span>
+          </template>
+          <span style="margin-left: 4px">
+            <el-select
+              v-model="data.cronJobForm.namespace"
+              style="width: 210px; float: right; margin-right: 10px"
+            >
+              <el-option v-for="item in data.namespaces" :key="item" :value="item" :label="item" />
+            </el-select>
+          </span>
+        </el-form-item>
+        <el-form-item>
+          <div class="dialog-describe-style" style="margin-left: 78px">
+            命名空间用于对定时任务分为相互隔离的组。
+          </div>
+        </el-form-item>
+
+        <el-form-item>
+          <template #label>
+            <span class="form-item-key-style">定时计划</span>
+          </template>
+          <el-input v-model="data.cronJobForm.spec.schedule" style="margin-left: 5px; width: 30%" />
+        </el-form-item>
+        <el-form-item>
+          <div class="dialog-describe-style" style="margin-left: 76px">
+            为定时任务设置定时计划。格式 * * * * *
+          </div>
+        </el-form-item>
+
+        <el-form-item>
+          <template #label>
+            <span class="form-item-key-style">描述</span>
+          </template>
+          <el-input
+            v-model="data.cronJobForm.description"
+            style="margin-left: 30px; margin-top: 5px; width: 60%"
+            type="textarea"
+            :autosize="data.autosize"
+          />
+        </el-form-item>
+      </div>
+
+      <div v-if="data.active == 1">
+        <el-form-item>
+          <template #label>
+            <span class="form-item-key-style">最大重试次数</span>
+          </template>
+        </el-form-item>
+
+        <el-form-item>
+          <template #label>
+            <span class="form-item-key-style">最大运行时间 </span>
+          </template>
+        </el-form-item>
+
+        <el-form-item>
+          <template #label>
+            <span class="form-item-key-style">容器组完成数量 </span>
+          </template>
+        </el-form-item>
+        <el-form-item>
+          <template #label>
+            <span class="form-item-key-style">并行容器组数量 </span>
+          </template>
+        </el-form-item>
+
+        <el-form-item>
+          <el-button
+            class="table-inline-btn"
+            style="margin-left: -8px; margin-right: -20px; cursor: pointer"
+            @click="openAdvanceOption"
+            >高级设置</el-button
+          >
+        </el-form-item>
+        <div v-if="data.cronJobAdvanceOptions.enable === true">
+          <el-form-item>
+            <template #label>
+              <span class="form-item-key-style">最大启动延后时间</span>
+            </template>
+            <el-input
+              v-model="data.cronJobAdvanceOptions.startingDeadlineSeconds"
+              style="width: 30%"
+            />
+          </el-form-item>
+
+          <el-form-item>
+            <template #label>
+              <span class="form-item-key-style">成功任务保留数量</span>
+            </template>
+            <el-input
+              v-model="data.cronJobAdvanceOptions.successfulJobsHistoryLimit"
+              style="width: 30%"
+            />
+          </el-form-item>
+
+          <el-form-item>
+            <template #label>
+              <span class="form-item-key-style">失败任务保留数量 </span>
+            </template>
+            <el-input
+              v-model="data.cronJobAdvanceOptions.failedJobsHistoryLimit"
+              style="width: 30%"
+            />
+          </el-form-item>
+
+          <el-form-item>
+            <template #label>
+              <span class="form-item-key-style">并发策略 </span>
+            </template>
+            <span style="margin-left: 40px">
+              <el-select
+                v-model="data.cronJobAdvanceOptions.concurrencyPolicy"
+                style="width: 210px; float: right; margin-right: 10px"
+              >
+                <el-option
+                  v-for="item in data.cronJobAdvanceOptions.concurrencyPolicies"
+                  :key="item"
+                  :value="item"
+                  :label="item"
+                />
+              </el-select>
+            </span>
+          </el-form-item>
+        </div>
+      </div>
+
+      <div v-if="data.active == 2">
+        <el-form-item label>
+          <template #label>
+            <span class="form-item-key-style">容器配置</span>
+          </template>
+          <el-button
+            type="text"
+            class="app-action-btn"
+            style="margin-top: 1px"
+            @click="addContainer"
+            >+增加容器</el-button
+          >
+        </el-form-item>
+        <div class="dialog-describe-style" style="margin-left: 50px; margin-bottom: -12px">
+          设置容器的镜像、名称、类型和计算资源。
+        </div>
+
+        <el-form-item
+          v-for="(item, index) in data.cronJobData.containers"
+          :key="index"
+          style="margin-left: 50px"
+        >
+          <div style="width: 95%; background-color: #f2f2f2; margin-top: 20px; border-radius: 0px">
+            <div
+              style="float: right; cursor: pointer; margin-top: 10px; margin-right: 15px"
+              @click="deleteContainer(index)"
+            >
+              <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
+            </div>
+
+            <div style="margin-top: 18px"></div>
+            <el-form-item label>
+              <template #label>
+                <span class="form-item-key-style">容器名称</span>
+              </template>
+              <el-input v-model="item.name" style="margin-left: 10px; width: 45%" />
+            </el-form-item>
+
+            <el-form-item label style="margin-top: 10px">
+              <template #label>
+                <span class="form-item-key-style">镜像</span>
+              </template>
+              <el-input v-model="item.image" style="margin-left: 36px; width: 42%" />
+            </el-form-item>
+
+            <el-form-item label style="margin-top: 10px">
+              <template #label>
+                <span class="form-item-key-style">拉取策略</span>
+              </template>
+              <span style="margin-left: 10px">
+                <el-select
+                  v-model="item.imagePullPolicy"
+                  style="width: 150px; float: right; margin-right: 10px"
+                >
+                  <el-option
+                    v-for="item in data.cronJobData.imagePullPolicies"
+                    :key="item"
+                    :value="item"
+                    :label="item"
+                  />
+                </el-select>
+              </span>
+            </el-form-item>
+            <div class="container-line-describe">设置镜像拉取策略，默认使用 IfNotPresent 策略</div>
+
+            <el-form-item label>
+              <template #label>
+                <span
+                  class="form-item-key-style"
+                  style="cursor: pointer; color: #006eff; font-size: 12px"
+                  @click="openContainerAdvanceOption(item)"
+                  >高级设置</span
+                >
+              </template>
+            </el-form-item>
+
+            <div v-if="item.advance">
+              <el-form-item label>
+                <template #label>
+                  <span class="form-item-key-style">资源</span>
+                </template>
+                TODO
+              </el-form-item>
+            </div>
+          </div>
+        </el-form-item>
+      </div>
+
+      <div v-if="data.active == 3">TODO 存储设置</div>
+
+      <div v-if="data.active == 4">
+        <el-form-item label>
+          <template #label>
+            <span class="form-item-key-style">选择节点</span>
+          </template>
+          <el-checkbox v-model="data.cronJobData.choiceNode" @change="nodeChange" />
+        </el-form-item>
+        <div class="dialog-describe-style">
+          分配 Pod 到特定的节点。支持使用标签选择节点和手动指定节点。
+        </div>
+
+        <div v-if="data.cronJobData.choiceNode">
+          <div style="margin-top: 25px"></div>
+          <el-form-item
+            v-for="(item, index) in data.cronJobData.nodeSelectLabels"
+            :key="index"
+            style="margin-top: -10px"
+          >
+            <el-form-item prop="item.key">
+              <el-input v-model="item.key" style="width: 300px; margin-left: 10px" />
+            </el-form-item>
+            <div>
+              <el-input v-model="item.value" style="width: 300px; margin-left: 20px" />
+            </div>
+            <div
+              class="table-inline-btn"
+              style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
+              @click="deleteNodeSelectLabel(index)"
+            >
+              删除
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              class="table-inline-btn"
+              style="
+                margin-left: -5px;
+                margin-right: -20px;
+                margin-top: -15px;
+                margin-bottom: -15px;
+                cursor: pointer;
+              "
+              @click="addNodeSelectLabel"
+              >+ 添加</el-button
+            >
+          </el-form-item>
+        </div>
+
+        <div style="margin-top: 15px"></div>
+        <el-form-item label>
+          <template #label>
+            <span class="form-item-key-style">添加元数据</span>
+          </template>
+          <el-checkbox v-model="data.cronJobData.enableMetadata" @change="metaChange" />
+        </el-form-item>
+        <div class="dialog-describe-style">为定时任务添加标签和注解数据</div>
+
+        <div v-if="data.cronJobData.enableMetadata">
+          <el-form-item>
+            <template #label>
+              <span class="form-item-key-style">标签</span>
+            </template>
+          </el-form-item>
+          <el-form-item
+            v-for="(item, index) in data.cronJobData.labels"
+            :key="index"
+            style="margin-top: -10px"
+          >
+            <el-form-item prop="item.key">
+              <el-input v-model="item.key" style="width: 300px; margin-left: 10px" />
+            </el-form-item>
+            <div>
+              <el-input v-model="item.value" style="width: 300px; margin-left: 20px" />
+            </div>
+            <div
+              class="table-inline-btn"
+              style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
+              @click="deleteLabel(index)"
+            >
+              删除
+            </div>
+          </el-form-item>
+
+          <el-form-item>
+            <el-button
+              class="table-inline-btn"
+              style="
+                margin-left: -5px;
+                margin-right: -20px;
+                margin-top: -15px;
+                margin-bottom: -15px;
+                cursor: pointer;
+              "
+              @click="addLabel"
+              >+ 添加</el-button
+            >
+          </el-form-item>
+
+          <el-form-item>
+            <template #label>
+              <span class="form-item-key-style">注解</span>
+            </template>
+          </el-form-item>
+
+          <el-form-item
+            v-for="(item, index) in data.cronJobData.annotations"
+            :key="index"
+            style="margin-top: -10px"
+          >
+            <el-form-item prop="item.key">
+              <el-input v-model="item.key" style="width: 300px; margin-left: 10px" />
+            </el-form-item>
+            <div>
+              <el-input v-model="item.value" style="width: 300px; margin-left: 20px" />
+            </div>
+            <div
+              class="table-inline-btn"
+              style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
+              @click="deleteAnnotation(index)"
+            >
+              删除
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              class="table-inline-btn"
+              style="
+                margin-left: -5px;
+                margin-right: -20px;
+                margin-top: -15px;
+                margin-bottom: -15px;
+                cursor: pointer;
+              "
+              @click="addAnnotation"
+              >+ 添加</el-button
+            >
+          </el-form-item>
+        </div>
+      </div>
+    </el-form>
+
     <template #footer>
       <span class="dialog-footer">
         <el-button class="pixiu-delete-cancel-button" @click="cancelCreate">取消</el-button>
-        <el-button type="primary" class="pixiu-delete-confirm-button" @click="confirmCreate"
+
+        <el-button
+          v-if="data.active > 0"
+          type="primary"
+          class="pixiu-delete-cancel-button"
+          @click="lastStep"
+          >上一步</el-button
+        >
+        <el-button
+          v-if="data.active < 4"
+          type="primary"
+          class="pixiu-delete-confirm-button"
+          @click="nextStep"
+          >下一步</el-button
+        >
+        <el-button
+          v-if="data.active === 4"
+          type="primary"
+          class="pixiu-delete-confirm-button"
+          @click="confirmCreate"
           >确认</el-button
         >
       </span>
@@ -192,16 +627,25 @@ import {
   formatterTime,
   formatterCronJobStatus,
 } from '@/utils/formatter';
-
-import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
-import { getCronJobList, deleteCronJob } from '@/services/kubernetes/cronjobService';
+import { getLocalNamespace, getNamespaceList } from '@/services/kubernetes/namespaceService';
+import { getCronJobList, deleteCronJob, patchCronJob } from '@/services/kubernetes/cronjobService';
 import Description from '@/components/description/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
-import { patchCronJob } from '../../../services/kubernetes/cronjobService';
 
 const { proxy } = getCurrentInstance();
 const editYaml = ref();
+
+const container = reactive({
+  name: '',
+  image: '',
+  command: [],
+  args: [],
+  imagePullPolicy: 'IfNotPresent',
+  env: [],
+  ports: [],
+  resources: {},
+});
 
 const data = reactive({
   cluster: '',
@@ -214,9 +658,13 @@ const data = reactive({
     total: 0,
   },
   tableData: [],
-  loading: false,
 
+  loading: false,
   noLoading: false,
+
+  autosize: {
+    minRows: 5,
+  },
 
   // yaml相关属性
   yaml: '',
@@ -225,8 +673,38 @@ const data = reactive({
 
   cronJobData: {
     close: false,
+    // 选择节点配置
+    choiceNode: false,
+    nodeSelectLabels: [],
+    // 添加元数据
+    enableMetadata: false,
+    labels: [],
+    annotations: [],
+    // 容器配置
+    containers: [],
+    imagePullPolicies: ['IfNotPresent', 'Always', 'Never'],
   },
-  cronJobForm: {},
+  cronJobAdvanceOptions: {
+    enable: false,
+    concurrencyPolicy: 'Allow',
+    concurrencyPolicies: ['Allow'],
+    successfulJobsHistoryLimit: '',
+    failedJobsHistoryLimit: '',
+    startingDeadlineSeconds: '',
+  },
+  active: 2,
+  namespaces: [],
+  cronJobForm: {
+    metadata: {
+      name: '',
+      namespace: '',
+    },
+    spec: {
+      jobTemplate: {},
+      schedule: '',
+      suspend: false,
+    },
+  },
 
   // 删除对象属性
   deleteDialog: {
@@ -263,13 +741,105 @@ const handleStorageChange = (e) => {
   }
 };
 
+// 创建开始
+const nodeChange = () => {
+  if (data.cronJobData.choiceNode) {
+    if (data.cronJobData.nodeSelectLabels.length === 0) {
+      addNodeSelectLabel();
+    }
+  }
+};
+
+const addNodeSelectLabel = () => {
+  data.cronJobData.nodeSelectLabels.push({ key: '', value: '' });
+};
+
+const deleteNodeSelectLabel = (index) => {
+  data.cronJobData.nodeSelectLabels.splice(index, 1);
+};
+
+const metaChange = () => {
+  if (data.cronJobData.enableMetadata) {
+    if (data.cronJobData.labels.length === 0) {
+      addLabel();
+    }
+    // if (data.cronJobData.annotations.length === 0) {
+    //   addAnnotation();
+    // }
+  }
+};
+
+const addLabel = () => {
+  data.cronJobData.labels.push({ key: '', value: '' });
+};
+
+const deleteLabel = (index) => {
+  data.cronJobData.labels.splice(index, 1);
+};
+
+const addAnnotation = () => {
+  data.cronJobData.annotations.push({ key: '', value: '' });
+};
+
+const deleteAnnotation = (index) => {
+  data.cronJobData.annotations.splice(index, 1);
+};
+
+const addContainer = () => {
+  data.cronJobData.containers.push({
+    name: '',
+    image: '',
+    imagePullPolicy: 'IfNotPresent',
+    advance: false,
+  });
+};
+
+const deleteContainer = (index) => {
+  data.cronJobData.containers.splice(index, 1);
+};
+
+const nextStep = () => {
+  if (data.active++ >= 4) data.active = 4;
+};
+
+const lastStep = () => {
+  if (data.active-- <= 0) data.active = 0;
+};
+
 const handleCreateDialog = (row) => {
+  getNamespaces();
   data.cronJobData.close = true;
 };
 
-const confirmCreate = () => {};
+const openAdvanceOption = () => {
+  data.cronJobAdvanceOptions.enable = !data.cronJobAdvanceOptions.enable;
+};
 
-const cancelCreate = () => {};
+const openContainerAdvanceOption = (item) => {
+  item.advance = !item.advance;
+};
+
+const confirmCreate = () => {
+  data.cronJobData.close = false;
+};
+
+const cancelCreate = () => {
+  data.cronJobData.close = false;
+  data.active = 0;
+};
+
+const getNamespaces = async () => {
+  const [result, err] = await getNamespaceList(data.cluster);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  data.namespaces = [];
+  for (let ns of result.items) {
+    data.namespaces.push(ns.metadata.name);
+  }
+};
+// 创建结束
 
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
