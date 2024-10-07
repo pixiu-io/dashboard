@@ -411,6 +411,17 @@
               </span>
             </el-form-item>
             <div class="container-line-describe">设置镜像拉取策略，默认使用 IfNotPresent 策略</div>
+
+            <el-form-item label>
+              <template #label>
+                <span
+                  class="form-item-key-style"
+                  style="cursor: pointer; color: #006eff"
+                  @click="openContainerAdvanceOption"
+                  >高级设置</span
+                >
+              </template>
+            </el-form-item>
           </div>
         </el-form-item>
       </div>
