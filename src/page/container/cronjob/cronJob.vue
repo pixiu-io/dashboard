@@ -383,6 +383,87 @@
           <el-checkbox v-model="data.cronJobData.enableMetadata" @change="metaChange" />
         </el-form-item>
         <div class="dialog-describe-style">为定时任务添加标签和注解数据</div>
+
+        <div v-if="data.cronJobData.enableMetadata">
+          <el-form-item>
+            <template #label>
+              <span class="form-item-key-style">标签</span>
+            </template>
+          </el-form-item>
+          <el-form-item
+            v-for="(item, index) in data.cronJobData.labels"
+            :key="index"
+            style="margin-top: -10px"
+          >
+            <el-form-item prop="item.key">
+              <el-input v-model="item.key" style="width: 300px; margin-left: 10px" />
+            </el-form-item>
+            <div>
+              <el-input v-model="item.value" style="width: 300px; margin-left: 20px" />
+            </div>
+            <div
+              class="table-inline-btn"
+              style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
+              @click="deleteLabel(index)"
+            >
+              删除
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              class="table-inline-btn"
+              style="
+                margin-left: -5px;
+                margin-right: -20px;
+                margin-top: -15px;
+                margin-bottom: -15px;
+                cursor: pointer;
+              "
+              @click="addLabel"
+              >+ 添加</el-button
+            >
+          </el-form-item>
+
+          <el-form-item>
+            <template #label>
+              <span class="form-item-key-style">注解</span>
+            </template>
+          </el-form-item>
+
+          <el-form-item
+            v-for="(item, index) in data.cronJobData.annotations"
+            :key="index"
+            style="margin-top: -10px"
+          >
+            <el-form-item prop="item.key">
+              <el-input v-model="item.key" style="width: 300px; margin-left: 10px" />
+            </el-form-item>
+            <div>
+              <el-input v-model="item.value" style="width: 300px; margin-left: 20px" />
+            </div>
+            <div
+              class="table-inline-btn"
+              style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
+              @click="deleteAnnotation(index)"
+            >
+              删除
+            </div>
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              class="table-inline-btn"
+              style="
+                margin-left: -5px;
+                margin-right: -20px;
+                margin-top: -15px;
+                margin-bottom: -15px;
+                cursor: pointer;
+              "
+              @click="addAnnotation"
+              >+ 添加</el-button
+            >
+          </el-form-item>
+        </div>
       </div>
     </el-form>
 
@@ -561,6 +642,33 @@ const addNodeSelectLabel = () => {
 
 const deleteNodeSelectLabel = (index) => {
   data.cronJobData.nodeSelectLabels.splice(index, 1);
+};
+
+const metaChange = () => {
+  if (data.cronJobData.enableMetadata) {
+    if (data.cronJobData.labels.length === 0) {
+      addLabel();
+    }
+    // if (data.cronJobData.annotations.length === 0) {
+    //   addAnnotation();
+    // }
+  }
+};
+
+const addLabel = () => {
+  data.cronJobData.labels.push({ key: '', value: '' });
+};
+
+const deleteLabel = (index) => {
+  data.cronJobData.labels.splice(index, 1);
+};
+
+const addAnnotation = () => {
+  data.cronJobData.annotations.push({ key: '', value: '' });
+};
+
+const deleteAnnotation = (index) => {
+  data.cronJobData.annotations.splice(index, 1);
 };
 
 const nextStep = () => {
