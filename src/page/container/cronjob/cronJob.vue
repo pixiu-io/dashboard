@@ -636,17 +636,6 @@ import pixiuDialog from '@/components/pixiuDialog/index.vue';
 const { proxy } = getCurrentInstance();
 const editYaml = ref();
 
-const container = reactive({
-  name: '',
-  image: '',
-  command: [],
-  args: [],
-  imagePullPolicy: 'IfNotPresent',
-  env: [],
-  ports: [],
-  resources: {},
-});
-
 const data = reactive({
   cluster: '',
   namespace: 'default',
@@ -692,7 +681,7 @@ const data = reactive({
     failedJobsHistoryLimit: '',
     startingDeadlineSeconds: '',
   },
-  active: 2,
+  active: 0,
   namespaces: [],
   cronJobForm: {
     metadata: {
@@ -700,7 +689,13 @@ const data = reactive({
       namespace: '',
     },
     spec: {
-      jobTemplate: {},
+      jobTemplate: {
+        spec: {
+          template: {
+            spec: {},
+          },
+        },
+      },
       schedule: '',
       suspend: false,
     },
@@ -820,7 +815,51 @@ const openContainerAdvanceOption = (item) => {
 };
 
 const confirmCreate = () => {
-  data.cronJobData.close = false;
+  // 添加元数据
+  if (data.cronJobData.enableMetadata) {
+    if (data.cronJobData.labels.length !== 0) {
+      let newLabels = {};
+      for (let l of data.cronJobData.labels) {
+        newLabels[l.key] = l.value;
+      }
+      data.cronJobForm.metadata['labels'] = newLabels;
+    }
+  }
+  if (data.cronJobData.annotations.length !== 0) {
+    let newannotations = {};
+    for (let a of data.cronJobData.annotations) {
+      newannotations[a.key] = a.value;
+    }
+    data.cronJobForm.metadata['annotations'] = newannotations;
+  }
+
+  // 添加容器
+  let containers = [];
+  for (let container of data.cronJobData.containers) {
+    let c = {
+      name: container.name,
+      image: container.image,
+      imagePullPolicy: container.imagePullPolicy,
+    };
+    if (container.advance) {
+      // TODO
+    }
+
+    containers.push(c);
+  }
+  data.cronJobForm.spec.jobTemplate.spec.template.spec['containers'] = containers;
+
+  // 添加node标签
+  if (data.cronJobData.choiceNode) {
+    let nodeSelects = {};
+    for (let nodeSelectLabel of data.cronJobData.nodeSelectLabels) {
+      nodeSelects[nodeSelectLabel.key] = nodeSelectLabel.value;
+    }
+    data.cronJobForm.spec.jobTemplate.spec.template.spec['nodeSelector'] = nodeSelects;
+  }
+
+  console.log(data.cronJobForm);
+  // data.cronJobData.close = false;
 };
 
 const cancelCreate = () => {
