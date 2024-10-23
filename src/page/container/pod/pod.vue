@@ -509,6 +509,15 @@
           <div style="vertical-align: middle; margin-top: -40px">查看 Pod 的资源状态</div>
         </el-card>
       </div>
+      <el-space wrap>
+        <el-card>
+          <Echart :option="data.monitorData.cpuOption"></Echart>
+        </el-card>
+
+        <el-card>
+          <Echart :option="data.monitorData.memoryOption"></Echart>
+        </el-card>
+      </el-space>
     </div>
   </el-drawer>
 
@@ -608,7 +617,7 @@ import {
   reactive,
   ref,
 } from 'vue';
-import { ElMessage } from 'element-plus';
+import { ElMessage, formatter } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import PixiuInput from '@/components/pixiuInput/index.vue';
 import { getTableData, searchFromData } from '@/utils/utils';
@@ -630,13 +639,17 @@ import {
   getPodListByCache,
   getPodLog,
   watchPodLog,
+  getPodCpuUsageMetrics,
+  getPodMemoryUsageMetrics,
+  getPodNetworkSentMetrics,
+  getPodNetworkReceiveMetrics,
 } from '@/services/kubernetes/podService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import Description from '@/components/description/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import PixiuLog from '@/components/pixiulog/index.vue';
 import { deleteEvent, getRawEventList } from '@/services/kubernetes/eventService';
-
+import Echart from '@/components/echarts/index.vue';
 const { toClipboard } = useClipboard();
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -731,6 +744,140 @@ const data = reactive({
 
   monitorData: {
     drawer: false,
+    cpuOption: {
+      tooltip: {
+        trigger: 'axis',
+        position: function (pt) {
+          return [pt[0], '10%'];
+        },
+      },
+      title: {
+        left: '0px',
+        text: 'CPU使用率（%）',
+        textStyle: {
+          fontSize: 13,
+          fontWeight: 'bold',
+          color: '#191919',
+        },
+      },
+
+      xAxis: {
+        type: 'time',
+        boundaryGap: false,
+      },
+      yAxis: {
+        type: 'value',
+        boundaryGap: [0, '100%'],
+        name: 'CPU（ cores ）',
+        nameLocation: 'middle',
+        nameGap: 30,
+        nameTextStyle: {
+          fontSize: 13,
+          color: '#191919',
+        },
+      },
+
+      series: [
+        {
+          name: 'CPU使用率',
+          type: 'line',
+          smooth: true,
+          symbol: 'none',
+          itemStyle: {
+            color: '#5dd183',
+          },
+          areaStyle: {
+            color: '#5dd183',
+          },
+          data: [],
+        },
+      ],
+    },
+    memoryOption: {
+      tooltip: {
+        trigger: 'axis',
+        position: function (pt) {
+          return [pt[0], '10%'];
+        },
+        formatter: function (params) {
+          let str =
+            params[0].axisValueLabel +
+            '<br/>' +
+            params[0].marker +
+            params[0].seriesName +
+            '<span style="margin-left: 15px; font-size: 13px; color: green">';
+          let v = params[0].value[1];
+          if (v >= 1024 * 1024 * 1024) {
+            str += (v / 1024 / 1024 / 1024).toFixed(2) + ' GB';
+          } else {
+            str += (v / 1024 / 1024).toFixed(2) + ' MB';
+          }
+          str += '</span>';
+          return str;
+        },
+        axisPointer: {
+          // label: {
+          // formatter: function (value) {
+          //   return value.toFixed(2) + ' MB';
+          // },
+          // },
+        },
+      },
+      title: {
+        left: '0px',
+        text: '内存使用量',
+        textStyle: {
+          fontSize: 13,
+          fontWeight: 'bold',
+          color: '#191919',
+        },
+      },
+
+      xAxis: {
+        type: 'time',
+        boundaryGap: false,
+      },
+      yAxis: {
+        type: 'value',
+        // name: 'Memory（ bytes ）',
+        // nameLocation: 'middle',
+        // nameGap: 30,
+        // nameTextStyle: {
+        //   fontSize: 13,
+        //   color: '#191919',
+        // },
+        axisLabel: {
+          formatter: function (value) {
+            if (value >= 1024 * 1024 * 1024) {
+              return (value / 1024 / 1024 / 1024).toFixed(0) + ' GB';
+            } else {
+              return (value / 1024 / 1024).toFixed(0) + ' MB';
+            }
+          },
+        },
+      },
+      dataZoom: [
+        {
+          type: 'inside',
+          start: 0,
+          end: 100,
+        },
+        {
+          start: 0,
+          end: 20,
+        },
+      ],
+      series: [
+        {
+          name: 'Memory Usage',
+          type: 'line',
+          smooth: true,
+          symbol: 'none',
+          areaStyle: {},
+          data: [],
+        },
+      ],
+    },
   },
 });
 
@@ -778,8 +925,34 @@ const handleStorageChange = (e) => {
   }
 };
 
-const handleMonitorDrawer = (row) => {
-  data.monitorData.drawer = true;
+const parseMetrics = (metricPoints) => {
+  let res = metricPoints.map(({ timestamp, value }) => [new Date(timestamp).getTime(), value]);
+  return res;
+};
+const parseMemoryMetrics = (metricPoints) => {
+  let res = metricPoints.map(({ timestamp, value }) => {
+    // const memoryInMB = value / 1024 / 1024;
+    // const formattedValue =
+    //   memoryInMB >= 1024 ? (memoryInMB / 1024).toFixed(2) : memoryInMB.toFixed(2);
+    return [new Date(timestamp).getTime(), value];
+  });
+  return res;
+};
+const handleMonitorDrawer = async (row) => {
+  const { name, namespace } = row.metadata;
+  try {
+    const [cpuUsage] = await getPodCpuUsageMetrics(data.cluster, namespace, name);
+    let cpuMetrics = parseMetrics(cpuUsage.items[0].metricPoints);
+    data.monitorData.cpuOption.series[0].data = cpuMetrics;
+
+    const [memoryUsage] = await getPodMemoryUsageMetrics(data.cluster, namespace, name);
+    let memMetrics = parseMemoryMetrics(memoryUsage.items[0].metricPoints);
+    data.monitorData.memoryOption.series[0].data = memMetrics;
+
+    data.monitorData.drawer = true;
+  } catch (error) {
+    proxy.$notify.error(error.response?.data?.message || 'Failed to fetch metrics');
+  }
 };
 
 const handleEventDrawer = (row) => {
