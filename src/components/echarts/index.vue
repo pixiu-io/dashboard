@@ -1,5 +1,5 @@
 <template>
-  <div ref="chartDom" class="echart"></div>
+  <div ref="chartDom" :style="{ width: width, height: height }"></div>
 </template>
 
 <script setup>
@@ -16,6 +16,14 @@ const props = defineProps({
   option: {
     type: Object,
     default: () => {},
+  },
+  width: {
+    type: String,
+    default: '600px',
+  },
+  height: {
+    type: String,
+    default: '250px',
   },
 });
 
@@ -57,9 +65,4 @@ watch(
 );
 </script>
 
-<style scoped>
-.echart {
-  width: 100%;
-  height: 100%;
-}
-</style>
+<style scoped></style>
