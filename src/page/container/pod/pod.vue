@@ -484,7 +484,6 @@
     v-model="data.monitorData.drawer"
     :size="data.drawerWidth"
     :with-header="false"
-    @open="openMonitorDrawer"
     @close="closeMonitorDrawer"
   >
     <div style="display: flex; flex-direction: column; height: 100%">
@@ -509,14 +508,9 @@
           <div style="vertical-align: middle; margin-top: -40px">查看 Pod 的资源状态</div>
         </el-card>
       </div>
-      <el-space wrap>
-        <el-card>
-          <Echart :option="data.monitorData.cpuOption"></Echart>
-        </el-card>
-
-        <el-card>
-          <Echart :option="data.monitorData.memoryOption"></Echart>
-        </el-card>
+      <el-space style="margin-left: 8px; margin-top: 15px" wrap>
+        <Echart :option="data.monitorData.cpuOption"></Echart>
+        <Echart :option="data.monitorData.memoryOption"></Echart>
       </el-space>
     </div>
   </el-drawer>
@@ -617,7 +611,7 @@ import {
   reactive,
   ref,
 } from 'vue';
-import { ElMessage, formatter } from 'element-plus';
+import { ElMessage } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import PixiuInput from '@/components/pixiuInput/index.vue';
 import { getTableData, searchFromData } from '@/utils/utils';
@@ -639,17 +633,18 @@ import {
   getPodListByCache,
   getPodLog,
   watchPodLog,
+} from '@/services/kubernetes/podService';
+import {
   getPodCpuUsageMetrics,
   getPodMemoryUsageMetrics,
-  getPodNetworkSentMetrics,
-  getPodNetworkReceiveMetrics,
-} from '@/services/kubernetes/podService';
+} from '@/services/kubernetes/metricsService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import Description from '@/components/description/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import PixiuLog from '@/components/pixiulog/index.vue';
 import { deleteEvent, getRawEventList } from '@/services/kubernetes/eventService';
 import Echart from '@/components/echarts/index.vue';
+
 const { toClipboard } = useClipboard();
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -743,6 +738,7 @@ const data = reactive({
   },
 
   monitorData: {
+    timer: null,
     drawer: false,
     cpuOption: {
       tooltip: {
@@ -796,6 +792,7 @@ const data = reactive({
     memoryOption: {
       tooltip: {
         trigger: 'axis',
+        confine: true,
         position: function (pt) {
           return [pt[0], '10%'];
         },
@@ -815,13 +812,7 @@ const data = reactive({
           str += '</span>';
           return str;
         },
-        axisPointer: {
-          // label: {
-          // formatter: function (value) {
-          //   return value.toFixed(2) + ' MB';
-          // },
-          // },
-        },
+        axisPointer: {},
       },
       title: {
         left: '0px',
@@ -839,13 +830,6 @@ const data = reactive({
       },
       yAxis: {
         type: 'value',
-        // name: 'Memory（ bytes ）',
-        // nameLocation: 'middle',
-        // nameGap: 30,
-        // nameTextStyle: {
-        //   fontSize: 13,
-        //   color: '#191919',
-        // },
         axisLabel: {
           formatter: function (value) {
             if (value >= 1024 * 1024 * 1024) {
@@ -856,24 +840,18 @@ const data = reactive({
           },
         },
       },
-      dataZoom: [
-        {
-          type: 'inside',
-          start: 0,
-          end: 100,
-        },
-        {
-          start: 0,
-          end: 20,
-        },
-      ],
       series: [
         {
           name: 'Memory Usage',
           type: 'line',
           smooth: true,
           symbol: 'none',
-          areaStyle: {},
+          itemStyle: {
+            color: '#a8baee',
+          },
+          areaStyle: {
+            color: '#a8baee',
+          },
           data: [],
         },
       ],
@@ -926,35 +904,40 @@ const handleStorageChange = (e) => {
 };
 
 const parseMetrics = (metricPoints) => {
-  let res = metricPoints.map(({ timestamp, value }) => [new Date(timestamp).getTime(), value]);
-  return res;
+  return metricPoints.map(({ timestamp, value }) => [new Date(timestamp).getTime(), value]);
 };
-const parseMemoryMetrics = (metricPoints) => {
-  let res = metricPoints.map(({ timestamp, value }) => {
-    // const memoryInMB = value / 1024 / 1024;
-    // const formattedValue =
-    //   memoryInMB >= 1024 ? (memoryInMB / 1024).toFixed(2) : memoryInMB.toFixed(2);
-    return [new Date(timestamp).getTime(), value];
-  });
-  return res;
-};
-const handleMonitorDrawer = async (row) => {
-  const { name, namespace } = row.metadata;
+
+const getMetricsInfo = async (name, namespace) => {
   try {
     const [cpuUsage] = await getPodCpuUsageMetrics(data.cluster, namespace, name);
-    let cpuMetrics = parseMetrics(cpuUsage.items[0].metricPoints);
-    data.monitorData.cpuOption.series[0].data = cpuMetrics;
-
+    data.monitorData.cpuOption.series[0].data = parseMetrics(cpuUsage.items[0].metricPoints);
     const [memoryUsage] = await getPodMemoryUsageMetrics(data.cluster, namespace, name);
-    let memMetrics = parseMemoryMetrics(memoryUsage.items[0].metricPoints);
-    data.monitorData.memoryOption.series[0].data = memMetrics;
-
-    data.monitorData.drawer = true;
+    data.monitorData.memoryOption.series[0].data = parseMetrics(memoryUsage.items[0].metricPoints);
   } catch (error) {
     proxy.$notify.error(error.response?.data?.message || 'Failed to fetch metrics');
   }
 };
 
+const handleMonitorDrawer = async (row) => {
+  const { name, namespace } = row.metadata;
+  await getMetricsInfo(name, namespace);
+  data.monitorData.drawer = true;
+  //定时刷新 3秒
+  data.monitorData.timer = setInterval(async () => {
+    await getMetricsInfo(name, namespace);
+  }, 3000);
+};
+const closeMonitorDrawer = () => {
+  //关闭定时器
+  if (data.monitorData.timer) {
+    clearInterval(data.monitorData.timer);
+  }
+};
+onUnmounted(() => {
+  if (data.monitorData.timer) {
+    clearInterval(data.monitorData.timer);
+  }
+});
 const handleEventDrawer = (row) => {
   data.eventData.pod = row;
   data.eventData.drawer = true;
