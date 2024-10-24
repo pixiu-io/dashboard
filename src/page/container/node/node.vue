@@ -317,7 +317,6 @@
     v-model="data.monitorData.drawer"
     :size="data.drawerWidth"
     :with-header="false"
-    @open="openMonitorDrawer"
     @close="closeMonitorDrawer"
   >
     <div style="display: flex; flex-direction: column; height: 100%">
@@ -342,6 +341,10 @@
           <div style="vertical-align: middle; margin-top: -40px">查看 Node 的资源状态</div>
         </el-card>
       </div>
+      <el-space style="margin-left: 8px; margin-top: 15px" wrap :fill-ratio="48">
+        <Echart :option="data.monitorData.cpuOption" :width="'640px'" :height="'250px'"></Echart>
+        <Echart :option="data.monitorData.memoryOption" :width="'640px'" :height="'250px'"></Echart>
+      </el-space>
     </div>
   </el-drawer>
 
@@ -495,20 +498,16 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, provide } from 'vue';
+import { getCurrentInstance, onMounted, onUnmounted, provide, reactive } from 'vue';
 import { getTableData, searchData } from '@/utils/utils';
 import Description from '@/components/description/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import Pagination from '@/components/pagination/index.vue';
-import { getNodeList, patchNode, getNode, drainNode } from '@/services/kubernetes/nodeService';
-import {
-  formatterTime,
-  formatterNodeStatus,
-  formatString,
-  formatNodeRole,
-  formatNodeIp,
-} from '@/utils/formatter';
-import { getRawEventList, deleteEvent } from '@/services/kubernetes/eventService';
+import { drainNode, getNode, getNodeList, patchNode } from '@/services/kubernetes/nodeService';
+import { formatNodeIp, formatString, formatterNodeStatus, formatterTime } from '@/utils/formatter';
+import { deleteEvent, getRawEventList } from '@/services/kubernetes/eventService';
+import Echart from '@/components/echarts/index.vue';
+import { getNodeUsageMetrics } from '@/services/kubernetes/metricsService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -582,6 +581,124 @@ const data = reactive({
 
   monitorData: {
     drawer: false,
+    timer: null,
+    cpuOption: {
+      tooltip: {
+        confine: true,
+        trigger: 'axis',
+        position: function (pt) {
+          return [pt[0], '5%'];
+        },
+      },
+      title: {
+        left: '0',
+        text: 'CPU使用率（%）',
+        textStyle: {
+          fontSize: 13,
+          fontWeight: 'bold',
+          color: '#191919',
+        },
+      },
+
+      xAxis: {
+        type: 'time',
+        boundaryGap: false,
+      },
+      yAxis: {
+        type: 'value',
+        boundaryGap: [0, '100%'],
+        // name: 'CPU（ cores ）',
+        // nameLocation: 'middle',
+        // nameGap: 30,
+        nameTextStyle: {
+          fontSize: 13,
+          color: '#191919',
+        },
+      },
+
+      series: [
+        {
+          name: 'CPU使用率',
+          type: 'line',
+          smooth: true,
+          symbol: 'none',
+          itemStyle: {
+            color: '#5dd183',
+          },
+          areaStyle: {
+            color: '#5dd183',
+          },
+          data: [],
+        },
+      ],
+    },
+    memoryOption: {
+      tooltip: {
+        confine: true,
+        trigger: 'axis',
+        position: function (pt) {
+          return [pt[0], '5%'];
+        },
+        formatter: function (params) {
+          let str =
+            params[0].axisValueLabel +
+            '<br/>' +
+            params[0].marker +
+            params[0].seriesName +
+            '<span style="margin-left: 15px; font-size: 13px; color: green">';
+          let v = params[0].value[1];
+          if (v >= 1024 * 1024 * 1024) {
+            str += (v / 1024 / 1024 / 1024).toFixed(2) + ' GB';
+          } else {
+            str += (v / 1024 / 1024).toFixed(2) + ' MB';
+          }
+          str += '</span>';
+          return str;
+        },
+        axisPointer: {},
+      },
+      title: {
+        left: '0px',
+        text: '内存使用量',
+        textStyle: {
+          fontSize: 13,
+          fontWeight: 'bold',
+          color: '#191919',
+        },
+      },
+
+      xAxis: {
+        type: 'time',
+        boundaryGap: false,
+      },
+      yAxis: {
+        type: 'value',
+        axisLabel: {
+          formatter: function (value) {
+            if (value >= 1024 * 1024 * 1024) {
+              return (value / 1024 / 1024 / 1024).toFixed(0) + ' GB';
+            } else {
+              return (value / 1024 / 1024).toFixed(0) + ' MB';
+            }
+          },
+        },
+      },
+      series: [
+        {
+          name: 'Memory Usage',
+          type: 'line',
+          smooth: true,
+          symbol: 'none',
+          itemStyle: {
+            color: '#a8baee',
+          },
+          areaStyle: {
+            color: '#a8baee',
+          },
+          data: [],
+        },
+      ],
+    },
   },
 
   remoteLogin: {
@@ -647,14 +764,53 @@ const changeNodeSchedule = async (row) => {
     return;
   }
   data.noLoading = true;
-  getNodes();
+  await getNodes();
   data.noLoading = false;
 };
 
-const handleMonitorDrawer = (row) => {
-  data.monitorData.drawer = true;
+const parseMetrics = (metricPoints) => {
+  return metricPoints.map(({ timestamp, value }) => [new Date(timestamp).getTime(), value]);
 };
 
+const parseCPUMetrics = (metricPoints, totalCpu) => {
+  return metricPoints.map(({ timestamp, value }) => [
+    new Date(timestamp).getTime(),
+    (value / totalCpu).toFixed(2),
+  ]);
+};
+const getNodeMetricsInfo = async (name, totalCpu, totalMemory) => {
+  const [cpuUsage] = await getNodeUsageMetrics(data.cluster, name, 'cpu', 'usage');
+  data.monitorData.cpuOption.series[0].data = parseCPUMetrics(
+    cpuUsage.items[0].metricPoints,
+    totalCpu,
+  );
+  const [memoryUsage] = await getNodeUsageMetrics(data.cluster, name, 'memory', 'usage');
+  data.monitorData.memoryOption.series[0].data = parseMetrics(memoryUsage.items[0].metricPoints);
+};
+
+const handleMonitorDrawer = async (row) => {
+  const nodeNme = row.metadata.name;
+  //值为3600m
+  const totalCpu = parseInt(row.status.capacity.cpu) * 1000;
+  const totalMemory = parseInt(row.status.capacity.memory.replace('Ki', ''));
+  await getNodeMetricsInfo(nodeNme, totalCpu, totalMemory);
+  data.monitorData.drawer = true;
+  data.monitorData.timer = setInterval(async () => {
+    await getNodeMetricsInfo(nodeNme, totalCpu, totalMemory);
+  }, 3000);
+};
+
+const closeMonitorDrawer = () => {
+  //关闭定时器
+  if (data.monitorData.timer) {
+    clearInterval(data.monitorData.timer);
+  }
+};
+onUnmounted(() => {
+  if (data.monitorData.timer) {
+    clearInterval(data.monitorData.timer);
+  }
+});
 // 远程登录开始
 const handleHostRemoteLoginDialog = () => {
   data.remoteLogin.close = true;

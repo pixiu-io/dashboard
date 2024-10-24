@@ -484,7 +484,6 @@
     v-model="data.monitorData.drawer"
     :size="data.drawerWidth"
     :with-header="false"
-    @open="openMonitorDrawer"
     @close="closeMonitorDrawer"
   >
     <div style="display: flex; flex-direction: column; height: 100%">
@@ -509,6 +508,10 @@
           <div style="vertical-align: middle; margin-top: -40px">查看 Pod 的资源状态</div>
         </el-card>
       </div>
+      <el-space style="margin-left: 8px; margin-top: 15px" wrap>
+        <Echart :option="data.monitorData.cpuOption"></Echart>
+        <Echart :option="data.monitorData.memoryOption"></Echart>
+      </el-space>
     </div>
   </el-drawer>
 
@@ -631,11 +634,16 @@ import {
   getPodLog,
   watchPodLog,
 } from '@/services/kubernetes/podService';
+import {
+  getPodCpuUsageMetrics,
+  getPodMemoryUsageMetrics,
+} from '@/services/kubernetes/metricsService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import Description from '@/components/description/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import PixiuLog from '@/components/pixiulog/index.vue';
 import { deleteEvent, getRawEventList } from '@/services/kubernetes/eventService';
+import Echart from '@/components/echarts/index.vue';
 
 const { toClipboard } = useClipboard();
 const { proxy } = getCurrentInstance();
@@ -730,7 +738,124 @@ const data = reactive({
   },
 
   monitorData: {
+    timer: null,
     drawer: false,
+    cpuOption: {
+      tooltip: {
+        trigger: 'axis',
+        position: function (pt) {
+          return [pt[0], '10%'];
+        },
+      },
+      title: {
+        left: '0px',
+        text: 'CPU使用率（%）',
+        textStyle: {
+          fontSize: 13,
+          fontWeight: 'bold',
+          color: '#191919',
+        },
+      },
+
+      xAxis: {
+        type: 'time',
+        boundaryGap: false,
+      },
+      yAxis: {
+        type: 'value',
+        boundaryGap: [0, '100%'],
+        name: 'CPU（ cores ）',
+        nameLocation: 'middle',
+        nameGap: 30,
+        nameTextStyle: {
+          fontSize: 13,
+          color: '#191919',
+        },
+      },
+
+      series: [
+        {
+          name: 'CPU使用率',
+          type: 'line',
+          smooth: true,
+          symbol: 'none',
+          itemStyle: {
+            color: '#5dd183',
+          },
+          areaStyle: {
+            color: '#5dd183',
+          },
+          data: [],
+        },
+      ],
+    },
+    memoryOption: {
+      tooltip: {
+        trigger: 'axis',
+        confine: true,
+        position: function (pt) {
+          return [pt[0], '10%'];
+        },
+        formatter: function (params) {
+          let str =
+            params[0].axisValueLabel +
+            '<br/>' +
+            params[0].marker +
+            params[0].seriesName +
+            '<span style="margin-left: 15px; font-size: 13px; color: green">';
+          let v = params[0].value[1];
+          if (v >= 1024 * 1024 * 1024) {
+            str += (v / 1024 / 1024 / 1024).toFixed(2) + ' GB';
+          } else {
+            str += (v / 1024 / 1024).toFixed(2) + ' MB';
+          }
+          str += '</span>';
+          return str;
+        },
+        axisPointer: {},
+      },
+      title: {
+        left: '0px',
+        text: '内存使用量',
+        textStyle: {
+          fontSize: 13,
+          fontWeight: 'bold',
+          color: '#191919',
+        },
+      },
+
+      xAxis: {
+        type: 'time',
+        boundaryGap: false,
+      },
+      yAxis: {
+        type: 'value',
+        axisLabel: {
+          formatter: function (value) {
+            if (value >= 1024 * 1024 * 1024) {
+              return (value / 1024 / 1024 / 1024).toFixed(0) + ' GB';
+            } else {
+              return (value / 1024 / 1024).toFixed(0) + ' MB';
+            }
+          },
+        },
+      },
+      series: [
+        {
+          name: 'Memory Usage',
+          type: 'line',
+          smooth: true,
+          symbol: 'none',
+          itemStyle: {
+            color: '#a8baee',
+          },
+          areaStyle: {
+            color: '#a8baee',
+          },
+          data: [],
+        },
+      ],
+    },
   },
 });
 
@@ -778,10 +903,41 @@ const handleStorageChange = (e) => {
   }
 };
 
-const handleMonitorDrawer = (row) => {
-  data.monitorData.drawer = true;
+const parseMetrics = (metricPoints) => {
+  return metricPoints.map(({ timestamp, value }) => [new Date(timestamp).getTime(), value]);
 };
 
+const getMetricsInfo = async (name, namespace) => {
+  try {
+    const [cpuUsage] = await getPodCpuUsageMetrics(data.cluster, namespace, name);
+    data.monitorData.cpuOption.series[0].data = parseMetrics(cpuUsage.items[0].metricPoints);
+    const [memoryUsage] = await getPodMemoryUsageMetrics(data.cluster, namespace, name);
+    data.monitorData.memoryOption.series[0].data = parseMetrics(memoryUsage.items[0].metricPoints);
+  } catch (error) {
+    proxy.$notify.error(error.response?.data?.message || 'Failed to fetch metrics');
+  }
+};
+
+const handleMonitorDrawer = async (row) => {
+  const { name, namespace } = row.metadata;
+  await getMetricsInfo(name, namespace);
+  data.monitorData.drawer = true;
+  //定时刷新 3秒
+  data.monitorData.timer = setInterval(async () => {
+    await getMetricsInfo(name, namespace);
+  }, 3000);
+};
+const closeMonitorDrawer = () => {
+  //关闭定时器
+  if (data.monitorData.timer) {
+    clearInterval(data.monitorData.timer);
+  }
+};
+onUnmounted(() => {
+  if (data.monitorData.timer) {
+    clearInterval(data.monitorData.timer);
+  }
+});
 const handleEventDrawer = (row) => {
   data.eventData.pod = row;
   data.eventData.drawer = true;
