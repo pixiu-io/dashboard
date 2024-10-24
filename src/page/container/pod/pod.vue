@@ -509,13 +509,8 @@
         </el-card>
       </div>
       <el-space style="margin-left: 8px" wrap>
-        <el-card>
-          <Echart :option="data.monitorData.cpuOption"></Echart>
-        </el-card>
-
-        <el-card>
-          <Echart :option="data.monitorData.memoryOption"></Echart>
-        </el-card>
+        <Echart :option="data.monitorData.cpuOption"></Echart>
+        <Echart :option="data.monitorData.memoryOption"></Echart>
       </el-space>
     </div>
   </el-drawer>
@@ -616,7 +611,7 @@ import {
   reactive,
   ref,
 } from 'vue';
-import { ElMessage, formatter } from 'element-plus';
+import { ElMessage } from 'element-plus';
 import useClipboard from 'vue-clipboard3';
 import PixiuInput from '@/components/pixiuInput/index.vue';
 import { getTableData, searchFromData } from '@/utils/utils';
@@ -649,6 +644,7 @@ import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import PixiuLog from '@/components/pixiulog/index.vue';
 import { deleteEvent, getRawEventList } from '@/services/kubernetes/eventService';
 import Echart from '@/components/echarts/index.vue';
+
 const { toClipboard } = useClipboard();
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -796,6 +792,7 @@ const data = reactive({
     memoryOption: {
       tooltip: {
         trigger: 'axis',
+        confine: true,
         position: function (pt) {
           return [pt[0], '10%'];
         },
@@ -815,13 +812,7 @@ const data = reactive({
           str += '</span>';
           return str;
         },
-        axisPointer: {
-          // label: {
-          // formatter: function (value) {
-          //   return value.toFixed(2) + ' MB';
-          // },
-          // },
-        },
+        axisPointer: {},
       },
       title: {
         left: '0px',
@@ -855,7 +846,12 @@ const data = reactive({
           type: 'line',
           smooth: true,
           symbol: 'none',
-          areaStyle: {},
+          itemStyle: {
+            color: '#a8baee',
+          },
+          areaStyle: {
+            color: '#a8baee',
+          },
           data: [],
         },
       ],
@@ -908,19 +904,15 @@ const handleStorageChange = (e) => {
 };
 
 const parseMetrics = (metricPoints) => {
-  let res = metricPoints.map(({ timestamp, value }) => [new Date(timestamp).getTime(), value]);
-  return res;
+  return metricPoints.map(({ timestamp, value }) => [new Date(timestamp).getTime(), value]);
 };
 
 const getMetricsInfo = async (name, namespace) => {
   try {
     const [cpuUsage] = await getPodCpuUsageMetrics(data.cluster, namespace, name);
-    let cpuMetrics = parseMetrics(cpuUsage.items[0].metricPoints);
-    data.monitorData.cpuOption.series[0].data = cpuMetrics;
-
+    data.monitorData.cpuOption.series[0].data = parseMetrics(cpuUsage.items[0].metricPoints);
     const [memoryUsage] = await getPodMemoryUsageMetrics(data.cluster, namespace, name);
-    let memMetrics = parseMetrics(memoryUsage.items[0].metricPoints);
-    data.monitorData.memoryOption.series[0].data = memMetrics;
+    data.monitorData.memoryOption.series[0].data = parseMetrics(memoryUsage.items[0].metricPoints);
   } catch (error) {
     proxy.$notify.error(error.response?.data?.message || 'Failed to fetch metrics');
   }
@@ -937,9 +929,15 @@ const handleMonitorDrawer = async (row) => {
 };
 const closeMonitorDrawer = () => {
   //关闭定时器
-  clearInterval(data.monitorData.timer);
+  if (data.monitorData.timer) {
+    clearInterval(data.monitorData.timer);
+  }
 };
-
+onUnmounted(() => {
+  if (data.monitorData.timer) {
+    clearInterval(data.monitorData.timer);
+  }
+});
 const handleEventDrawer = (row) => {
   data.eventData.pod = row;
   data.eventData.drawer = true;

@@ -342,8 +342,8 @@
         </el-card>
       </div>
       <el-space style="margin-left: 8px" wrap :fill-ratio="48">
-        <Echart :option="data.monitorData.cpuOption"></Echart>
-        <Echart :option="data.monitorData.memoryOption"></Echart>
+        <Echart :option="data.monitorData.cpuOption" :width="'640px'" :height="'250px'"></Echart>
+        <Echart :option="data.monitorData.memoryOption" :width="'640px'" :height="'250px'"></Echart>
       </el-space>
     </div>
   </el-drawer>
@@ -498,20 +498,14 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, provide } from 'vue';
+import { getCurrentInstance, onMounted, onUnmounted, provide, reactive } from 'vue';
 import { getTableData, searchData } from '@/utils/utils';
 import Description from '@/components/description/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import Pagination from '@/components/pagination/index.vue';
-import { getNodeList, patchNode, getNode, drainNode } from '@/services/kubernetes/nodeService';
-import {
-  formatterTime,
-  formatterNodeStatus,
-  formatString,
-  formatNodeRole,
-  formatNodeIp,
-} from '@/utils/formatter';
-import { getRawEventList, deleteEvent } from '@/services/kubernetes/eventService';
+import { drainNode, getNode, getNodeList, patchNode } from '@/services/kubernetes/nodeService';
+import { formatNodeIp, formatString, formatterNodeStatus, formatterTime } from '@/utils/formatter';
+import { deleteEvent, getRawEventList } from '@/services/kubernetes/eventService';
 import Echart from '@/components/echarts/index.vue';
 import { getNodeUsageMetrics } from '@/services/kubernetes/metricsService';
 
@@ -590,17 +584,14 @@ const data = reactive({
     timer: null,
     cpuOption: {
       tooltip: {
+        confine: true,
         trigger: 'axis',
-        position: function (pos, params, dom, rect, size) {
-          // 鼠标在左侧时 tooltip 显示到右侧，鼠标在右侧时 tooltip 显示到左侧。
-          var obj = { top: 20, point: 0 };
-          obj[['left', 'right'][+(pos[0] < size.viewSize[0] / 2)]] = 35;
-          console.log(obj);
-          return obj;
+        position: function (pt) {
+          return [pt[0], '5%'];
         },
       },
       title: {
-        left: '0px',
+        left: '0',
         text: 'CPU使用率（%）',
         textStyle: {
           fontSize: 13,
@@ -616,9 +607,9 @@ const data = reactive({
       yAxis: {
         type: 'value',
         boundaryGap: [0, '100%'],
-        name: 'CPU（ cores ）',
-        nameLocation: 'middle',
-        nameGap: 30,
+        // name: 'CPU（ cores ）',
+        // nameLocation: 'middle',
+        // nameGap: 30,
         nameTextStyle: {
           fontSize: 13,
           color: '#191919',
@@ -643,9 +634,10 @@ const data = reactive({
     },
     memoryOption: {
       tooltip: {
+        confine: true,
         trigger: 'axis',
         position: function (pt) {
-          return [pt[0], '10%'];
+          return [pt[0], '5%'];
         },
         formatter: function (params) {
           let str =
@@ -697,7 +689,12 @@ const data = reactive({
           type: 'line',
           smooth: true,
           symbol: 'none',
-          areaStyle: {},
+          itemStyle: {
+            color: '#a8baee',
+          },
+          areaStyle: {
+            color: '#a8baee',
+          },
           data: [],
         },
       ],
@@ -767,46 +764,53 @@ const changeNodeSchedule = async (row) => {
     return;
   }
   data.noLoading = true;
-  getNodes();
+  await getNodes();
   data.noLoading = false;
 };
 
 const parseMetrics = (metricPoints) => {
-  let res = metricPoints.map(({ timestamp, value }) => [new Date(timestamp).getTime(), value]);
-  return res;
+  return metricPoints.map(({ timestamp, value }) => [new Date(timestamp).getTime(), value]);
 };
 
 const parseCPUMetrics = (metricPoints, totalCpu) => {
-  let res = metricPoints.map(({ timestamp, value }) => [
+  return metricPoints.map(({ timestamp, value }) => [
     new Date(timestamp).getTime(),
     (value / totalCpu).toFixed(2),
   ]);
-  return res;
 };
 const getNodeMetricsInfo = async (name, totalCpu, totalMemory) => {
-  const [cpuUsage] = await getNodeUsageMetrics(data.cluster, name, 'cpu', 'uage');
-
-  let cpuMetrics = parseCPUMetrics(cpuUsage.items[0].metricPoints, totalCpu);
-  data.monitorData.cpuOption.series[0].data = cpuMetrics;
-  const [memoryUsage] = await getNodeUsageMetrics(data.cluster, name, 'memory', 'uage');
-
-  let memMetrics = parseMetrics(memoryUsage.items[0].metricPoints);
-  data.monitorData.memoryOption.series[0].data = memMetrics;
-
-  const [diskUsage] = await getNodeUsageMetrics(data.cluster, name, 'disk', 'uage');
-  console.log(diskUsage);
+  const [cpuUsage] = await getNodeUsageMetrics(data.cluster, name, 'cpu', 'usage');
+  data.monitorData.cpuOption.series[0].data = parseCPUMetrics(
+    cpuUsage.items[0].metricPoints,
+    totalCpu,
+  );
+  const [memoryUsage] = await getNodeUsageMetrics(data.cluster, name, 'memory', 'usage');
+  data.monitorData.memoryOption.series[0].data = parseMetrics(memoryUsage.items[0].metricPoints);
 };
 
 const handleMonitorDrawer = async (row) => {
   const nodeNme = row.metadata.name;
-  //值为3600m 转换为3600数字
+  //值为3600m
   const totalCpu = parseInt(row.status.capacity.cpu) * 1000;
   const totalMemory = parseInt(row.status.capacity.memory.replace('Ki', ''));
   await getNodeMetricsInfo(nodeNme, totalCpu, totalMemory);
-
   data.monitorData.drawer = true;
+  data.monitorData.timer = setInterval(async () => {
+    await getNodeMetricsInfo(nodeNme, totalCpu, totalMemory);
+  }, 3000);
 };
 
+const closeMonitorDrawer = () => {
+  //关闭定时器
+  if (data.monitorData.timer) {
+    clearInterval(data.monitorData.timer);
+  }
+};
+onUnmounted(() => {
+  if (data.monitorData.timer) {
+    clearInterval(data.monitorData.timer);
+  }
+});
 // 远程登录开始
 const handleHostRemoteLoginDialog = () => {
   data.remoteLogin.close = true;
