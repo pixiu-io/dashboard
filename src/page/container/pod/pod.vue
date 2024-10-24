@@ -630,7 +630,6 @@ import {
   getPodListByCache,
   getPodLog,
   watchPodLog,
-  getPodCpuUsageMetrics,
 } from '@/services/kubernetes/podService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import Description from '@/components/description/index.vue';
@@ -761,8 +760,6 @@ onMounted(() => {
   window.addEventListener('setItem', handleStorageChange);
 
   getPods();
-
-  getPodCpuUsageMetrics(data.cluster, 'pixiu-system', 'helm-toolbox-0');
 });
 onUnmounted(() => {
   window.removeEventListener('setItem', handleStorageChange);

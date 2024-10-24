@@ -124,13 +124,3 @@ export const watchPodLog = (cluster, namespace, name, container, line) => {
   const ws = new WebSocket(url);
   return ws;
 };
-
-export const getPodCpuUsageMetrics = async (cluster, namespace, pods) => {
-  const [err, result] = await awaitWrap(
-    http({
-      method: 'get',
-      url: `/pixiu/proxy/${cluster}/apis/metrics.pixiu.io/v1beta1/api/v1/dashboard/namespaces/${namespace}/pod-list/${pods}/metrics/cpu/usage_rate`,
-    }),
-  );
-  return [result, err];
-};
