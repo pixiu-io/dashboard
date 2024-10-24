@@ -581,6 +581,12 @@
   color: #191919;
 }
 
+.form-input-key-style {
+  margin-left: 8px;
+  font-size: 12px;
+  color: #191919;
+}
+
 .dialog-describe-style {
   margin-left: 9px;
   margin-top: -20px;

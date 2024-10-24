@@ -455,7 +455,30 @@
                 <template #label>
                   <span class="form-item-key-style">资源</span>
                 </template>
-                TODO
+                <el-form-item label style="margin-left: 30px">
+                  <template #label>
+                    <span class="form-input-key-style">CPU 预留</span>
+                  </template>
+                  <el-input v-model="item.cpuRequst" />
+                </el-form-item>
+                <el-form-item label>
+                  <template #label>
+                    <span class="form-input-key-style">内存预留 </span>
+                  </template>
+                  <el-input v-model="item.memoryRequst" />
+                </el-form-item>
+                <el-form-item label style="margin-left: 30px; margin-top: 5px">
+                  <template #label>
+                    <span class="form-input-key-style">CPU 限制</span>
+                  </template>
+                  <el-input v-model="item.cpuLimit" />
+                </el-form-item>
+                <el-form-item label>
+                  <template #label>
+                    <span class="form-input-key-style">内存限制</span>
+                  </template>
+                  <el-input v-model="item.memoryLimit" />
+                </el-form-item>
               </el-form-item>
             </div>
           </div>
