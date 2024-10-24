@@ -341,7 +341,7 @@
           <div style="vertical-align: middle; margin-top: -40px">查看 Node 的资源状态</div>
         </el-card>
       </div>
-      <el-space style="margin-left: 8px" wrap :fill-ratio="48">
+      <el-space style="margin-left: 8px; margin-top: 15px" wrap :fill-ratio="48">
         <Echart :option="data.monitorData.cpuOption" :width="'640px'" :height="'250px'"></Echart>
         <Echart :option="data.monitorData.memoryOption" :width="'640px'" :height="'250px'"></Echart>
       </el-space>

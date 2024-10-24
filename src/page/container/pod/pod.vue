@@ -508,7 +508,7 @@
           <div style="vertical-align: middle; margin-top: -40px">查看 Pod 的资源状态</div>
         </el-card>
       </div>
-      <el-space style="margin-left: 8px" wrap>
+      <el-space style="margin-left: 8px; margin-top: 15px" wrap>
         <Echart :option="data.monitorData.cpuOption"></Echart>
         <Echart :option="data.monitorData.memoryOption"></Echart>
       </el-space>
