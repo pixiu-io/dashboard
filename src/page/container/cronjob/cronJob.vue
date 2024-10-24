@@ -459,25 +459,42 @@
                   <template #label>
                     <span class="form-input-key-style">CPU 预留</span>
                   </template>
-                  <el-input v-model="item.cpuRequst" />
+                  <el-input v-model="item.cpuRequst" placeholder="无限制">
+                    <template #suffix>
+                      <div style="font-size: 12px; color: #191919">Core</div>
+                    </template>
+                  </el-input>
                 </el-form-item>
                 <el-form-item label>
                   <template #label>
                     <span class="form-input-key-style">内存预留 </span>
                   </template>
-                  <el-input v-model="item.memoryRequst" />
+                  <el-input v-model="item.memoryRequst" placeholder="无限制">
+                    <template #suffix
+                      ><div style="font-size: 12px; color: #191919">Mi</div>
+                    </template>
+                  </el-input>
                 </el-form-item>
                 <el-form-item label style="margin-left: 30px; margin-top: 5px">
                   <template #label>
                     <span class="form-input-key-style">CPU 限制</span>
                   </template>
-                  <el-input v-model="item.cpuLimit" />
+                  <el-input v-model="item.cpuLimit" placeholder="无限制">
+                    <template #suffix>
+                      <div style="font-size: 12px; color: #191919">Core</div>
+                    </template>
+                  </el-input>
                 </el-form-item>
                 <el-form-item label>
                   <template #label>
                     <span class="form-input-key-style">内存限制</span>
                   </template>
-                  <el-input v-model="item.memoryLimit" />
+
+                  <el-input v-model="item.memoryLimit" placeholder="无限制">
+                    <template #suffix
+                      ><div style="font-size: 12px; color: #191919">Mi</div>
+                    </template>
+                  </el-input>
                 </el-form-item>
               </el-form-item>
             </div>
