@@ -356,7 +356,7 @@
           <span style="margin-left: 10px">
             <el-select
               v-model="data.cronJobForm.spec.jobTemplate.spec.template.spec.restartPolicy"
-              style="width: 150px; float: right; margin-right: 10px"
+              style="width: 180px; float: right; margin-right: 10px"
             >
               <el-option
                 v-for="item in data.cronJobData.restartPolicies"
@@ -367,7 +367,7 @@
             </el-select>
           </span>
         </el-form-item>
-        <div class="dialog-describe-style" style="margin-left: 50px">
+        <div class="dialog-describe-style" style="margin-left: 82px; margin-top: -10px">
           选择容器组中的容器异常退出时，容器集群采取的策略。
         </div>
 
@@ -378,21 +378,21 @@
           <el-button
             type="text"
             class="app-action-btn"
-            style="margin-top: 1px"
+            style="margin-top: 1px; margin-left: 8px"
             @click="addContainer"
             >+增加容器</el-button
           >
         </el-form-item>
-        <div class="dialog-describe-style" style="margin-left: 50px; margin-bottom: -12px">
+        <div class="dialog-describe-style" style="margin-left: 80px; margin-bottom: -12px">
           设置容器的镜像、名称、类型和计算资源。
         </div>
 
         <el-form-item
           v-for="(item, index) in data.cronJobData.containers"
           :key="index"
-          style="margin-left: 50px"
+          style="margin-left: 80px"
         >
-          <div style="width: 95%; background-color: #f2f2f2; margin-top: 20px; border-radius: 0px">
+          <div style="width: 90%; background-color: #f2f2f2; margin-top: 20px; border-radius: 0px">
             <div
               style="float: right; cursor: pointer; margin-top: 10px; margin-right: 15px"
               @click="deleteContainer(index)"
