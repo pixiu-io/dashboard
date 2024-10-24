@@ -350,6 +350,29 @@
       <div v-if="data.active == 2">
         <el-form-item label>
           <template #label>
+            <span class="form-item-key-style">重启策略</span>
+          </template>
+
+          <span style="margin-left: 10px">
+            <el-select
+              v-model="data.cronJobForm.spec.jobTemplate.spec.template.spec.restartPolicy"
+              style="width: 150px; float: right; margin-right: 10px"
+            >
+              <el-option
+                v-for="item in data.cronJobData.restartPolicies"
+                :key="item"
+                :value="item"
+                :label="item"
+              />
+            </el-select>
+          </span>
+        </el-form-item>
+        <div class="dialog-describe-style" style="margin-left: 50px">
+          选择容器组中的容器异常退出时，容器集群采取的策略。
+        </div>
+
+        <el-form-item label>
+          <template #label>
             <span class="form-item-key-style">容器配置</span>
           </template>
           <el-button
@@ -402,10 +425,10 @@
                   style="width: 150px; float: right; margin-right: 10px"
                 >
                   <el-option
-                    v-for="item in data.cronJobData.imagePullPolicies"
-                    :key="item"
-                    :value="item"
-                    :label="item"
+                    v-for="item2 in data.cronJobData.imagePullPolicies"
+                    :key="item2"
+                    :value="item2"
+                    :label="item2"
                   />
                 </el-select>
               </span>
@@ -677,6 +700,7 @@ const data = reactive({
     // 容器配置
     containers: [],
     imagePullPolicies: ['IfNotPresent', 'Always', 'Never'],
+    restartPolicies: ['Always', 'OnFailure'],
   },
   cronJobAdvanceOptions: {
     enable: false,
@@ -698,7 +722,7 @@ const data = reactive({
         spec: {
           template: {
             spec: {
-              restartPolicy: 'OnFailure',
+              restartPolicy: 'Always',
             },
           },
         },
@@ -865,7 +889,6 @@ const confirmCreate = async () => {
     data.cronJobForm.spec.jobTemplate.spec.template.spec['nodeSelector'] = nodeSelects;
   }
 
-  console.log(data.cronJobForm);
   // data.cronJobData.close = false;
   const [result, err] = await createCronJob(
     data.cluster,
