@@ -350,26 +350,49 @@
       <div v-if="data.active == 2">
         <el-form-item label>
           <template #label>
+            <span class="form-item-key-style">重启策略</span>
+          </template>
+
+          <span style="margin-left: 10px">
+            <el-select
+              v-model="data.cronJobForm.spec.jobTemplate.spec.template.spec.restartPolicy"
+              style="width: 180px; float: right; margin-right: 10px"
+            >
+              <el-option
+                v-for="item in data.cronJobData.restartPolicies"
+                :key="item"
+                :value="item"
+                :label="item"
+              />
+            </el-select>
+          </span>
+        </el-form-item>
+        <div class="dialog-describe-style" style="margin-left: 82px; margin-top: -10px">
+          选择容器组中的容器异常退出时，容器集群采取的策略。
+        </div>
+
+        <el-form-item label>
+          <template #label>
             <span class="form-item-key-style">容器配置</span>
           </template>
           <el-button
             type="text"
             class="app-action-btn"
-            style="margin-top: 1px"
+            style="margin-top: 1px; margin-left: 8px"
             @click="addContainer"
             >+增加容器</el-button
           >
         </el-form-item>
-        <div class="dialog-describe-style" style="margin-left: 50px; margin-bottom: -12px">
+        <div class="dialog-describe-style" style="margin-left: 80px; margin-bottom: -12px">
           设置容器的镜像、名称、类型和计算资源。
         </div>
 
         <el-form-item
           v-for="(item, index) in data.cronJobData.containers"
           :key="index"
-          style="margin-left: 50px"
+          style="margin-left: 80px"
         >
-          <div style="width: 95%; background-color: #f2f2f2; margin-top: 20px; border-radius: 0px">
+          <div style="width: 90%; background-color: #f2f2f2; margin-top: 20px; border-radius: 0px">
             <div
               style="float: right; cursor: pointer; margin-top: 10px; margin-right: 15px"
               @click="deleteContainer(index)"
@@ -383,6 +406,10 @@
                 <span class="form-item-key-style">容器名称</span>
               </template>
               <el-input v-model="item.name" style="margin-left: 10px; width: 45%" />
+              <div class="container-line-describe" style="margin-left: 10px; margin-bottom: -10px">
+                名称只能包含小写字母、数字和连字符（-），必须以小写字母或数字开头和结尾，最长 63
+                个字符。
+              </div>
             </el-form-item>
 
             <el-form-item label style="margin-top: 10px">
@@ -402,10 +429,10 @@
                   style="width: 150px; float: right; margin-right: 10px"
                 >
                   <el-option
-                    v-for="item in data.cronJobData.imagePullPolicies"
-                    :key="item"
-                    :value="item"
-                    :label="item"
+                    v-for="item2 in data.cronJobData.imagePullPolicies"
+                    :key="item2"
+                    :value="item2"
+                    :label="item2"
                   />
                 </el-select>
               </span>
@@ -428,7 +455,47 @@
                 <template #label>
                   <span class="form-item-key-style">资源</span>
                 </template>
-                TODO
+                <el-form-item label style="margin-left: 30px">
+                  <template #label>
+                    <span class="form-input-key-style">CPU 预留</span>
+                  </template>
+                  <el-input v-model="item.cpuRequst" placeholder="无限制">
+                    <template #suffix>
+                      <div style="font-size: 12px; color: #191919">Core</div>
+                    </template>
+                  </el-input>
+                </el-form-item>
+                <el-form-item label>
+                  <template #label>
+                    <span class="form-input-key-style">内存预留 </span>
+                  </template>
+                  <el-input v-model="item.memoryRequst" placeholder="无限制">
+                    <template #suffix
+                      ><div style="font-size: 12px; color: #191919">Mi</div>
+                    </template>
+                  </el-input>
+                </el-form-item>
+                <el-form-item label style="margin-left: 30px; margin-top: 5px">
+                  <template #label>
+                    <span class="form-input-key-style">CPU 限制</span>
+                  </template>
+                  <el-input v-model="item.cpuLimit" placeholder="无限制">
+                    <template #suffix>
+                      <div style="font-size: 12px; color: #191919">Core</div>
+                    </template>
+                  </el-input>
+                </el-form-item>
+                <el-form-item label>
+                  <template #label>
+                    <span class="form-input-key-style">内存限制</span>
+                  </template>
+
+                  <el-input v-model="item.memoryLimit" placeholder="无限制">
+                    <template #suffix
+                      ><div style="font-size: 12px; color: #191919">Mi</div>
+                    </template>
+                  </el-input>
+                </el-form-item>
               </el-form-item>
             </div>
           </div>
@@ -677,6 +744,7 @@ const data = reactive({
     // 容器配置
     containers: [],
     imagePullPolicies: ['IfNotPresent', 'Always', 'Never'],
+    restartPolicies: ['Always', 'OnFailure'],
   },
   cronJobAdvanceOptions: {
     enable: false,
@@ -698,7 +766,7 @@ const data = reactive({
         spec: {
           template: {
             spec: {
-              restartPolicy: 'OnFailure',
+              restartPolicy: 'Always',
             },
           },
         },
@@ -865,7 +933,6 @@ const confirmCreate = async () => {
     data.cronJobForm.spec.jobTemplate.spec.template.spec['nodeSelector'] = nodeSelects;
   }
 
-  console.log(data.cronJobForm);
   // data.cronJobData.close = false;
   const [result, err] = await createCronJob(
     data.cluster,
