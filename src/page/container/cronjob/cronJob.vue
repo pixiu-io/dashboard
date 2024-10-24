@@ -406,6 +406,10 @@
                 <span class="form-item-key-style">容器名称</span>
               </template>
               <el-input v-model="item.name" style="margin-left: 10px; width: 45%" />
+              <div class="container-line-describe" style="margin-left: 10px; margin-bottom: -10px">
+                名称只能包含小写字母、数字和连字符（-），必须以小写字母或数字开头和结尾，最长 63
+                个字符。
+              </div>
             </el-form-item>
 
             <el-form-item label style="margin-top: 10px">
