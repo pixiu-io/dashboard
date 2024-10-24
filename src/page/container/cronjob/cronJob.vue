@@ -496,6 +496,9 @@
                     </template>
                   </el-input>
                 </el-form-item>
+                <div class="container-line-describe" style="margin-left: 38px">
+                  设置容器的资源限制与资源预留，以将容器调度到合适的节点上。
+                </div>
               </el-form-item>
             </div>
           </div>
