@@ -513,8 +513,8 @@
               <div v-if="item.choicePort">
                 <div style="margin-top: 25px">
                   <el-form-item
-                    v-for="(i, index) in item.ports"
-                    :key="index"
+                    v-for="(i, index1) in item.ports"
+                    :key="index1"
                     style="margin-top: -28px"
                   >
                     <el-form-item style="margin-left: 70px">
