@@ -530,6 +530,36 @@
                       />
                       <div style="font-size: 12px; color: #191919">容器端口</div>
                       <el-input v-model="i.port" style="width: 20%; margin-left: 10px" />
+
+                      <div
+                        class="table-inline-btn"
+                        style="
+                          float: right;
+                          cursor: pointer;
+                          margin-left: 15px;
+                          margin-top: 6px;
+                          background-color: #f2f2f2;
+                        "
+                        @click="deleteNodeSelectLabel(index)"
+                      >
+                        删除
+                      </div>
+                    </el-form-item>
+
+                    <el-form-item label>
+                      <template #label>
+                        <span
+                          class="form-item-key-style"
+                          style="
+                            cursor: pointer;
+                            color: #006eff;
+                            font-size: 12px;
+                            margin-left: 70px;
+                            margin-top: -1px;
+                          "
+                          >+ 添加</span
+                        >
+                      </template>
                     </el-form-item>
                   </el-form-item>
                 </div>
