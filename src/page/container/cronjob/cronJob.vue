@@ -507,7 +507,7 @@
                 </template>
                 <el-checkbox v-model="item.choicePort" @change="portChange(item)" />
               </el-form-item>
-              <div class="container-line-describe" style="margin-left: 75px; margin-top: -8px">
+              <div class="container-line-describe" style="margin-left: 72px; margin-top: -8px">
                 设置容器的端口。
               </div>
               <div v-if="item.choicePort">
@@ -515,14 +515,22 @@
                   <el-form-item
                     v-for="(i, index) in item.ports"
                     :key="index"
-                    style="margin-top: -10px"
+                    style="margin-top: -28px"
                   >
-                    <el-form-item>
-                      <el-input v-model="i.http" style="width: 300px; margin-left: 10px" />
+                    <el-form-item style="margin-left: 70px">
+                      <div style="font-size: 12px; color: #191919">协议</div>
+                      <el-input
+                        v-model="i.http"
+                        style="width: 20%; margin-left: 10px; margin-right: 10px"
+                      />
+                      <div style="font-size: 12px; color: #191919">名称</div>
+                      <el-input
+                        v-model="i.name"
+                        style="width: 20%; margin-left: 10px; margin-right: 10px"
+                      />
+                      <div style="font-size: 12px; color: #191919">容器端口</div>
+                      <el-input v-model="i.port" style="width: 20%; margin-left: 10px" />
                     </el-form-item>
-                    <div>
-                      <el-input v-model="i.name" style="width: 300px; margin-left: 20px" />
-                    </div>
                   </el-form-item>
                 </div>
               </div>
@@ -763,9 +771,6 @@ const data = reactive({
 
   cronJobData: {
     close: false,
-
-    // 启动pod设置
-    choicePort: false,
 
     // 选择节点配置
     choiceNode: false,
