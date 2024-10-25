@@ -505,7 +505,27 @@
                 <template #label>
                   <span class="form-item-key-style">端口设置</span>
                 </template>
+                <el-checkbox v-model="item.choicePort" @change="portChange(item)" />
               </el-form-item>
+              <div class="container-line-describe" style="margin-left: 75px; margin-top: -8px">
+                设置容器的端口。
+              </div>
+              <div v-if="item.choicePort">
+                <div style="margin-top: 25px">
+                  <el-form-item
+                    v-for="(i, index) in item.ports"
+                    :key="index"
+                    style="margin-top: -10px"
+                  >
+                    <el-form-item>
+                      <el-input v-model="i.http" style="width: 300px; margin-left: 10px" />
+                    </el-form-item>
+                    <div>
+                      <el-input v-model="i.name" style="width: 300px; margin-left: 20px" />
+                    </div>
+                  </el-form-item>
+                </div>
+              </div>
             </div>
           </div>
         </el-form-item>
@@ -743,6 +763,10 @@ const data = reactive({
 
   cronJobData: {
     close: false,
+
+    // 启动pod设置
+    choicePort: false,
+
     // 选择节点配置
     choiceNode: false,
     nodeSelectLabels: [],
@@ -829,6 +853,19 @@ const nodeChange = () => {
   }
 };
 
+const portChange = (item) => {
+  if (item.choicePort) {
+    if (item.ports.length === 0) {
+      addNodeSelectLabel();
+      item.ports.push({
+        http: 'http',
+        name: '',
+        port: '',
+      });
+    }
+  }
+};
+
 const addNodeSelectLabel = () => {
   data.cronJobData.nodeSelectLabels.push({ key: '', value: '' });
 };
@@ -870,6 +907,12 @@ const addContainer = () => {
     image: '',
     imagePullPolicy: 'IfNotPresent',
     advance: false,
+    cpuRequst: '',
+    cpuLimit: '',
+    memoryRequst: '',
+    memoryLimit: '',
+    choicePort: false,
+    ports: [],
   });
 };
 
