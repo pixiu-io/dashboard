@@ -511,12 +511,8 @@
                 设置容器的端口。
               </div>
               <div v-if="item.choicePort">
-                <div style="margin-top: 25px">
-                  <el-form-item
-                    v-for="(i, index1) in item.ports"
-                    :key="index1"
-                    style="margin-top: -28px"
-                  >
+                <div style="margin-top: -2px">
+                  <el-form-item v-for="(i, index1) in item.ports" :key="index1">
                     <el-form-item style="margin-left: 70px">
                       <div style="font-size: 12px; color: #191919">协议</div>
                       <el-input
@@ -544,25 +540,25 @@
                         删除
                       </div>
                     </el-form-item>
-
-                    <el-form-item label>
-                      <template #label>
-                        <span
-                          class="form-item-key-style"
-                          style="
-                            cursor: pointer;
-                            color: #006eff;
-                            font-size: 12px;
-                            margin-left: 70px;
-                            margin-top: -1px;
-                          "
-                          @click="addPort(item)"
-                          >+ 添加</span
-                        >
-                      </template>
-                    </el-form-item>
                   </el-form-item>
                 </div>
+
+                <el-form-item label>
+                  <template #label>
+                    <span
+                      class="form-item-key-style"
+                      style="
+                        cursor: pointer;
+                        color: #006eff;
+                        font-size: 12px;
+                        margin-left: 70px;
+                        margin-top: -1px;
+                      "
+                      @click="addPort(item)"
+                      >+ 添加</span
+                    >
+                  </template>
+                </el-form-item>
               </div>
             </div>
           </div>
