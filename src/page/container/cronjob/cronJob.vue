@@ -496,7 +496,130 @@
                     </template>
                   </el-input>
                 </el-form-item>
+                <div class="container-line-describe" style="margin-left: 40px">
+                  设置容器的资源限制与资源预留，以将容器调度到合适的节点上。
+                </div>
               </el-form-item>
+
+              <el-form-item label>
+                <template #label>
+                  <span class="form-item-key-style">端口设置</span>
+                </template>
+                <el-checkbox v-model="item.choicePort" @change="portChange(item)" />
+              </el-form-item>
+              <div class="container-line-describe" style="margin-left: 72px; margin-top: -8px">
+                设置容器的端口。
+              </div>
+              <div v-if="item.choicePort">
+                <div style="margin-top: -2px">
+                  <el-form-item v-for="(i, index1) in item.ports" :key="index1">
+                    <el-form-item style="margin-left: 70px">
+                      <div style="font-size: 12px; color: #191919">协议</div>
+                      <el-input
+                        v-model="i.http"
+                        style="width: 20%; margin-left: 10px; margin-right: 10px"
+                      />
+                      <div style="font-size: 12px; color: #191919">名称</div>
+                      <el-input
+                        v-model="i.name"
+                        style="width: 20%; margin-left: 10px; margin-right: 10px"
+                      />
+                      <div style="font-size: 12px; color: #191919">容器端口</div>
+                      <el-input v-model="i.port" style="width: 25%; margin-left: 10px" />
+                      <div
+                        class="table-inline-btn"
+                        style="
+                          float: right;
+                          cursor: pointer;
+                          margin-left: 15px;
+                          margin-top: 6px;
+                          background-color: #f2f2f2;
+                        "
+                        @click="deletePort(item, index)"
+                      >
+                        删除
+                      </div>
+                    </el-form-item>
+                  </el-form-item>
+                </div>
+
+                <el-form-item label>
+                  <template #label>
+                    <span
+                      class="form-item-key-style"
+                      style="
+                        cursor: pointer;
+                        color: #006eff;
+                        font-size: 12px;
+                        margin-left: 70px;
+                        margin-top: -1px;
+                      "
+                      @click="addPort(item)"
+                      >+ 添加</span
+                    >
+                  </template>
+                </el-form-item>
+              </div>
+
+              <el-form-item label>
+                <template #label>
+                  <span class="form-item-key-style">环境变量</span>
+                </template>
+                <el-checkbox v-model="item.choiceEnv" @change="envChange(item)" />
+              </el-form-item>
+              <div class="container-line-describe" style="margin-left: 72px; margin-top: -8px">
+                为容器添加添加环境变量。
+              </div>
+
+              <div v-if="item.choiceEnv">
+                <div style="margin-top: -2px">
+                  <el-form-item v-for="(i1, index2) in item.envs" :key="index2">
+                    <el-form-item style="margin-left: 70px">
+                      <div style="font-size: 12px; color: #191919">类型</div>
+                      <el-input
+                        v-model="i1.type"
+                        style="width: 20%; margin-left: 10px; margin-right: 10px"
+                      />
+                      <div style="font-size: 12px; color: #191919">名称</div>
+                      <el-input
+                        v-model="i1.key"
+                        style="width: 20%; margin-left: 10px; margin-right: 10px"
+                      />
+                      <div style="font-size: 12px; color: #191919">键值</div>
+                      <el-input v-model="i1.value" style="width: 25%; margin-left: 10px" />
+                      <div
+                        class="table-inline-btn"
+                        style="
+                          float: right;
+                          cursor: pointer;
+                          margin-left: 15px;
+                          margin-top: 6px;
+                          background-color: #f2f2f2;
+                        "
+                        @click="deleteEnv(item, index)"
+                      >
+                        删除
+                      </div>
+                    </el-form-item>
+                  </el-form-item>
+                </div>
+                <el-form-item label>
+                  <template #label>
+                    <span
+                      class="form-item-key-style"
+                      style="
+                        cursor: pointer;
+                        color: #006eff;
+                        font-size: 12px;
+                        margin-left: 70px;
+                        margin-top: -1px;
+                      "
+                      @click="addEnv(item)"
+                      >+ 添加</span
+                    >
+                  </template>
+                </el-form-item>
+              </div>
             </div>
           </div>
         </el-form-item>
@@ -734,6 +857,7 @@ const data = reactive({
 
   cronJobData: {
     close: false,
+
     // 选择节点配置
     choiceNode: false,
     nodeSelectLabels: [],
@@ -820,6 +944,46 @@ const nodeChange = () => {
   }
 };
 
+const envChange = (item) => {
+  if (item.choiceEnv) {
+    if (item.envs.length === 0) {
+      addEnv(item);
+    }
+  }
+};
+
+const addEnv = (item) => {
+  item.envs.push({
+    type: '自定义',
+    key: '',
+    value: '',
+  });
+};
+
+const deleteEnv = (item, index) => {
+  item.envs.splice(index, 1);
+};
+
+const portChange = (item) => {
+  if (item.choicePort) {
+    if (item.ports.length === 0) {
+      addPort(item);
+    }
+  }
+};
+
+const addPort = (item) => {
+  item.ports.push({
+    http: 'http',
+    name: '',
+    port: '',
+  });
+};
+
+const deletePort = (item, index) => {
+  item.ports.splice(index, 1);
+};
+
 const addNodeSelectLabel = () => {
   data.cronJobData.nodeSelectLabels.push({ key: '', value: '' });
 };
@@ -861,6 +1025,14 @@ const addContainer = () => {
     image: '',
     imagePullPolicy: 'IfNotPresent',
     advance: false,
+    cpuRequst: '',
+    cpuLimit: '',
+    memoryRequst: '',
+    memoryLimit: '',
+    choicePort: false,
+    ports: [],
+    choiceEnv: false,
+    envs: [],
   });
 };
 
