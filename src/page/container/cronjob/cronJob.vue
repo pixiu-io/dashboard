@@ -1187,8 +1187,8 @@ const confirmCreate = async () => {
     }
     data.cronJobForm.metadata['annotations'] = newannotations;
   }
-
   data.cronJobForm.spec.jobTemplate.spec.template.spec = makePodTemplate(data.cronJobData);
+
   const [result, err] = await createCronJob(
     data.cluster,
     data.cronJobForm.metadata.namespace,
