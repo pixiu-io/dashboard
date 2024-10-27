@@ -623,6 +623,33 @@
                   </template>
                 </el-form-item>
               </div>
+
+              <el-form-item label>
+                <template #label>
+                  <span class="form-item-key-style">启动命令</span>
+                </template>
+                <el-checkbox v-model="item.choiceCmd" />
+              </el-form-item>
+              <div class="container-line-describe" style="margin-left: 72px; margin-top: -8px">
+                自定义容器启动时运行的命令。默认情况下，容器启动时将运行镜像默认命令。
+              </div>
+
+              <div v-if="item.choiceCmd">
+                <div style="margin-top: -2px">
+                  <el-form-item style="margin-left: 70px">
+                    <div style="font-size: 12px; color: #191919">命令</div>
+                  </el-form-item>
+                  <el-form-item style="margin-left: 70px">
+                    <el-input v-model="item.cmds.cmd" style="width: 85%" type="textarea" />
+                  </el-form-item>
+                  <el-form-item style="margin-left: 70px">
+                    <div style="font-size: 12px; color: #191919">参数</div>
+                  </el-form-item>
+                  <el-form-item style="margin-left: 70px">
+                    <el-input v-model="item.cmds.args" style="width: 85%" type="textarea" />
+                  </el-form-item>
+                </div>
+              </div>
             </div>
           </div>
         </el-form-item>
@@ -1036,6 +1063,11 @@ const addContainer = () => {
     ports: [],
     choiceEnv: false,
     envs: [],
+    choiceCmd: false,
+    cmds: {
+      cmd: '',
+      args: '',
+    },
   });
 };
 
