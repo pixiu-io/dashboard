@@ -655,6 +655,30 @@
                   </el-form-item>
                 </div>
               </div>
+
+              <el-form-item label>
+                <template #label>
+                  <span class="form-item-key-style">健康检查</span>
+                </template>
+                <el-checkbox v-model="item.choiceHealth" />
+              </el-form-item>
+              <div class="container-line-describe" style="margin-left: 72px; margin-top: -8px">
+                检查容器健康状态。
+              </div>
+
+              <div v-if="item.choiceHealth">
+                <div style="margin-top: -2px">
+                  <el-form-item style="margin-left: 70px">
+                    <div style="font-size: 12px; color: #191919">存活检查</div>
+                  </el-form-item>
+                  <el-form-item style="margin-left: 70px">
+                    <div style="font-size: 12px; color: #191919">就绪检查</div>
+                  </el-form-item>
+                  <el-form-item style="margin-left: 70px">
+                    <div style="font-size: 12px; color: #191919">启动检查</div>
+                  </el-form-item>
+                </div>
+              </div>
             </div>
           </div>
         </el-form-item>
@@ -1073,6 +1097,7 @@ const addContainer = () => {
       cmd: '',
       args: '',
     },
+    choiceHealth: false,
   });
 };
 
