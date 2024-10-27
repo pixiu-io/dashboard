@@ -699,7 +699,7 @@
           <template #label>
             <span class="form-item-key-style">主机网络</span>
           </template>
-          <el-checkbox v-model="data.cronJobData.hostNetwok" />
+          <el-checkbox v-model="data.cronJobData.hostNetwork" />
         </el-form-item>
         <div class="dialog-describe-style">容器使用宿主机网络。</div>
         <div style="margin-top: 25px"></div>
@@ -963,7 +963,7 @@ const data = reactive({
     imagePullPolicies: ['IfNotPresent', 'Always', 'Never'],
     restartPolicies: ['Always', 'OnFailure'],
     restartPolicy: 'Always',
-    hostNetwok: false,
+    hostNetwork: false,
   },
   cronJobAdvanceOptions: {
     enable: false,

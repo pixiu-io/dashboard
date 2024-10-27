@@ -19,7 +19,9 @@ const makeObjectMetadata = (data) => {
 export { makeObjectMetadata };
 
 const makePodTemplate = (data) => {
-  let tplSpec = {};
+  let tplSpec = {
+    restartPolicy: data.restartPolicy,
+  };
 
   if (data.choiceNode) {
     let nodeSelects = {};
@@ -29,8 +31,8 @@ const makePodTemplate = (data) => {
     tplSpec['nodeSelector'] = nodeSelects;
   }
 
-  if (data.hostNetwok) {
-    tplSpec['hostNetwok'] = true;
+  if (data.hostNetwork) {
+    tplSpec['hostNetwork'] = true;
   }
 
   let targetContainers = [];
