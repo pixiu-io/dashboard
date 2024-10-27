@@ -686,9 +686,24 @@
         </el-form-item>
       </div>
 
-      <div v-if="data.active == 3">TODO 存储设置</div>
+      <div v-if="data.active == 3">
+        <el-form-item label>
+          <template #label>
+            <span class="form-item-key-style">存储设置</span>
+          </template>
+        </el-form-item>
+      </div>
 
       <div v-if="data.active == 4">
+        <el-form-item label>
+          <template #label>
+            <span class="form-item-key-style">主机网络</span>
+          </template>
+          <el-checkbox v-model="data.cronJobData.hostNetwok" />
+        </el-form-item>
+        <div class="dialog-describe-style">容器使用宿主机的网络。</div>
+        <div style="margin-top: 25px"></div>
+
         <el-form-item label>
           <template #label>
             <span class="form-item-key-style">选择节点</span>
@@ -930,6 +945,7 @@ const data = reactive({
     containers: [],
     imagePullPolicies: ['IfNotPresent', 'Always', 'Never'],
     restartPolicies: ['Always', 'OnFailure'],
+    hostNetwok: false,
   },
   cronJobAdvanceOptions: {
     enable: false,
