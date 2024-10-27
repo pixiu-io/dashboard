@@ -772,10 +772,18 @@
             style="margin-top: -10px"
           >
             <el-form-item prop="item.key">
-              <el-input v-model="item.key" style="width: 300px; margin-left: 10px" />
+              <el-input
+                v-model="item.key"
+                style="width: 300px; margin-left: 10px"
+                placeholder="键"
+              />
             </el-form-item>
             <div>
-              <el-input v-model="item.value" style="width: 300px; margin-left: 20px" />
+              <el-input
+                v-model="item.value"
+                style="width: 300px; margin-left: 20px"
+                placeholder="值"
+              />
             </div>
             <div
               class="table-inline-btn"
@@ -813,10 +821,18 @@
             style="margin-top: -10px"
           >
             <el-form-item prop="item.key">
-              <el-input v-model="item.key" style="width: 300px; margin-left: 10px" />
+              <el-input
+                v-model="item.key"
+                style="width: 300px; margin-left: 10px"
+                placeholder="键"
+              />
             </el-form-item>
             <div>
-              <el-input v-model="item.value" style="width: 300px; margin-left: 20px" />
+              <el-input
+                v-model="item.value"
+                style="width: 300px; margin-left: 20px"
+                placeholder="值"
+              />
             </div>
             <div
               class="table-inline-btn"
