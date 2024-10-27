@@ -578,15 +578,18 @@
                       <div style="font-size: 12px; color: #191919">类型</div>
                       <el-input
                         v-model="i1.type"
-                        style="width: 20%; margin-left: 10px; margin-right: 10px"
+                        style="width: 16%; margin-left: 10px; margin-right: 10px"
                       />
-                      <div style="font-size: 12px; color: #191919">名称</div>
                       <el-input
                         v-model="i1.key"
-                        style="width: 20%; margin-left: 10px; margin-right: 10px"
+                        style="width: 30%; margin-left: 10px; margin-right: 10px"
+                        placeholder="键"
                       />
-                      <div style="font-size: 12px; color: #191919">键值</div>
-                      <el-input v-model="i1.value" style="width: 25%; margin-left: 10px" />
+                      <el-input
+                        v-model="i1.value"
+                        style="width: 30%; margin-left: 10px"
+                        placeholder="值"
+                      />
                       <div
                         class="table-inline-btn"
                         style="
@@ -620,14 +623,87 @@
                   </template>
                 </el-form-item>
               </div>
+
+              <el-form-item label>
+                <template #label>
+                  <span class="form-item-key-style">启动命令</span>
+                </template>
+                <el-checkbox v-model="item.choiceCmd" />
+              </el-form-item>
+              <div class="container-line-describe" style="margin-left: 72px; margin-top: -8px">
+                自定义容器启动时运行的命令。默认情况下，容器启动时将运行镜像默认命令。
+              </div>
+
+              <div v-if="item.choiceCmd">
+                <div style="margin-top: -2px">
+                  <el-form-item style="margin-left: 70px">
+                    <div style="font-size: 12px; color: #191919">命令</div>
+                  </el-form-item>
+                  <el-form-item style="margin-left: 70px">
+                    <el-input v-model="item.cmds.cmd" style="width: 85%" type="textarea" />
+                  </el-form-item>
+                  <el-form-item style="margin-left: 70px">
+                    <div style="font-size: 12px; color: #191919">参数</div>
+                  </el-form-item>
+                  <el-form-item style="margin-left: 70px">
+                    <el-input
+                      v-model="item.cmds.args"
+                      style="width: 85%"
+                      type="textarea"
+                      placeholder="启动命令的参数, 如有多个参数请使用半角逗号（,）分隔。"
+                    />
+                  </el-form-item>
+                </div>
+              </div>
+
+              <el-form-item label>
+                <template #label>
+                  <span class="form-item-key-style">健康检查</span>
+                </template>
+                <el-checkbox v-model="item.choiceHealth" />
+              </el-form-item>
+              <div class="container-line-describe" style="margin-left: 72px; margin-top: -8px">
+                检查容器健康状态。
+              </div>
+
+              <div v-if="item.choiceHealth">
+                <div style="margin-top: -2px">
+                  <el-form-item style="margin-left: 70px">
+                    <div style="font-size: 12px; margin-right: 8px; color: #191919">存活检查</div>
+                    <el-checkbox v-model="item.healths.liveness.enable" />
+                  </el-form-item>
+                  <el-form-item style="margin-left: 70px">
+                    <div style="font-size: 12px; margin-right: 8px; color: #191919">就绪检查</div>
+                    <el-checkbox v-model="item.healths.readiness.enable" />
+                  </el-form-item>
+                  <el-form-item style="margin-left: 70px">
+                    <div style="font-size: 12px; margin-right: 8px; color: #191919">启动检查</div>
+                  </el-form-item>
+                </div>
+              </div>
             </div>
           </div>
         </el-form-item>
       </div>
 
-      <div v-if="data.active == 3">TODO 存储设置</div>
+      <div v-if="data.active == 3">
+        <el-form-item label>
+          <template #label>
+            <span class="form-item-key-style">存储设置</span>
+          </template>
+        </el-form-item>
+      </div>
 
       <div v-if="data.active == 4">
+        <el-form-item label>
+          <template #label>
+            <span class="form-item-key-style">主机网络</span>
+          </template>
+          <el-checkbox v-model="data.cronJobData.hostNetwok" />
+        </el-form-item>
+        <div class="dialog-describe-style">容器使用宿主机网络。</div>
+        <div style="margin-top: 25px"></div>
+
         <el-form-item label>
           <template #label>
             <span class="form-item-key-style">选择节点</span>
@@ -696,10 +772,18 @@
             style="margin-top: -10px"
           >
             <el-form-item prop="item.key">
-              <el-input v-model="item.key" style="width: 300px; margin-left: 10px" />
+              <el-input
+                v-model="item.key"
+                style="width: 300px; margin-left: 10px"
+                placeholder="键"
+              />
             </el-form-item>
             <div>
-              <el-input v-model="item.value" style="width: 300px; margin-left: 20px" />
+              <el-input
+                v-model="item.value"
+                style="width: 300px; margin-left: 20px"
+                placeholder="值"
+              />
             </div>
             <div
               class="table-inline-btn"
@@ -737,10 +821,18 @@
             style="margin-top: -10px"
           >
             <el-form-item prop="item.key">
-              <el-input v-model="item.key" style="width: 300px; margin-left: 10px" />
+              <el-input
+                v-model="item.key"
+                style="width: 300px; margin-left: 10px"
+                placeholder="键"
+              />
             </el-form-item>
             <div>
-              <el-input v-model="item.value" style="width: 300px; margin-left: 20px" />
+              <el-input
+                v-model="item.value"
+                style="width: 300px; margin-left: 20px"
+                placeholder="值"
+              />
             </div>
             <div
               class="table-inline-btn"
@@ -869,6 +961,7 @@ const data = reactive({
     containers: [],
     imagePullPolicies: ['IfNotPresent', 'Always', 'Never'],
     restartPolicies: ['Always', 'OnFailure'],
+    hostNetwok: false,
   },
   cronJobAdvanceOptions: {
     enable: false,
@@ -1033,6 +1126,20 @@ const addContainer = () => {
     ports: [],
     choiceEnv: false,
     envs: [],
+    choiceCmd: false,
+    cmds: {
+      cmd: '',
+      args: '',
+    },
+    choiceHealth: false,
+    healths: {
+      liveness: {
+        enable: false,
+      },
+      readiness: {
+        enable: false,
+      },
+    },
   });
 };
 
