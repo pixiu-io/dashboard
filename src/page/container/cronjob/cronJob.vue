@@ -355,7 +355,7 @@
 
           <span style="margin-left: 10px">
             <el-select
-              v-model="data.cronJobForm.spec.jobTemplate.spec.template.spec.restartPolicy"
+              v-model="data.cronJobData.restartPolicy"
               style="width: 180px; float: right; margin-right: 10px"
             >
               <el-option
@@ -516,7 +516,7 @@
                     <el-form-item style="margin-left: 70px">
                       <div style="font-size: 12px; color: #191919">协议</div>
                       <el-input
-                        v-model="i.http"
+                        v-model="i.protocol"
                         style="width: 20%; margin-left: 10px; margin-right: 10px"
                       />
                       <div style="font-size: 12px; color: #191919">名称</div>
@@ -525,7 +525,7 @@
                         style="width: 20%; margin-left: 10px; margin-right: 10px"
                       />
                       <div style="font-size: 12px; color: #191919">容器端口</div>
-                      <el-input v-model="i.port" style="width: 25%; margin-left: 10px" />
+                      <el-input v-model="i.containerPort" style="width: 25%; margin-left: 10px" />
                       <div
                         class="table-inline-btn"
                         style="
@@ -699,7 +699,7 @@
           <template #label>
             <span class="form-item-key-style">主机网络</span>
           </template>
-          <el-checkbox v-model="data.cronJobData.hostNetwok" />
+          <el-checkbox v-model="data.cronJobData.hostNetwork" />
         </el-form-item>
         <div class="dialog-describe-style">容器使用宿主机网络。</div>
         <div style="margin-top: 25px"></div>
@@ -903,6 +903,7 @@ import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref, onUnmounted } from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData } from '@/utils/utils';
+import { makePodTemplate, makeObjectMetadata } from '@/utils/k8s';
 import {
   formatterLabels,
   formatterNamespace,
@@ -960,8 +961,9 @@ const data = reactive({
     // 容器配置
     containers: [],
     imagePullPolicies: ['IfNotPresent', 'Always', 'Never'],
-    restartPolicies: ['Always', 'OnFailure'],
-    hostNetwok: false,
+    restartPolicies: ['OnFailure', 'Never'],
+    restartPolicy: 'OnFailure',
+    hostNetwork: false,
   },
   cronJobAdvanceOptions: {
     enable: false,
@@ -982,9 +984,7 @@ const data = reactive({
       jobTemplate: {
         spec: {
           template: {
-            spec: {
-              restartPolicy: 'Always',
-            },
+            spec: {},
           },
         },
       },
@@ -1067,9 +1067,9 @@ const portChange = (item) => {
 
 const addPort = (item) => {
   item.ports.push({
-    http: 'http',
     name: '',
-    port: '',
+    protocol: 'TCP',
+    containerPort: '',
   });
 };
 
@@ -1187,32 +1187,8 @@ const confirmCreate = async () => {
     }
     data.cronJobForm.metadata['annotations'] = newannotations;
   }
+  data.cronJobForm.spec.jobTemplate.spec.template.spec = makePodTemplate(data.cronJobData);
 
-  // 添加容器
-  let containers = [];
-  for (let container of data.cronJobData.containers) {
-    let c = {
-      name: container.name,
-      image: container.image,
-      imagePullPolicy: container.imagePullPolicy,
-    };
-    if (container.advance) {
-      // TODO
-    }
-    containers.push(c);
-  }
-  data.cronJobForm.spec.jobTemplate.spec.template.spec['containers'] = containers;
-
-  // 添加node标签
-  if (data.cronJobData.choiceNode) {
-    let nodeSelects = {};
-    for (let nodeSelectLabel of data.cronJobData.nodeSelectLabels) {
-      nodeSelects[nodeSelectLabel.key] = nodeSelectLabel.value;
-    }
-    data.cronJobForm.spec.jobTemplate.spec.template.spec['nodeSelector'] = nodeSelects;
-  }
-
-  // data.cronJobData.close = false;
   const [result, err] = await createCronJob(
     data.cluster,
     data.cronJobForm.metadata.namespace,
@@ -1246,6 +1222,7 @@ const cancelCreate = () => {
       // 容器配置
       containers: [],
       imagePullPolicies: ['IfNotPresent', 'Always', 'Never'],
+      restartPolicy: 'OnFailure',
     };
 
     data.cronJobAdvanceOptions = {
@@ -1266,9 +1243,7 @@ const cancelCreate = () => {
         jobTemplate: {
           spec: {
             template: {
-              spec: {
-                restartPolicy: 'OnFailure',
-              },
+              spec: {},
             },
           },
         },
