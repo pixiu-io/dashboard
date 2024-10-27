@@ -646,7 +646,12 @@
                     <div style="font-size: 12px; color: #191919">参数</div>
                   </el-form-item>
                   <el-form-item style="margin-left: 70px">
-                    <el-input v-model="item.cmds.args" style="width: 85%" type="textarea" />
+                    <el-input
+                      v-model="item.cmds.args"
+                      style="width: 85%"
+                      type="textarea"
+                      placeholder="启动命令的参数, 如有多个参数请使用半角逗号（,）分隔。"
+                    />
                   </el-form-item>
                 </div>
               </div>
