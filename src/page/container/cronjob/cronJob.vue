@@ -578,15 +578,18 @@
                       <div style="font-size: 12px; color: #191919">类型</div>
                       <el-input
                         v-model="i1.type"
-                        style="width: 20%; margin-left: 10px; margin-right: 10px"
+                        style="width: 16%; margin-left: 10px; margin-right: 10px"
                       />
-                      <div style="font-size: 12px; color: #191919">名称</div>
                       <el-input
                         v-model="i1.key"
-                        style="width: 20%; margin-left: 10px; margin-right: 10px"
+                        style="width: 30%; margin-left: 10px; margin-right: 10px"
+                        placeholder="键"
                       />
-                      <div style="font-size: 12px; color: #191919">键值</div>
-                      <el-input v-model="i1.value" style="width: 25%; margin-left: 10px" />
+                      <el-input
+                        v-model="i1.value"
+                        style="width: 30%; margin-left: 10px"
+                        placeholder="值"
+                      />
                       <div
                         class="table-inline-btn"
                         style="
