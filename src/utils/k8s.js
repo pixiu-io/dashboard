@@ -1,5 +1,22 @@
-const makeKubernetesMetadata = (data) => {};
-export { makeKubernetesMetadata };
+const makeObjectMetadata = (data) => {
+  if (data.enableMetadata) {
+    if (data.labels.length !== 0) {
+      let newLabels = {};
+      for (let l of data.labels) {
+        newLabels[l.key] = l.value;
+      }
+    }
+    if (data.annotations.length !== 0) {
+      let newAnnotations = {};
+      for (let a of data.annotations) {
+        newAnnotations[a.key] = a.value;
+      }
+    }
+
+    return newLabels, newAnnotations;
+  }
+};
+export { makeObjectMetadata };
 
 const makePodTemplate = (data) => {
   let tplSpec = {};
@@ -10,6 +27,10 @@ const makePodTemplate = (data) => {
       nodeSelects[nodeSelectLabel.key] = nodeSelectLabel.value;
     }
     tplSpec['nodeSelector'] = nodeSelects;
+  }
+
+  if (data.hostNetwok) {
+    tplSpec['hostNetwok'] = true;
   }
 
   let targetContainers = [];
@@ -51,7 +72,15 @@ const makePodTemplate = (data) => {
       }
 
       if (fc.choicePort) {
-        targetContainer['ports'] = fc.ports;
+        let pps = [];
+        for (let p of fc.ports) {
+          pps.push({
+            name: p.name,
+            protocol: p.protocol,
+            containerPort: parseInt(p.containerPort),
+          });
+        }
+        targetContainer['ports'] = pps;
       }
 
       if (fc.choiceEnv) {

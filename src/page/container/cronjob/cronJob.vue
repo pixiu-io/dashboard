@@ -355,7 +355,7 @@
 
           <span style="margin-left: 10px">
             <el-select
-              v-model="data.cronJobForm.spec.jobTemplate.spec.template.spec.restartPolicy"
+              v-model="data.cronJobData.restartPolicy"
               style="width: 180px; float: right; margin-right: 10px"
             >
               <el-option
@@ -903,6 +903,7 @@ import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref, onUnmounted } from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData } from '@/utils/utils';
+import { makePodTemplate, makeObjectMetadata } from '@/utils/k8s';
 import {
   formatterLabels,
   formatterNamespace,
@@ -961,6 +962,7 @@ const data = reactive({
     containers: [],
     imagePullPolicies: ['IfNotPresent', 'Always', 'Never'],
     restartPolicies: ['Always', 'OnFailure'],
+    restartPolicy: 'Always',
     hostNetwok: false,
   },
   cronJobAdvanceOptions: {
@@ -982,9 +984,7 @@ const data = reactive({
       jobTemplate: {
         spec: {
           template: {
-            spec: {
-              restartPolicy: 'Always',
-            },
+            spec: {},
           },
         },
       },
@@ -1068,7 +1068,7 @@ const portChange = (item) => {
 const addPort = (item) => {
   item.ports.push({
     name: '',
-    protocol: 'http',
+    protocol: 'TCP',
     containerPort: '',
   });
 };
@@ -1188,31 +1188,8 @@ const confirmCreate = async () => {
     data.cronJobForm.metadata['annotations'] = newannotations;
   }
 
-  // 添加容器
-  let containers = [];
-  for (let container of data.cronJobData.containers) {
-    let c = {
-      name: container.name,
-      image: container.image,
-      imagePullPolicy: container.imagePullPolicy,
-    };
-    if (container.advance) {
-      // TODO
-    }
-    containers.push(c);
-  }
-  data.cronJobForm.spec.jobTemplate.spec.template.spec['containers'] = containers;
-
-  // 添加node标签
-  if (data.cronJobData.choiceNode) {
-    let nodeSelects = {};
-    for (let nodeSelectLabel of data.cronJobData.nodeSelectLabels) {
-      nodeSelects[nodeSelectLabel.key] = nodeSelectLabel.value;
-    }
-    data.cronJobForm.spec.jobTemplate.spec.template.spec['nodeSelector'] = nodeSelects;
-  }
-
-  // data.cronJobData.close = false;
+  data.cronJobForm.spec.jobTemplate.spec.template.spec = makePodTemplate(data.cronJobData);
+  data.cronJobData.close = false;
   const [result, err] = await createCronJob(
     data.cluster,
     data.cronJobForm.metadata.namespace,
@@ -1246,6 +1223,7 @@ const cancelCreate = () => {
       // 容器配置
       containers: [],
       imagePullPolicies: ['IfNotPresent', 'Always', 'Never'],
+      restartPolicy: 'OnFailure',
     };
 
     data.cronJobAdvanceOptions = {
@@ -1266,9 +1244,7 @@ const cancelCreate = () => {
         jobTemplate: {
           spec: {
             template: {
-              spec: {
-                restartPolicy: 'OnFailure',
-              },
+              spec: {},
             },
           },
         },
