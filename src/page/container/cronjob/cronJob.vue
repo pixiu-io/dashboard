@@ -961,8 +961,8 @@ const data = reactive({
     // 容器配置
     containers: [],
     imagePullPolicies: ['IfNotPresent', 'Always', 'Never'],
-    restartPolicies: ['Always', 'OnFailure'],
-    restartPolicy: 'Always',
+    restartPolicies: ['OnFailure', 'Never'],
+    restartPolicy: 'OnFailure',
     hostNetwork: false,
   },
   cronJobAdvanceOptions: {
