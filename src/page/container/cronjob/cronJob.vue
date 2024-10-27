@@ -669,13 +669,15 @@
               <div v-if="item.choiceHealth">
                 <div style="margin-top: -2px">
                   <el-form-item style="margin-left: 70px">
-                    <div style="font-size: 12px; color: #191919">存活检查</div>
+                    <div style="font-size: 12px; margin-right: 8px; color: #191919">存活检查</div>
+                    <el-checkbox v-model="item.healths.liveness.enable" />
                   </el-form-item>
                   <el-form-item style="margin-left: 70px">
-                    <div style="font-size: 12px; color: #191919">就绪检查</div>
+                    <div style="font-size: 12px; margin-right: 8px; color: #191919">就绪检查</div>
+                    <el-checkbox v-model="item.healths.readiness.enable" />
                   </el-form-item>
                   <el-form-item style="margin-left: 70px">
-                    <div style="font-size: 12px; color: #191919">启动检查</div>
+                    <div style="font-size: 12px; margin-right: 8px; color: #191919">启动检查</div>
                   </el-form-item>
                 </div>
               </div>
@@ -1098,6 +1100,14 @@ const addContainer = () => {
       args: '',
     },
     choiceHealth: false,
+    healths: {
+      liveness: {
+        enable: false,
+      },
+      readiness: {
+        enable: false,
+      },
+    },
   });
 };
 
