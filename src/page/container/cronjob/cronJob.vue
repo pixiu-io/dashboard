@@ -1067,9 +1067,9 @@ const portChange = (item) => {
 
 const addPort = (item) => {
   item.ports.push({
-    http: 'http',
     name: '',
-    port: '',
+    protocol: 'http',
+    containerPort: '',
   });
 };
 
