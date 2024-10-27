@@ -516,7 +516,7 @@
                     <el-form-item style="margin-left: 70px">
                       <div style="font-size: 12px; color: #191919">协议</div>
                       <el-input
-                        v-model="i.http"
+                        v-model="i.protocol"
                         style="width: 20%; margin-left: 10px; margin-right: 10px"
                       />
                       <div style="font-size: 12px; color: #191919">名称</div>
@@ -525,7 +525,7 @@
                         style="width: 20%; margin-left: 10px; margin-right: 10px"
                       />
                       <div style="font-size: 12px; color: #191919">容器端口</div>
-                      <el-input v-model="i.port" style="width: 25%; margin-left: 10px" />
+                      <el-input v-model="i.containerPort" style="width: 25%; margin-left: 10px" />
                       <div
                         class="table-inline-btn"
                         style="
