@@ -160,7 +160,7 @@
     :model-value="data.cronJobData.close"
     :close-on-click-modal="false"
     :close-on-press-escape="false"
-    style="color: #000000; font: 14px"
+    style="color: #000000; font: 14px; width: 950px"
     @close="cancelCreate"
   >
     <template #header>
@@ -455,51 +455,57 @@
                 <template #label>
                   <span class="form-item-key-style">资源</span>
                 </template>
-                <el-form-item label style="margin-left: 30px">
-                  <template #label>
-                    <span class="form-input-key-style">CPU 预留</span>
-                  </template>
-                  <el-input v-model="item.cpuRequst" placeholder="无限制">
-                    <template #suffix>
-                      <div style="font-size: 12px; color: #191919">Core</div>
-                    </template>
-                  </el-input>
-                </el-form-item>
-                <el-form-item label>
-                  <template #label>
-                    <span class="form-input-key-style">内存预留 </span>
-                  </template>
-                  <el-input v-model="item.memoryRequst" placeholder="无限制">
-                    <template #suffix
-                      ><div style="font-size: 12px; color: #191919">Mi</div>
-                    </template>
-                  </el-input>
-                </el-form-item>
-                <el-form-item label style="margin-left: 30px; margin-top: 5px">
-                  <template #label>
-                    <span class="form-input-key-style">CPU 限制</span>
-                  </template>
-                  <el-input v-model="item.cpuLimit" placeholder="无限制">
-                    <template #suffix>
-                      <div style="font-size: 12px; color: #191919">Core</div>
-                    </template>
-                  </el-input>
-                </el-form-item>
-                <el-form-item label>
-                  <template #label>
-                    <span class="form-input-key-style">内存限制</span>
-                  </template>
 
-                  <el-input v-model="item.memoryLimit" placeholder="无限制">
-                    <template #suffix
-                      ><div style="font-size: 12px; color: #191919">Mi</div>
+                <el-form-item>
+                  <el-form-item label style="margin-left: 30px">
+                    <template #label>
+                      <span class="form-input-key-style">CPU 预留</span>
                     </template>
-                  </el-input>
+                    <el-input v-model="item.cpuRequst" placeholder="无限制">
+                      <template #suffix>
+                        <div style="font-size: 12px; color: #191919">Core</div>
+                      </template>
+                    </el-input>
+                  </el-form-item>
+                  <el-form-item label>
+                    <template #label>
+                      <span class="form-input-key-style">内存预留 </span>
+                    </template>
+                    <el-input v-model="item.memoryRequst" placeholder="无限制">
+                      <template #suffix
+                        ><div style="font-size: 12px; color: #191919">Mi</div>
+                      </template>
+                    </el-input>
+                  </el-form-item>
                 </el-form-item>
-                <div class="container-line-describe" style="margin-left: 40px">
-                  设置容器的资源限制与资源预留，以将容器调度到合适的节点上。
-                </div>
+
+                <el-form-item>
+                  <el-form-item label style="margin-left: 30px; margin-top: 5px">
+                    <template #label>
+                      <span class="form-input-key-style">CPU 限制</span>
+                    </template>
+                    <el-input v-model="item.cpuLimit" placeholder="无限制">
+                      <template #suffix>
+                        <div style="font-size: 12px; color: #191919">Core</div>
+                      </template>
+                    </el-input>
+                  </el-form-item>
+                  <el-form-item label>
+                    <template #label>
+                      <span class="form-input-key-style">内存限制</span>
+                    </template>
+
+                    <el-input v-model="item.memoryLimit" placeholder="无限制">
+                      <template #suffix
+                        ><div style="font-size: 12px; color: #191919">Mi</div>
+                      </template>
+                    </el-input>
+                  </el-form-item>
+                </el-form-item>
               </el-form-item>
+              <div class="container-line-describe" style="margin-left: 85px">
+                设置容器的资源限制与资源预留，以将容器调度到合适的节点上。
+              </div>
 
               <el-form-item label>
                 <template #label>
