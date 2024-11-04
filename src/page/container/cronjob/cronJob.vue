@@ -160,7 +160,7 @@
     :model-value="data.cronJobData.close"
     :close-on-click-modal="false"
     :close-on-press-escape="false"
-    style="color: #000000; font: 14px; min-width: 65%"
+    style="color: #000000; font: 14px; width: 950px"
     @close="cancelCreate"
   >
     <template #header>
