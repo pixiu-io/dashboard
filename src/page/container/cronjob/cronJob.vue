@@ -268,23 +268,27 @@
           <template #label>
             <span class="form-item-key-style">最大重试次数</span>
           </template>
+          <el-input style="margin-left: 25px; width: 50%" />
         </el-form-item>
 
         <el-form-item>
           <template #label>
             <span class="form-item-key-style">最大运行时间 </span>
           </template>
+          <el-input style="margin-left: 25px; width: 50%" />
         </el-form-item>
 
         <el-form-item>
           <template #label>
             <span class="form-item-key-style">容器组完成数量 </span>
           </template>
+          <el-input style="margin-left: 12px; width: 50%" />
         </el-form-item>
         <el-form-item>
           <template #label>
             <span class="form-item-key-style">并行容器组数量 </span>
           </template>
+          <el-input style="margin-left: 12px; width: 50%" />
         </el-form-item>
 
         <el-form-item>
@@ -708,7 +712,7 @@
           <el-checkbox v-model="data.cronJobData.hostNetwork" />
         </el-form-item>
         <div class="dialog-describe-style">容器使用宿主机网络。</div>
-        <div style="margin-top: 25px"></div>
+        <div style="margin-top: 15px"></div>
 
         <el-form-item label>
           <template #label>
@@ -981,6 +985,12 @@ const data = reactive({
   },
   active: 0,
   namespaces: [],
+
+  parallelism: '',
+  completions: '',
+  activeDeadlineSeconds: '',
+  backoffLimit: '',
+
   cronJobForm: {
     metadata: {
       name: '',
