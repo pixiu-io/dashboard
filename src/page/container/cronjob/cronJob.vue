@@ -708,7 +708,7 @@
           <el-checkbox v-model="data.cronJobData.hostNetwork" />
         </el-form-item>
         <div class="dialog-describe-style">容器使用宿主机网络。</div>
-        <div style="margin-top: 25px"></div>
+        <div style="margin-top: 15px"></div>
 
         <el-form-item label>
           <template #label>
