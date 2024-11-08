@@ -268,23 +268,27 @@
           <template #label>
             <span class="form-item-key-style">最大重试次数</span>
           </template>
+          <el-input style="margin-left: 25px; width: 50%" />
         </el-form-item>
 
         <el-form-item>
           <template #label>
             <span class="form-item-key-style">最大运行时间 </span>
           </template>
+          <el-input style="margin-left: 25px; width: 50%" />
         </el-form-item>
 
         <el-form-item>
           <template #label>
             <span class="form-item-key-style">容器组完成数量 </span>
           </template>
+          <el-input style="margin-left: 12px; width: 50%" />
         </el-form-item>
         <el-form-item>
           <template #label>
             <span class="form-item-key-style">并行容器组数量 </span>
           </template>
+          <el-input style="margin-left: 12px; width: 50%" />
         </el-form-item>
 
         <el-form-item>
