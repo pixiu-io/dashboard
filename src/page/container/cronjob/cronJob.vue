@@ -985,6 +985,12 @@ const data = reactive({
   },
   active: 0,
   namespaces: [],
+
+  parallelism: '',
+  completions: '',
+  activeDeadlineSeconds: '',
+  backoffLimit: '',
+
   cronJobForm: {
     metadata: {
       name: '',
