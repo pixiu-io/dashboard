@@ -268,7 +268,7 @@
           <template #label>
             <span class="form-item-key-style">最大重试次数</span>
           </template>
-          <el-input style="margin-left: 25px; width: 50%" v-model="data.cronJobData.backoffLimit" />
+          <el-input v-model="data.cronJobData.backoffLimit" style="margin-left: 12px; width: 50%" />
         </el-form-item>
 
         <el-form-item>
@@ -276,8 +276,8 @@
             <span class="form-item-key-style">最大运行时间 </span>
           </template>
           <el-input
-            style="margin-left: 25px; width: 50%"
             v-model="data.cronJobData.activeDeadlineSeconds"
+            style="margin-left: 12px; width: 50%"
           />
         </el-form-item>
 
@@ -285,13 +285,13 @@
           <template #label>
             <span class="form-item-key-style">容器组完成数量 </span>
           </template>
-          <el-input style="margin-left: 12px; width: 50%" v-model="data.cronJobData.completions" />
+          <el-input v-model="data.cronJobData.completions" style="margin-left: 12px; width: 50%" />
         </el-form-item>
         <el-form-item>
           <template #label>
             <span class="form-item-key-style">并行容器组数量 </span>
           </template>
-          <el-input style="margin-left: 12px; width: 50%" v-model="data.cronJobData.parallelism" />
+          <el-input v-model="data.cronJobData.parallelism" style="margin-left: 12px; width: 50%" />
         </el-form-item>
 
         <el-form-item>
