@@ -268,27 +268,30 @@
           <template #label>
             <span class="form-item-key-style">最大重试次数</span>
           </template>
-          <el-input style="margin-left: 25px; width: 50%" />
+          <el-input style="margin-left: 25px; width: 50%" v-model="data.cronJobData.backoffLimit" />
         </el-form-item>
 
         <el-form-item>
           <template #label>
             <span class="form-item-key-style">最大运行时间 </span>
           </template>
-          <el-input style="margin-left: 25px; width: 50%" />
+          <el-input
+            style="margin-left: 25px; width: 50%"
+            v-model="data.cronJobData.activeDeadlineSeconds"
+          />
         </el-form-item>
 
         <el-form-item>
           <template #label>
             <span class="form-item-key-style">容器组完成数量 </span>
           </template>
-          <el-input style="margin-left: 12px; width: 50%" />
+          <el-input style="margin-left: 12px; width: 50%" v-model="data.cronJobData.completions" />
         </el-form-item>
         <el-form-item>
           <template #label>
             <span class="form-item-key-style">并行容器组数量 </span>
           </template>
-          <el-input style="margin-left: 12px; width: 50%" />
+          <el-input style="margin-left: 12px; width: 50%" v-model="data.cronJobData.parallelism" />
         </el-form-item>
 
         <el-form-item>
@@ -974,6 +977,14 @@ const data = reactive({
     restartPolicies: ['OnFailure', 'Never'],
     restartPolicy: 'OnFailure',
     hostNetwork: false,
+    // 并行容器组熟练
+    parallelism: '',
+    // 完成数量
+    completions: '',
+    // 最大运行时间
+    activeDeadlineSeconds: '',
+    // 最大重试次数
+    backoffLimit: '',
   },
   cronJobAdvanceOptions: {
     enable: false,
@@ -985,12 +996,6 @@ const data = reactive({
   },
   active: 0,
   namespaces: [],
-
-  parallelism: '',
-  completions: '',
-  activeDeadlineSeconds: '',
-  backoffLimit: '',
-
   cronJobForm: {
     metadata: {
       name: '',
