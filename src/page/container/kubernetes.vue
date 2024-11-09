@@ -221,7 +221,7 @@ const data = reactive({
         {
           id: 3.2,
           name: '持久卷声明',
-          url: '/kubernetes/storageclass',
+          url: '/kubernetes/persistentVolumeClaim',
         },
       ],
     },
