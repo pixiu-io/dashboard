@@ -268,27 +268,30 @@
           <template #label>
             <span class="form-item-key-style">最大重试次数</span>
           </template>
-          <el-input style="margin-left: 25px; width: 50%" />
+          <el-input v-model="data.cronJobData.backoffLimit" style="margin-left: 12px; width: 50%" />
         </el-form-item>
 
         <el-form-item>
           <template #label>
             <span class="form-item-key-style">最大运行时间 </span>
           </template>
-          <el-input style="margin-left: 25px; width: 50%" />
+          <el-input
+            v-model="data.cronJobData.activeDeadlineSeconds"
+            style="margin-left: 12px; width: 50%"
+          />
         </el-form-item>
 
         <el-form-item>
           <template #label>
             <span class="form-item-key-style">容器组完成数量 </span>
           </template>
-          <el-input style="margin-left: 12px; width: 50%" />
+          <el-input v-model="data.cronJobData.completions" style="margin-left: 12px; width: 50%" />
         </el-form-item>
         <el-form-item>
           <template #label>
             <span class="form-item-key-style">并行容器组数量 </span>
           </template>
-          <el-input style="margin-left: 12px; width: 50%" />
+          <el-input v-model="data.cronJobData.parallelism" style="margin-left: 12px; width: 50%" />
         </el-form-item>
 
         <el-form-item>
@@ -299,35 +302,26 @@
             >高级设置</el-button
           >
         </el-form-item>
-        <div v-if="data.cronJobAdvanceOptions.enable === true">
+        <div v-if="data.cronJobData.enableAdvanceOptions === true">
           <el-form-item>
             <template #label>
               <span class="form-item-key-style">最大启动延后时间</span>
             </template>
-            <el-input
-              v-model="data.cronJobAdvanceOptions.startingDeadlineSeconds"
-              style="width: 30%"
-            />
+            <el-input v-model="data.cronJobData.startingDeadlineSeconds" style="width: 50%" />
           </el-form-item>
 
           <el-form-item>
             <template #label>
               <span class="form-item-key-style">成功任务保留数量</span>
             </template>
-            <el-input
-              v-model="data.cronJobAdvanceOptions.successfulJobsHistoryLimit"
-              style="width: 30%"
-            />
+            <el-input v-model="data.cronJobData.successfulJobsHistoryLimit" style="width: 50%" />
           </el-form-item>
 
           <el-form-item>
             <template #label>
               <span class="form-item-key-style">失败任务保留数量 </span>
             </template>
-            <el-input
-              v-model="data.cronJobAdvanceOptions.failedJobsHistoryLimit"
-              style="width: 30%"
-            />
+            <el-input v-model="data.cronJobData.failedJobsHistoryLimit" style="width: 50%" />
           </el-form-item>
 
           <el-form-item>
@@ -336,11 +330,11 @@
             </template>
             <span style="margin-left: 40px">
               <el-select
-                v-model="data.cronJobAdvanceOptions.concurrencyPolicy"
+                v-model="data.cronJobData.concurrencyPolicy"
                 style="width: 210px; float: right; margin-right: 10px"
               >
                 <el-option
-                  v-for="item in data.cronJobAdvanceOptions.concurrencyPolicies"
+                  v-for="item in data.cronJobData.concurrencyPolicies"
                   :key="item"
                   :value="item"
                   :label="item"
@@ -974,23 +968,28 @@ const data = reactive({
     restartPolicies: ['OnFailure', 'Never'],
     restartPolicy: 'OnFailure',
     hostNetwork: false,
-  },
-  cronJobAdvanceOptions: {
-    enable: false,
+    // 并行容器组熟练
+    parallelism: '',
+    // 完成数量
+    completions: '',
+    // 最大运行时间
+    activeDeadlineSeconds: '',
+    // 最大重试次数
+    backoffLimit: '',
+
+    // 高级配置选项
+    enableAdvanceOptions: false,
     concurrencyPolicy: 'Allow',
-    concurrencyPolicies: ['Allow'],
+    concurrencyPolicies: ['Allow', 'Forbid', 'Replace'],
+    // 默认3
     successfulJobsHistoryLimit: '',
+    // 默认1
     failedJobsHistoryLimit: '',
     startingDeadlineSeconds: '',
   },
+
   active: 0,
   namespaces: [],
-
-  parallelism: '',
-  completions: '',
-  activeDeadlineSeconds: '',
-  backoffLimit: '',
-
   cronJobForm: {
     metadata: {
       name: '',
@@ -1178,7 +1177,7 @@ const handleCreateDialog = (row) => {
 };
 
 const openAdvanceOption = () => {
-  data.cronJobAdvanceOptions.enable = !data.cronJobAdvanceOptions.enable;
+  data.cronJobData.enableAdvanceOptions = !data.cronJobData.enableAdvanceOptions;
 };
 
 const openContainerAdvanceOption = (item) => {
@@ -1203,6 +1202,38 @@ const confirmCreate = async () => {
     }
     data.cronJobForm.metadata['annotations'] = newannotations;
   }
+
+  if (data.cronJobData.parallelism !== '') {
+    data.cronJobForm.spec.jobTemplate.spec.parallelism = parseInt(data.cronJobData.parallelism);
+  }
+  if (data.cronJobData.completions !== '') {
+    data.cronJobForm.spec.jobTemplate.spec.completions = parseInt(data.cronJobData.completions);
+  }
+  if (data.cronJobData.activeDeadlineSeconds !== '') {
+    data.cronJobForm.spec.jobTemplate.spec.activeDeadlineSeconds = parseInt(
+      data.cronJobData.activeDeadlineSeconds,
+    );
+  }
+  if (data.cronJobData.backoffLimit !== '') {
+    data.cronJobForm.spec.jobTemplate.spec.backoffLimit = parseInt(data.cronJobData.backoffLimit);
+  }
+
+  if (data.cronJobData.successfulJobsHistoryLimit !== '') {
+    data.cronJobForm.spec.successfulJobsHistoryLimit = parseInt(
+      data.cronJobData.successfulJobsHistoryLimit,
+    );
+  }
+  if (data.cronJobData.failedJobsHistoryLimit !== '') {
+    data.cronJobForm.spec.failedJobsHistoryLimit = parseInt(
+      data.cronJobData.failedJobsHistoryLimit,
+    );
+  }
+  if (data.cronJobData.startingDeadlineSeconds !== '') {
+    data.cronJobForm.spec.startingDeadlineSeconds = parseInt(
+      data.cronJobData.startingDeadlineSeconds,
+    );
+  }
+
   data.cronJobForm.spec.jobTemplate.spec.template.spec = makePodTemplate(data.cronJobData);
 
   const [result, err] = await createCronJob(
@@ -1239,16 +1270,25 @@ const cancelCreate = () => {
       containers: [],
       imagePullPolicies: ['IfNotPresent', 'Always', 'Never'],
       restartPolicy: 'OnFailure',
-    };
+      parallelism: '',
+      // 完成数量
+      completions: '',
+      // 最大运行时间
+      activeDeadlineSeconds: '',
+      // 最大重试次数
+      backoffLimit: '',
 
-    data.cronJobAdvanceOptions = {
-      enable: false,
+      // 高级配置选项
+      enableAdvanceOptions: false,
       concurrencyPolicy: 'Allow',
-      concurrencyPolicies: ['Allow'],
+      concurrencyPolicies: ['Allow', 'Forbid', 'Replace'],
+      // 默认3
       successfulJobsHistoryLimit: '',
+      // 默认1
       failedJobsHistoryLimit: '',
       startingDeadlineSeconds: '',
     };
+
     data.namespaces = [];
     data.cronJobForm = {
       metadata: {
