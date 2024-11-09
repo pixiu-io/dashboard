@@ -1208,6 +1208,22 @@ const confirmCreate = async () => {
     }
     data.cronJobForm.metadata['annotations'] = newannotations;
   }
+
+  if (data.cronJobData.parallelism !== '') {
+    data.cronJobForm.spec.jobTemplate.spec.parallelism = parseInt(data.cronJobData.parallelism);
+  }
+  if (data.cronJobData.completions !== '') {
+    data.cronJobForm.spec.jobTemplate.spec.completions = parseInt(data.cronJobData.completions);
+  }
+  if (data.cronJobData.activeDeadlineSeconds !== '') {
+    data.cronJobForm.spec.jobTemplate.spec.activeDeadlineSeconds = parseInt(
+      data.cronJobData.activeDeadlineSeconds,
+    );
+  }
+  if (data.cronJobData.backoffLimit !== '') {
+    data.cronJobForm.spec.jobTemplate.spec.backoffLimit = parseInt(data.cronJobData.backoffLimit);
+  }
+
   data.cronJobForm.spec.jobTemplate.spec.template.spec = makePodTemplate(data.cronJobData);
 
   const [result, err] = await createCronJob(
