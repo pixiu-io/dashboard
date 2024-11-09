@@ -1217,6 +1217,7 @@ const confirmCreate = async () => {
   if (data.cronJobData.backoffLimit !== '') {
     data.cronJobForm.spec.jobTemplate.spec.backoffLimit = parseInt(data.cronJobData.backoffLimit);
   }
+
   if (data.cronJobData.successfulJobsHistoryLimit !== '') {
     data.cronJobForm.spec.successfulJobsHistoryLimit = parseInt(
       data.cronJobData.successfulJobsHistoryLimit,
@@ -1269,16 +1270,25 @@ const cancelCreate = () => {
       containers: [],
       imagePullPolicies: ['IfNotPresent', 'Always', 'Never'],
       restartPolicy: 'OnFailure',
-    };
+      parallelism: '',
+      // 完成数量
+      completions: '',
+      // 最大运行时间
+      activeDeadlineSeconds: '',
+      // 最大重试次数
+      backoffLimit: '',
 
-    data.cronJobAdvanceOptions = {
-      enable: false,
+      // 高级配置选项
+      enableAdvanceOptions: false,
       concurrencyPolicy: 'Allow',
-      concurrencyPolicies: ['Allow'],
+      concurrencyPolicies: ['Allow', 'Forbid', 'Replace'],
+      // 默认3
       successfulJobsHistoryLimit: '',
+      // 默认1
       failedJobsHistoryLimit: '',
       startingDeadlineSeconds: '',
     };
+
     data.namespaces = [];
     data.cronJobForm = {
       metadata: {
