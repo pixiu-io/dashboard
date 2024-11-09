@@ -191,7 +191,7 @@ const data = reactive({
     },
     {
       id: 9,
-      name: '任务',
+      name: '任务中心',
       icon: 'icon-flowjob',
       iconType: 'iconfont',
       children: [
