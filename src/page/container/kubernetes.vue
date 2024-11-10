@@ -191,7 +191,7 @@ const data = reactive({
     },
     {
       id: 9,
-      name: '任务',
+      name: '任务中心',
       icon: 'icon-flowjob',
       iconType: 'iconfont',
       children: [
@@ -215,8 +215,13 @@ const data = reactive({
       children: [
         {
           id: 3.1,
-          name: 'StorageClass',
+          name: '存储类',
           url: '/kubernetes/storageclass',
+        },
+        {
+          id: 3.2,
+          name: '持久卷声明',
+          url: '/kubernetes/persistentVolumeClaims',
         },
       ],
     },

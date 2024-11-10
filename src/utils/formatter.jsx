@@ -355,22 +355,56 @@ export { formatterNamespace };
 const formatterNodeStatus = (row, column, cellValue) => {
   let status = '已停止';
   for (let condition of cellValue.conditions) {
-    if (condition.type === "Ready") {
-      if (condition.status === "True") {
-        status = "运行中"
-        break
+    if (condition.type === 'Ready') {
+      if (condition.status === 'True') {
+        status = '运行中';
+        break;
       }
     }
   }
-  if (status === "运行中") {
+  if (status === '运行中') {
     if (row.spec.unschedulable) {
-      status = "禁止调度"
+      status = '禁止调度';
     }
   }
 
-  return parseStatus(status)
-}
+  return parseStatus(status);
+};
 export { formatterNodeStatus };
+
+const pvcAccessModesFormatter = (row, column, cellValue) => {
+  if (cellValue.accessModes) {
+    return cellValue.accessModes.join(',');
+  }
+};
+export { pvcAccessModesFormatter };
+
+const pvcMountFormatter = (row, column, cellValue) => {};
+export { pvcMountFormatter };
+
+const pvcStatusFormatter = (row, column, cellValue) => {
+  let status = '等待中';
+  if (cellValue.phase === 'Bound') {
+    status = '已绑定';
+  }
+  if (cellValue.phase === 'Lost') {
+    status = '丢失';
+  }
+  return (
+    <div style="display: flex">
+      <div>
+        <pixiu-icon
+          name={runningStatus[status].name}
+          size="12px"
+          type="iconfont"
+          color={runningStatus[status].color}
+        />
+      </div>
+      <div style="margin-left: 6px"> {status}</div>
+    </div>
+  );
+};
+export { pvcStatusFormatter };
 
 const runningFormatter = (row, column, cellValue) => {
   let status = '运行中';
@@ -378,13 +412,13 @@ const runningFormatter = (row, column, cellValue) => {
   if (availableReplicas === undefined) {
     availableReplicas = 0;
   }
-  let replicas = row.spec.replicas
+  let replicas = row.spec.replicas;
 
   if (availableReplicas !== replicas) {
-    status = "更新中"
+    status = '更新中';
   } else {
     if (replicas === 0 && availableReplicas === 0) {
-      status = "已停止"
+      status = '已停止';
     }
   }
 
@@ -585,6 +619,18 @@ const runningStatus = {
     name: 'icon-circle-dot',
     color: '#E0992C', // 黄色
   },
+  等待中: {
+    name: 'icon-circle-dot',
+    color: '#808080',
+  },
+  已绑定: {
+    name: 'icon-circle-dot',
+    color: '#28C65A',
+  },
+  丢失: {
+    name: 'icon-circle-dot',
+    color: '#E0992C',
+  },
 };
 
 const formatterNodeAuthType = (row, column, cellValue) => {
@@ -669,31 +715,31 @@ export { formatterClusterNode };
 const formatterJobStatus = (row, column, cellValue) => {
   if (!cellValue.conditions) {
     if (cellValue.startTime) {
-      return parseStatus("运行中")
+      return parseStatus('运行中');
     }
-    return parseStatus("未执行")
+    return parseStatus('未执行');
   }
 
   let status = '运行中';
   for (let condition of cellValue.conditions) {
-    if (condition.type === "Complete") {
-      if (condition.status === "True") {
-        status = "已完成"
-        }
+    if (condition.type === 'Complete') {
+      if (condition.status === 'True') {
+        status = '已完成';
       }
+    }
   }
 
-  return parseStatus(status)
+  return parseStatus(status);
 };
 export { formatterJobStatus };
 
 const formatterCronJobStatus = (row, column, cellValue) => {
   let status = '运行中';
   if (cellValue.suspend === true) {
-    status = "已暂停"
+    status = '已暂停';
   }
 
-  return parseStatus(status)
+  return parseStatus(status);
 };
 export { formatterCronJobStatus };
 
@@ -711,45 +757,45 @@ const parseStatus = (s) => {
       <div style="margin-left: 6px"> {s}</div>
     </div>
   );
-}
+};
 
 const formatterJobDuration = (row, column, cellValue) => {
   // 未开始
   if (!cellValue.startTime) {
-    return ""
+    return '';
   }
   // 已开始但未结束
   if (!cellValue.completionTime) {
-    var now =new Date();
-    return calculateTimeDuration(cellValue.startTime, now)
+    var now = new Date();
+    return calculateTimeDuration(cellValue.startTime, now);
   }
 
-  return calculateTimeDuration(cellValue.startTime, cellValue.completionTime)
-}
+  return calculateTimeDuration(cellValue.startTime, cellValue.completionTime);
+};
 export { formatterJobDuration };
 
 // 计算时间，直接得出最后的值，
 // 5s => 5秒
 // 65s => 1分5秒
 const calculateTimeDuration = (startTime, endTime) => {
-  const start = new Date(startTime)
-  const end = new Date(endTime)
+  const start = new Date(startTime);
+  const end = new Date(endTime);
 
-  const duration = end - start
+  const duration = end - start;
   var seconds = Math.floor((duration / 1000) % 60),
-      minutes = Math.floor((duration / (1000 * 60)) % 60),
-      hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
+    minutes = Math.floor((duration / (1000 * 60)) % 60),
+    hours = Math.floor((duration / (1000 * 60 * 60)) % 24);
 
-  let result = []
+  let result = [];
   if (hours !== 0) {
-      result.push(hours + "h")
+    result.push(hours + 'h');
   }
   if (minutes !== 0) {
-      result.push(minutes + "m")
+    result.push(minutes + 'm');
   }
   if (seconds !== 0) {
-      result.push(seconds + "s")
+    result.push(seconds + 's');
   }
 
-  return result.join("")
-}
+  return result.join('');
+};

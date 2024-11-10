@@ -69,6 +69,7 @@ import CRD from './container/crd/crd.vue';
 import Audit from './audit/audit.vue';
 import Daemonset from './container/daemonset/daemonset.vue';
 import DaemonsetDetail from './container/daemonset/details.vue';
+import PersistentVolumeClaim from './container/persistentvolumeclaim/PersistentVolumeClaim.vue';
 export {
   Home,
   Login,
@@ -141,4 +142,5 @@ export {
   Event,
   CRD,
   Audit,
+  PersistentVolumeClaim,
 };
