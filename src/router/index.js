@@ -304,7 +304,6 @@ const routes = [
             },
             component: Service,
           },
-
           {
             path: 'services/detail',
             name: 'ServiceDetail',
@@ -353,6 +352,15 @@ const routes = [
               title: 'storageclass',
             },
             component: StorageClass,
+          },
+          // pvc 路由
+          {
+            path: 'persistentVolumeClaims',
+            name: 'PersistentVolumeClaim',
+            meta: {
+              title: 'persistentVolumeClaim',
+            },
+            component: PersistentVolumeClaim,
           },
           {
             path: 'pipeline',
@@ -515,12 +523,6 @@ const routes = [
           title: 'createJob',
         },
         component: CreateJob,
-      },
-      // pvc 路由
-      {
-        path: 'persistentVolumeClaim',
-        name: 'persistentVolumeClaim',
-        component: PersistentVolumeClaim,
       },
       {
         path: 'pods/createPod',

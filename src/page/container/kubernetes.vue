@@ -221,7 +221,7 @@ const data = reactive({
         {
           id: 3.2,
           name: '持久卷声明',
-          url: '/kubernetes/persistentVolumeClaim',
+          url: '/kubernetes/persistentVolumeClaims',
         },
       ],
     },
@@ -377,6 +377,11 @@ const data = reactive({
           id: 3.1,
           name: 'StorageClass',
           url: '/kubernetes/storageclass',
+        },
+        {
+          id: 3.2,
+          name: '持久卷声明',
+          url: '/kubernetes/persistentVolumeClaim',
         },
       ],
     },
