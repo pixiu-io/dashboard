@@ -71,11 +71,14 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="status" label="状态"> </el-table-column>
+        <el-table-column prop="status" label="状态" :formatter="pvcStatusFormatter">
+        </el-table-column>
 
-        <el-table-column prop="status" label="容量"> </el-table-column>
-        <el-table-column prop="status" label="访问模式"> </el-table-column>
-        <el-table-column prop="status" label="挂载状态"> </el-table-column>
+        <el-table-column prop="spec.resources.requests.storage" label="容量"> </el-table-column>
+        <el-table-column prop="spec" label="访问模式" :formatter="pvcAccessModesFormatter">
+        </el-table-column>
+        <el-table-column prop="status" label="挂载状态" :formatter="pvcMountFormatter">
+        </el-table-column>
 
         <el-table-column
           v-if="data.namespace === '全部空间'"
@@ -98,9 +101,8 @@
               size="small"
               type="text"
               style="margin-right: -25px; margin-left: -10px; color: #006eff"
-              @click="handleMonitorDrawer(scope.row)"
             >
-              监控
+              编辑
             </el-button>
 
             <el-button
@@ -169,8 +171,9 @@ import {
   formatterImage,
   formatterTime,
   formatterNamespace,
-  runningFormatter,
-  formatterContainerImage,
+  pvcStatusFormatter,
+  pvcAccessModesFormatter,
+  pvcMountFormatter,
   formatString,
 } from '@/utils/formatter';
 import { getPersistentVolumeClaimList } from '@/services/kubernetes/persistentVolumeClaimService';
