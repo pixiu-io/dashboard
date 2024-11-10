@@ -72,6 +72,7 @@ import {
   CRD,
   Audit,
   DaemonsetDetail,
+  PersistentVolumeClaim,
 } from '@/page';
 
 const routes = [
@@ -498,7 +499,6 @@ const routes = [
         },
         component: CreateSecret,
       },
-
       // job 路由
       {
         path: 'job/createJob',
@@ -515,6 +515,12 @@ const routes = [
           title: 'createJob',
         },
         component: CreateJob,
+      },
+      // pvc 路由
+      {
+        path: 'persistentVolumeClaim',
+        name: 'persistentVolumeClaim',
+        component: PersistentVolumeClaim,
       },
       {
         path: 'pods/createPod',
