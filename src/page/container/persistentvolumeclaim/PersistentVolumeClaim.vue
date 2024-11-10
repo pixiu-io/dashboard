@@ -240,10 +240,11 @@ const handleStorageChange = (e) => {
 };
 
 const getPersistentVolumeClaims = async () => {
-  if (!data.autoRefresh) {
-    data.loading = true;
-  }
+  //   if (!data.autoRefresh) {
+  //     data.loading = true;
+  //   }
 
+  data.loading = true;
   const [result, err] = await getPersistentVolumeClaimList(
     data.cluster,
     data.namespace,
