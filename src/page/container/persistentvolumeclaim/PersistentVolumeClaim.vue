@@ -195,6 +195,7 @@ const data = reactive({
     labelSelector: '',
   },
 
+  persistentVolumeClaimList: [],
   tableData: [],
   loading: false,
 });
@@ -251,10 +252,15 @@ const getPersistentVolumeClaims = async () => {
     return;
   }
 
-  console.log('result.items', result.items);
+  data.persistentVolumeClaimList = result.items;
+  data.pageInfo.total = data.persistentVolumeClaimList.length;
+  data.tableData = getTableData(data.pageInfo, data.persistentVolumeClaimList);
+};
 
-  data.tableData = result.items;
-  data.pageInfo.total = result.total;
+const onChange = (v) => {
+  data.pageInfo.limit = v.limit;
+  data.pageInfo.page = v.page;
+  data.tableData = getTableData(data.pageInfo, data.persistentVolumeClaimList);
 };
 </script>
 
