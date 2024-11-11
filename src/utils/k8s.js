@@ -49,10 +49,20 @@ const makePodTemplate = (data) => {
   let newVolumes = [];
   for (let key in uniqVolumes) {
     let v = uniqVolumes[key];
-    if (v.volumeType === '持久卷') {
+    if (v.volumeType === '临时卷') {
+      newVolumes.push({});
+    }
+    if (v.volumeType === 'HostPath卷') {
+      newVolumes.push({});
+    }
+    if (v.volumeType === '配置字典') {
+      newVolumes.push({});
+    }
+    if (v.volumeType === '保密字典') {
       newVolumes.push({});
     }
   }
+  tplSpec['volumes'] = newVolumes;
 
   let targetContainers = [];
   for (let fc of data.containers) {
@@ -126,14 +136,8 @@ const makePodTemplate = (data) => {
           let volumeMounts = [];
 
           for (let s of fc.storages) {
-            if (s.volumeType === '持久卷') {
-              volumes.push({});
-            }
-
-            volumes.push({});
           }
 
-          tplSpec['volumes'].push(volumes);
           targetContainer['volumeMounts'] = volumeMounts;
         }
       }
