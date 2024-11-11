@@ -35,6 +35,47 @@ const makePodTemplate = (data) => {
     tplSpec['hostNetwork'] = true;
   }
 
+  let uniqVolumes = {};
+  for (let fc of data.containers) {
+    if (fc.choiceStorage) {
+      for (let s of fc.storages) {
+        if (s.name in uniqVolumes) {
+          continue;
+        }
+        uniqVolumes[s.name] = s;
+      }
+    }
+  }
+  let newVolumes = [];
+  for (let key in uniqVolumes) {
+    let v = uniqVolumes[key];
+    if (v.volumeType === '临时卷') {
+      newVolumes.push({});
+    }
+    if (v.volumeType === 'HostPath卷') {
+      newVolumes.push({});
+    }
+    if (v.volumeType === '配置字典') {
+      newVolumes.push({
+        name: v.name,
+        configMap: {
+          defaultMode: 420,
+          name: v.mountSrc,
+        },
+      });
+    }
+    if (v.volumeType === '保密字典') {
+      newVolumes.push({
+        name: v.name,
+        secret: {
+          defaultMode: 420,
+          secretName: v.mountSrc,
+        },
+      });
+    }
+  }
+  tplSpec['volumes'] = newVolumes;
+
   let targetContainers = [];
   for (let fc of data.containers) {
     let targetContainer = {
@@ -100,6 +141,19 @@ const makePodTemplate = (data) => {
           targetContainer['args'] = fc.cmds.args.split(',');
         }
       }
+
+      if (fc.choiceStorage) {
+        if (fc.storages.length !== 0) {
+          let volumes = [];
+          let volumeMounts = [];
+
+          for (let s of fc.storages) {
+          }
+
+          targetContainer['volumeMounts'] = volumeMounts;
+        }
+      }
+
       targetContainers.push(targetContainer);
     }
     tplSpec['containers'] = targetContainers;

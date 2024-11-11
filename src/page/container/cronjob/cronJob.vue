@@ -685,6 +685,99 @@
                   </el-form-item>
                 </div>
               </div>
+
+              <el-form-item label>
+                <template #label>
+                  <span class="form-item-key-style">存储设置</span>
+                </template>
+                <el-checkbox v-model="item.choiceStorage" @change="storageChange(item)" />
+              </el-form-item>
+              <div class="container-line-describe" style="margin-left: 72px; margin-top: -8px">
+                将存储挂载到容器。
+              </div>
+              <div v-if="item.choiceStorage">
+                <div style="margin-top: -2px">
+                  <div style="margin-left: 70px; display: flex">
+                    <div style="font-size: 12px; color: #191919">存储类型</div>
+                    <div style="font-size: 12px; color: #191919; margin-left: 14%">名称</div>
+                    <div style="font-size: 12px; color: #191919; margin-left: 18.5%">挂载源</div>
+                    <div style="font-size: 12px; color: #191919; margin-left: 21.5%">
+                      容器挂载路径
+                    </div>
+                  </div>
+
+                  <el-form-item v-for="(i, index1) in item.storages" :key="index1">
+                    <el-form-item style="margin-left: 60px">
+                      <el-select
+                        v-model="i.volumeType"
+                        style="width: 19%; margin-left: 10px; margin-right: 10px"
+                      >
+                        <el-option
+                          v-for="item2 in data.cronJobData.storageTypeChoices"
+                          :key="item2"
+                          :value="item2"
+                          :label="item2"
+                        />
+                      </el-select>
+
+                      <el-input
+                        v-model="i.name"
+                        style="width: 20%; margin-left: 10px; margin-right: 10px"
+                        placeholder="请输入卷名称"
+                      />
+
+                      <!-- <div
+                        v-if="i.volumeType == 'HostPath卷'"
+                        style="width: 25%; margin-left: 10px; margin-right: 10px"
+                      >
+                        <el-input v-model="i.mountSrc" placeholder="主机路径" />
+                      </div> -->
+
+                      <el-input
+                        v-model="i.mountSrc"
+                        style="width: 25%; margin-left: 10px; margin-right: 10px"
+                        placeholder="主机路径"
+                      />
+
+                      <el-input
+                        v-model="i.mountPath"
+                        style="width: 20%; margin-left: 10px"
+                        placeholder="容器路径"
+                      />
+                      <div
+                        class="table-inline-btn"
+                        style="
+                          float: right;
+                          cursor: pointer;
+                          margin-left: 10px;
+                          margin-top: 6px;
+                          background-color: #f2f2f2;
+                        "
+                        @click="deleteStorage(item, index)"
+                      >
+                        删除
+                      </div>
+                    </el-form-item>
+                  </el-form-item>
+                </div>
+
+                <el-form-item label>
+                  <template #label>
+                    <span
+                      class="form-item-key-style"
+                      style="
+                        cursor: pointer;
+                        color: #006eff;
+                        font-size: 12px;
+                        margin-left: 70px;
+                        margin-top: -1px;
+                      "
+                      @click="addStorage(item)"
+                      >+ 添加</span
+                    >
+                  </template>
+                </el-form-item>
+              </div>
             </div>
           </div>
         </el-form-item>
@@ -986,6 +1079,9 @@ const data = reactive({
     // 默认1
     failedJobsHistoryLimit: '',
     startingDeadlineSeconds: '',
+
+    // 存储设置
+    storageTypeChoices: ['持久卷', '临时卷', 'HostPath卷', '配置字典', '保密字典'],
   },
 
   active: 0,
@@ -1092,6 +1188,27 @@ const deletePort = (item, index) => {
   item.ports.splice(index, 1);
 };
 
+const addStorage = (item) => {
+  item.storages.push({
+    volumeType: '持久卷',
+    name: '',
+    mountSrc: '',
+    mountPath: '',
+  });
+};
+
+const deleteStorage = (item, index) => {
+  item.storages.splice(index, 1);
+};
+
+const storageChange = (item) => {
+  if (item.choiceStorage) {
+    if (item.storages.length === 0) {
+      addStorage(item);
+    }
+  }
+};
+
 const addNodeSelectLabel = () => {
   data.cronJobData.nodeSelectLabels.push({ key: '', value: '' });
 };
@@ -1155,6 +1272,9 @@ const addContainer = () => {
         enable: false,
       },
     },
+    // 容器存储
+    choiceStorage: false,
+    storages: [],
   });
 };
 
