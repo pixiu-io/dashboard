@@ -35,6 +35,25 @@ const makePodTemplate = (data) => {
     tplSpec['hostNetwork'] = true;
   }
 
+  let uniqVolumes = {};
+  for (let fc of data.containers) {
+    if (fc.choiceStorage) {
+      for (let s of fc.storages) {
+        if (s.name in uniqVolumes) {
+          continue;
+        }
+        uniqVolumes[s.name] = s;
+      }
+    }
+  }
+  let newVolumes = [];
+  for (let key in uniqVolumes) {
+    let v = uniqVolumes[key];
+    if (v.volumeType === '持久卷') {
+      newVolumes.push({});
+    }
+  }
+
   let targetContainers = [];
   for (let fc of data.containers) {
     let targetContainer = {
@@ -100,6 +119,25 @@ const makePodTemplate = (data) => {
           targetContainer['args'] = fc.cmds.args.split(',');
         }
       }
+
+      if (fc.choiceStorage) {
+        if (fc.storages.length !== 0) {
+          let volumes = [];
+          let volumeMounts = [];
+
+          for (let s of fc.storages) {
+            if (s.volumeType === '持久卷') {
+              volumes.push({});
+            }
+
+            volumes.push({});
+          }
+
+          tplSpec['volumes'].push(volumes);
+          targetContainer['volumeMounts'] = volumeMounts;
+        }
+      }
+
       targetContainers.push(targetContainer);
     }
     tplSpec['containers'] = targetContainers;
