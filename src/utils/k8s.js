@@ -56,10 +56,22 @@ const makePodTemplate = (data) => {
       newVolumes.push({});
     }
     if (v.volumeType === '配置字典') {
-      newVolumes.push({});
+      newVolumes.push({
+        name: v.name,
+        configMap: {
+          defaultMode: 420,
+          name: v.mountSrc,
+        },
+      });
     }
     if (v.volumeType === '保密字典') {
-      newVolumes.push({});
+      newVolumes.push({
+        name: v.name,
+        secret: {
+          defaultMode: 420,
+          secretName: v.mountSrc,
+        },
+      });
     }
   }
   tplSpec['volumes'] = newVolumes;
