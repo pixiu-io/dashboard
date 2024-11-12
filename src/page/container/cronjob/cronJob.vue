@@ -711,6 +711,7 @@
                       <el-select
                         v-model="i.volumeType"
                         style="width: 19%; margin-left: 10px; margin-right: 10px"
+                        @change="changeVolumeType(i.volumeType)"
                       >
                         <el-option
                           v-for="item2 in data.cronJobData.storageTypeChoices"
@@ -1288,6 +1289,10 @@ const nextStep = () => {
 
 const lastStep = () => {
   if (data.active-- <= 0) data.active = 0;
+};
+
+const changeVolumeType = (volumeType) => {
+  console.log('ddd', volumeType);
 };
 
 const handleCreateDialog = (row) => {
