@@ -50,10 +50,29 @@ const makePodTemplate = (data) => {
   for (let key in uniqVolumes) {
     let v = uniqVolumes[key];
     if (v.volumeType === '临时卷') {
-      newVolumes.push({});
+      newVolumes.push({
+        name: v.name,
+        emptyDir: {
+          medium: 'Memory',
+        },
+      });
+    }
+    if (v.volumeType === '持久卷') {
+      newVolumes.push({
+        name: v.name,
+        persistentVolumeClaim: {
+          claimName: v.mountSrc,
+        },
+      });
     }
     if (v.volumeType === 'HostPath卷') {
-      newVolumes.push({});
+      newVolumes.push({
+        name: v.name,
+        hostPath: {
+          path: v.mountSrc,
+          type: 'FileOrCreate',
+        },
+      });
     }
     if (v.volumeType === '配置字典') {
       newVolumes.push({
@@ -74,7 +93,9 @@ const makePodTemplate = (data) => {
       });
     }
   }
-  tplSpec['volumes'] = newVolumes;
+  if (newVolumes.length !== 0) {
+    tplSpec['volumes'] = newVolumes;
+  }
 
   let targetContainers = [];
   for (let fc of data.containers) {
@@ -144,13 +165,16 @@ const makePodTemplate = (data) => {
 
       if (fc.choiceStorage) {
         if (fc.storages.length !== 0) {
-          let volumes = [];
           let volumeMounts = [];
-
           for (let s of fc.storages) {
+            volumeMounts.push({
+              name: s.name,
+              mountPath: s.mountPath,
+            });
           }
-
-          targetContainer['volumeMounts'] = volumeMounts;
+          if (volumeMounts.length !== 0) {
+            targetContainer['volumeMounts'] = volumeMounts;
+          }
         }
       }
 
