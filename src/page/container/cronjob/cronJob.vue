@@ -729,14 +729,14 @@
 
                       <div
                         v-if="i.volumeType == '临时卷'"
-                        style="width: 25%; margin-left: 10px; margin-right: 10px"
+                        style="width: 25%; margin-left: 10px; margin-right: 7px"
                       >
                         <el-input v-model="i.mountSrc" placeholder="emptyDir" disabled />
                       </div>
                       <el-input
                         v-else-if="i.volumeType == 'HostPath卷'"
                         v-model="i.mountSrc"
-                        style="width: 25%; margin-left: 10px; margin-right: 10px"
+                        style="width: 25%; margin-left: 9px; margin-right: 8px"
                         placeholder="主机路径"
                       />
                       <el-select
