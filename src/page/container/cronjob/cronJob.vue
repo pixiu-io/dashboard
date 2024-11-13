@@ -734,18 +734,23 @@
                         <el-input v-model="i.mountSrc" placeholder="emptyDir" disabled />
                       </div>
                       <el-input
-                        v-if="i.volumeType == 'HostPath卷'"
+                        v-else-if="i.volumeType == 'HostPath卷'"
                         v-model="i.mountSrc"
                         style="width: 25%; margin-left: 10px; margin-right: 10px"
                         placeholder="主机路径"
                       />
-
-                      <el-input
-                        v-if="i.volumeType == '持久卷'"
+                      <el-select
+                        v-else
                         v-model="i.mountSrc"
-                        style="width: 25%; margin-left: 10px; margin-right: 10px"
-                        placeholder="主机路径"
-                      />
+                        style="width: 160px; margin-left: 10px; margin-right: 10px"
+                      >
+                        <el-option
+                          v-for="itemSrc in i.mountSrcs"
+                          :key="itemSrc"
+                          :value="itemSrc"
+                          :label="itemSrc"
+                        />
+                      </el-select>
 
                       <el-input
                         v-model="i.mountPath"
@@ -1303,6 +1308,7 @@ const lastStep = () => {
 };
 
 const changeVolumeType = async (volumeType, item) => {
+  item.mountSrc = '';
   item.mountSrcs = [];
   if (volumeType === '持久卷') {
     const [result, err] = await getPersistentVolumeClaimList(
