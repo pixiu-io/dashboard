@@ -711,6 +711,7 @@
                       <el-select
                         v-model="i.volumeType"
                         style="width: 19%; margin-left: 10px; margin-right: 10px"
+                        @change="changeVolumeType(i.volumeType, i)"
                       >
                         <el-option
                           v-for="item2 in data.cronJobData.storageTypeChoices"
@@ -726,18 +727,30 @@
                         placeholder="请输入卷名称"
                       />
 
-                      <!-- <div
-                        v-if="i.volumeType == 'HostPath卷'"
-                        style="width: 25%; margin-left: 10px; margin-right: 10px"
+                      <div
+                        v-if="i.volumeType == '临时卷'"
+                        style="width: 25%; margin-left: 10px; margin-right: 7px"
                       >
-                        <el-input v-model="i.mountSrc" placeholder="主机路径" />
-                      </div> -->
-
+                        <el-input v-model="i.mountSrc" placeholder="emptyDir" disabled />
+                      </div>
                       <el-input
+                        v-else-if="i.volumeType == 'HostPath卷'"
                         v-model="i.mountSrc"
-                        style="width: 25%; margin-left: 10px; margin-right: 10px"
+                        style="width: 25%; margin-left: 9px; margin-right: 8px"
                         placeholder="主机路径"
                       />
+                      <el-select
+                        v-else
+                        v-model="i.mountSrc"
+                        style="width: 160px; margin-left: 10px; margin-right: 10px"
+                      >
+                        <el-option
+                          v-for="itemSrc in i.mountSrcs"
+                          :key="itemSrc"
+                          :value="itemSrc"
+                          :label="itemSrc"
+                        />
+                      </el-select>
 
                       <el-input
                         v-model="i.mountPath"
@@ -1014,6 +1027,9 @@ import {
   deleteCronJob,
   patchCronJob,
 } from '@/services/kubernetes/cronjobService';
+import { getPersistentVolumeClaimList } from '@/services/kubernetes/persistentVolumeClaimService';
+import { getConfigmapList } from '@/services/kubernetes/configmapService';
+import { getSecretList } from '@/services/kubernetes/secretService';
 import Description from '@/components/description/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
@@ -1190,7 +1206,7 @@ const deletePort = (item, index) => {
 
 const addStorage = (item) => {
   item.storages.push({
-    volumeType: '持久卷',
+    volumeType: 'HostPath卷',
     name: '',
     mountSrc: '',
     mountPath: '',
@@ -1275,6 +1291,7 @@ const addContainer = () => {
     // 容器存储
     choiceStorage: false,
     storages: [],
+    mountSrcs: [],
   });
 };
 
@@ -1288,6 +1305,45 @@ const nextStep = () => {
 
 const lastStep = () => {
   if (data.active-- <= 0) data.active = 0;
+};
+
+const changeVolumeType = async (volumeType, item) => {
+  item.mountSrc = '';
+  item.mountSrcs = [];
+  if (volumeType === '持久卷') {
+    const [result, err] = await getPersistentVolumeClaimList(
+      data.cluster,
+      data.namespace,
+      data.pageInfo,
+    );
+    if (err) {
+      proxy.$message.error(err.response.data.message);
+      return;
+    }
+    for (let v of result.items) {
+      item.mountSrcs.push(v.metadata.name);
+    }
+  }
+  if (volumeType === '配置字典') {
+    const [result, err] = await getConfigmapList(data.cluster, data.namespace);
+    if (err) {
+      proxy.$message.error(err.response.data.message);
+      return;
+    }
+    for (let cm of result.items) {
+      item.mountSrcs.push(cm.metadata.name);
+    }
+  }
+  if (volumeType === '保密字典') {
+    const [result, err] = await getSecretList(data.cluster, data.namespace);
+    if (err) {
+      proxy.$message.error(err.response.data.message);
+      return;
+    }
+    for (let secret of result.items) {
+      item.mountSrcs.push(secret.metadata.name);
+    }
+  }
 };
 
 const handleCreateDialog = (row) => {
