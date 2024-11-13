@@ -519,14 +519,22 @@
                   <el-form-item v-for="(i, index1) in item.ports" :key="index1">
                     <el-form-item style="margin-left: 70px">
                       <div style="font-size: 12px; color: #191919">协议</div>
-                      <el-input
+                      <el-select
                         v-model="i.protocol"
-                        style="width: 20%; margin-left: 10px; margin-right: 10px"
-                      />
+                        style="width: 18%; margin-left: 10px; margin-right: 10px"
+                      >
+                        <el-option
+                          v-for="itemP in item.portProtocols"
+                          :key="itemP"
+                          :value="itemP"
+                          :label="itemP"
+                        />
+                      </el-select>
+
                       <div style="font-size: 12px; color: #191919">名称</div>
                       <el-input
                         v-model="i.name"
-                        style="width: 20%; margin-left: 10px; margin-right: 10px"
+                        style="width: 21%; margin-left: 10px; margin-right: 10px"
                       />
                       <div style="font-size: 12px; color: #191919">容器端口</div>
                       <el-input v-model="i.containerPort" style="width: 25%; margin-left: 10px" />
@@ -1272,6 +1280,7 @@ const addContainer = () => {
     memoryLimit: '',
     choicePort: false,
     ports: [],
+    portProtocols: ['TCP', 'UDP', 'SCTP'],
     choiceEnv: false,
     envs: [],
     choiceCmd: false,
