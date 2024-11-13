@@ -711,7 +711,7 @@
                       <el-select
                         v-model="i.volumeType"
                         style="width: 19%; margin-left: 10px; margin-right: 10px"
-                        @change="changeVolumeType(i.volumeType)"
+                        @change="changeVolumeType(i.volumeType, i)"
                       >
                         <el-option
                           v-for="item2 in data.cronJobData.storageTypeChoices"
@@ -727,14 +727,21 @@
                         placeholder="请输入卷名称"
                       />
 
-                      <!-- <div
-                        v-if="i.volumeType == 'HostPath卷'"
+                      <div
+                        v-if="i.volumeType == '临时卷'"
                         style="width: 25%; margin-left: 10px; margin-right: 10px"
                       >
-                        <el-input v-model="i.mountSrc" placeholder="主机路径" />
-                      </div> -->
+                        <el-input v-model="i.mountSrc" placeholder="emptyDir" disabled />
+                      </div>
+                      <el-input
+                        v-if="i.volumeType == 'HostPath卷'"
+                        v-model="i.mountSrc"
+                        style="width: 25%; margin-left: 10px; margin-right: 10px"
+                        placeholder="主机路径"
+                      />
 
                       <el-input
+                        v-if="i.volumeType == '持久卷'"
                         v-model="i.mountSrc"
                         style="width: 25%; margin-left: 10px; margin-right: 10px"
                         placeholder="主机路径"
@@ -1015,6 +1022,9 @@ import {
   deleteCronJob,
   patchCronJob,
 } from '@/services/kubernetes/cronjobService';
+import { getPersistentVolumeClaimList } from '@/services/kubernetes/persistentVolumeClaimService';
+import { getConfigmapList } from '@/services/kubernetes/configmapService';
+import { getSecretList } from '@/services/kubernetes/secretService';
 import Description from '@/components/description/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
@@ -1191,7 +1201,7 @@ const deletePort = (item, index) => {
 
 const addStorage = (item) => {
   item.storages.push({
-    volumeType: '持久卷',
+    volumeType: 'HostPath卷',
     name: '',
     mountSrc: '',
     mountPath: '',
@@ -1276,6 +1286,7 @@ const addContainer = () => {
     // 容器存储
     choiceStorage: false,
     storages: [],
+    mountSrcs: [],
   });
 };
 
@@ -1291,8 +1302,42 @@ const lastStep = () => {
   if (data.active-- <= 0) data.active = 0;
 };
 
-const changeVolumeType = (volumeType) => {
-  console.log('ddd', volumeType);
+const changeVolumeType = async (volumeType, item) => {
+  item.mountSrcs = [];
+  if (volumeType === '持久卷') {
+    const [result, err] = await getPersistentVolumeClaimList(
+      data.cluster,
+      data.namespace,
+      data.pageInfo,
+    );
+    if (err) {
+      proxy.$message.error(err.response.data.message);
+      return;
+    }
+    for (let v of result.items) {
+      item.mountSrcs.push(v.metadata.name);
+    }
+  }
+  if (volumeType === '配置字典') {
+    const [result, err] = await getConfigmapList(data.cluster, data.namespace);
+    if (err) {
+      proxy.$message.error(err.response.data.message);
+      return;
+    }
+    for (let cm of result.items) {
+      item.mountSrcs.push(cm.metadata.name);
+    }
+  }
+  if (volumeType === '保密字典') {
+    const [result, err] = await getSecretList(data.cluster, data.namespace);
+    if (err) {
+      proxy.$message.error(err.response.data.message);
+      return;
+    }
+    for (let secret of result.items) {
+      item.mountSrcs.push(secret.metadata.name);
+    }
+  }
 };
 
 const handleCreateDialog = (row) => {
