@@ -234,15 +234,30 @@
         </el-form-item>
         <el-form-item>
           <div class="dialog-describe-style" style="margin-left: 78px">
-            命名空间用于对定时任务分为相互隔离的组。
+            命名空间用于对定时任务进行逻辑隔离。
           </div>
         </el-form-item>
 
         <el-form-item>
           <template #label>
-            <span class="form-item-key-style">定时计划</span>
+            <span class="form-item-key-style">定时计划 </span>
           </template>
-          <el-input v-model="data.cronJobForm.spec.schedule" style="margin-left: 5px; width: 30%" />
+          <span style="margin-left: 4px">
+            <el-select
+              v-model="data.cronJobForm.spec.schedule"
+              value-key="id"
+              filterable
+              allow-create
+              style="width: 210px; float: right; margin-right: 10px"
+            >
+              <el-option
+                v-for="item in data.cronJobSpecData.schedules"
+                :key="item.id"
+                :label="item.label"
+                :value="item.id"
+              />
+            </el-select>
+          </span>
         </el-form-item>
         <el-form-item>
           <div class="dialog-describe-style" style="margin-left: 76px">
@@ -409,6 +424,25 @@
                 个字符。
               </div>
             </el-form-item>
+
+            <!-- <el-form-item label style="margin-top: 10px">
+              <template #label>
+                <span class="form-item-key-style">容器类型 </span>
+              </template>
+              <span style="margin-left: 10px">
+                <el-select
+                  v-model="item.containerType"
+                  style="width: 150px; float: right; margin-right: 10px"
+                >
+                  <el-option
+                    v-for="item2 in item.containerTypes"
+                    :key="item2"
+                    :value="item2"
+                    :label="item2"
+                  />
+                </el-select>
+              </span>
+            </el-form-item> -->
 
             <el-form-item label style="margin-top: 10px">
               <template #label>
@@ -1108,6 +1142,27 @@ const data = reactive({
     storageTypeChoices: ['持久卷', '临时卷', 'HostPath卷', '配置字典', '保密字典'],
   },
 
+  cronJobSpecData: {
+    schedules: [
+      {
+        id: '0 * * * *',
+        label: '0 * * * * (每小时)',
+      },
+      {
+        id: '0 0 * * *',
+        label: '0 0 * * * (每天)',
+      },
+      {
+        id: '0 0 * * 0',
+        label: '0 0 * * 0 (每周)',
+      },
+      {
+        id: '0 0 1 * *',
+        label: '0 0 1 * * (每月)',
+      },
+    ],
+  },
+
   active: 0,
   namespaces: [],
   cronJobForm: {
@@ -1271,6 +1326,8 @@ const deleteAnnotation = (index) => {
 const addContainer = () => {
   data.cronJobData.containers.push({
     name: '',
+    containerType: '工作容器',
+    containerTypes: ['工作容器', '初始化容器'],
     image: '',
     imagePullPolicy: 'IfNotPresent',
     advance: false,
