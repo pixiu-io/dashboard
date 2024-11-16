@@ -709,7 +709,7 @@
                 <el-checkbox v-model="item.choiceHealth" />
               </el-form-item>
               <div class="container-line-describe" style="margin-left: 72px; margin-top: -8px">
-                检查容器健康状态。
+                添加探针以定时检查容器健康状态。
               </div>
 
               <div v-if="item.choiceHealth">
@@ -729,6 +729,28 @@
                         </el-radio-group>
                       </el-form-item>
 
+                      <div v-if="item.healths.liveness.checkType === 1">
+                        <el-form-item style="margin-left: 70px">
+                          <div style="font-size: 12px; color: #191919">路径</div>
+                        </el-form-item>
+                        <el-form-item style="margin-left: 70px">
+                          <el-select
+                            v-model="item.healths.liveness.httpGet.scheme"
+                            style="width: 30%"
+                          >
+                            <el-option v-for="i in item.schemes" :key="i" :value="i" :label="i" />
+                          </el-select>
+                          <el-input
+                            v-model="item.healths.liveness.httpGet.path"
+                            style="width: 30%; margin-left: 15px"
+                          />
+                          <el-input
+                            v-model="item.healths.liveness.httpGet.port"
+                            style="width: 30%; margin-left: 15px"
+                          />
+                        </el-form-item>
+                      </div>
+
                       <div v-if="item.healths.liveness.checkType === 2">
                         <el-form-item style="margin-left: 70px">
                           <div style="font-size: 12px; color: #191919">命令</div>
@@ -746,7 +768,7 @@
                           <div style="font-size: 12px; color: #191919">端口</div>
                         </el-form-item>
                         <el-form-item style="margin-left: 70px">
-                          <el-input v-model="item.healths.liveness.tcp" style="width: 100%" />
+                          <el-input v-model="item.healths.liveness.port" style="width: 100%" />
                         </el-form-item>
                       </div>
                     </div>
@@ -1384,13 +1406,18 @@ const addContainer = () => {
     },
     choiceHealth: false,
     healthCheckTypes: ['HTTP 请求', '命令', 'TCP 端口'],
+    schemes: ['HTTP', 'HTTPS'],
     healths: {
       liveness: {
         enable: false,
         checkType: '1',
         cmd: '',
-        http: {},
-        tcp: '',
+        httpGet: {
+          path: '/',
+          port: '80',
+          scheme: 'HTTP',
+        },
+        port: '',
         initialDelaySeconds: 0,
         timeoutSeconds: 1,
         periodSeconds: 10,
