@@ -722,15 +722,25 @@
                   <el-form-item v-if="item.healths.liveness.enable">
                     <div style="margin-top: -2px">
                       <el-form-item style="margin-left: 70px">
-                        <div style="font-size: 12px; color: #191919">命令</div>
+                        <el-radio-group v-model="item.healths.liveness.checkType">
+                          <el-radio :value="1">HTTP 请求</el-radio>
+                          <el-radio :value="2">命令</el-radio>
+                          <el-radio :value="3">TCP 端口</el-radio>
+                        </el-radio-group>
                       </el-form-item>
-                      <el-form-item style="margin-left: 70px">
-                        <el-input
-                          v-model="item.healths.liveness.cmd"
-                          style="width: 580px"
-                          type="textarea"
-                        />
-                      </el-form-item>
+
+                      <div v-if="item.healths.liveness.checkType === 2">
+                        <el-form-item style="margin-left: 70px">
+                          <div style="font-size: 12px; color: #191919">命令</div>
+                        </el-form-item>
+                        <el-form-item style="margin-left: 70px">
+                          <el-input
+                            v-model="item.healths.liveness.cmd"
+                            style="width: 580px"
+                            type="textarea"
+                          />
+                        </el-form-item>
+                      </div>
                     </div>
                   </el-form-item>
 
@@ -1369,7 +1379,7 @@ const addContainer = () => {
     healths: {
       liveness: {
         enable: false,
-        checkType: 'HTTP 请求',
+        checkType: '1',
         cmd: '',
         http: {},
         tcp: {},
