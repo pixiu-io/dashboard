@@ -779,10 +779,120 @@
                     <div style="font-size: 12px; margin-right: 8px; color: #191919">就绪检查</div>
                     <el-checkbox v-model="item.healths.readiness.enable" />
                   </el-form-item>
+                  <el-form-item v-if="item.healths.readiness.enable">
+                    <div style="margin-top: -2px">
+                      <el-form-item style="margin-left: 70px">
+                        <el-radio-group v-model="item.healths.readiness.checkType" size="small">
+                          <el-radio :value="1">HTTP 请求</el-radio>
+                          <el-radio :value="2">命令</el-radio>
+                          <el-radio :value="3">TCP 端口</el-radio>
+                        </el-radio-group>
+                      </el-form-item>
+
+                      <div v-if="item.healths.readiness.checkType === 1">
+                        <el-form-item style="margin-left: 70px">
+                          <div style="font-size: 12px; color: #191919">路径</div>
+                        </el-form-item>
+                        <el-form-item style="margin-left: 70px">
+                          <el-select
+                            v-model="item.healths.readiness.httpGet.scheme"
+                            style="width: 30%"
+                          >
+                            <el-option v-for="i in item.schemes" :key="i" :value="i" :label="i" />
+                          </el-select>
+                          <el-input
+                            v-model="item.healths.readiness.httpGet.path"
+                            style="width: 30%; margin-left: 15px"
+                          />
+                          <el-input
+                            v-model="item.healths.readiness.httpGet.port"
+                            style="width: 30%; margin-left: 15px"
+                          />
+                        </el-form-item>
+                      </div>
+
+                      <div v-if="item.healths.readiness.checkType === 2">
+                        <el-form-item style="margin-left: 70px">
+                          <div style="font-size: 12px; color: #191919">命令</div>
+                        </el-form-item>
+                        <el-form-item style="margin-left: 70px">
+                          <el-input
+                            v-model="item.healths.readiness.cmd"
+                            style="width: 580px"
+                            type="textarea"
+                          />
+                        </el-form-item>
+                      </div>
+                      <div v-if="item.healths.readiness.checkType === 3">
+                        <el-form-item style="margin-left: 70px">
+                          <div style="font-size: 12px; color: #191919">端口</div>
+                        </el-form-item>
+                        <el-form-item style="margin-left: 70px">
+                          <el-input v-model="item.healths.readiness.port" style="width: 100%" />
+                        </el-form-item>
+                      </div>
+                    </div>
+                  </el-form-item>
 
                   <!-- 启动检查 -->
                   <el-form-item style="margin-left: 70px">
                     <div style="font-size: 12px; margin-right: 8px; color: #191919">启动检查</div>
+                    <el-checkbox v-model="item.healths.startup.enable" />
+                  </el-form-item>
+
+                  <el-form-item v-if="item.healths.startup.enable">
+                    <div style="margin-top: -2px">
+                      <el-form-item style="margin-left: 70px">
+                        <el-radio-group v-model="item.healths.startup.checkType" size="small">
+                          <el-radio :value="1">HTTP 请求</el-radio>
+                          <el-radio :value="2">命令</el-radio>
+                          <el-radio :value="3">TCP 端口</el-radio>
+                        </el-radio-group>
+                      </el-form-item>
+
+                      <div v-if="item.healths.startup.checkType === 1">
+                        <el-form-item style="margin-left: 70px">
+                          <div style="font-size: 12px; color: #191919">路径</div>
+                        </el-form-item>
+                        <el-form-item style="margin-left: 70px">
+                          <el-select
+                            v-model="item.healths.startup.httpGet.scheme"
+                            style="width: 30%"
+                          >
+                            <el-option v-for="i in item.schemes" :key="i" :value="i" :label="i" />
+                          </el-select>
+                          <el-input
+                            v-model="item.healths.startup.httpGet.path"
+                            style="width: 30%; margin-left: 15px"
+                          />
+                          <el-input
+                            v-model="item.healths.startup.httpGet.port"
+                            style="width: 30%; margin-left: 15px"
+                          />
+                        </el-form-item>
+                      </div>
+
+                      <div v-if="item.healths.startup.checkType === 2">
+                        <el-form-item style="margin-left: 70px">
+                          <div style="font-size: 12px; color: #191919">命令</div>
+                        </el-form-item>
+                        <el-form-item style="margin-left: 70px">
+                          <el-input
+                            v-model="item.healths.startup.cmd"
+                            style="width: 580px"
+                            type="textarea"
+                          />
+                        </el-form-item>
+                      </div>
+                      <div v-if="item.healths.readiness.checkType === 3">
+                        <el-form-item style="margin-left: 70px">
+                          <div style="font-size: 12px; color: #191919">端口</div>
+                        </el-form-item>
+                        <el-form-item style="margin-left: 70px">
+                          <el-input v-model="item.healths.readiness.port" style="width: 100%" />
+                        </el-form-item>
+                      </div>
+                    </div>
                   </el-form-item>
                 </div>
               </div>
@@ -1426,6 +1536,35 @@ const addContainer = () => {
       },
       readiness: {
         enable: false,
+        checkType: 1,
+        cmd: '',
+        httpGet: {
+          path: '/',
+          port: '80',
+          scheme: 'HTTP',
+        },
+        port: '',
+        initialDelaySeconds: 0,
+        timeoutSeconds: 1,
+        periodSeconds: 10,
+        successThreshold: 1,
+        failureThreshold: 3,
+      },
+      startup: {
+        enable: false,
+        checkType: 1,
+        cmd: '',
+        httpGet: {
+          path: '/',
+          port: '80',
+          scheme: 'HTTP',
+        },
+        port: '',
+        initialDelaySeconds: 0,
+        timeoutSeconds: 1,
+        periodSeconds: 10,
+        successThreshold: 1,
+        failureThreshold: 3,
       },
     },
     // 容器存储
