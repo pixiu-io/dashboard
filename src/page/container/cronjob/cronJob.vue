@@ -714,14 +714,33 @@
 
               <div v-if="item.choiceHealth">
                 <div style="margin-top: -2px">
+                  <!-- 存活检查 -->
                   <el-form-item style="margin-left: 70px">
                     <div style="font-size: 12px; margin-right: 8px; color: #191919">存活检查</div>
                     <el-checkbox v-model="item.healths.liveness.enable" />
                   </el-form-item>
+                  <el-form-item v-if="item.healths.liveness.enable">
+                    <div style="margin-top: -2px">
+                      <el-form-item style="margin-left: 70px">
+                        <div style="font-size: 12px; color: #191919">命令</div>
+                      </el-form-item>
+                      <el-form-item style="margin-left: 70px">
+                        <el-input
+                          v-model="item.healths.liveness.cmd"
+                          style="width: 580px"
+                          type="textarea"
+                        />
+                      </el-form-item>
+                    </div>
+                  </el-form-item>
+
+                  <!-- 就绪检查 -->
                   <el-form-item style="margin-left: 70px">
                     <div style="font-size: 12px; margin-right: 8px; color: #191919">就绪检查</div>
                     <el-checkbox v-model="item.healths.readiness.enable" />
                   </el-form-item>
+
+                  <!-- 启动检查 -->
                   <el-form-item style="margin-left: 70px">
                     <div style="font-size: 12px; margin-right: 8px; color: #191919">启动检查</div>
                   </el-form-item>
@@ -1346,9 +1365,19 @@ const addContainer = () => {
       args: '',
     },
     choiceHealth: false,
+    healthCheckTypes: ['HTTP 请求', '命令', 'TCP 端口'],
     healths: {
       liveness: {
         enable: false,
+        checkType: 'HTTP 请求',
+        cmd: '',
+        http: {},
+        tcp: {},
+        initialDelaySeconds: 0,
+        timeoutSeconds: 1,
+        periodSeconds: 10,
+        successThreshold: 1,
+        failureThreshold: 3,
       },
       readiness: {
         enable: false,
