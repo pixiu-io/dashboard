@@ -741,6 +741,14 @@
                           />
                         </el-form-item>
                       </div>
+                      <div v-if="item.healths.liveness.checkType === 3">
+                        <el-form-item style="margin-left: 70px">
+                          <div style="font-size: 12px; color: #191919">端口</div>
+                        </el-form-item>
+                        <el-form-item style="margin-left: 70px">
+                          <el-input v-model="item.healths.liveness.tcp" style="width: 100%" />
+                        </el-form-item>
+                      </div>
                     </div>
                   </el-form-item>
 
@@ -1382,7 +1390,7 @@ const addContainer = () => {
         checkType: '1',
         cmd: '',
         http: {},
-        tcp: {},
+        tcp: '',
         initialDelaySeconds: 0,
         timeoutSeconds: 1,
         periodSeconds: 10,
