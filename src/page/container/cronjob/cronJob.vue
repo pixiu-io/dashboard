@@ -1410,7 +1410,7 @@ const addContainer = () => {
     healths: {
       liveness: {
         enable: false,
-        checkType: '1',
+        checkType: 1,
         cmd: '',
         httpGet: {
           path: '/',
