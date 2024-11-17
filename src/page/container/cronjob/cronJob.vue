@@ -890,12 +890,12 @@
                           />
                         </el-form-item>
                       </div>
-                      <div v-if="item.healths.readiness.checkType === 3">
+                      <div v-if="item.healths.startup.checkType === 3">
                         <el-form-item style="margin-left: 70px">
                           <div style="font-size: 12px; color: #191919">端口</div>
                         </el-form-item>
                         <el-form-item style="margin-left: 70px">
-                          <el-input v-model="item.healths.readiness.port" style="width: 100%" />
+                          <el-input v-model="item.healths.startup.port" style="width: 100%" />
                         </el-form-item>
                       </div>
                     </div>
