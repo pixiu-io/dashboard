@@ -735,22 +735,25 @@
                         <el-form-item style="margin-left: 70px">
                           <div style="font-size: 12px; color: #191919">路径</div>
                         </el-form-item>
-                        <el-form-item style="margin-left: 70px">
-                          <el-select
-                            v-model="item.healths.liveness.httpGet.scheme"
-                            style="width: 30%"
-                          >
-                            <el-option v-for="i in item.schemes" :key="i" :value="i" :label="i" />
-                          </el-select>
-                          <el-input
-                            v-model="item.healths.liveness.httpGet.path"
-                            style="width: 30%; margin-left: 15px"
-                          />
-                          <el-input
-                            v-model="item.healths.liveness.httpGet.port"
-                            style="width: 30%; margin-left: 15px"
-                          />
-                        </el-form-item>
+
+                        <div style="width: 650px">
+                          <el-form-item style="margin-left: 70px">
+                            <el-select
+                              v-model="item.healths.liveness.httpGet.scheme"
+                              style="width: 30%"
+                            >
+                              <el-option v-for="i in item.schemes" :key="i" :value="i" :label="i" />
+                            </el-select>
+                            <el-input
+                              v-model="item.healths.liveness.httpGet.path"
+                              style="width: 30%; margin-left: 15px"
+                            />
+                            <el-input
+                              v-model="item.healths.liveness.httpGet.port"
+                              style="width: 30%; margin-left: 15px"
+                            />
+                          </el-form-item>
+                        </div>
                       </div>
 
                       <div v-if="item.healths.liveness.checkType === 2">
