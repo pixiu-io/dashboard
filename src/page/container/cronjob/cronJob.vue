@@ -723,9 +723,11 @@
                     <div style="margin-top: -2px">
                       <el-form-item style="margin-left: 70px">
                         <el-radio-group v-model="item.healths.liveness.checkType" size="small">
-                          <el-radio :value="1">HTTP 请求</el-radio>
-                          <el-radio :value="2">命令</el-radio>
-                          <el-radio :value="3">TCP 端口</el-radio>
+                          <el-space :size="25">
+                            <el-radio :value="1">HTTP 请求</el-radio>
+                            <el-radio :value="2">命令</el-radio>
+                            <el-radio :value="3">TCP 端口</el-radio>
+                          </el-space>
                         </el-radio-group>
                       </el-form-item>
 
@@ -783,9 +785,11 @@
                     <div style="margin-top: -2px">
                       <el-form-item style="margin-left: 70px">
                         <el-radio-group v-model="item.healths.readiness.checkType" size="small">
-                          <el-radio :value="1">HTTP 请求</el-radio>
-                          <el-radio :value="2">命令</el-radio>
-                          <el-radio :value="3">TCP 端口</el-radio>
+                          <el-space :size="25">
+                            <el-radio :value="1">HTTP 请求</el-radio>
+                            <el-radio :value="2">命令</el-radio>
+                            <el-radio :value="3">TCP 端口</el-radio>
+                          </el-space>
                         </el-radio-group>
                       </el-form-item>
 
@@ -844,9 +848,11 @@
                     <div style="margin-top: -2px">
                       <el-form-item style="margin-left: 70px">
                         <el-radio-group v-model="item.healths.startup.checkType" size="small">
-                          <el-radio :value="1">HTTP 请求</el-radio>
-                          <el-radio :value="2">命令</el-radio>
-                          <el-radio :value="3">TCP 端口</el-radio>
+                          <el-space :size="25">
+                            <el-radio :value="1">HTTP 请求</el-radio>
+                            <el-radio :value="2">命令</el-radio>
+                            <el-radio :value="3">TCP 端口</el-radio>
+                          </el-space>
                         </el-radio-group>
                       </el-form-item>
 
