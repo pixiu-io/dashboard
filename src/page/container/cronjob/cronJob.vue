@@ -770,60 +770,73 @@
                           <div style="font-size: 12px; color: #191919">端口</div>
                         </el-form-item>
                         <el-form-item style="margin-left: 70px">
-                          <el-input v-model="item.healths.liveness.port" style="width: 100%" />
+                          <el-input v-model="item.healths.liveness.port" style="width: 580px" />
                         </el-form-item>
                       </div>
 
-                      <div class="one-line-style">
-                        <el-form-item style="margin-left: 70px">
-                          <div style="font-size: 12px; color: #191919">初始延迟（s）</div>
-                        </el-form-item>
-                        <el-form-item style="margin-left: 70px">
-                          <div style="font-size: 12px; color: #191919">超时时间（s）</div>
-                        </el-form-item>
-                      </div>
+                      <el-row :gutter="20" style="margin-left: 60px">
+                        <el-col :span="12">
+                          <el-row>
+                            <div style="font-size: 12px; color: #191919">初始延迟（s）</div>
+                          </el-row>
+                          <el-row>
+                            <el-input
+                              v-model="item.healths.liveness.initialDelaySeconds"
+                              style="width: 100%"
+                            />
+                          </el-row>
+                        </el-col>
+                        <el-col :span="12">
+                          <el-row>
+                            <div style="font-size: 12px; color: #191919">超时时间（s）</div>
+                          </el-row>
+                          <el-row>
+                            <el-input
+                              v-model="item.healths.liveness.timeoutSeconds"
+                              style="width: 100%"
+                            />
+                          </el-row>
+                        </el-col>
+                      </el-row>
 
-                      <div class="one-line-style">
-                        <el-input
-                          v-model="item.healths.liveness.initialDelaySeconds"
-                          style="width: 100%; margin-left: 70px"
-                        />
-                        <el-input
-                          v-model="item.healths.liveness.timeoutSeconds"
-                          style="width: 100%; margin-left: 15px"
-                        />
-                      </div>
+                      <el-row :gutter="20" style="margin-left: 60px">
+                        <el-col :span="12">
+                          <el-row>
+                            <div style="font-size: 12px; color: #191919">检查间隔（s ）</div>
+                          </el-row>
+                          <el-row>
+                            <el-input
+                              v-model="item.healths.liveness.periodSeconds"
+                              style="width: 100%"
+                            />
+                          </el-row>
+                        </el-col>
+                        <el-col :span="12">
+                          <el-row>
+                            <div style="font-size: 12px; color: #191919">成功阈值</div>
+                          </el-row>
+                          <el-row>
+                            <el-input
+                              v-model="item.healths.liveness.successThreshold"
+                              style="width: 100%"
+                            />
+                          </el-row>
+                        </el-col>
+                      </el-row>
 
-                      <div class="one-line-style">
-                        <el-form-item style="margin-left: 70px">
-                          <div style="font-size: 12px; color: #191919">检查间隔（s ）</div>
-                        </el-form-item>
-                        <el-form-item style="margin-left: 70px">
-                          <div style="font-size: 12px; color: #191919">成功阈值</div>
-                        </el-form-item>
-                      </div>
-                      <div class="one-line-style">
-                        <el-input
-                          v-model="item.healths.liveness.periodSeconds"
-                          style="width: 100%; margin-left: 70px"
-                        />
-                        <el-input
-                          v-model="item.healths.liveness.successThreshold"
-                          style="width: 100%; margin-left: 15px"
-                        />
-                      </div>
-
-                      <div class="one-line-style">
-                        <el-form-item style="margin-left: 70px">
-                          <div style="font-size: 12px; color: #191919">失败阈值</div>
-                        </el-form-item>
-                      </div>
-                      <div class="one-line-style">
-                        <el-input
-                          v-model="item.healths.liveness.failureThreshold"
-                          style="width: 50%; margin-left: 70px"
-                        />
-                      </div>
+                      <el-row :gutter="20" style="margin-left: 60px">
+                        <el-col :span="12">
+                          <el-row>
+                            <div style="font-size: 12px; color: #191919">失败阈值</div>
+                          </el-row>
+                          <el-row>
+                            <el-input
+                              v-model="item.healths.liveness.failureThreshold"
+                              style="width: 100%"
+                            />
+                          </el-row>
+                        </el-col>
+                      </el-row>
                     </div>
                   </el-form-item>
 
