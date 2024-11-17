@@ -723,9 +723,11 @@
                     <div style="margin-top: -2px">
                       <el-form-item style="margin-left: 70px">
                         <el-radio-group v-model="item.healths.liveness.checkType" size="small">
-                          <el-radio :value="1">HTTP 请求</el-radio>
-                          <el-radio :value="2">命令</el-radio>
-                          <el-radio :value="3">TCP 端口</el-radio>
+                          <el-space :size="25">
+                            <el-radio :value="1">HTTP 请求</el-radio>
+                            <el-radio :value="2">命令</el-radio>
+                            <el-radio :value="3">TCP 端口</el-radio>
+                          </el-space>
                         </el-radio-group>
                       </el-form-item>
 
@@ -733,22 +735,25 @@
                         <el-form-item style="margin-left: 70px">
                           <div style="font-size: 12px; color: #191919">路径</div>
                         </el-form-item>
-                        <el-form-item style="margin-left: 70px">
-                          <el-select
-                            v-model="item.healths.liveness.httpGet.scheme"
-                            style="width: 30%"
-                          >
-                            <el-option v-for="i in item.schemes" :key="i" :value="i" :label="i" />
-                          </el-select>
-                          <el-input
-                            v-model="item.healths.liveness.httpGet.path"
-                            style="width: 30%; margin-left: 15px"
-                          />
-                          <el-input
-                            v-model="item.healths.liveness.httpGet.port"
-                            style="width: 30%; margin-left: 15px"
-                          />
-                        </el-form-item>
+
+                        <div style="width: 650px">
+                          <el-form-item style="margin-left: 70px">
+                            <el-select
+                              v-model="item.healths.liveness.httpGet.scheme"
+                              style="width: 30%"
+                            >
+                              <el-option v-for="i in item.schemes" :key="i" :value="i" :label="i" />
+                            </el-select>
+                            <el-input
+                              v-model="item.healths.liveness.httpGet.path"
+                              style="width: 30%; margin-left: 15px"
+                            />
+                            <el-input
+                              v-model="item.healths.liveness.httpGet.port"
+                              style="width: 30%; margin-left: 15px"
+                            />
+                          </el-form-item>
+                        </div>
                       </div>
 
                       <div v-if="item.healths.liveness.checkType === 2">
@@ -768,9 +773,73 @@
                           <div style="font-size: 12px; color: #191919">端口</div>
                         </el-form-item>
                         <el-form-item style="margin-left: 70px">
-                          <el-input v-model="item.healths.liveness.port" style="width: 100%" />
+                          <el-input v-model="item.healths.liveness.port" style="width: 580px" />
                         </el-form-item>
                       </div>
+
+                      <el-row :gutter="20" style="margin-left: 60px">
+                        <el-col :span="12">
+                          <el-row>
+                            <div style="font-size: 12px; color: #191919">初始延迟（s）</div>
+                          </el-row>
+                          <el-row>
+                            <el-input
+                              v-model="item.healths.liveness.initialDelaySeconds"
+                              style="width: 100%"
+                            />
+                          </el-row>
+                        </el-col>
+                        <el-col :span="12">
+                          <el-row>
+                            <div style="font-size: 12px; color: #191919">超时时间（s）</div>
+                          </el-row>
+                          <el-row>
+                            <el-input
+                              v-model="item.healths.liveness.timeoutSeconds"
+                              style="width: 100%"
+                            />
+                          </el-row>
+                        </el-col>
+                      </el-row>
+
+                      <el-row :gutter="20" style="margin-left: 60px">
+                        <el-col :span="12">
+                          <el-row>
+                            <div style="font-size: 12px; color: #191919">检查间隔（s ）</div>
+                          </el-row>
+                          <el-row>
+                            <el-input
+                              v-model="item.healths.liveness.periodSeconds"
+                              style="width: 100%"
+                            />
+                          </el-row>
+                        </el-col>
+                        <el-col :span="12">
+                          <el-row>
+                            <div style="font-size: 12px; color: #191919">成功阈值</div>
+                          </el-row>
+                          <el-row>
+                            <el-input
+                              v-model="item.healths.liveness.successThreshold"
+                              style="width: 100%"
+                            />
+                          </el-row>
+                        </el-col>
+                      </el-row>
+
+                      <el-row :gutter="20" style="margin-left: 60px">
+                        <el-col :span="12">
+                          <el-row>
+                            <div style="font-size: 12px; color: #191919">失败阈值</div>
+                          </el-row>
+                          <el-row>
+                            <el-input
+                              v-model="item.healths.liveness.failureThreshold"
+                              style="width: 100%"
+                            />
+                          </el-row>
+                        </el-col>
+                      </el-row>
                     </div>
                   </el-form-item>
 
@@ -783,9 +852,11 @@
                     <div style="margin-top: -2px">
                       <el-form-item style="margin-left: 70px">
                         <el-radio-group v-model="item.healths.readiness.checkType" size="small">
-                          <el-radio :value="1">HTTP 请求</el-radio>
-                          <el-radio :value="2">命令</el-radio>
-                          <el-radio :value="3">TCP 端口</el-radio>
+                          <el-space :size="25">
+                            <el-radio :value="1">HTTP 请求</el-radio>
+                            <el-radio :value="2">命令</el-radio>
+                            <el-radio :value="3">TCP 端口</el-radio>
+                          </el-space>
                         </el-radio-group>
                       </el-form-item>
 
@@ -844,9 +915,11 @@
                     <div style="margin-top: -2px">
                       <el-form-item style="margin-left: 70px">
                         <el-radio-group v-model="item.healths.startup.checkType" size="small">
-                          <el-radio :value="1">HTTP 请求</el-radio>
-                          <el-radio :value="2">命令</el-radio>
-                          <el-radio :value="3">TCP 端口</el-radio>
+                          <el-space :size="25">
+                            <el-radio :value="1">HTTP 请求</el-radio>
+                            <el-radio :value="2">命令</el-radio>
+                            <el-radio :value="3">TCP 端口</el-radio>
+                          </el-space>
                         </el-radio-group>
                       </el-form-item>
 
@@ -884,12 +957,12 @@
                           />
                         </el-form-item>
                       </div>
-                      <div v-if="item.healths.readiness.checkType === 3">
+                      <div v-if="item.healths.startup.checkType === 3">
                         <el-form-item style="margin-left: 70px">
                           <div style="font-size: 12px; color: #191919">端口</div>
                         </el-form-item>
                         <el-form-item style="margin-left: 70px">
-                          <el-input v-model="item.healths.readiness.port" style="width: 100%" />
+                          <el-input v-model="item.healths.startup.port" style="width: 100%" />
                         </el-form-item>
                       </div>
                     </div>
@@ -1522,12 +1595,12 @@ const addContainer = () => {
         enable: false,
         checkType: 1,
         cmd: '',
+        port: '',
         httpGet: {
           path: '/',
           port: '80',
           scheme: 'HTTP',
         },
-        port: '',
         initialDelaySeconds: 0,
         timeoutSeconds: 1,
         periodSeconds: 10,
@@ -1538,12 +1611,13 @@ const addContainer = () => {
         enable: false,
         checkType: 1,
         cmd: '',
+        port: '',
         httpGet: {
           path: '/',
           port: '80',
           scheme: 'HTTP',
         },
-        port: '',
+
         initialDelaySeconds: 0,
         timeoutSeconds: 1,
         periodSeconds: 10,
@@ -1554,12 +1628,13 @@ const addContainer = () => {
         enable: false,
         checkType: 1,
         cmd: '',
+        port: '',
         httpGet: {
           path: '/',
           port: '80',
           scheme: 'HTTP',
         },
-        port: '',
+
         initialDelaySeconds: 0,
         timeoutSeconds: 1,
         periodSeconds: 10,
