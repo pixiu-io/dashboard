@@ -804,7 +804,7 @@
                       </div>
                       <div class="one-line-style">
                         <el-input
-                          v-model="item.healths.liveness.timeoutSeconds"
+                          v-model="item.healths.liveness.periodSeconds"
                           style="width: 100%; margin-left: 70px"
                         />
                         <el-input
