@@ -773,6 +773,57 @@
                           <el-input v-model="item.healths.liveness.port" style="width: 100%" />
                         </el-form-item>
                       </div>
+
+                      <div class="one-line-style">
+                        <el-form-item style="margin-left: 70px">
+                          <div style="font-size: 12px; color: #191919">初始延迟（s）</div>
+                        </el-form-item>
+                        <el-form-item style="margin-left: 70px">
+                          <div style="font-size: 12px; color: #191919">超时时间（s）</div>
+                        </el-form-item>
+                      </div>
+
+                      <div class="one-line-style">
+                        <el-input
+                          v-model="item.healths.liveness.initialDelaySeconds"
+                          style="width: 100%; margin-left: 70px"
+                        />
+                        <el-input
+                          v-model="item.healths.liveness.timeoutSeconds"
+                          style="width: 100%; margin-left: 15px"
+                        />
+                      </div>
+
+                      <div class="one-line-style">
+                        <el-form-item style="margin-left: 70px">
+                          <div style="font-size: 12px; color: #191919">检查间隔（s ）</div>
+                        </el-form-item>
+                        <el-form-item style="margin-left: 70px">
+                          <div style="font-size: 12px; color: #191919">成功阈值</div>
+                        </el-form-item>
+                      </div>
+                      <div class="one-line-style">
+                        <el-input
+                          v-model="item.healths.liveness.timeoutSeconds"
+                          style="width: 100%; margin-left: 70px"
+                        />
+                        <el-input
+                          v-model="item.healths.liveness.successThreshold"
+                          style="width: 100%; margin-left: 15px"
+                        />
+                      </div>
+
+                      <div class="one-line-style">
+                        <el-form-item style="margin-left: 70px">
+                          <div style="font-size: 12px; color: #191919">失败阈值</div>
+                        </el-form-item>
+                      </div>
+                      <div class="one-line-style">
+                        <el-input
+                          v-model="item.healths.liveness.failureThreshold"
+                          style="width: 50%; margin-left: 70px"
+                        />
+                      </div>
                     </div>
                   </el-form-item>
 
@@ -1528,12 +1579,12 @@ const addContainer = () => {
         enable: false,
         checkType: 1,
         cmd: '',
+        port: '',
         httpGet: {
           path: '/',
           port: '80',
           scheme: 'HTTP',
         },
-        port: '',
         initialDelaySeconds: 0,
         timeoutSeconds: 1,
         periodSeconds: 10,
@@ -1544,12 +1595,13 @@ const addContainer = () => {
         enable: false,
         checkType: 1,
         cmd: '',
+        port: '',
         httpGet: {
           path: '/',
           port: '80',
           scheme: 'HTTP',
         },
-        port: '',
+
         initialDelaySeconds: 0,
         timeoutSeconds: 1,
         periodSeconds: 10,
@@ -1560,12 +1612,13 @@ const addContainer = () => {
         enable: false,
         checkType: 1,
         cmd: '',
+        port: '',
         httpGet: {
           path: '/',
           port: '80',
           scheme: 'HTTP',
         },
-        port: '',
+
         initialDelaySeconds: 0,
         timeoutSeconds: 1,
         periodSeconds: 10,
