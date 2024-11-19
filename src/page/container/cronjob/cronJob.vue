@@ -891,22 +891,30 @@
                           <el-form-item style="margin-left: 70px">
                             <div style="font-size: 12px; color: #191919">路径</div>
                           </el-form-item>
-                          <el-form-item style="margin-left: 70px">
-                            <el-select
-                              v-model="item.healths.readiness.httpGet.scheme"
-                              style="width: 30%"
-                            >
-                              <el-option v-for="i in item.schemes" :key="i" :value="i" :label="i" />
-                            </el-select>
-                            <el-input
-                              v-model="item.healths.readiness.httpGet.path"
-                              style="width: 30%; margin-left: 15px"
-                            />
-                            <el-input
-                              v-model="item.healths.readiness.httpGet.port"
-                              style="width: 30%; margin-left: 15px"
-                            />
-                          </el-form-item>
+
+                          <div style="width: 650px">
+                            <el-form-item style="margin-left: 70px">
+                              <el-select
+                                v-model="item.healths.readiness.httpGet.scheme"
+                                style="width: 30%"
+                              >
+                                <el-option
+                                  v-for="i in item.schemes"
+                                  :key="i"
+                                  :value="i"
+                                  :label="i"
+                                />
+                              </el-select>
+                              <el-input
+                                v-model="item.healths.readiness.httpGet.path"
+                                style="width: 30%; margin-left: 15px"
+                              />
+                              <el-input
+                                v-model="item.healths.readiness.httpGet.port"
+                                style="width: 30%; margin-left: 15px"
+                              />
+                            </el-form-item>
+                          </div>
                         </div>
 
                         <div v-if="item.healths.readiness.checkType === 2">
@@ -926,9 +934,73 @@
                             <div style="font-size: 12px; color: #191919">端口</div>
                           </el-form-item>
                           <el-form-item style="margin-left: 70px">
-                            <el-input v-model="item.healths.readiness.port" style="width: 100%" />
+                            <el-input v-model="item.healths.readiness.port" style="width: 580px" />
                           </el-form-item>
                         </div>
+
+                        <el-row :gutter="20" style="margin-left: 60px">
+                          <el-col :span="12">
+                            <el-row>
+                              <div style="font-size: 12px; color: #191919">初始延迟（s）</div>
+                            </el-row>
+                            <el-row>
+                              <el-input
+                                v-model="item.healths.readiness.initialDelaySeconds"
+                                style="width: 100%"
+                              />
+                            </el-row>
+                          </el-col>
+                          <el-col :span="12">
+                            <el-row>
+                              <div style="font-size: 12px; color: #191919">超时时间（s）</div>
+                            </el-row>
+                            <el-row>
+                              <el-input
+                                v-model="item.healths.readiness.timeoutSeconds"
+                                style="width: 100%"
+                              />
+                            </el-row>
+                          </el-col>
+                        </el-row>
+
+                        <el-row :gutter="20" style="margin-left: 60px">
+                          <el-col :span="12">
+                            <el-row>
+                              <div style="font-size: 12px; color: #191919">检查间隔（s ）</div>
+                            </el-row>
+                            <el-row>
+                              <el-input
+                                v-model="item.healths.readiness.periodSeconds"
+                                style="width: 100%"
+                              />
+                            </el-row>
+                          </el-col>
+                          <el-col :span="12">
+                            <el-row>
+                              <div style="font-size: 12px; color: #191919">成功阈值</div>
+                            </el-row>
+                            <el-row>
+                              <el-input
+                                v-model="item.healths.readiness.successThreshold"
+                                style="width: 100%"
+                              />
+                            </el-row>
+                          </el-col>
+                        </el-row>
+
+                        <el-row :gutter="20" style="margin-left: 60px">
+                          <el-col :span="12">
+                            <el-row>
+                              <div style="font-size: 12px; color: #191919">失败阈值</div>
+                            </el-row>
+                            <el-row>
+                              <el-input
+                                v-model="item.healths.readiness.failureThreshold"
+                                style="width: 100%"
+                              />
+                            </el-row>
+                          </el-col>
+                        </el-row>
                       </div>
                     </el-form-item>
 
