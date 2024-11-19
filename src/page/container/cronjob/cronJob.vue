@@ -200,7 +200,7 @@
       </el-step>
     </el-steps>
 
-    <el-scrollbar height="400px">
+    <el-scrollbar height="480px">
       <el-form :label-position="labelPosition" style="margin-top: 20px">
         <div v-if="data.active == 0">
           <el-form-item>
@@ -1975,4 +1975,12 @@ const getCronJobs = async () => {
 };
 </script>
 
-<style scoped="scoped"></style>
+<style>
+.el-overlay-dialog {
+  overflow: hidden;
+}
+
+/* .el-overlay-dialog {
+  scrollbar-width: none;
+} */
+</style>
