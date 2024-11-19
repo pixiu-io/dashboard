@@ -343,7 +343,7 @@
             <el-row :gutter="20" style="margin-left: 0px">
               <el-col :span="12">
                 <el-row>
-                  <div class="form-change-key-style">最大启动延后时间</div>
+                  <div class="form-change-key-style">最大启动延后时间（s）</div>
                 </el-row>
                 <div style="margin-top: 10px"></div>
                 <el-row>
