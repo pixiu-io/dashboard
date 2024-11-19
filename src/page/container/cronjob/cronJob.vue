@@ -331,8 +331,9 @@
 
           <el-form-item>
             <el-button
-              class="table-inline-btn"
-              style="margin-left: -8px; margin-right: -20px; cursor: pointer; margin-top: 5px"
+              type="text"
+              class="app-action-btn"
+              style="margin-top: 5px; margin-left: 8px"
               @click="openAdvanceOption"
               >高级设置</el-button
             >
