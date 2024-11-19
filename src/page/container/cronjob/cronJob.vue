@@ -210,7 +210,7 @@
             <el-input
               v-model="data.cronJobForm.metadata.name"
               class="form-item-key-style"
-              style="margin-left: 30px; width: 45%"
+              style="margin-left: 30px; width: 60%"
             />
           </el-form-item>
 
@@ -285,93 +285,115 @@
         </div>
 
         <div v-if="data.active == 1">
-          <el-form-item>
-            <template #label>
-              <span class="form-item-key-style">最大重试次数</span>
-            </template>
-            <el-input
-              v-model="data.cronJobData.backoffLimit"
-              style="margin-left: 12px; width: 50%"
-            />
-          </el-form-item>
+          <el-row :gutter="20" style="margin-left: 1px">
+            <el-col :span="12">
+              <el-row>
+                <div class="form-change-key-style">最大重试次数</div>
+              </el-row>
+              <div style="margin-top: 10px"></div>
+              <el-row>
+                <el-input v-model="data.cronJobData.backoffLimit" style="width: 90%" />
+              </el-row>
+            </el-col>
 
-          <el-form-item>
-            <template #label>
-              <span class="form-item-key-style">最大运行时间 </span>
-            </template>
-            <el-input
-              v-model="data.cronJobData.activeDeadlineSeconds"
-              style="margin-left: 12px; width: 50%"
-            />
-          </el-form-item>
+            <el-col :span="12">
+              <el-row>
+                <div class="form-change-key-style">最大运行时间</div>
+              </el-row>
+              <div style="margin-top: 10px"></div>
+              <el-row>
+                <el-input v-model="data.cronJobData.activeDeadlineSeconds" style="width: 90%" />
+              </el-row>
+            </el-col>
+          </el-row>
+          <div style="margin-top: 10px"></div>
 
-          <el-form-item>
-            <template #label>
-              <span class="form-item-key-style">容器组完成数量 </span>
-            </template>
-            <el-input
-              v-model="data.cronJobData.completions"
-              style="margin-left: 12px; width: 50%"
-            />
-          </el-form-item>
-          <el-form-item>
-            <template #label>
-              <span class="form-item-key-style">并行容器组数量 </span>
-            </template>
-            <el-input
-              v-model="data.cronJobData.parallelism"
-              style="margin-left: 12px; width: 50%"
-            />
-          </el-form-item>
+          <el-row :gutter="20" style="margin-left: 0px">
+            <el-col :span="12">
+              <el-row>
+                <div class="form-change-key-style">容器组完成数量</div>
+              </el-row>
+              <div style="margin-top: 10px"></div>
+              <el-row>
+                <el-input v-model="data.cronJobData.completions" style="width: 90%" />
+              </el-row>
+            </el-col>
+            <el-col :span="12">
+              <el-row>
+                <div class="form-change-key-style">并行容器组数量</div>
+              </el-row>
+              <div style="margin-top: 10px"></div>
+              <el-row>
+                <el-input v-model="data.cronJobData.parallelism" style="width: 90%" />
+              </el-row>
+            </el-col>
+          </el-row>
 
           <el-form-item>
             <el-button
-              class="table-inline-btn"
-              style="margin-left: -8px; margin-right: -20px; cursor: pointer"
+              type="text"
+              class="app-action-btn"
+              style="margin-top: 5px; margin-left: 8px"
               @click="openAdvanceOption"
               >高级设置</el-button
             >
           </el-form-item>
+
           <div v-if="data.cronJobData.enableAdvanceOptions === true">
-            <el-form-item>
-              <template #label>
-                <span class="form-item-key-style">最大启动延后时间</span>
-              </template>
-              <el-input v-model="data.cronJobData.startingDeadlineSeconds" style="width: 50%" />
-            </el-form-item>
-
-            <el-form-item>
-              <template #label>
-                <span class="form-item-key-style">成功任务保留数量</span>
-              </template>
-              <el-input v-model="data.cronJobData.successfulJobsHistoryLimit" style="width: 50%" />
-            </el-form-item>
-
-            <el-form-item>
-              <template #label>
-                <span class="form-item-key-style">失败任务保留数量 </span>
-              </template>
-              <el-input v-model="data.cronJobData.failedJobsHistoryLimit" style="width: 50%" />
-            </el-form-item>
-
-            <el-form-item>
-              <template #label>
-                <span class="form-item-key-style">并发策略 </span>
-              </template>
-              <span style="margin-left: 40px">
-                <el-select
-                  v-model="data.cronJobData.concurrencyPolicy"
-                  style="width: 210px; float: right; margin-right: 10px"
-                >
-                  <el-option
-                    v-for="item in data.cronJobData.concurrencyPolicies"
-                    :key="item"
-                    :value="item"
-                    :label="item"
+            <el-row :gutter="20" style="margin-left: 0px">
+              <el-col :span="12">
+                <el-row>
+                  <div class="form-change-key-style">最大启动延后时间（s）</div>
+                </el-row>
+                <div style="margin-top: 10px"></div>
+                <el-row>
+                  <el-input v-model="data.cronJobData.startingDeadlineSeconds" style="width: 90%" />
+                </el-row>
+              </el-col>
+              <el-col :span="12">
+                <el-row>
+                  <div class="form-change-key-style">成功任务保留数量</div>
+                </el-row>
+                <div style="margin-top: 10px"></div>
+                <el-row>
+                  <el-input
+                    v-model="data.cronJobData.successfulJobsHistoryLimit"
+                    style="width: 90%"
                   />
-                </el-select>
-              </span>
-            </el-form-item>
+                </el-row>
+              </el-col>
+            </el-row>
+
+            <div style="margin-top: 10px"></div>
+
+            <el-row :gutter="20" style="margin-left: 0px">
+              <el-col :span="12">
+                <el-row>
+                  <div class="form-change-key-style">失败任务保留数量</div>
+                </el-row>
+                <div style="margin-top: 10px"></div>
+                <el-row>
+                  <el-input v-model="data.cronJobData.failedJobsHistoryLimit" style="width: 90%" />
+                </el-row>
+              </el-col>
+
+              <el-col :span="12">
+                <el-row>
+                  <div class="form-change-key-style">并发策略</div>
+                </el-row>
+                <div style="margin-top: 10px"></div>
+                <el-row>
+                  <el-select v-model="data.cronJobData.concurrencyPolicy" style="width: 90%">
+                    <el-option
+                      v-for="item in data.cronJobData.concurrencyPolicies"
+                      :key="item"
+                      :value="item"
+                      :label="item"
+                    />
+                  </el-select>
+                </el-row>
+              </el-col>
+            </el-row>
           </div>
         </div>
 
