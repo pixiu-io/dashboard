@@ -581,6 +581,11 @@
   color: #191919;
 }
 
+.form-change-key-style {
+  font-size: 13px;
+  color: #191919;
+}
+
 .form-input-key-style {
   margin-left: 8px;
   font-size: 12px;
