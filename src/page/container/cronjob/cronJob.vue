@@ -11,11 +11,12 @@
         </button>
 
         <el-input
-          v-model="data.pageInfo.query"
+          v-model="data.pageInfo.nameSelector"
           placeholder="名称搜索关键字"
-          style="width: 480px; float: right"
+          style="width: 35%; float: right"
           clearable
           @clear="getCronJobs"
+          @input="getCronJobs"
         >
           <template #suffix>
             <pixiu-icon
@@ -1542,9 +1543,11 @@ const data = reactive({
   pageInfo: {
     page: 1,
     limit: 10,
-    query: '',
     total: 0,
+    nameSelector: '',
+    labelSelector: '',
   },
+
   tableData: [],
 
   loading: false,
@@ -2154,20 +2157,14 @@ const handleEditYamlDialog = async (row) => {
 };
 
 const getCronJobs = async () => {
-  if (!data.noLoading) {
-    data.loading = true;
-  }
-
-  const [result, err] = await getCronJobList(data.cluster, data.namespace);
-  data.loading = false;
+  const [result, err] = await getCronJobList(data.cluster, data.namespace, data.pageInfo);
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
 
-  data.deploymentList = result.items;
-  data.pageInfo.total = data.deploymentList.length;
-  data.tableData = getTableData(data.pageInfo, data.deploymentList);
+  data.pageInfo.total = result.total;
+  data.tableData = result.items;
 };
 </script>
 

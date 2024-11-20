@@ -1,18 +1,17 @@
 import http from '@/utils/http';
 import { awaitWrap } from '@/utils/utils';
 
-export const getCronJobList = async (cluster, namespace) => {
-  let url = `/pixiu/proxy/${cluster}/apis/batch/v1/namespaces/${namespace}/cronjobs`;
+export const getCronJobList = async (cluster, namespace, params) => {
+  let url = `/pixiu/indexer/clusters/${cluster}/resources/cronjob/namespaces/${namespace}`;
   if (namespace === '全部空间') {
-    url = `/pixiu/proxy/${cluster}/apis/batch/v1/cronjobs`;
+    url = `/pixiu/indexer/clusters/${cluster}/resources/cronjob/namespaces/all_namespaces`;
   }
+
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
       url: url,
-      data: {
-        limit: 500,
-      },
+      data: params,
     }),
   );
   return [result, err];
