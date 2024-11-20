@@ -69,10 +69,10 @@
           </template>
         </el-table-column>
 
-        <!-- <el-table-column prop="status" label="状态" :formatter="runningFormatter">
-        </el-table-column> -->
+        <el-table-column prop="status" label="状态" :formatter="runningFormatter">
+        </el-table-column>
 
-        <el-table-column
+        <!-- <el-table-column
           prop="spec.template.metadata.labels"
           label="Labels"
           :formatter="formatterLabels"
@@ -83,7 +83,7 @@
           label="Selector"
           :formatter="formatterLabels"
         >
-        </el-table-column>
+        </el-table-column> -->
 
         <!-- <el-table-column prop="status" label="就绪/副本/失败">
           <template #default="scope">
