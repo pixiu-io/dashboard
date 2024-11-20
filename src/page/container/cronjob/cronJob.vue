@@ -1520,6 +1520,7 @@ import {
 import { getLocalNamespace, getNamespaceList } from '@/services/kubernetes/namespaceService';
 import {
   createCronJob,
+  getCronJob,
   getCronJobList,
   deleteCronJob,
   patchCronJob,
@@ -1547,7 +1548,6 @@ const data = reactive({
     nameSelector: '',
     labelSelector: '',
   },
-
   tableData: [],
 
   loading: false,
@@ -2146,7 +2146,7 @@ const changeCronJobSuspend = async (row) => {
 
 const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
-  const [result, err] = await getDeployment(data.cluster, data.namespace, data.yamlName);
+  const [result, err] = await getCronJob(data.cluster, data.namespace, data.yamlName);
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;

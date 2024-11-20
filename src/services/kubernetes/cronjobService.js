@@ -54,3 +54,13 @@ export const patchCronJob = async (cluster, namespace, name, data) => {
 
   return [result, err];
 };
+
+export const getCronJob = async (cluster, namespace, name) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: `/pixiu/proxy/${cluster}/apis/batch/v1/namespaces/${namespace}/cronjobs/${name}`,
+    }),
+  );
+  return [result, err];
+};
