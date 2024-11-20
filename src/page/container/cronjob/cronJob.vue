@@ -1498,7 +1498,15 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref, onUnmounted } from 'vue';
+import {
+  reactive,
+  getCurrentInstance,
+  onMounted,
+  ref,
+  onUnmounted,
+  onBeforeUnmount,
+  onBeforeMount,
+} from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData } from '@/utils/utils';
 import { makePodTemplate, makeObjectMetadata } from '@/utils/k8s';
@@ -1528,6 +1536,8 @@ const editYaml = ref();
 const data = reactive({
   cluster: '',
   namespace: 'default',
+
+  timer: null,
 
   pageInfo: {
     page: 1,
@@ -1645,6 +1655,16 @@ onMounted(() => {
   // 启动 localstorage 缓存监听，用于检测命名空间是否发生了变化
   window.addEventListener('setItem', handleStorageChange);
   getCronJobs();
+});
+
+onBeforeUnmount(() => {
+  window.clearInterval(data.timer);
+});
+
+onBeforeMount(() => {
+  data.timer = window.setInterval(() => {
+    getCronJobs();
+  }, 3000);
 });
 
 onUnmounted(() => {
