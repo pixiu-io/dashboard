@@ -12,7 +12,7 @@
         </button>
 
         <el-input
-          v-model="data.pageInfo.search.searchInfo"
+          v-model="data.pageInfo.nameSelector"
           placeholder="名称搜索关键字"
           style="width: 35%; float: right"
           clearable
@@ -69,10 +69,10 @@
           </template>
         </el-table-column>
 
-        <!-- <el-table-column prop="status" label="状态" :formatter="runningFormatter">
-        </el-table-column> -->
+        <el-table-column prop="status" label="状态" :formatter="formatDaemonSetStatus">
+        </el-table-column>
 
-        <el-table-column
+        <!-- <el-table-column
           prop="spec.template.metadata.labels"
           label="Labels"
           :formatter="formatterLabels"
@@ -83,7 +83,7 @@
           label="Selector"
           :formatter="formatterLabels"
         >
-        </el-table-column>
+        </el-table-column> -->
 
         <!-- <el-table-column prop="status" label="就绪/副本/失败">
           <template #default="scope">
@@ -293,7 +293,7 @@
 
   <PiXiuViewOrEdit
     :yaml-dialog="data.editYamlDialog"
-    title="编辑Yaml"
+    title="编辑YAML"
     :yaml="data.yaml"
     :read-only="false"
     :refresh="getDaemonsets"
@@ -550,6 +550,7 @@ import {
   onMounted,
   onUnmounted,
   onBeforeUnmount,
+  onBeforeMount,
   ref,
   watch,
   provide,
@@ -568,7 +569,7 @@ import {
   formatterImage,
   formatterTime,
   formatterNamespace,
-  runningFormatter,
+  formatDaemonSetStatus,
   formatterContainerImage,
   formatString,
   formatterLabels,
@@ -593,19 +594,17 @@ const data = reactive({
   cluster: '',
   namespace: 'default',
 
-  autoRefresh: false,
+  autoRefresh: true,
   timer: null,
 
   pageInfo: {
     page: 1,
     limit: 10,
-    query: '',
     total: 0,
-    search: {
-      field: 'name',
-      searchInfo: '',
-    },
+    nameSelector: '',
+    labelSelector: '',
   },
+
   tableData: [],
   loading: false,
 
@@ -697,6 +696,12 @@ onUnmounted(() => {
 
 onBeforeUnmount(() => {
   window.clearInterval(data.timer);
+});
+
+onBeforeMount(() => {
+  data.timer = window.setInterval(() => {
+    getDaemonsets();
+  }, 3000);
 });
 
 const handleStorageChange = (e) => {
@@ -933,11 +938,7 @@ const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
 
-  data.tableData = getTableData(data.pageInfo, data.daemonsetList);
-
-  if (data.pageInfo.search.searchInfo !== '') {
-    searchDaemonsets();
-  }
+  getDaemonsets();
 };
 
 const confirmEvent = async (row) => {
@@ -1049,11 +1050,7 @@ const jumpRoute = (row) => {
 };
 
 const getDaemonsets = async () => {
-  if (!data.autoRefresh) {
-    data.loading = true;
-  }
   const [result, err] = await getDaemonsetList(data.cluster, data.namespace, data.pageInfo);
-  data.loading = false;
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
@@ -1063,21 +1060,7 @@ const getDaemonsets = async () => {
   data.pageInfo.total = result.total;
 };
 
-const startAutoRefresh = () => {
-  if (data.autoRefresh) {
-    data.timer = window.setInterval(() => {
-      getDaemonsets();
-    }, 3000);
-  } else {
-    window.clearInterval(data.timer);
-  }
-};
-
 provide('getDaemonsets', getDaemonsets);
-
-const searchDaemonsets = async () => {
-  data.tableData = searchData(data.pageInfo, data.daemonsetList);
-};
 
 const closeDaemonsetScaleDialog = (row) => {
   data.daemonsetReplicasDialog = false;
