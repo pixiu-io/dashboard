@@ -438,6 +438,28 @@ const runningFormatter = (row, column, cellValue) => {
 };
 export { runningFormatter };
 
+const formatDaemonSetStatus = (row, column, cellValue) => {
+  let status = '运行中';
+  if (cellValue.currentNumberScheduled !== cellValue.desiredNumberScheduled) {
+    status = '更新中';
+  }
+
+  return (
+    <div style="display: flex">
+      <div>
+        <pixiu-icon
+          name={runningStatus[status].name}
+          size="12px"
+          type="iconfont"
+          color={runningStatus[status].color}
+        />
+      </div>
+      <div style="margin-left: 6px"> {status}</div>
+    </div>
+  );
+};
+export { formatDaemonSetStatus };
+
 const formatNodeRole = (row, column, cellValue) => {
   let roles = [];
   let ls = JSON.parse(JSON.stringify(cellValue.labels));

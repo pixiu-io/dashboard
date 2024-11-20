@@ -69,7 +69,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="status" label="状态" :formatter="runningFormatter">
+        <el-table-column prop="status" label="状态" :formatter="formatDaemonSetStatus">
         </el-table-column>
 
         <!-- <el-table-column
@@ -569,7 +569,7 @@ import {
   formatterImage,
   formatterTime,
   formatterNamespace,
-  runningFormatter,
+  formatDaemonSetStatus,
   formatterContainerImage,
   formatString,
   formatterLabels,
