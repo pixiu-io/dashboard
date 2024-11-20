@@ -2152,11 +2152,11 @@ const getCronJobs = async () => {
 </script>
 
 <style>
-.el-overlay-dialog {
-  overflow: hidden;
-}
-
 /* .el-overlay-dialog {
-  scrollbar-width: none;
+  overflow: hidden;
 } */
+
+.el-overlay-dialog {
+  scrollbar-width: none;
+}
 </style>

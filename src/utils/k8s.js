@@ -97,6 +97,7 @@ const makePodTemplate = (data) => {
     tplSpec['volumes'] = newVolumes;
   }
 
+  // 追加容器属性
   let targetContainers = [];
   for (let fc of data.containers) {
     let targetContainer = {
@@ -104,6 +105,7 @@ const makePodTemplate = (data) => {
       image: fc.image,
       imagePullPolicy: fc.imagePullPolicy,
     };
+    // 启用容器高级选项
     if (fc.advance) {
       // 资源设置
       if (
@@ -133,6 +135,105 @@ const makePodTemplate = (data) => {
           }
         }
         targetContainer['resources'] = resources;
+      }
+
+      // 健康检查设置
+      if (fc.choiceHealth) {
+        // 存活检查
+        if (fc.healths.liveness.enable) {
+          let livenessProbe = {
+            initialDelaySeconds: fc.healths.liveness.initialDelaySeconds,
+            timeoutSeconds: fc.healths.liveness.timeoutSeconds,
+            periodSeconds: fc.healths.liveness.periodSeconds,
+            successThreshold: fc.healths.liveness.successThreshold,
+            failureThreshold: fc.healths.liveness.failureThreshold,
+          };
+
+          // HTTP 请求
+          if (fc.healths.liveness.checkType === 1) {
+            livenessProbe['httpGet'] = {
+              path: fc.healths.liveness.httpGet.path,
+              port: parseInt(fc.healths.liveness.httpGet.port),
+              scheme: fc.healths.liveness.httpGet.scheme,
+            };
+          }
+          // 命令
+          if (fc.healths.liveness.checkType === 2) {
+            livenessProbe['exec'] = {
+              command: fc.healths.liveness.cmd.split(','),
+            };
+          }
+          // TCP 端口
+          if (fc.healths.liveness.checkType === 3) {
+            livenessProbe['tcpSocket'] = {
+              port: parseInt(fc.healths.liveness.port),
+            };
+          }
+          targetContainer['livenessProbe'] = livenessProbe;
+        }
+        // 就绪检查
+        if (fc.healths.readiness.enable) {
+          let readinessProbe = {
+            initialDelaySeconds: fc.healths.readiness.initialDelaySeconds,
+            timeoutSeconds: fc.healths.readiness.timeoutSeconds,
+            periodSeconds: fc.healths.readiness.periodSeconds,
+            successThreshold: fc.healths.readiness.successThreshold,
+            failureThreshold: fc.healths.readiness.failureThreshold,
+          };
+          // HTTP 请求
+          if (fc.healths.readiness.checkType === 1) {
+            readinessProbe['httpGet'] = {
+              path: fc.healths.readiness.httpGet.path,
+              port: parseInt(fc.healths.readiness.httpGet.port),
+              scheme: fc.healths.readiness.httpGet.scheme,
+            };
+          }
+          // 命令
+          if (fc.healths.readiness.checkType === 2) {
+            readinessProbe['exec'] = {
+              command: fc.healths.readiness.cmd.split(','),
+            };
+          }
+          // TCP 端口
+          if (fc.healths.readiness.checkType === 3) {
+            readinessProbe['tcpSocket'] = {
+              port: parseInt(fc.healths.readiness.port),
+            };
+          }
+          targetContainer['readinessProbe'] = readinessProbe;
+        }
+        // 启动检查
+        if (fc.healths.startup.enable) {
+          let startupProbe = {
+            initialDelaySeconds: fc.healths.startup.initialDelaySeconds,
+            timeoutSeconds: fc.healths.startup.timeoutSeconds,
+            periodSeconds: fc.healths.startup.periodSeconds,
+            successThreshold: fc.healths.startup.successThreshold,
+            failureThreshold: fc.healths.startup.failureThreshold,
+          };
+          // HTTP 请求
+          if (fc.healths.startup.checkType === 1) {
+            startupProbe['httpGet'] = {
+              path: fc.healths.startup.httpGet.path,
+              port: parseInt(fc.healths.startup.httpGet.port),
+              scheme: fc.healths.startup.httpGet.scheme,
+            };
+          }
+          // 命令
+          if (fc.healths.startup.checkType === 2) {
+            startupProbe['exec'] = {
+              command: fc.healths.startup.cmd.split(','),
+            };
+          }
+          // TCP 端口
+          if (fc.healths.startup.checkType === 3) {
+            startupProbe['tcpSocket'] = {
+              port: parseInt(fc.healths.startup.port),
+            };
+          }
+
+          targetContainer['startupProbe'] = startupProbe;
+        }
       }
 
       if (fc.choicePort) {
@@ -177,11 +278,11 @@ const makePodTemplate = (data) => {
           }
         }
       }
-
-      targetContainers.push(targetContainer);
     }
-    tplSpec['containers'] = targetContainers;
+    targetContainers.push(targetContainer);
   }
+  tplSpec['containers'] = targetContainers;
+
   return tplSpec;
 };
 export { makePodTemplate };
