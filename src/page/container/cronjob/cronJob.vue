@@ -11,11 +11,12 @@
         </button>
 
         <el-input
-          v-model="data.pageInfo.query"
+          v-model="data.pageInfo.nameSelector"
           placeholder="名称搜索关键字"
-          style="width: 480px; float: right"
+          style="width: 35%; float: right"
           clearable
           @clear="getCronJobs"
+          @input="getCronJobs"
         >
           <template #suffix>
             <pixiu-icon
@@ -1487,6 +1488,14 @@
     </template>
   </el-dialog>
 
+  <PiXiuViewOrEdit
+    :yaml-dialog="data.editYamlDialog"
+    title="编辑YAML"
+    :yaml="data.yaml"
+    :read-only="false"
+    :refresh="getCronJobs"
+  ></PiXiuViewOrEdit>
+
   <pixiuDialog
     :close-event="data.deleteDialog.close"
     :object-name="data.deleteDialog.objectName"
@@ -1498,7 +1507,15 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref, onUnmounted } from 'vue';
+import {
+  reactive,
+  getCurrentInstance,
+  onMounted,
+  ref,
+  onUnmounted,
+  onBeforeUnmount,
+  onBeforeMount,
+} from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData } from '@/utils/utils';
 import { makePodTemplate, makeObjectMetadata } from '@/utils/k8s';
@@ -1508,9 +1525,11 @@ import {
   formatterTime,
   formatterCronJobStatus,
 } from '@/utils/formatter';
+import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import { getLocalNamespace, getNamespaceList } from '@/services/kubernetes/namespaceService';
 import {
   createCronJob,
+  getCronJob,
   getCronJobList,
   deleteCronJob,
   patchCronJob,
@@ -1529,11 +1548,14 @@ const data = reactive({
   cluster: '',
   namespace: 'default',
 
+  timer: null,
+
   pageInfo: {
     page: 1,
     limit: 10,
-    query: '',
     total: 0,
+    nameSelector: '',
+    labelSelector: '',
   },
   tableData: [],
 
@@ -1645,6 +1667,16 @@ onMounted(() => {
   // 启动 localstorage 缓存监听，用于检测命名空间是否发生了变化
   window.addEventListener('setItem', handleStorageChange);
   getCronJobs();
+});
+
+onBeforeUnmount(() => {
+  window.clearInterval(data.timer);
+});
+
+onBeforeMount(() => {
+  data.timer = window.setInterval(() => {
+    getCronJobs();
+  }, 3000);
 });
 
 onUnmounted(() => {
@@ -2095,8 +2127,7 @@ const clean = () => {
 const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
-
-  data.tableData = getTableData(data.pageInfo, data.deploymentList);
+  getCronJobs();
 };
 
 const changeCronJobSuspend = async (row) => {
@@ -2123,31 +2154,24 @@ const changeCronJobSuspend = async (row) => {
 };
 
 const handleEditYamlDialog = async (row) => {
-  data.yamlName = row.metadata.name;
-  const [result, err] = await getDeployment(data.cluster, data.namespace, data.yamlName);
+  const [result, err] = await getCronJob(data.cluster, row.metadata.namespace, row.metadata.name);
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  data.yaml = jsYaml.dump(result, { quotingType: '"' });
+  data.yaml = result;
   data.editYamlDialog = true;
 };
 
 const getCronJobs = async () => {
-  if (!data.noLoading) {
-    data.loading = true;
-  }
-
-  const [result, err] = await getCronJobList(data.cluster, data.namespace);
-  data.loading = false;
+  const [result, err] = await getCronJobList(data.cluster, data.namespace, data.pageInfo);
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
 
-  data.deploymentList = result.items;
-  data.pageInfo.total = data.deploymentList.length;
-  data.tableData = getTableData(data.pageInfo, data.deploymentList);
+  data.pageInfo.total = result.total;
+  data.tableData = result.items;
 };
 </script>
 
