@@ -2118,8 +2118,7 @@ const clean = () => {
 const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
-
-  data.tableData = getTableData(data.pageInfo, data.deploymentList);
+  getCronJobs();
 };
 
 const changeCronJobSuspend = async (row) => {
