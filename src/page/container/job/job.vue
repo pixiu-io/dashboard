@@ -9,11 +9,12 @@
         <button class="pixiu-two-button2" style="margin-left: 10px" @click="getJobs">刷新</button>
 
         <el-input
-          v-model="data.pageInfo.query"
+          v-model="data.pageInfo.nameSelector"
           placeholder="名称搜索关键字"
-          style="width: 480px; float: right"
+          style="width: 35%; float: right"
           clearable
           @clear="getJobs"
+          @input="getJobs"
         >
           <template #suffix>
             <pixiu-icon
@@ -144,7 +145,7 @@
 
   <PiXiuViewOrEdit
     :yaml-dialog="data.editYamlDialog"
-    title="编辑Yaml"
+    title="编辑YAML"
     :yaml="data.yaml"
     :read-only="false"
     :refresh="getJobs"
@@ -160,7 +161,7 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref, onBeforeUnmount, onBeforeMount } from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData } from '@/utils/utils';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
@@ -193,11 +194,14 @@ const data = reactive({
   loading: false,
   noLoading: false,
 
+  timer: null,
+
   pageInfo: {
     page: 1,
     limit: 10,
-    query: '',
     total: 0,
+    nameSelector: '',
+    labelSelector: '',
   },
   tableData: [],
   jobList: [],
@@ -224,6 +228,16 @@ onMounted(() => {
   window.addEventListener('setItem', handleStorageChange);
 
   getJobs();
+});
+
+onBeforeUnmount(() => {
+  window.clearInterval(data.timer);
+});
+
+onBeforeMount(() => {
+  data.timer = window.setInterval(() => {
+    getJobs();
+  }, 3000);
 });
 
 const handleStorageChange = (e) => {
@@ -288,18 +302,17 @@ const clean = () => {
 const onChange = (v) => {
   data.pageInfo.limit = v.limit;
   data.pageInfo.page = v.page;
-
-  data.tableData = getTableData(data.pageInfo, data.jobList);
+  getJobs();
 };
 
 const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
-  const [result, err] = await getJob(data.cluster, data.namespace, data.yamlName);
+  const [result, err] = await getJob(data.cluster, row.metadata.namespace, row.metadata.name);
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  data.yaml = jsYaml.dump(result, { quotingType: '"' });
+  data.yaml = result;
   data.editYamlDialog = true;
 };
 
@@ -311,19 +324,14 @@ const createJob = () => {
 const jumpRoute = (row) => {};
 
 const getJobs = async () => {
-  if (!data.noLoading) {
-    data.loading = true;
-  }
-  const [result, err] = await getJobList(data.cluster, data.namespace);
-  data.loading = false;
+  const [result, err] = await getJobList(data.cluster, data.namespace, data.pageInfo);
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
 
-  data.jobList = result.items;
-  data.pageInfo.total = data.jobList.length;
-  data.tableData = getTableData(data.pageInfo, data.jobList);
+  data.pageInfo.total = result.total;
+  data.tableData = result.items;
 };
 </script>
 

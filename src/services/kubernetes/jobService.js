@@ -53,18 +53,17 @@ export const reRunJob = async (cluster, namespace, name, resourceVersion) => {
   return [result];
 };
 
-export const getJobList = async (cluster, namespace) => {
-  let url = `/pixiu/proxy/${cluster}/apis/batch/v1/namespaces/${namespace}/jobs`;
+export const getJobList = async (cluster, namespace, params) => {
+  let url = `/pixiu/indexer/clusters/${cluster}/resources/job/namespaces/${namespace}`;
   if (namespace === '全部空间') {
-    url = `/pixiu/proxy/${cluster}/apis/batch/v1/jobs`;
+    url = `/pixiu/indexer/clusters/${cluster}/resources/job/namespaces/all_namespaces`;
   }
+
   const [err, result] = await awaitWrap(
     http({
       method: 'get',
       url: url,
-      data: {
-        limit: 500,
-      },
+      data: params,
     }),
   );
   return [result, err];
