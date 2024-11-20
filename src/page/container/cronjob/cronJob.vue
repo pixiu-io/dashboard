@@ -1488,6 +1488,14 @@
     </template>
   </el-dialog>
 
+  <PiXiuViewOrEdit
+    :yaml-dialog="data.editYamlDialog"
+    title="编辑YAML"
+    :yaml="data.yaml"
+    :read-only="false"
+    :refresh="getCronJobs"
+  ></PiXiuViewOrEdit>
+
   <pixiuDialog
     :close-event="data.deleteDialog.close"
     :object-name="data.deleteDialog.objectName"
@@ -1517,6 +1525,7 @@ import {
   formatterTime,
   formatterCronJobStatus,
 } from '@/utils/formatter';
+import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import { getLocalNamespace, getNamespaceList } from '@/services/kubernetes/namespaceService';
 import {
   createCronJob,
@@ -2145,13 +2154,12 @@ const changeCronJobSuspend = async (row) => {
 };
 
 const handleEditYamlDialog = async (row) => {
-  data.yamlName = row.metadata.name;
-  const [result, err] = await getCronJob(data.cluster, data.namespace, data.yamlName);
+  const [result, err] = await getCronJob(data.cluster, row.metadata.namespace, row.metadata.name);
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  data.yaml = jsYaml.dump(result, { quotingType: '"' });
+  data.yaml = result;
   data.editYamlDialog = true;
 };
 
