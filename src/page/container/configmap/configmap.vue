@@ -59,18 +59,18 @@
         </el-table-column>
 
         <el-table-column
+          prop="spec.template.metadata.labels"
+          label="Labels"
+          :formatter="formatterLabels"
+        />
+
+        <el-table-column
           v-if="data.namespace === '全部空间'"
           prop="metadata.namespace"
           label="命名空间"
           :formatter="formatterNamespace"
         >
         </el-table-column>
-
-        <el-table-column
-          prop="spec.template.metadata.labels"
-          label="Labels"
-          :formatter="formatterLabels"
-        />
 
         <el-table-column
           prop="metadata.creationTimestamp"
@@ -303,7 +303,7 @@ const searchConfigMaps = async () => {
 
 const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
-  const [result, err] = await getConfigMap(data.cluster, data.namespace, data.yamlName);
+  const [result, err] = await getConfigMap(data.cluster, row.metadata.namespace, row.metadata.name);
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
