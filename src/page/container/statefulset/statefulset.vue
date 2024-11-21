@@ -67,7 +67,7 @@
             </el-link>
           </template>
         </el-table-column>
-
+        <!--
         <el-table-column
           prop="spec.template.metadata.labels"
           label="Labels"
@@ -79,6 +79,9 @@
           label="Selector"
           :formatter="formatterLabels"
         >
+        </el-table-column> -->
+
+        <el-table-column prop="status" label="状态" :formatter="runningFormatter">
         </el-table-column>
 
         <el-table-column prop="status" label="实例个数(正常/全部)" :formatter="formatterStatus">
@@ -197,28 +200,13 @@
     </template>
   </el-dialog>
 
-  <!-- 编辑 yaml 页面 -->
-  <el-dialog
-    :model-value="data.editYamlDialog"
-    style="color: #000000; font: 14px; margin-top: 50px"
-    width="800px"
-    center
-    @close="closeEditYamlDialog"
-  >
-    <template #header>
-      <div style="text-align: left; font-weight: bold; padding-left: 5px">YAML 设置</div>
-    </template>
-    <div style="margin-top: -18px"></div>
-    <MyCodeMirror ref="editYaml" :yaml="data.yaml" :height="650"></MyCodeMirror>
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button class="pixiu-small-cancel-button" @click="closeEditYamlDialog">取消</el-button>
-        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmEditYaml"
-          >确认</el-button
-        >
-      </span>
-    </template>
-  </el-dialog>
+  <PiXiuViewOrEdit
+    :yaml-dialog="data.editYamlDialog"
+    title="编辑YAML"
+    :yaml="data.yaml"
+    :read-only="false"
+    :refresh="getStatefulsets"
+  ></PiXiuViewOrEdit>
 
   <pixiuDialog
     :close-event="data.deleteDialog.close"
@@ -231,20 +219,34 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, onUnmounted, onBeforeUnmount, ref } from 'vue';
+import {
+  reactive,
+  getCurrentInstance,
+  onMounted,
+  onUnmounted,
+  ref,
+  onBeforeUnmount,
+  onBeforeMount,
+} from 'vue';
 import jsYaml from 'js-yaml';
 import { getTableData } from '@/utils/utils';
 import PixiuTag from '@/components/pixiuTag/index.vue';
 import Description from '@/components/description/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
-import { formatterImage, formatterTime, formatterNamespace } from '@/utils/formatter';
+import {
+  formatterImage,
+  formatterTime,
+  formatterNamespace,
+  runningFormatter,
+} from '@/utils/formatter';
 import {
   getStatefulSet,
   updateStatefulSet,
   deleteStatefulSet,
   getStatefulSetList,
 } from '@/services/kubernetes/statefulsetService';
+import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import Pagination from '@/components/pagination/index.vue';
@@ -258,7 +260,7 @@ const data = reactive({
   cluster: '',
   namespace: '',
 
-  autoRefresh: false,
+  autoRefresh: true,
   timer: null,
 
   pageInfo: {
@@ -305,6 +307,11 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('setItem', handleStorageChange);
+});
+onBeforeMount(() => {
+  data.timer = window.setInterval(() => {
+    getStatefulsets();
+  }, 3000);
 });
 
 onBeforeUnmount(() => {
@@ -364,19 +371,18 @@ const onChange = (v) => {
 
 const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
-  const [result, err] = await getStatefulSet(data.cluster, data.namespace, data.yamlName);
+  const [result, err] = await getStatefulSet(
+    data.cluster,
+    row.metadata.namespace,
+    row.metadata.name,
+  );
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
-  data.yaml = jsYaml.dump(result, { quotingType: '"' });
-  data.editYamlDialog = true;
-};
 
-const closeEditYamlDialog = (row) => {
-  data.yaml = '';
-  data.yamlName = '';
-  data.editYamlDialog = false;
+  data.yaml = result;
+  data.editYamlDialog = true;
 };
 
 const confirmEditYaml = async () => {
@@ -418,11 +424,7 @@ const jumpRoute = (row) => {
 };
 
 const getStatefulsets = async () => {
-  if (!data.autoRefresh) {
-    data.loading = true;
-  }
   const [result, err] = await getStatefulSetList(data.cluster, data.namespace, data.pageInfo);
-  data.loading = false;
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
@@ -430,16 +432,6 @@ const getStatefulsets = async () => {
 
   data.tableData = result.items;
   data.pageInfo.total = result.total;
-};
-
-const startAutoRefresh = () => {
-  if (data.autoRefresh) {
-    data.timer = window.setInterval(() => {
-      getStatefulsets();
-    }, 3000);
-  } else {
-    window.clearInterval(data.timer);
-  }
 };
 
 const changeNamespace = async (val) => {

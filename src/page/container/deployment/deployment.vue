@@ -607,6 +607,7 @@ import {
   ref,
   watch,
   provide,
+  onBeforeMount,
 } from 'vue';
 import jsYaml from 'js-yaml';
 import { formatTimestamp, getTableData, searchData } from '@/utils/utils';
@@ -645,7 +646,7 @@ const data = reactive({
   cluster: '',
   namespace: 'default',
 
-  autoRefresh: false,
+  autoRefresh: true,
   timer: null,
 
   pageInfo: {
@@ -743,6 +744,12 @@ onMounted(() => {
 
   // 初始化 workload 列表
   getDeployments();
+});
+
+onBeforeMount(() => {
+  data.timer = window.setInterval(() => {
+    getDeployments();
+  }, 3000);
 });
 
 onUnmounted(() => {
@@ -1150,21 +1157,7 @@ const getDeployments = async () => {
   data.pageInfo.total = result.total;
 };
 
-const startAutoRefresh = () => {
-  if (data.autoRefresh) {
-    data.timer = window.setInterval(() => {
-      getDeployments();
-    }, 3000);
-  } else {
-    window.clearInterval(data.timer);
-  }
-};
-
 provide('getDeployments', getDeployments);
-
-const searchDeployments = async () => {
-  data.tableData = searchData(data.pageInfo, data.deploymentList);
-};
 
 const handleDeploymentScaleDialog = (row) => {
   data.deploymentRepcliasFrom.name = row.metadata.name;
