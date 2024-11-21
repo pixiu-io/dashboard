@@ -13,10 +13,9 @@
         style="
           display: flex;
           justify-content: space-between;
-          align-items: center;
           text-align: left;
           font-weight: bold;
-          padding-left: 5px;
+          padding-left: 15px;
         "
       >
         <span> {{ data.title }}</span>
@@ -40,7 +39,6 @@
         </span>
       </div>
     </template>
-    <div style="margin-top: -18px"></div>
     <!--    <div class="custom-radio-group">-->
     <!--      <el-radio-group v-model="state.fromSize" style="margin-top: 4px">-->
     <!--        <el-radio-button label="small">小窗</el-radio-button>-->
@@ -48,14 +46,16 @@
     <!--        <el-radio-button label="large">全屏</el-radio-button>-->
     <!--      </el-radio-group>-->
     <!--    </div>-->
+    <div style="margin-left: 15px; margin-right: 15px; margin-top: -1px">
+      <MyMonaco
+        ref="editYaml"
+        :yaml="data.yaml"
+        :height="data.dialogHeight"
+        :read-only="readOnly"
+      ></MyMonaco>
+    </div>
 
-    <MyMonaco
-      ref="editYaml"
-      :yaml="data.yaml"
-      :height="data.dialogHeight"
-      :read-only="readOnly"
-    ></MyMonaco>
-
+    <div style="margin-top: 10px"></div>
     <template #footer>
       <span class="dialog-footer">
         <el-button class="pixiu-small-cancel-button" @click="closeYamlDialog">关闭</el-button>
@@ -80,7 +80,7 @@ const data = reactive({
   title: '',
   cluster: '',
   yaml: '',
-  fromSize: 'small',
+  fromSize: 'middle',
   dialogWidth: 900,
   dialogHeight: 450,
   marginTop: '50px',
