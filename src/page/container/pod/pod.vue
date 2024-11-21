@@ -2,52 +2,41 @@
   <Description
     :description="'Pod 是可以在 Kubernetes 中创建和管理的、最小的可部署的计算单元。它包含一个或多个容器，共享网络命名空间，存储，以及唯一的标识符。'"
   />
-
   <div style="margin-top: 5px">
-    <el-row style="display: flex; align-items: center">
-      <el-col style="display: flex; justify-content: space-between">
-        <el-space>
-          <button class="pixiu-two-button" @click="createPod">新建</button>
-          <button
-            style="margin-left: 10px; width: 85px"
-            class="pixiu-two-button2"
-            @click="deletePodsInBatch"
-          >
-            批量删除
-          </button>
-        </el-space>
-        <el-space style="display: flex; align-items: center">
-          <div>
-            <el-switch
-              v-model="data.refresh"
-              inline-prompt
-              :active-icon="Check"
-              :inactive-icon="Close"
-              @change="startRefresh"
-            />
-            <!-- <span style="font-size: 13px; margin-left: 5px; margin-right: 5px">自动刷新</span> -->
-            <el-text style="font-size: 13px; margin-left: 5px; margin-right: 5px">自动刷新</el-text>
-          </div>
+    <el-row>
+      <el-col>
+        <button class="pixiu-two-button" @click="createPod">新建</button>
+        <button class="pixiu-two-button2" style="margin-left: 10px" @click="deletePodsInBatch">
+          删除
+        </button>
 
-          <pixiu-input
-            placeholder="名称搜索关键字"
-            :options="data.options"
-            :enter-event="getPods"
-            style="width: 460px; font-size: 12px"
-            @update:tags="handleDynamicTags"
-          >
-            <template #suffix>
-              <pixiu-icon
-                name="icon-search"
-                style="cursor: pointer"
-                size="15px"
-                type="iconfont"
-                color="#909399"
-                @click="getPods"
-              />
-            </template>
-          </pixiu-input>
-        </el-space>
+        <el-input
+          v-model="data.pageInfo.nameSelector"
+          placeholder="名称搜索关键字"
+          style="width: 35%; float: right"
+          clearable
+          @clear="getPods"
+          @input="getPods"
+        >
+          <template #suffix>
+            <pixiu-icon
+              name="icon-search"
+              style="cursor: pointer"
+              size="15px"
+              type="iconfont"
+              color="#909399"
+              @click="getPods"
+            />
+          </template>
+        </el-input>
+        <div style="float: right">
+          <el-switch
+            v-model="data.autoRefresh"
+            inline-prompt
+            width="36px"
+            @change="startAutoRefresh"
+          /><span style="font-size: 13px; margin-left: 5px; margin-right: 10px">自动刷新</span>
+        </div>
       </el-col>
     </el-row>
     <el-card class="box-card">
@@ -194,17 +183,9 @@
         </template>
       </el-table>
 
-      <pagination :total="data.total" @on-change="onChange"></pagination>
+      <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
-
-  <pixiuDialog
-    :close-event="data.deleteDialog.close"
-    :object-name="data.deleteDialog.objectName"
-    :delete-name="data.deleteDialog.deleteName"
-    @confirm="confirm"
-    @cancel="cancel"
-  ></pixiuDialog>
 
   <el-dialog
     :model-value="data.remoteLogin.close"
@@ -283,6 +264,14 @@
       <div style="margin-bottom: 10px" />
     </template>
   </el-dialog>
+
+  <pixiuDialog
+    :close-event="data.deleteDialog.close"
+    :object-name="data.deleteDialog.objectName"
+    :delete-name="data.deleteDialog.deleteName"
+    @confirm="confirm"
+    @cancel="cancel"
+  ></pixiuDialog>
 
   <PiXiuViewOrEdit
     :yaml-dialog="data.yamlDialog"
@@ -609,6 +598,7 @@ import {
   onUnmounted,
   provide,
   reactive,
+  onBeforeMount,
   ref,
 } from 'vue';
 import { ElMessage } from 'element-plus';
@@ -657,6 +647,7 @@ const data = reactive({
   total: 0,
   search: {},
   timer: null,
+  autoRefresh: true,
   cluster: '',
   namespace: 'default',
   refresh: false,
@@ -668,6 +659,7 @@ const data = reactive({
   pageInfo: {
     page: 1,
     limit: 10,
+    total: 0,
     nameSelector: '',
     labelSelector: '',
   },
@@ -1137,6 +1129,12 @@ onBeforeUnmount(() => {
   window.clearInterval(data.timer);
 });
 
+onBeforeMount(() => {
+  data.timer = window.setInterval(() => {
+    getPods();
+  }, 3000);
+});
+
 const cancelpodContainers = () => {
   data.podContainers.close = false;
   data.podContainers.containers = [];
@@ -1270,19 +1268,14 @@ const deletePodsInBatch = async () => {
 };
 
 const getPods = async () => {
-  if (!data.refresh) {
-    data.loading = true;
-  }
   // const [result, err] = await getPodList(state.cluster, state.namespace);
   const [result, err] = await getPodListByCache(data.cluster, data.namespace, data.pageInfo);
-
-  data.loading = false;
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
   // state.podList = result.items;
-  data.total = result.total;
+  data.pageInfo.total = result.total;
   data.tableData = result.items;
   // state.tableData = getTableData(state.pageInfo, state.podList);
 };
