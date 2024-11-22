@@ -390,19 +390,7 @@ const pvcStatusFormatter = (row, column, cellValue) => {
   if (cellValue.phase === 'Lost') {
     status = '丢失';
   }
-  return (
-    <div style="display: flex">
-      <div>
-        <pixiu-icon
-          name={runningStatus[status].name}
-          size="12px"
-          type="iconfont"
-          color={runningStatus[status].color}
-        />
-      </div>
-      <div style="margin-left: 6px"> {status}</div>
-    </div>
-  );
+  return parseStatus(status);
 };
 export { pvcStatusFormatter };
 
@@ -422,19 +410,7 @@ const runningFormatter = (row, column, cellValue) => {
     }
   }
 
-  return (
-    <div style="display: flex">
-      <div>
-        <pixiu-icon
-          name={runningStatus[status].name}
-          size="12px"
-          type="iconfont"
-          color={runningStatus[status].color}
-        />
-      </div>
-      <div style="margin-left: 6px"> {status}</div>
-    </div>
-  );
+  return parseStatus(status);
 };
 export { runningFormatter };
 
@@ -444,19 +420,7 @@ const formatDaemonSetStatus = (row, column, cellValue) => {
     status = '更新中';
   }
 
-  return (
-    <div style="display: flex">
-      <div>
-        <pixiu-icon
-          name={runningStatus[status].name}
-          size="12px"
-          type="iconfont"
-          color={runningStatus[status].color}
-        />
-      </div>
-      <div style="margin-left: 6px"> {status}</div>
-    </div>
-  );
+  return parseStatus(status);
 };
 export { formatDaemonSetStatus };
 
