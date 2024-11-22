@@ -54,24 +54,24 @@ const getContainerStatuses = (data, pending) => {
 
 const formatterPodStatus = (row, column, cellValue) => {
   if (row.metadata.deletionTimestamp) {
-    return formatterIcon('#c62828', 'Terminating');
+    return parseStatus('删除中');
   }
   let phase = cellValue.phase;
   switch (phase) {
     case 'Failed':
       if (cellValue.reason) {
-        return formatterIcon('#c62828', cellValue.reason);
+        return parseStatus('已失败');
       }
       return formatterIcon('#c62828', getContainerStatuses(cellValue, false));
     case 'Pending':
-      return formatterIcon('#f3d362', getContainerStatuses(cellValue, true));
+      return parseStatus('等待中');
     case 'Succeeded':
-      return formatterIcon('#155ec0', getContainerStatuses(cellValue, false));
+      return parseStatus('已完成');
     case 'Running':
-      if ((cellValue.conditions.filter((s) => s.status !== 'True') || []).length > 0) {
-        return formatterIcon('#c62828', getContainerStatuses(cellValue, true));
-      }
-      return formatterIcon('#2ba552', phase);
+      // if ((cellValue.conditions.filter((s) => s.status !== 'True') || []).length > 0) {
+      //   return formatterIcon('#c62828', getContainerStatuses(cellValue, true));
+      // }
+      return parseStatus('运行中');
     default:
       return formatterIcon('#c62828', phase);
   }
@@ -390,19 +390,7 @@ const pvcStatusFormatter = (row, column, cellValue) => {
   if (cellValue.phase === 'Lost') {
     status = '丢失';
   }
-  return (
-    <div style="display: flex">
-      <div>
-        <pixiu-icon
-          name={runningStatus[status].name}
-          size="12px"
-          type="iconfont"
-          color={runningStatus[status].color}
-        />
-      </div>
-      <div style="margin-left: 6px"> {status}</div>
-    </div>
-  );
+  return parseStatus(status);
 };
 export { pvcStatusFormatter };
 
@@ -422,19 +410,7 @@ const runningFormatter = (row, column, cellValue) => {
     }
   }
 
-  return (
-    <div style="display: flex">
-      <div>
-        <pixiu-icon
-          name={runningStatus[status].name}
-          size="12px"
-          type="iconfont"
-          color={runningStatus[status].color}
-        />
-      </div>
-      <div style="margin-left: 6px"> {status}</div>
-    </div>
-  );
+  return parseStatus(status);
 };
 export { runningFormatter };
 
@@ -444,19 +420,7 @@ const formatDaemonSetStatus = (row, column, cellValue) => {
     status = '更新中';
   }
 
-  return (
-    <div style="display: flex">
-      <div>
-        <pixiu-icon
-          name={runningStatus[status].name}
-          size="12px"
-          type="iconfont"
-          color={runningStatus[status].color}
-        />
-      </div>
-      <div style="margin-left: 6px"> {status}</div>
-    </div>
-  );
+  return parseStatus(status);
 };
 export { formatDaemonSetStatus };
 
@@ -652,6 +616,14 @@ const runningStatus = {
   丢失: {
     name: 'icon-circle-dot',
     color: '#E0992C',
+  },
+  删除中: {
+    name: 'icon-circle-dot',
+    color: '#c62828',
+  },
+  已失败: {
+    name: 'icon-circle-dot',
+    color: '#c62828',
   },
 };
 
