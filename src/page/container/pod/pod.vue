@@ -53,14 +53,28 @@
         @selection-change="handlePodSelectionChange"
       >
         <el-table-column type="selection" width="30" />
-        <el-table-column
+
+        <el-table-column prop="metadata.name" sortable label="实例名称" min-width="130px">
+          <template #default="scope">
+            <el-link
+              class="global-table-world"
+              :underline="false"
+              type="primary"
+              @click="jumpRoute(scope.row)"
+            >
+              {{ scope.row.metadata.name }}
+            </el-link>
+          </template>
+        </el-table-column>
+
+        <!-- <el-table-column
           prop="metadata.name"
           sortable
           label="实例名称"
           :formatter="formatString"
           min-width="150px"
         >
-        </el-table-column>
+        </el-table-column> -->
 
         <el-table-column prop="status" label="状态" :formatter="formatterPodStatus" />
 
