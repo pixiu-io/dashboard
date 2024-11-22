@@ -46,15 +46,16 @@
                 style="width: 40%"
                 placeholder="请输入 configMap 名称"
               />
-              <div class="app-pixiu-line-describe2">
-                最长63个字符，只能包含小写字母、数字及分隔符("-"),且必须以小写字母开头，数字或小写字母结尾
-              </div>
             </el-form-item>
+            <div class="app-pixiu-line-describe2" style="margin-left: 20px">
+              最长63个字符，只能包含小写字母、数字及分隔符("-"),且必须以小写字母开头，数字或小写字母结尾
+            </div>
 
-            <el-form-item label="命名空间" style="width: 500px; margin-right: 20px">
+            <el-form-item label="命名空间" style="margin-right: 20px">
               <div class="one-line-style">
                 <el-select
                   v-model="data.configmapForm.metadata.namespace"
+                  style="width: 20%"
                   @change="changeNamespace"
                 >
                   <el-option
