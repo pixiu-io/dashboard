@@ -54,7 +54,7 @@
       >
         <el-table-column type="selection" width="30" />
 
-        <el-table-column prop="metadata.name" sortable label="实例名称" min-width="160px">
+        <el-table-column prop="metadata.name" sortable label="实例名称" min-width="180px">
           <template #default="scope">
             <el-link
               class="global-table-world"
