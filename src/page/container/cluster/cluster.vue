@@ -258,7 +258,7 @@
           <el-table-column>
             <template #header>
               <Icon icon="QuestionFilled" desc="启用集群删除保护时，集群不能被删除。">
-                删除保护
+                保护状态
               </Icon>
             </template>
             <template #default="scope">
@@ -576,20 +576,6 @@ const statusText = {
   3: '部署失败',
   4: '集群异常',
 };
-
-const cloudStatus2Formatter = (row, column, cellValue) => (
-  <div style="display:flex;align-items:center">
-    <el-space size={8}>
-      <pixiu-icon
-        size="25px"
-        name={cloudStatus[cellValue].icon}
-        type="iconfont"
-        color={cloudStatus[cellValue].color}
-      ></pixiu-icon>
-      <div>{cloudStatus[cellValue].text}</div>
-    </el-space>
-  </div>
-);
 
 const formatterResource = (row, column, cellValue) => {
   return (
