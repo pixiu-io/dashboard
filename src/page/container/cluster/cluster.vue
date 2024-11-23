@@ -432,8 +432,8 @@
 
   <el-dialog
     :model-value="cloudStore.showDeleteModal"
-    style="color: #000000; font: 14px; height: 190px"
-    width="500px"
+    style="color: #191919; font: 14px"
+    width="480px"
     align-center
     center
     @close="cloudStore.cancelDeleteCloud"
@@ -443,19 +443,29 @@
         style="
           text-align: left;
           font-weight: bold;
-          padding-left: 5px;
+          padding-left: 6px;
           margin-top: 5px;
+          margin-bottom: 20px;
           font-size: 14.5px;
         "
       >
         删除集群
       </div>
     </template>
-    <div style="margin-top: -6px; font-weight: bold; font-size: 13.5px; color: #000">
-      此操作将永久删除集群 (<span style="color: red">{{ cloudStore.preDeleteCloudName }}</span
-      >) 是否继续？
-    </div>
 
+    <el-card class="app-docs" style="margin-left: 7px; margin-top: -20px; margin-right: 7px">
+      <el-icon
+        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -30px"
+        ><WarningFilled
+      /></el-icon>
+
+      <div style="vertical-align: middle; margin-top: -30px">
+        此操作将永久删除集群 (<span style="color: red"> {{ cloudStore.preDeleteCloudName }}</span
+        >)， 是否继续？
+      </div>
+    </el-card>
+
+    <div style="margin-top: -10px" />
     <template #footer>
       <span class="dialog-footer">
         <el-button class="pixiu-delete-cancel-button" @click="cloudStore.cancelDeleteCloud"
@@ -468,6 +478,7 @@
           >确认</el-button
         >
       </span>
+      <div style="margin-bottom: 8px" />
     </template>
   </el-dialog>
 </template>
@@ -565,10 +576,6 @@ const statusText = {
   3: '部署失败',
   4: '集群异常',
 };
-
-// const cloudStatusFormatter = (row, column, cellValue) => (
-
-// );
 
 const cloudStatus2Formatter = (row, column, cellValue) => (
   <div style="display:flex;align-items:center">
