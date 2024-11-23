@@ -46,7 +46,7 @@
     <div style="margin-top: 20px"></div>
 
     <Description
-      :description="'容器服务支持自建 Kubernetes 集群，也支持云厂商的 Kubernetes 集群注册到容器服务进行统一管理。'"
+      :description="'Pixiu容器服务支持自建 Kubernetes 集群，也支持导入其他云厂商的集群进行统一管理。'"
     />
 
     <div style="margin-top: 20px">
