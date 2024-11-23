@@ -678,8 +678,15 @@ const formatterAuditStatus = (row, column, cellValue) => {
 export { formatterAuditStatus };
 
 const formatterClusterNode = (row, column, cellValue) => {
-  const ready = cellValue.ready.length;
-  const notReady = cellValue.not_ready.length;
+  let ready = 0;
+  let notReady = 0;
+  if (cellValue.ready !== null) {
+    ready = cellValue.ready.length;
+  }
+  if (cellValue.not_ready !== null) {
+    notReady = cellValue.not_ready.length;
+  }
+
   const total = ready + notReady;
 
   if (notReady === 0) {
