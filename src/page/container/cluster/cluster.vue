@@ -277,39 +277,40 @@
 
           <!-- <el-table-column prop="resources" label="资源量" :formatter="formatterResource" /> -->
 
-          <el-table-column fixed="right" label="操作" width="170px">
+          <el-table-column fixed="right" label="操作" width="150px">
             <template #default="scope">
               <el-button
                 v-permissions="'user:cloud:setting'"
                 size="small"
                 type="text"
-                style="margin-right: -22px; margin-left: -10px; color: #006eff"
+                style="margin-right: -25px; margin-left: -10px; color: #006eff"
                 @click="handleEdit(scope.row)"
               >
-                设置
+                编辑
               </el-button>
 
               <el-button
                 v-permissions="'user:cloud:delete'"
                 type="text"
                 size="small"
-                style="color: #006eff"
+                style="margin-right: -2px; color: #006eff"
                 @click="cloudStore.deleteCloud(scope.row)"
               >
                 删除
               </el-button>
 
               <el-dropdown>
-                <span class="cluster-dropdown">
+                <span class="el-dropdown-link">
                   更多
-                  <div style="margin-left: 2px"></div>
                   <pixiu-icon name="icon-xiala" size="12px" type="iconfont" color="#006eff" />
 
                   <!-- <el-icon style="margin-left: 2px"><arrow-down /></el-icon> -->
                 </span>
                 <template #dropdown>
                   <el-dropdown-menu class="dropdown-buttons">
-                    <el-dropdown-item class="dropdown-item-buttons"> 连接集群 </el-dropdown-item>
+                    <el-dropdown-item class="dropdown-item-buttons" @click="openKubectl(scope.row)">
+                      打开终端
+                    </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -592,6 +593,14 @@ const formatterResource = (row, column, cellValue) => {
   );
 };
 
+const handleEdit = (row) => {
+  proxy.$notify.warning('暂不支持');
+};
+
+const openKubectl = (row) => {
+  proxy.$notify.warning('暂不支持');
+};
+
 const jumpRoute = (row) => {
   if (row.status === 0) {
     localStorage.setItem(row.name, row.alias_name);
@@ -601,7 +610,6 @@ const jumpRoute = (row) => {
       name: 'Info',
       query: {
         cluster: row.name,
-        id: row.id,
       },
     });
   } else if (row.status === 1) {
