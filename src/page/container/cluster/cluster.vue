@@ -45,7 +45,9 @@
 
     <div style="margin-top: 20px"></div>
 
-    <Description :description="'Kubernetnes 节点能力全面升级，支持更多集群版本。'" />
+    <Description
+      :description="'Pixiu容器服务支持自建 Kubernetes 集群，也支持导入其他云厂商的集群进行统一管理。'"
+    />
 
     <div style="margin-top: 20px">
       <el-row>
