@@ -79,34 +79,49 @@
           :formatter="formatterTime"
         />
 
-        <el-table-column fixed="right" label="操作" width="200">
+        <el-table-column fixed="right" label="操作" width="180px">
           <template #default="scope">
             <el-button
               size="small"
               type="text"
-              style="margin-right: -20px; margin-left: -10px; color: #006eff"
+              style="margin-right: -25px; margin-left: -10px; color: #006eff"
               @click="editConfigMap(scope.row)"
             >
-              更新配置
+              设置
             </el-button>
 
             <el-button
               type="text"
               size="small"
-              style="margin-right: 1px; color: #006eff"
+              style="margin-right: -2px; color: #006eff"
               @click="handleEditYamlDialog(scope.row)"
             >
-              编辑yaml
+              编辑YAML
             </el-button>
-            <el-button
-              link
-              type="text"
-              size="small"
-              style="margin-right: 1px; margin-left: -2px; color: #006eff"
-              @click="handleDeleteDialog(scope.row)"
-            >
-              删除
-            </el-button>
+
+            <el-dropdown>
+              <span class="el-dropdown-link">
+                更多
+                <pixiu-icon name="icon-xiala" size="12px" type="iconfont" color="#006eff" />
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu class="dropdown-buttons">
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleEditYamlDialog(scope.row)"
+                  >
+                    编辑YAML
+                  </el-dropdown-item>
+
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleDeleteDialog(scope.row)"
+                  >
+                    删除
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
           </template>
         </el-table-column>
 
@@ -266,6 +281,8 @@ const createConfigMap = () => {
 };
 
 const editConfigMap = (row) => {
+  proxy.$notify.warning('暂不支持，请通过编辑yaml修改');
+  return;
   const url = `/configmaps/editConfigMap?cluster=${data.cluster}&name=${row.metadata.name}`;
   router.push(url);
 };
