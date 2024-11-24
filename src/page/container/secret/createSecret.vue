@@ -1,6 +1,6 @@
 <template>
   <div style="display: flex; flex-direction: column; width: 100%; height: 100%">
-    <div style="width: 100%; height: 60px; background: #ffffff; display: flex; align-items: center">
+    <div style="width: 100%; height: 75px; background: #ffffff; display: flex; align-items: center">
       <pixiu-icon
         name="icon-back"
         style="cursor: pointer; margin-left: 25px"
@@ -55,7 +55,7 @@
                 <el-radio-group v-model="data.secretType">
                   <el-radio-button label="Opaque" />
                   <el-radio-button label="TLS证书" />
-                  <el-radio-button label="镜像仓库访问凭证" />
+                  <el-radio-button label="镜像凭证" />
                 </el-radio-group>
               </div>
             </el-form-item>
