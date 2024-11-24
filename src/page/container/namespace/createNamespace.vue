@@ -1,6 +1,6 @@
 <template>
   <div style="display: flex; flex-direction: column; width: 100%; height: 100%">
-    <div style="width: 100%; height: 50px; background: #ffffff; display: flex; align-items: center">
+    <div style="width: 100%; height: 60px; background: #ffffff; display: flex; align-items: center">
       <pixiu-icon
         name="icon-back"
         style="cursor: pointer; margin-left: 25px"
@@ -39,21 +39,32 @@
             <div style="margin-top: 20px" />
 
             <el-form-item label="名称" prop="metadata.name">
+              <template #label>
+                <span class="form-item-key-style">名称 </span>
+              </template>
               <el-input
                 v-model="data.namespaceForm.metadata.name"
                 style="width: 40%"
+                class="form-item-key-style"
                 placeholder="请输入命名空间名称"
               />
-              <div class="app-pixiu-line-describe2">
+            </el-form-item>
+            <el-form-item>
+              <div class="dialog-describe-style" style="margin-left: 10px; margin-top: -18px">
                 最长63个字符，只能包含小写字母、数字及分隔符("-"),且必须以小写字母开头，数字或小写字母结尾
               </div>
             </el-form-item>
 
             <div style="margin-top: 20px" />
-            <el-form-item prop="description" label="描述" style="width: 65%">
+            <el-form-item prop="description" label="描述">
+              <template #label>
+                <span class="form-item-key-style">描述 </span>
+              </template>
               <el-input
                 v-model="data.namespaceForm.description"
                 placeholder="请输入命名空间的描述信息"
+                class="form-item-key-style"
+                style="width: 85%"
                 type="textarea"
                 :autosize="data.autosize"
               />
