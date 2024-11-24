@@ -45,7 +45,9 @@
 
     <div style="margin-top: 20px"></div>
 
-    <Description :description="'Kubernetnes 节点能力全面升级，支持更多集群版本。'" />
+    <Description
+      :description="'Pixiu容器服务支持自建 Kubernetes 集群，也支持导入其他云厂商的集群进行统一管理。'"
+    />
 
     <div style="margin-top: 20px">
       <el-row>
@@ -258,7 +260,7 @@
           <el-table-column>
             <template #header>
               <Icon icon="QuestionFilled" desc="启用集群删除保护时，集群不能被删除。">
-                删除保护
+                保护状态
               </Icon>
             </template>
             <template #default="scope">
@@ -277,39 +279,40 @@
 
           <!-- <el-table-column prop="resources" label="资源量" :formatter="formatterResource" /> -->
 
-          <el-table-column fixed="right" label="操作" width="170px">
+          <el-table-column fixed="right" label="操作" width="150px">
             <template #default="scope">
               <el-button
                 v-permissions="'user:cloud:setting'"
                 size="small"
                 type="text"
-                style="margin-right: -22px; margin-left: -10px; color: #006eff"
+                style="margin-right: -25px; margin-left: -10px; color: #006eff"
                 @click="handleEdit(scope.row)"
               >
-                设置
+                编辑
               </el-button>
 
               <el-button
                 v-permissions="'user:cloud:delete'"
                 type="text"
                 size="small"
-                style="color: #006eff"
+                style="margin-right: -2px; color: #006eff"
                 @click="cloudStore.deleteCloud(scope.row)"
               >
                 删除
               </el-button>
 
               <el-dropdown>
-                <span class="cluster-dropdown">
+                <span class="el-dropdown-link">
                   更多
-                  <div style="margin-left: 2px"></div>
                   <pixiu-icon name="icon-xiala" size="12px" type="iconfont" color="#006eff" />
 
                   <!-- <el-icon style="margin-left: 2px"><arrow-down /></el-icon> -->
                 </span>
                 <template #dropdown>
                   <el-dropdown-menu class="dropdown-buttons">
-                    <el-dropdown-item class="dropdown-item-buttons"> 连接集群 </el-dropdown-item>
+                    <el-dropdown-item class="dropdown-item-buttons" @click="openKubectl(scope.row)">
+                      打开终端
+                    </el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
               </el-dropdown>
@@ -432,8 +435,8 @@
 
   <el-dialog
     :model-value="cloudStore.showDeleteModal"
-    style="color: #000000; font: 14px; height: 190px"
-    width="500px"
+    style="color: #191919; font: 14px"
+    width="480px"
     align-center
     center
     @close="cloudStore.cancelDeleteCloud"
@@ -443,19 +446,29 @@
         style="
           text-align: left;
           font-weight: bold;
-          padding-left: 5px;
+          padding-left: 6px;
           margin-top: 5px;
+          margin-bottom: 20px;
           font-size: 14.5px;
         "
       >
         删除集群
       </div>
     </template>
-    <div style="margin-top: -6px; font-weight: bold; font-size: 13.5px; color: #000">
-      此操作将永久删除集群 (<span style="color: red">{{ cloudStore.preDeleteCloudName }}</span
-      >) 是否继续？
-    </div>
 
+    <el-card class="app-docs" style="margin-left: 7px; margin-top: -20px; margin-right: 7px">
+      <el-icon
+        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -30px"
+        ><WarningFilled
+      /></el-icon>
+
+      <div style="vertical-align: middle; margin-top: -30px">
+        此操作将永久删除集群 (<span style="color: red"> {{ cloudStore.preDeleteCloudName }}</span
+        >)， 是否继续？
+      </div>
+    </el-card>
+
+    <div style="margin-top: -10px" />
     <template #footer>
       <span class="dialog-footer">
         <el-button class="pixiu-delete-cancel-button" @click="cloudStore.cancelDeleteCloud"
@@ -468,6 +481,7 @@
           >确认</el-button
         >
       </span>
+      <div style="margin-bottom: 8px" />
     </template>
   </el-dialog>
 </template>
@@ -566,24 +580,6 @@ const statusText = {
   4: '集群异常',
 };
 
-// const cloudStatusFormatter = (row, column, cellValue) => (
-
-// );
-
-const cloudStatus2Formatter = (row, column, cellValue) => (
-  <div style="display:flex;align-items:center">
-    <el-space size={8}>
-      <pixiu-icon
-        size="25px"
-        name={cloudStatus[cellValue].icon}
-        type="iconfont"
-        color={cloudStatus[cellValue].color}
-      ></pixiu-icon>
-      <div>{cloudStatus[cellValue].text}</div>
-    </el-space>
-  </div>
-);
-
 const formatterResource = (row, column, cellValue) => {
   return (
     <div style="display:flex;flex-direction:column">
@@ -599,6 +595,14 @@ const formatterResource = (row, column, cellValue) => {
   );
 };
 
+const handleEdit = (row) => {
+  proxy.$notify.warning('暂不支持');
+};
+
+const openKubectl = (row) => {
+  proxy.$notify.warning('暂不支持');
+};
+
 const jumpRoute = (row) => {
   if (row.status === 0) {
     localStorage.setItem(row.name, row.alias_name);
@@ -608,7 +612,6 @@ const jumpRoute = (row) => {
       name: 'Info',
       query: {
         cluster: row.name,
-        id: row.id,
       },
     });
   } else if (row.status === 1) {

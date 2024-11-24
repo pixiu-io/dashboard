@@ -121,8 +121,10 @@ const useCloudStore = defineStore('cloud', () => {
 
   const cancelDeleteCloud = () => {
     showDeleteModal.value = false;
-    preDeleteCloudName.value = '';
-    preDeleteCloudId.value = '';
+    setTimeout(() => {
+      preDeleteCloudName.value = '';
+      preDeleteCloudId.value = '';
+    }, 100);
   };
   const confirmDeleteCloud = async () => {
     const [err, result] = await deleteCloudById(preDeleteCloudId.value);
