@@ -103,10 +103,11 @@
               >
             </el-form-item>
 
+            <div style="margin-top: -30px"></div>
             <el-form-item
               v-for="(item, index) in data.configMapLabels"
               :key="index"
-              style="margin-top: -8px"
+              style="margin-top: -20px"
             >
               <div
                 style="width: 85%; background-color: #f2f2f2; margin-top: 20px; border-radius: 0px"
