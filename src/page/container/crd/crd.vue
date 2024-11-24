@@ -11,7 +11,7 @@
         <el-input
           v-model="data.pageInfo.search.searchInfo"
           placeholder="名称搜索关键字"
-          style="width: 480px; float: right"
+          style="width: 35%; float: right"
           clearable
           @clear="getCRDs"
           @input="getCRDs"
@@ -38,7 +38,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="30" />
-        <el-table-column prop="metadata.name" sortable label="资源名称">
+        <el-table-column prop="metadata.name" sortable label="资源名称" min-width="150px">
           <template #default="scope">
             <el-tooltip effect="dark" :content="scope.row.metadata.name" placement="top-start">
               <el-link

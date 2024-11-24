@@ -1,6 +1,6 @@
 <template>
   <div style="display: flex; flex-direction: column; width: 100%; height: 100%">
-    <div style="width: 100%; height: 50px; background: #ffffff; display: flex; align-items: center">
+    <div style="width: 100%; height: 60px; background: #ffffff; display: flex; align-items: center">
       <pixiu-icon
         name="icon-back"
         style="cursor: pointer; margin-left: 25px"
