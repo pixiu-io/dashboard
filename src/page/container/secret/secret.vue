@@ -185,6 +185,7 @@ const data = reactive({
     close: false,
     objectName: 'Secret',
     deleteName: '',
+    namespace: '',
   },
 });
 
@@ -220,12 +221,13 @@ const handleStorageChange = (e) => {
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.metadata.name;
+  data.deleteDialog.namespace = row.metadata.namespace;
 };
 
 const confirm = async () => {
   const [result, err] = await deleteSecret(
     data.cluster,
-    data.namespace,
+    data.deleteDialog.namespace,
     data.deleteDialog.deleteName,
   );
   if (err) {
