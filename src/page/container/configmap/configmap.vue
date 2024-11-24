@@ -1,9 +1,4 @@
 <template>
-  <!-- <div class="title-card-container2">
-    <div style="flex-grow: 1">
-      <PiXiuYaml :refresh="getConfigMaps"></PiXiuYaml>
-    </div>
-  </div> -->
   <Description
     :description="'ConfigMap 是一种 API 对象，用来将非机密性的数据保存到键值对中。使用时， Pod 可以将其用作环境变量、命令行参数或者存储卷中的配置文件。'"
   />
@@ -17,7 +12,7 @@
         <el-input
           v-model="data.pageInfo.search.searchInfo"
           placeholder="名称搜索关键字"
-          style="width: 480px; float: right"
+          style="width: 35%; float: right"
           clearable
           @clear="getConfigMaps"
           @input="searchConfigMaps"

@@ -88,48 +88,12 @@
               </div>
             </el-form-item>
 
-            <el-divider />
+            <!-- <el-divider /> -->
+
             <el-form-item>
               <template #label>
                 <span class="form-item-key-style">内容</span>
               </template>
-              <div class="configmap-label-title" style="margin-left: 5px">变量名</div>
-              <div class="configmap-label-title" style="margin-left: 305px">变量值</div>
-              <el-divider />
-            </el-form-item>
-
-            <el-form-item
-              v-for="(item, index) in data.configMapLabels"
-              :key="index"
-              style="margin-top: -20px"
-            >
-              <el-form-item prop="item.key">
-                <el-input v-model="item.key" placeholder="变量名" style="width: 300px" />
-              </el-form-item>
-              <div style="margin-right: 8px; margin-left: 8px"></div>
-              =
-              <div>
-                <el-input
-                  v-model="item.value"
-                  placeholder="请输入变量值"
-                  autosize
-                  type="textarea"
-                  style="width: 350px; margin-left: 20px"
-                />
-              </div>
-              <div
-                style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
-                @click="deleteLabel(index)"
-              >
-                <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
-              </div>
-              <el-divider />
-            </el-form-item>
-            <div class="app-pixiu-line-describe4">
-              只能包含字母、数字及分隔符"."; 变量名为空时，在变量名称中粘贴一行或多行 key=value key:
-              value 的键值对可以实现快速批量输入
-            </div>
-            <el-form-item>
               <el-button
                 type="text"
                 class="app-action-btn"
@@ -137,6 +101,48 @@
                 @click="addLabel"
                 >+增加配置</el-button
               >
+            </el-form-item>
+
+            <el-form-item
+              v-for="(item, index) in data.configMapLabels"
+              :key="index"
+              style="margin-top: -25px"
+            >
+              <div
+                style="width: 85%; background-color: #f2f2f2; margin-top: 20px; border-radius: 0px"
+              >
+                <div
+                  style="float: right; cursor: pointer; margin-top: 10px; margin-right: 15px"
+                  @click="deleteLabel(index)"
+                >
+                  <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
+                </div>
+
+                <div style="margin-top: 10px"></div>
+                <el-form-item label>
+                  <template #label>
+                    <span class="form-item-key-style" style="margin-left: 20px">变量名</span>
+                  </template>
+                </el-form-item>
+                <el-form-item>
+                  <el-input v-model="item.key" style="margin-left: 20px; width: 95%" />
+                </el-form-item>
+
+                <el-form-item label>
+                  <template #label>
+                    <span class="form-item-key-style" style="margin-left: 20px">变量值</span>
+                  </template>
+                </el-form-item>
+                <el-form-item>
+                  <el-input
+                    v-model="item.value"
+                    style="margin-left: 20px; width: 95%"
+                    type="textarea"
+                    :autosize="data.autosize"
+                  />
+                </el-form-item>
+                <div style="margin-top: 25px"></div>
+              </div>
             </el-form-item>
 
             <div style="margin-top: 30px" />
@@ -168,6 +174,9 @@ const data = reactive({
   namespaces: [],
 
   configMapLabels: [{ key: null, value: null }],
+  autosize: {
+    minRows: 4,
+  },
 
   // configmap 创建初始对象
   configmapForm: {
