@@ -89,8 +89,10 @@
             </el-form-item>
 
             <el-divider />
-            <el-form-item label="内容" style="margin-top: 10px">
-              <!-- <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button> -->
+            <el-form-item>
+              <template #label>
+                <span class="form-item-key-style">内容</span>
+              </template>
               <div class="configmap-label-title" style="margin-left: 5px">变量名</div>
               <div class="configmap-label-title" style="margin-left: 305px">变量值</div>
               <el-divider />
