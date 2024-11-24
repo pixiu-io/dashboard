@@ -129,15 +129,14 @@
             </div>
             <el-form-item>
               <el-button
-                class="table-inline-btn"
-                style="margin-left: -14px; margin-right: -20px; margin-top: 15px"
+                type="text"
+                class="app-action-btn"
+                style="margin-top: 1px"
                 @click="addLabel"
-                >手动增加</el-button
-              >
-              <el-button class="table-inline-btn" style="margin-top: 15px" @click="addLabel"
-                >文件导入</el-button
+                >+增加配置</el-button
               >
             </el-form-item>
+
             <div style="margin-top: 30px" />
             <el-form-item style="margin-left: 30%">
               <el-button class="pixiu-cancel-button" @click="cancelCreate()">取消</el-button>
