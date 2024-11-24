@@ -79,7 +79,7 @@
           :formatter="formatterTime"
         />
 
-        <el-table-column fixed="right" label="操作" width="190px">
+        <el-table-column fixed="right" label="操作" width="180px">
           <template #default="scope">
             <el-button
               size="small"
@@ -102,7 +102,7 @@
             <el-button
               type="text"
               size="small"
-              style="margin-right: -2px; color: #006eff"
+              style="margin-left: -10px; color: #006eff"
               @click="handleDeleteDialog(scope.row)"
             >
               删除
