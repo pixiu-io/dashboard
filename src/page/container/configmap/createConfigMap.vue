@@ -40,21 +40,32 @@
             class="create-card-form"
           >
             <div style="margin-top: 20px" />
-            <el-form-item label="名称" prop="metadata.name">
+
+            <el-form-item>
+              <template #label>
+                <span class="form-item-key-style">名称 </span>
+              </template>
               <el-input
                 v-model="data.configmapForm.metadata.name"
                 style="width: 40%"
+                class="form-item-key-style"
                 placeholder="请输入 configMap 名称"
               />
-              <div class="app-pixiu-line-describe2">
+            </el-form-item>
+            <el-form-item>
+              <div class="dialog-describe-style" style="margin-left: 10px; margin-top: -18px">
                 最长63个字符，只能包含小写字母、数字及分隔符("-"),且必须以小写字母开头，数字或小写字母结尾
               </div>
             </el-form-item>
 
-            <el-form-item label="命名空间" style="width: 500px; margin-right: 20px">
-              <div class="one-line-style">
+            <el-form-item>
+              <template #label>
+                <span class="form-item-key-style">命名空间 </span>
+              </template>
+              <span style="margin-left: 8px">
                 <el-select
                   v-model="data.configmapForm.metadata.namespace"
+                  style="width: 210px; float: right; margin-right: 10px"
                   @change="changeNamespace"
                 >
                   <el-option
@@ -64,70 +75,77 @@
                     :label="item"
                   />
                 </el-select>
-
-                <div style="margin-left: 12px; margin-top: 3px">
-                  <pixiu-icon
-                    name="icon-icon-refresh"
-                    style="cursor: pointer"
-                    size="16px"
-                    type="iconfont"
-                    color="#909399"
-                    @click="getNamespaceList"
-                  />
-                </div>
+              </span>
+              <div style="margin-left: 2px; margin-top: 7px">
+                <pixiu-icon
+                  name="icon-icon-refresh"
+                  style="cursor: pointer"
+                  size="16px"
+                  type="iconfont"
+                  color="#909399"
+                  @click="getNamespaceList"
+                />
               </div>
             </el-form-item>
 
-            <el-divider />
-            <el-form-item label="内容" style="margin-top: 10px">
-              <!-- <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button> -->
-              <div class="configmap-label-title" style="margin-left: 5px">变量名</div>
-              <div class="configmap-label-title" style="margin-left: 305px">变量值</div>
-              <el-divider />
+            <!-- <el-divider /> -->
+
+            <el-form-item>
+              <template #label>
+                <span class="form-item-key-style">内容</span>
+              </template>
+              <el-button
+                type="text"
+                class="app-action-btn"
+                style="margin-top: 1px"
+                @click="addLabel"
+                >+增加配置</el-button
+              >
             </el-form-item>
 
+            <div style="margin-top: -30px"></div>
             <el-form-item
               v-for="(item, index) in data.configMapLabels"
               :key="index"
               style="margin-top: -20px"
             >
-              <el-form-item prop="item.key">
-                <el-input v-model="item.key" placeholder="变量名" style="width: 300px" />
-              </el-form-item>
-              <div style="margin-right: 8px; margin-left: 8px"></div>
-              =
-              <div>
-                <el-input
-                  v-model="item.value"
-                  placeholder="请输入变量值"
-                  autosize
-                  type="textarea"
-                  style="width: 350px; margin-left: 20px"
-                />
-              </div>
               <div
-                style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
-                @click="deleteLabel(index)"
+                style="width: 85%; background-color: #f2f2f2; margin-top: 20px; border-radius: 0px"
               >
-                <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
+                <div
+                  style="float: right; cursor: pointer; margin-top: 10px; margin-right: 15px"
+                  @click="deleteLabel(index)"
+                >
+                  <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
+                </div>
+
+                <div style="margin-top: 10px"></div>
+                <el-form-item label>
+                  <template #label>
+                    <span class="form-item-key-style" style="margin-left: 20px">变量名</span>
+                  </template>
+                </el-form-item>
+                <el-form-item prop="item.key">
+                  <el-input v-model="item.key" style="margin-left: 20px; width: 95%" />
+                </el-form-item>
+
+                <el-form-item label>
+                  <template #label>
+                    <span class="form-item-key-style" style="margin-left: 20px">变量值</span>
+                  </template>
+                </el-form-item>
+                <el-form-item prop="item.value">
+                  <el-input
+                    v-model="item.value"
+                    style="margin-left: 20px; width: 95%"
+                    type="textarea"
+                    :autosize="data.autosize"
+                  />
+                </el-form-item>
+                <div style="margin-top: 25px"></div>
               </div>
-              <el-divider />
             </el-form-item>
-            <div class="app-pixiu-line-describe4">
-              只能包含字母、数字及分隔符"."; 变量名为空时，在变量名称中粘贴一行或多行 key=value key:
-              value 的键值对可以实现快速批量输入
-            </div>
-            <el-form-item>
-              <el-button
-                class="table-inline-btn"
-                style="margin-left: -14px; margin-right: -20px; margin-top: 15px"
-                @click="addLabel"
-                >手动增加</el-button
-              >
-              <el-button class="table-inline-btn" style="margin-top: 15px" @click="addLabel"
-                >文件导入</el-button
-              >
-            </el-form-item>
+
             <div style="margin-top: 30px" />
             <el-form-item style="margin-left: 30%">
               <el-button class="pixiu-cancel-button" @click="cancelCreate()">取消</el-button>
@@ -157,6 +175,9 @@ const data = reactive({
   namespaces: [],
 
   configMapLabels: [{ key: null, value: null }],
+  autosize: {
+    minRows: 4,
+  },
 
   // configmap 创建初始对象
   configmapForm: {

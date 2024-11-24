@@ -1,9 +1,4 @@
 <template>
-  <!-- <div class="title-card-container2">
-    <div style="flex-grow: 1">
-      <PiXiuYaml :refresh="getConfigMaps"></PiXiuYaml>
-    </div>
-  </div> -->
   <Description
     :description="'ConfigMap 是一种 API 对象，用来将非机密性的数据保存到键值对中。使用时， Pod 可以将其用作环境变量、命令行参数或者存储卷中的配置文件。'"
   />
@@ -17,7 +12,7 @@
         <el-input
           v-model="data.pageInfo.search.searchInfo"
           placeholder="名称搜索关键字"
-          style="width: 480px; float: right"
+          style="width: 35%; float: right"
           clearable
           @clear="getConfigMaps"
           @input="searchConfigMaps"
@@ -79,30 +74,30 @@
           :formatter="formatterTime"
         />
 
-        <el-table-column fixed="right" label="操作" width="200">
+        <el-table-column fixed="right" label="操作" width="180px">
           <template #default="scope">
             <el-button
               size="small"
               type="text"
-              style="margin-right: -20px; margin-left: -10px; color: #006eff"
+              style="margin-right: -25px; margin-left: -10px; color: #006eff"
               @click="editConfigMap(scope.row)"
             >
-              更新配置
+              设置
             </el-button>
 
             <el-button
               type="text"
               size="small"
-              style="margin-right: 1px; color: #006eff"
+              style="margin-right: -2px; color: #006eff"
               @click="handleEditYamlDialog(scope.row)"
             >
-              编辑yaml
+              编辑YAML
             </el-button>
+
             <el-button
-              link
               type="text"
               size="small"
-              style="margin-right: 1px; margin-left: -2px; color: #006eff"
+              style="margin-left: -10px; color: #006eff"
               @click="handleDeleteDialog(scope.row)"
             >
               删除
@@ -266,6 +261,8 @@ const createConfigMap = () => {
 };
 
 const editConfigMap = (row) => {
+  proxy.$notify.warning('暂不支持，请通过编辑yaml修改');
+  return;
   const url = `/configmaps/editConfigMap?cluster=${data.cluster}&name=${row.metadata.name}`;
   router.push(url);
 };
