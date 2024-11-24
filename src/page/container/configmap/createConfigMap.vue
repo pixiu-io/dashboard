@@ -106,7 +106,7 @@
             <el-form-item
               v-for="(item, index) in data.configMapLabels"
               :key="index"
-              style="margin-top: -25px"
+              style="margin-top: -8px"
             >
               <div
                 style="width: 85%; background-color: #f2f2f2; margin-top: 20px; border-radius: 0px"
@@ -124,7 +124,7 @@
                     <span class="form-item-key-style" style="margin-left: 20px">变量名</span>
                   </template>
                 </el-form-item>
-                <el-form-item>
+                <el-form-item prop="item.key">
                   <el-input v-model="item.key" style="margin-left: 20px; width: 95%" />
                 </el-form-item>
 
@@ -133,7 +133,7 @@
                     <span class="form-item-key-style" style="margin-left: 20px">变量值</span>
                   </template>
                 </el-form-item>
-                <el-form-item>
+                <el-form-item prop="item.value">
                   <el-input
                     v-model="item.value"
                     style="margin-left: 20px; width: 95%"
