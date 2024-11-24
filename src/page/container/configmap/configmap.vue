@@ -79,7 +79,7 @@
           :formatter="formatterTime"
         />
 
-        <el-table-column fixed="right" label="操作" width="180px">
+        <el-table-column fixed="right" label="操作" width="190px">
           <template #default="scope">
             <el-button
               size="small"
@@ -99,29 +99,14 @@
               编辑YAML
             </el-button>
 
-            <el-dropdown>
-              <span class="el-dropdown-link">
-                更多
-                <pixiu-icon name="icon-xiala" size="12px" type="iconfont" color="#006eff" />
-              </span>
-              <template #dropdown>
-                <el-dropdown-menu class="dropdown-buttons">
-                  <el-dropdown-item
-                    class="dropdown-item-buttons"
-                    @click="handleEditYamlDialog(scope.row)"
-                  >
-                    编辑YAML
-                  </el-dropdown-item>
-
-                  <el-dropdown-item
-                    class="dropdown-item-buttons"
-                    @click="handleDeleteDialog(scope.row)"
-                  >
-                    删除
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
+            <el-button
+              type="text"
+              size="small"
+              style="margin-right: -2px; color: #006eff"
+              @click="handleDeleteDialog(scope.row)"
+            >
+              删除
+            </el-button>
           </template>
         </el-table-column>
 
