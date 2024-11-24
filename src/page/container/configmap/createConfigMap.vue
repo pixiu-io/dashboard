@@ -40,22 +40,32 @@
             class="create-card-form"
           >
             <div style="margin-top: 20px" />
-            <el-form-item label="名称" prop="metadata.name">
+
+            <el-form-item>
+              <template #label>
+                <span class="form-item-key-style">名称 </span>
+              </template>
               <el-input
                 v-model="data.configmapForm.metadata.name"
                 style="width: 40%"
+                class="form-item-key-style"
                 placeholder="请输入 configMap 名称"
               />
             </el-form-item>
-            <div class="app-pixiu-line-describe2" style="margin-left: 20px">
-              最长63个字符，只能包含小写字母、数字及分隔符("-"),且必须以小写字母开头，数字或小写字母结尾
-            </div>
+            <el-form-item>
+              <div class="dialog-describe-style" style="margin-left: 10px; margin-top: -18px">
+                最长63个字符，只能包含小写字母、数字及分隔符("-"),且必须以小写字母开头，数字或小写字母结尾
+              </div>
+            </el-form-item>
 
-            <el-form-item label="命名空间" style="margin-right: 20px">
-              <div class="one-line-style">
+            <el-form-item>
+              <template #label>
+                <span class="form-item-key-style">命名空间 </span>
+              </template>
+              <span style="margin-left: 8px">
                 <el-select
                   v-model="data.configmapForm.metadata.namespace"
-                  style="width: 20%"
+                  style="width: 210px; float: right; margin-right: 10px"
                   @change="changeNamespace"
                 >
                   <el-option
@@ -65,17 +75,16 @@
                     :label="item"
                   />
                 </el-select>
-
-                <div style="margin-left: 12px; margin-top: 3px">
-                  <pixiu-icon
-                    name="icon-icon-refresh"
-                    style="cursor: pointer"
-                    size="16px"
-                    type="iconfont"
-                    color="#909399"
-                    @click="getNamespaceList"
-                  />
-                </div>
+              </span>
+              <div style="margin-left: 2px; margin-top: 7px">
+                <pixiu-icon
+                  name="icon-icon-refresh"
+                  style="cursor: pointer"
+                  size="16px"
+                  type="iconfont"
+                  color="#909399"
+                  @click="getNamespaceList"
+                />
               </div>
             </el-form-item>
 
