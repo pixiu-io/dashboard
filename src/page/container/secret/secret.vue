@@ -267,6 +267,8 @@ const createSecret = () => {
 };
 
 const editSecret = (row) => {
+  proxy.$notify.warning('暂不支持，请通过编辑yaml修改');
+  return;
   const url = `/secrets/editSecret?cluster=${data.cluster}&name=${row.metadata.name}`;
   router.push(url);
 };
@@ -317,7 +319,7 @@ const searchSecrets = async () => {
 
 const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
-  const [result, err] = await getSecret(data.cluster, data.namespace, data.yamlName);
+  const [result, err] = await getSecret(data.cluster, row.metadata.namespace, row.metadata.name);
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
