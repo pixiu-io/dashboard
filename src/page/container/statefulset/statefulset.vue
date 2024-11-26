@@ -293,6 +293,7 @@ const data = reactive({
     close: false,
     objectName: 'StatefulSet',
     deleteName: '',
+    namespace: '',
   },
 });
 
@@ -321,6 +322,7 @@ onBeforeUnmount(() => {
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.metadata.name;
+  data.deleteDialog.namespace = row.metadata.namespace;
 };
 
 const handleStorageChange = (e) => {
@@ -339,7 +341,7 @@ const handleStorageChange = (e) => {
 const confirm = async () => {
   const [result, err] = await deleteStatefulSet(
     data.cluster,
-    data.namespace,
+    data.deleteDialog.namespace,
     data.deleteDialog.deleteName,
   );
   if (err) {
@@ -360,6 +362,7 @@ const clean = () => {
   data.deleteDialog.close = false;
   setTimeout(() => {
     data.deleteDialog.deleteName = '';
+    data.deleteDialog.namespace = '';
   }, 100);
 };
 

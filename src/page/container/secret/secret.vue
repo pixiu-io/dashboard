@@ -250,6 +250,7 @@ const clean = () => {
   data.deleteDialog.close = false;
   setTimeout(() => {
     data.deleteDialog.deleteName = '';
+    data.deleteDialog.namespace = '';
   }, 100);
 };
 

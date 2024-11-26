@@ -277,7 +277,7 @@ const editService = (row) => {
 
 const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
-  const [result, err] = await getService(data.cluster, data.namespace, data.yamlName);
+  const [result, err] = await getService(data.cluster, row.metadata.namespace, row.metadata.name);
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
