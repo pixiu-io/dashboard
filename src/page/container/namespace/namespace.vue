@@ -44,27 +44,16 @@
         header-row-class-name="pixiu-table-header"
         @selection-change="handleSelectionChange"
       >
-        <!-- <el-table-column type="selection" width="30" /> -->
+        <el-table-column type="selection" width="30" />
         <el-table-column prop="metadata.name" sortable label="命名空间">
           <template #default="scope">
-            <!-- <el-link
+            <el-link
               class="global-table-world"
               type="primary"
               @click="jumpNamespaceRoute(scope.row)"
-            > -->
-            {{ scope.row.metadata.name }}
-            <!-- </el-link> -->
-
-            <!-- <el-tooltip content="复制">
-              <pixiu-icon
-                name="icon-copy"
-                size="11px"
-                type="iconfont"
-                class-name="icon-box"
-                color="#909399"
-                @click="copy(scope.row)"
-              />
-            </el-tooltip> -->
+            >
+              {{ scope.row.metadata.name }}
+            </el-link>
           </template>
         </el-table-column>
 
@@ -612,6 +601,8 @@ const searchNamespace = async () => {
 };
 
 const jumpNamespaceRoute = (row) => {
+  proxy.$notify.warning('暂不支持，请多关注社区变动');
+  return;
   router.push({
     name: 'NamespaceDetail',
     query: {
