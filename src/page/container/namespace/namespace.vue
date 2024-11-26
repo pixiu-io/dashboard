@@ -601,6 +601,8 @@ const searchNamespace = async () => {
 };
 
 const jumpNamespaceRoute = (row) => {
+  proxy.$notify.warning('暂不支持，请多关注社区变动');
+  return;
   router.push({
     name: 'NamespaceDetail',
     query: {
