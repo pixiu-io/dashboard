@@ -639,13 +639,13 @@ const getNamespaceList = async () => {
 
 const handleEditYamlDialog = async (row) => {
   data.yamlName = row.metadata.name;
-  const [result, err] = await getIngress(data.cluster, data.namespace, data.yamlName);
+  const [result, err] = await getIngress(data.cluster, row.metadata.namespace, row.metadata.name);
   if (err) {
     proxy.$message.error(err.response.data.message);
     return;
   }
 
-  data.yaml = jsYaml.dump(result, { quotingType: '"' });
+  data.yaml = result;
   data.editYamlDialog = true;
 };
 
