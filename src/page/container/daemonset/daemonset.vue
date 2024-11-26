@@ -627,6 +627,7 @@ const data = reactive({
     close: false,
     objectName: 'Daemonset',
     deleteName: '',
+    namespace: '',
   },
 
   imageData: {
@@ -905,12 +906,13 @@ const getPodLogs = async () => {
 const handleDeleteDialog = (row) => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = row.metadata.name;
+  data.deleteDialog.namespace = row.metadata.namespace;
 };
 
 const confirm = async () => {
   const [result, err] = await deleteDaemonset(
     data.cluster,
-    data.namespace,
+    data.deleteDialog.namespace,
     data.deleteDialog.deleteName,
   );
   if (err) {
@@ -931,6 +933,7 @@ const clean = () => {
   data.deleteDialog.close = false;
   setTimeout(() => {
     data.deleteDialog.deleteName = '';
+    data.deleteDialog.namespace = '';
   }, 100);
 };
 
