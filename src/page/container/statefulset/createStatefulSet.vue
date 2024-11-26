@@ -39,7 +39,35 @@
             :model="data.form"
             class="create-card-form"
           >
+            <el-steps
+              style="max-width: 90%; margin-left: 6px"
+              :active="data.active"
+              finish-status="success"
+            >
+              <el-step>
+                <template #title>
+                  <span style="margin-left: 2px; font-size: 14px; color: #191919">基本信息 </span>
+                </template>
+              </el-step>
+              <el-step>
+                <template #title>
+                  <span style="margin-left: 2px; font-size: 14px; color: #191919">容器组设置 </span>
+                </template>
+              </el-step>
+              <el-step>
+                <template #title>
+                  <span style="margin-left: 2px; font-size: 14px; color: #191919">更新策略 </span>
+                </template>
+              </el-step>
+              <el-step>
+                <template #title>
+                  <span style="margin-left: 2px; font-size: 14px; color: #191919">高级选项 </span>
+                </template>
+              </el-step>
+            </el-steps>
+
             <div style="margin-top: 20px" />
+
             <el-form-item label="名称" prop="metadata.name" style="width: 500px">
               <el-input v-model="data.form.metadata.name" />
               <div class="app-pixiu-line-describe2">
