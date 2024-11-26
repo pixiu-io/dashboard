@@ -28,7 +28,7 @@
 
     <el-main>
       <div class="app-pixiu-content-card">
-        <el-card class="create-card-style">
+        <el-card class="create-card-style" style="width: 75%">
           <el-form
             ref="ruleFormRef"
             label-position="left"
@@ -37,7 +37,7 @@
             :rules="rules"
             status-icon
             :model="data.form"
-            style="margin-left: 3%; width: 70%"
+            class="create-card-form"
           >
             <div style="margin-top: 20px" />
             <el-form-item label="名称" prop="metadata.name" style="width: 500px">
