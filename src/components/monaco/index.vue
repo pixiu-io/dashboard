@@ -48,6 +48,10 @@ const props = defineProps({
     type: String,
     default: 'yaml',
   },
+  scrollEnd: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 onMounted(() => {
@@ -88,9 +92,11 @@ watch(() => {
   data.height = isNumber(props.height.valueOf())
     ? props.height.valueOf() + 'px'
     : props.height.valueOf();
-
   if (monacoEditor.value !== undefined) {
     toRaw(monacoEditor.value).setModel(monaco.editor.createModel(data.yaml, 'yaml'));
+    if (props.scrollEnd) {
+      toRaw(monacoEditor.value).setScrollTop(toRaw(monacoEditor.value).getScrollHeight());
+    }
   }
 });
 const init = () => {
