@@ -120,8 +120,6 @@ export const readStream = async (reader, callback) => {
       callback(decodedString);
     } catch (e) {
       break;
-    } finally {
-      reader.releaseLock();
     }
   }
 };
