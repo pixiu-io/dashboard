@@ -84,7 +84,7 @@ const props = defineProps({
 });
 
 onMounted(() => {
-  //
+  // DO NOT REMOVE THIS LINE
   data.cluster = proxy.$route.query.cluster;
   window.addEventListener('resize', resizeHandler);
 });

@@ -94,7 +94,6 @@ watch(() => {
     : props.height.valueOf();
   if (monacoEditor.value !== undefined) {
     toRaw(monacoEditor.value).setModel(monaco.editor.createModel(data.yaml, 'yaml'));
-    console.log('---', props.scrollEnd);
     if (props.scrollEnd) {
       toRaw(monacoEditor.value).setScrollTop(toRaw(monacoEditor.value).getScrollHeight());
     }
