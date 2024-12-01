@@ -322,19 +322,23 @@
       @close="closeTaskLogDrawer"
     >
       <div style="display: flex; height: 100%; width: 100%">
-        <div>
-          <el-steps direction="vertical" :active="3" space="60px" process-status="process">
+        <div style="width: 280px">
+          <el-steps direction="vertical" process-status="success" align-center class="steps">
             <el-step
               v-for="(activity, index) in data.taskData.tableData"
               :key="index"
               :title="activity.name"
-              :description="extractDateFormat(activity.gmt_create)"
+              :description="formatTimestamp(activity.gmt_create)"
               :status="stepStatus(activity.status)"
             />
           </el-steps>
         </div>
         <div style="width: 100%">
-          <PixiuLog :yaml-dialog="data.taskLog.drawer" :log="data.taskLog.log"></PixiuLog>
+          <PixiuLog
+            :yaml-dialog="data.taskLog.drawer"
+            :log="data.taskLog.log"
+            :scroll-end="true"
+          ></PixiuLog>
         </div>
       </div>
     </el-drawer>
@@ -345,7 +349,7 @@
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { formatterTime, formatterPlanStatus } from '@/utils/formatter';
-import { readStream } from '@/utils/utils';
+import { formatTimestamp, readStream } from '@/utils/utils';
 import Pagination from '@/components/pagination/index.vue';
 import {
   createPlan,
@@ -691,5 +695,64 @@ const jumpRoute = (row) => {
   });
 };
 </script>
+<style lang="less" scoped>
+@publicColor: #049a3a;
+@publicHeight: 18px;
+@publicProcess: rgb(51.2, 126.4, 204);
+.steps {
+  width: 80%;
+  margin: 20px auto 0;
+  height: @publicHeight;
+  ::v-deep .el-step {
+    margin-bottom: 70px;
+    height: 100%;
+    display: flex;
+    //flex-direction: column; // 将步骤组件设置为垂直排列
 
-<style></style>
+    .el-step__line {
+      background-color: rgba(0, 0, 0, 0.15);
+      width: 1px; // 将宽度设置为1px，使其成为垂直线
+      height: 50px; // 自动高度，根据内容调整
+      margin-top: 30px !important; // 顶部外边距
+      margin-bottom: 30px !important; // 底部外边距
+      position: absolute; // 绝对定位
+      transform: translateX(-50%); // 使线居中对齐
+    }
+
+    .el-step__icon {
+      width: @publicHeight;
+      height: @publicHeight;
+      font-size: 16px;
+      border: 1px solid;
+      .el-step__icon-inner {
+        font-weight: unset !important;
+      }
+    }
+    .el-step__head.is-process {
+      color: @publicProcess;
+      border-color: @publicProcess;
+    }
+    .el-step__head.is-success {
+      color: @publicColor;
+      border-color: @publicColor;
+    }
+    .is-process .el-step__icon.is-text {
+      background: @publicProcess;
+      color: #fff;
+    }
+    .el-step__title.is-process {
+      color: @publicProcess;
+    }
+    .el-step__title.is-success {
+      color: #01712f;
+    }
+    .el-step__title {
+      font-size: 16px;
+    }
+
+    .el-step__description.is-success {
+      color: #01712f;
+    }
+  }
+}
+</style>
