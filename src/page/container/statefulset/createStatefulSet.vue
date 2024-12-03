@@ -1314,6 +1314,3 @@ const backToStatefulSet = () => {
   });
 };
 </script>
-
-<style></style>
-
