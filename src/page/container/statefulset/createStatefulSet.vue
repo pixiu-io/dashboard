@@ -168,42 +168,37 @@
                     <template #label>
                       <span class="form-item-key-style">容器名称</span>
                     </template>
-                    <el-input v-model="item.name" style="margin-left: 10px; width: 45%" />
-                    <div
-                      class="container-line-describe"
-                      style="margin-left: 10px; margin-bottom: -10px"
-                    >
-                      名称只能包含小写字母、数字和连字符（-），必须以小写字母或数字开头和结尾，最长
-                      63 个字符。
-                    </div>
+                    <el-input v-model="item.name" style="width: 35%" />
                   </el-form-item>
+                  <div
+                    class="container-line-describe"
+                    style="margin-left: 100px; margin-bottom: -10px"
+                  >
+                    名称只能包含小写字母、数字和连字符（-），必须以小写字母或数字开头和结尾，最长 63
+                    个字符。
+                  </div>
 
                   <el-form-item label style="margin-top: 10px">
                     <template #label>
                       <span class="form-item-key-style">镜像</span>
                     </template>
-                    <el-input v-model="item.image" style="margin-left: 10px; width: 42%" />
+                    <el-input v-model="item.image" style="width: 50%" />
                   </el-form-item>
 
                   <el-form-item label style="margin-top: 10px">
                     <template #label>
                       <span class="form-item-key-style">拉取策略</span>
                     </template>
-                    <span style="margin-left: 10px">
-                      <el-select
-                        v-model="item.imagePullPolicy"
-                        style="width: 150px; float: right; margin-right: 10px"
-                      >
-                        <el-option
-                          v-for="item2 in data.frontObject.imagePullPolicies"
-                          :key="item2"
-                          :value="item2"
-                          :label="item2"
-                        />
-                      </el-select>
-                    </span>
+                    <el-select v-model="item.imagePullPolicy" style="width: 150px">
+                      <el-option
+                        v-for="item2 in data.frontObject.imagePullPolicies"
+                        :key="item2"
+                        :value="item2"
+                        :label="item2"
+                      />
+                    </el-select>
                   </el-form-item>
-                  <div class="container-line-describe" style="margin-left: 110px">
+                  <div class="container-line-describe" style="margin-left: 100px">
                     设置镜像拉取策略，默认使用 IfNotPresent 策略
                   </div>
 
@@ -227,7 +222,9 @@
                       <el-form-item>
                         <el-form-item>
                           <template #label>
-                            <span class="form-input-key-style">CPU 预留</span>
+                            <span class="form-input-key-style" style="margin-left: 0px"
+                              >CPU 预留</span
+                            >
                           </template>
                           <el-input v-model="item.cpuRequst" placeholder="无限制">
                             <template #suffix>
@@ -250,7 +247,9 @@
                       <el-form-item>
                         <el-form-item label style="margin-top: 5px">
                           <template #label>
-                            <span class="form-input-key-style">CPU 限制</span>
+                            <span class="form-input-key-style" style="margin-left: 0px"
+                              >CPU 限制</span
+                            >
                           </template>
                           <el-input v-model="item.cpuLimit" placeholder="无限制">
                             <template #suffix>
