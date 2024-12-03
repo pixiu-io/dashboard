@@ -67,16 +67,6 @@
             </el-steps>
 
             <div style="margin-top: 20px" />
-<<<<<<< HEAD
-=======
-
-            <el-form-item label="名称" prop="metadata.name" style="width: 500px">
-              <el-input v-model="data.form.metadata.name" />
-              <div class="app-pixiu-line-describe2">
-                最长63个字符，只能包含小写字母、数字及分隔符("-")
-              </div>
-            </el-form-item>
->>>>>>> 1cb97b9c5b6524ff9966b01b2d9f0060482f5f66
 
             <div v-if="data.active === 0">
               <el-form-item>
@@ -1326,7 +1316,4 @@ const backToStatefulSet = () => {
 </script>
 
 <style></style>
-<<<<<<< HEAD
 
-=======
->>>>>>> 1cb97b9c5b6524ff9966b01b2d9f0060482f5f66
