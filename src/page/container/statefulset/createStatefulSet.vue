@@ -184,6 +184,12 @@
                     </template>
                     <el-input v-model="item.image" style="width: 50%" />
                   </el-form-item>
+                  <div
+                    class="container-line-describe"
+                    style="margin-left: 100px; margin-bottom: -10px"
+                  >
+                    镜像名称或者路径，如需使用私有镜像服务，您需要先创建镜像服务密钥。
+                  </div>
 
                   <el-form-item label style="margin-top: 10px">
                     <template #label>
