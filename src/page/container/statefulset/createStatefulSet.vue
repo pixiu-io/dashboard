@@ -168,7 +168,7 @@
                     <template #label>
                       <span class="form-item-key-style">容器名称</span>
                     </template>
-                    <el-input v-model="item.name" style="width: 40%" />
+                    <el-input v-model="item.name" style="width: 35%" />
                   </el-form-item>
                   <div
                     class="container-line-describe"
@@ -182,17 +182,20 @@
                     <template #label>
                       <span class="form-item-key-style">镜像</span>
                     </template>
-                    <el-input v-model="item.image" style="width: 44%" />
+                    <el-input v-model="item.image" style="width: 50%" />
                   </el-form-item>
+                  <div
+                    class="container-line-describe"
+                    style="margin-left: 100px; margin-bottom: -10px"
+                  >
+                    镜像名称或者路径，如需使用私有镜像服务，您需要先创建镜像服务密钥。
+                  </div>
 
                   <el-form-item label style="margin-top: 10px">
                     <template #label>
                       <span class="form-item-key-style">拉取策略</span>
                     </template>
-                    <el-select
-                      v-model="item.imagePullPolicy"
-                      style="width: 150px; float: right; margin-right: 10px"
-                    >
+                    <el-select v-model="item.imagePullPolicy" style="width: 150px">
                       <el-option
                         v-for="item2 in data.frontObject.imagePullPolicies"
                         :key="item2"
@@ -229,7 +232,11 @@
                               >CPU 预留</span
                             >
                           </template>
-                          <el-input v-model="item.cpuRequst" placeholder="无限制">
+                          <el-input
+                            v-model="item.cpuRequst"
+                            placeholder="无限制"
+                            style="margin-left: -25px"
+                          >
                             <template #suffix>
                               <div style="font-size: 12px; color: #191919">Core</div>
                             </template>
@@ -239,7 +246,11 @@
                           <template #label>
                             <span class="form-input-key-style">内存预留 </span>
                           </template>
-                          <el-input v-model="item.memoryRequst" placeholder="无限制">
+                          <el-input
+                            v-model="item.memoryRequst"
+                            placeholder="无限制"
+                            style="margin-left: -25px"
+                          >
                             <template #suffix
                               ><div style="font-size: 12px; color: #191919">Mi</div>
                             </template>
@@ -250,9 +261,15 @@
                       <el-form-item>
                         <el-form-item label style="margin-top: 5px">
                           <template #label>
-                            <span class="form-input-key-style">CPU 限制</span>
+                            <span class="form-input-key-style" style="margin-left: 0px"
+                              >CPU 限制</span
+                            >
                           </template>
-                          <el-input v-model="item.cpuLimit" placeholder="无限制">
+                          <el-input
+                            v-model="item.cpuLimit"
+                            placeholder="无限制"
+                            style="margin-left: -25px"
+                          >
                             <template #suffix>
                               <div style="font-size: 12px; color: #191919">Core</div>
                             </template>
@@ -263,7 +280,11 @@
                             <span class="form-input-key-style">内存限制</span>
                           </template>
 
-                          <el-input v-model="item.memoryLimit" placeholder="无限制">
+                          <el-input
+                            v-model="item.memoryLimit"
+                            placeholder="无限制"
+                            style="margin-left: -25px"
+                          >
                             <template #suffix
                               ><div style="font-size: 12px; color: #191919">Mi</div>
                             </template>
@@ -271,7 +292,7 @@
                         </el-form-item>
                       </el-form-item>
                     </el-form-item>
-                    <div class="container-line-describe" style="margin-left: 85px">
+                    <div class="container-line-describe" style="margin-left: 100px">
                       设置容器的资源限制与资源预留，以将容器调度到合适的节点上。
                     </div>
 
@@ -283,14 +304,14 @@
                     </el-form-item>
                     <div
                       class="container-line-describe"
-                      style="margin-left: 72px; margin-top: -8px"
+                      style="margin-left: 100px; margin-top: -8px"
                     >
                       设置容器的端口。
                     </div>
                     <div v-if="item.choicePort">
                       <div style="margin-top: -2px">
                         <el-form-item v-for="(i, index1) in item.ports" :key="index1">
-                          <el-form-item style="margin-left: 70px">
+                          <el-form-item style="margin-left: 100px">
                             <div style="font-size: 12px; color: #191919">协议</div>
                             <el-select
                               v-model="i.protocol"
@@ -332,20 +353,18 @@
                       </div>
 
                       <el-form-item label>
-                        <template #label>
-                          <span
-                            class="form-item-key-style"
-                            style="
-                              cursor: pointer;
-                              color: #006eff;
-                              font-size: 12px;
-                              margin-left: 70px;
-                              margin-top: -1px;
-                            "
-                            @click="addPort(item)"
-                            >+ 添加</span
-                          >
-                        </template>
+                        <div
+                          style="
+                            cursor: pointer;
+                            color: #006eff;
+                            font-size: 12px;
+                            margin-left: 100px;
+                            margin-top: -1px;
+                          "
+                          @click="addPort(item)"
+                        >
+                          + 添加
+                        </div>
                       </el-form-item>
                     </div>
 
@@ -357,7 +376,7 @@
                     </el-form-item>
                     <div
                       class="container-line-describe"
-                      style="margin-left: 72px; margin-top: -8px"
+                      style="margin-left: 100px; margin-top: -8px"
                     >
                       为容器添加添加环境变量。
                     </div>
@@ -365,7 +384,7 @@
                     <div v-if="item.choiceEnv">
                       <div style="margin-top: -2px">
                         <el-form-item v-for="(i1, index2) in item.envs" :key="index2">
-                          <el-form-item style="margin-left: 70px">
+                          <el-form-item style="margin-left: 100px">
                             <div style="font-size: 12px; color: #191919">类型</div>
                             <el-input
                               v-model="i1.type"
@@ -398,20 +417,19 @@
                         </el-form-item>
                       </div>
                       <el-form-item label>
-                        <template #label>
-                          <span
-                            class="form-item-key-style"
-                            style="
-                              cursor: pointer;
-                              color: #006eff;
-                              font-size: 12px;
-                              margin-left: 70px;
-                              margin-top: -1px;
-                            "
-                            @click="addEnv(item)"
-                            >+ 添加</span
-                          >
-                        </template>
+                        <div
+                          class="form-item-key-style"
+                          style="
+                            cursor: pointer;
+                            color: #006eff;
+                            font-size: 12px;
+                            margin-left: 100px;
+                            margin-top: -1px;
+                          "
+                          @click="addEnv(item)"
+                        >
+                          + 添加
+                        </div>
                       </el-form-item>
                     </div>
 
@@ -423,23 +441,23 @@
                     </el-form-item>
                     <div
                       class="container-line-describe"
-                      style="margin-left: 72px; margin-top: -8px"
+                      style="margin-left: 100px; margin-top: -8px"
                     >
                       自定义容器启动时运行的命令。默认情况下，容器启动时将运行镜像默认命令。
                     </div>
 
                     <div v-if="item.choiceCmd">
                       <div style="margin-top: -2px">
-                        <el-form-item style="margin-left: 70px">
+                        <el-form-item style="margin-left: 100px">
                           <div style="font-size: 12px; color: #191919">命令</div>
                         </el-form-item>
-                        <el-form-item style="margin-left: 70px">
+                        <el-form-item style="margin-left: 100px">
                           <el-input v-model="item.cmds.cmd" style="width: 85%" type="textarea" />
                         </el-form-item>
-                        <el-form-item style="margin-left: 70px">
+                        <el-form-item style="margin-left: 100px">
                           <div style="font-size: 12px; color: #191919">参数</div>
                         </el-form-item>
-                        <el-form-item style="margin-left: 70px">
+                        <el-form-item style="margin-left: 100px">
                           <el-input
                             v-model="item.cmds.args"
                             style="width: 85%"
@@ -458,7 +476,7 @@
                     </el-form-item>
                     <div
                       class="container-line-describe"
-                      style="margin-left: 72px; margin-top: -8px"
+                      style="margin-left: 100px; margin-top: -8px"
                     >
                       添加探针以定时检查容器健康状态。
                     </div>
@@ -466,7 +484,7 @@
                     <div v-if="item.choiceHealth">
                       <div style="margin-top: -2px">
                         <!-- 存活检查 -->
-                        <el-form-item style="margin-left: 70px">
+                        <el-form-item style="margin-left: 100px">
                           <div style="font-size: 12px; margin-right: 8px; color: #191919">
                             存活检查
                           </div>
@@ -474,7 +492,7 @@
                         </el-form-item>
                         <el-form-item v-if="item.healths.liveness.enable">
                           <div style="margin-top: -2px">
-                            <el-form-item style="margin-left: 70px">
+                            <el-form-item style="margin-left: 100px">
                               <el-radio-group
                                 v-model="item.healths.liveness.checkType"
                                 size="small"
@@ -488,12 +506,12 @@
                             </el-form-item>
 
                             <div v-if="item.healths.liveness.checkType === 1">
-                              <el-form-item style="margin-left: 70px">
+                              <el-form-item style="margin-left: 100px">
                                 <div style="font-size: 12px; color: #191919">路径</div>
                               </el-form-item>
 
                               <div style="width: 650px">
-                                <el-form-item style="margin-left: 70px">
+                                <el-form-item style="margin-left: 100px">
                                   <el-select
                                     v-model="item.healths.liveness.httpGet.scheme"
                                     style="width: 30%"
@@ -518,10 +536,10 @@
                             </div>
 
                             <div v-if="item.healths.liveness.checkType === 2">
-                              <el-form-item style="margin-left: 70px">
+                              <el-form-item style="margin-left: 100px">
                                 <div style="font-size: 12px; color: #191919">命令</div>
                               </el-form-item>
-                              <el-form-item style="margin-left: 70px">
+                              <el-form-item style="margin-left: 100px">
                                 <el-input
                                   v-model="item.healths.liveness.cmd"
                                   style="width: 580px"
@@ -530,10 +548,10 @@
                               </el-form-item>
                             </div>
                             <div v-if="item.healths.liveness.checkType === 3">
-                              <el-form-item style="margin-left: 70px">
+                              <el-form-item style="margin-left: 100px">
                                 <div style="font-size: 12px; color: #191919">端口</div>
                               </el-form-item>
-                              <el-form-item style="margin-left: 70px">
+                              <el-form-item style="margin-left: 100px">
                                 <el-input
                                   v-model="item.healths.liveness.port"
                                   style="width: 580px"
@@ -541,7 +559,7 @@
                               </el-form-item>
                             </div>
 
-                            <el-row :gutter="20" style="margin-left: 60px">
+                            <el-row :gutter="20" style="margin-left: 90px">
                               <el-col :span="12">
                                 <el-row>
                                   <div style="font-size: 12px; color: #191919">初始延迟（s）</div>
@@ -566,7 +584,7 @@
                               </el-col>
                             </el-row>
 
-                            <el-row :gutter="20" style="margin-left: 60px">
+                            <el-row :gutter="20" style="margin-left: 90px">
                               <el-col :span="12">
                                 <el-row>
                                   <div style="font-size: 12px; color: #191919">检查间隔（s ）</div>
@@ -591,7 +609,7 @@
                               </el-col>
                             </el-row>
 
-                            <el-row :gutter="20" style="margin-left: 60px">
+                            <el-row :gutter="20" style="margin-left: 90px">
                               <el-col :span="12">
                                 <el-row>
                                   <div style="font-size: 12px; color: #191919">失败阈值</div>
@@ -608,7 +626,7 @@
                         </el-form-item>
 
                         <!-- 就绪检查 -->
-                        <el-form-item style="margin-left: 70px">
+                        <el-form-item style="margin-left: 100px">
                           <div style="font-size: 12px; margin-right: 8px; color: #191919">
                             就绪检查
                           </div>
@@ -616,7 +634,7 @@
                         </el-form-item>
                         <el-form-item v-if="item.healths.readiness.enable">
                           <div style="margin-top: -2px">
-                            <el-form-item style="margin-left: 70px">
+                            <el-form-item style="margin-left: 100px">
                               <el-radio-group
                                 v-model="item.healths.readiness.checkType"
                                 size="small"
@@ -630,12 +648,12 @@
                             </el-form-item>
 
                             <div v-if="item.healths.readiness.checkType === 1">
-                              <el-form-item style="margin-left: 70px">
+                              <el-form-item style="margin-left: 100px">
                                 <div style="font-size: 12px; color: #191919">路径</div>
                               </el-form-item>
 
                               <div style="width: 650px">
-                                <el-form-item style="margin-left: 70px">
+                                <el-form-item style="margin-left: 100px">
                                   <el-select
                                     v-model="item.healths.readiness.httpGet.scheme"
                                     style="width: 30%"
@@ -660,10 +678,10 @@
                             </div>
 
                             <div v-if="item.healths.readiness.checkType === 2">
-                              <el-form-item style="margin-left: 70px">
+                              <el-form-item style="margin-left: 100px">
                                 <div style="font-size: 12px; color: #191919">命令</div>
                               </el-form-item>
-                              <el-form-item style="margin-left: 70px">
+                              <el-form-item style="margin-left: 100px">
                                 <el-input
                                   v-model="item.healths.readiness.cmd"
                                   style="width: 580px"
@@ -672,10 +690,10 @@
                               </el-form-item>
                             </div>
                             <div v-if="item.healths.readiness.checkType === 3">
-                              <el-form-item style="margin-left: 70px">
+                              <el-form-item style="margin-left: 100px">
                                 <div style="font-size: 12px; color: #191919">端口</div>
                               </el-form-item>
-                              <el-form-item style="margin-left: 70px">
+                              <el-form-item style="margin-left: 100px">
                                 <el-input
                                   v-model="item.healths.readiness.port"
                                   style="width: 580px"
@@ -683,7 +701,7 @@
                               </el-form-item>
                             </div>
 
-                            <el-row :gutter="20" style="margin-left: 60px">
+                            <el-row :gutter="20" style="margin-left: 90px">
                               <el-col :span="12">
                                 <el-row>
                                   <div style="font-size: 12px; color: #191919">初始延迟（s）</div>
@@ -708,7 +726,7 @@
                               </el-col>
                             </el-row>
 
-                            <el-row :gutter="20" style="margin-left: 60px">
+                            <el-row :gutter="20" style="margin-left: 90px">
                               <el-col :span="12">
                                 <el-row>
                                   <div style="font-size: 12px; color: #191919">检查间隔（s ）</div>
@@ -733,7 +751,7 @@
                               </el-col>
                             </el-row>
 
-                            <el-row :gutter="20" style="margin-left: 60px">
+                            <el-row :gutter="20" style="margin-left: 90px">
                               <el-col :span="12">
                                 <el-row>
                                   <div style="font-size: 12px; color: #191919">失败阈值</div>
@@ -750,7 +768,7 @@
                         </el-form-item>
 
                         <!-- 启动检查 -->
-                        <el-form-item style="margin-left: 70px">
+                        <el-form-item style="margin-left: 100px">
                           <div style="font-size: 12px; margin-right: 8px; color: #191919">
                             启动检查
                           </div>
@@ -759,7 +777,7 @@
 
                         <el-form-item v-if="item.healths.startup.enable">
                           <div style="margin-top: -2px">
-                            <el-form-item style="margin-left: 70px">
+                            <el-form-item style="margin-left: 100px">
                               <el-radio-group v-model="item.healths.startup.checkType" size="small">
                                 <el-space :size="25">
                                   <el-radio :value="1">HTTP 请求</el-radio>
@@ -770,12 +788,12 @@
                             </el-form-item>
 
                             <div v-if="item.healths.startup.checkType === 1">
-                              <el-form-item style="margin-left: 70px">
+                              <el-form-item style="margin-left: 100px">
                                 <div style="font-size: 12px; color: #191919">路径</div>
                               </el-form-item>
 
                               <div style="width: 650px">
-                                <el-form-item style="margin-left: 70px">
+                                <el-form-item style="margin-left: 100px">
                                   <el-select
                                     v-model="item.healths.startup.httpGet.scheme"
                                     style="width: 30%"
@@ -800,10 +818,10 @@
                             </div>
 
                             <div v-if="item.healths.startup.checkType === 2">
-                              <el-form-item style="margin-left: 70px">
+                              <el-form-item style="margin-left: 100px">
                                 <div style="font-size: 12px; color: #191919">命令</div>
                               </el-form-item>
-                              <el-form-item style="margin-left: 70px">
+                              <el-form-item style="margin-left: 100px">
                                 <el-input
                                   v-model="item.healths.startup.cmd"
                                   style="width: 580px"
@@ -812,10 +830,10 @@
                               </el-form-item>
                             </div>
                             <div v-if="item.healths.startup.checkType === 3">
-                              <el-form-item style="margin-left: 70px">
+                              <el-form-item style="margin-left: 100px">
                                 <div style="font-size: 12px; color: #191919">端口</div>
                               </el-form-item>
-                              <el-form-item style="margin-left: 70px">
+                              <el-form-item style="margin-left: 100px">
                                 <el-input
                                   v-model="item.healths.startup.port"
                                   style="width: 580px"
@@ -823,7 +841,7 @@
                               </el-form-item>
                             </div>
 
-                            <el-row :gutter="20" style="margin-left: 60px">
+                            <el-row :gutter="20" style="margin-left: 90px">
                               <el-col :span="12">
                                 <el-row>
                                   <div style="font-size: 12px; color: #191919">初始延迟（s）</div>
@@ -848,7 +866,7 @@
                               </el-col>
                             </el-row>
 
-                            <el-row :gutter="20" style="margin-left: 60px">
+                            <el-row :gutter="20" style="margin-left: 90px">
                               <el-col :span="12">
                                 <el-row>
                                   <div style="font-size: 12px; color: #191919">检查间隔（s ）</div>
@@ -873,7 +891,7 @@
                               </el-col>
                             </el-row>
 
-                            <el-row :gutter="20" style="margin-left: 60px">
+                            <el-row :gutter="20" style="margin-left: 90px">
                               <el-col :span="12">
                                 <el-row>
                                   <div style="font-size: 12px; color: #191919">失败阈值</div>
@@ -899,25 +917,25 @@
                     </el-form-item>
                     <div
                       class="container-line-describe"
-                      style="margin-left: 72px; margin-top: -8px"
+                      style="margin-left: 100px; margin-top: -8px"
                     >
                       将存储挂载到容器。
                     </div>
                     <div v-if="item.choiceStorage">
                       <div style="margin-top: -2px">
-                        <div style="margin-left: 70px; display: flex">
+                        <div style="margin-left: 100px; display: flex">
                           <div style="font-size: 12px; color: #191919">存储类型</div>
-                          <div style="font-size: 12px; color: #191919; margin-left: 14%">名称</div>
-                          <div style="font-size: 12px; color: #191919; margin-left: 18.5%">
+                          <div style="font-size: 12px; color: #191919; margin-left: 10%">名称</div>
+                          <div style="font-size: 12px; color: #191919; margin-left: 14%">
                             挂载源
                           </div>
-                          <div style="font-size: 12px; color: #191919; margin-left: 21.5%">
+                          <div style="font-size: 12px; color: #191919; margin-left: 15.5%">
                             容器挂载路径
                           </div>
                         </div>
 
                         <el-form-item v-for="(i, index1) in item.storages" :key="index1">
-                          <el-form-item style="margin-left: 60px">
+                          <el-form-item style="margin-left: 90px">
                             <el-select
                               v-model="i.volumeType"
                               style="width: 19%; margin-left: 10px; margin-right: 10px"
@@ -985,25 +1003,188 @@
                       </div>
 
                       <el-form-item label>
-                        <template #label>
-                          <span
-                            class="form-item-key-style"
-                            style="
-                              cursor: pointer;
-                              color: #006eff;
-                              font-size: 12px;
-                              margin-left: 70px;
-                              margin-top: -1px;
-                            "
-                            @click="addStorage(item)"
-                            >+ 添加</span
-                          >
-                        </template>
+                        <div
+                          class="form-item-key-style"
+                          style="
+                            cursor: pointer;
+                            color: #006eff;
+                            font-size: 12px;
+                            margin-left: 100px;
+                            margin-top: -1px;
+                          "
+                          @click="addStorage(item)"
+                        >
+                          + 添加
+                        </div>
                       </el-form-item>
                     </div>
                   </div>
                 </div>
               </el-form-item>
+            </div>
+
+            <div v-if="data.active === 3">
+              <el-form-item>
+                <template #label>
+                  <span class="form-item-key-style">主机网络</span>
+                </template>
+                <el-checkbox v-model="data.frontObject.hostNetwork" style="margin-left: -15px" />
+              </el-form-item>
+              <div class="dialog-describe-style">容器使用宿主机网络。</div>
+              <div style="margin-top: 15px"></div>
+
+              <el-form-item label>
+                <template #label>
+                  <span class="form-item-key-style">选择节点</span>
+                </template>
+                <el-checkbox
+                  v-model="data.frontObject.choiceNode"
+                  @change="nodeChange"
+                  style="margin-left: -15px"
+                />
+              </el-form-item>
+              <div class="dialog-describe-style">
+                分配 Pod 到特定的节点。支持使用标签选择节点和手动指定节点。
+              </div>
+
+              <div v-if="data.frontObject.choiceNode">
+                <div style="margin-top: 25px"></div>
+                <el-form-item
+                  v-for="(item, index) in data.frontObject.nodeSelectLabels"
+                  :key="index"
+                  style="margin-top: -10px"
+                >
+                  <el-form-item prop="item.key">
+                    <el-input v-model="item.key" style="width: 300px" />
+                  </el-form-item>
+                  <div>
+                    <el-input v-model="item.value" style="width: 300px; margin-left: 20px" />
+                  </div>
+                  <div
+                    class="table-inline-btn"
+                    style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
+                    @click="deleteNodeSelectLabel(index)"
+                  >
+                    删除
+                  </div>
+                </el-form-item>
+                <el-form-item>
+                  <div
+                    class="table-inline-btn"
+                    style="margin-top: -15px; margin-bottom: -15px; cursor: pointer"
+                    @click="addNodeSelectLabel"
+                  >
+                    + 添加
+                  </div>
+                </el-form-item>
+              </div>
+
+              <div style="margin-top: 15px"></div>
+              <el-form-item label>
+                <template #label>
+                  <span class="form-item-key-style">添加元数据</span>
+                </template>
+                <el-checkbox
+                  v-model="data.frontObject.enableMetadata"
+                  @change="metaChange"
+                  style="margin-left: -15px"
+                />
+              </el-form-item>
+              <div class="dialog-describe-style">为定时任务添加标签和注解数据</div>
+
+              <div v-if="data.frontObject.enableMetadata">
+                <el-form-item>
+                  <template #label>
+                    <span class="form-item-key-style">标签</span>
+                  </template>
+                </el-form-item>
+                <el-form-item
+                  v-for="(item, index) in data.frontObject.labels"
+                  :key="index"
+                  style="margin-top: -10px"
+                >
+                  <el-form-item prop="item.key">
+                    <el-input
+                      v-model="item.key"
+                      style="width: 300px; margin-left: 10px"
+                      placeholder="键"
+                    />
+                  </el-form-item>
+                  <div>
+                    <el-input
+                      v-model="item.value"
+                      style="width: 300px; margin-left: 20px"
+                      placeholder="值"
+                    />
+                  </div>
+                  <div
+                    class="table-inline-btn"
+                    style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
+                    @click="deleteLabel(index)"
+                  >
+                    删除
+                  </div>
+                </el-form-item>
+
+                <el-form-item>
+                  <div
+                    class="table-inline-btn"
+                    style="
+                      margin-left: -5px;
+                      margin-right: -20px;
+                      margin-top: -15px;
+                      margin-bottom: -15px;
+                      cursor: pointer;
+                    "
+                    @click="addLabel"
+                  >
+                    + 添加
+                  </div>
+                </el-form-item>
+
+                <el-form-item>
+                  <template #label>
+                    <span class="form-item-key-style">注解</span>
+                  </template>
+                </el-form-item>
+
+                <el-form-item
+                  v-for="(item, index) in data.frontObject.annotations"
+                  :key="index"
+                  style="margin-top: -10px"
+                >
+                  <el-form-item prop="item.key">
+                    <el-input
+                      v-model="item.key"
+                      style="width: 300px; margin-left: 10px"
+                      placeholder="键"
+                    />
+                  </el-form-item>
+                  <div>
+                    <el-input
+                      v-model="item.value"
+                      style="width: 300px; margin-left: 20px"
+                      placeholder="值"
+                    />
+                  </div>
+                  <div
+                    class="table-inline-btn"
+                    style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
+                    @click="deleteAnnotation(index)"
+                  >
+                    删除
+                  </div>
+                </el-form-item>
+                <el-form-item>
+                  <div
+                    class="table-inline-btn"
+                    style="margin-top: -15px; margin-bottom: -15px; cursor: pointer"
+                    @click="addAnnotation"
+                  >
+                    + 添加
+                  </div>
+                </el-form-item>
+              </div>
             </div>
 
             <div style="margin-top: 30px" />
@@ -1017,14 +1198,14 @@
                 >上一步</el-button
               >
               <el-button
-                v-if="data.active < 4"
+                v-if="data.active < 3"
                 type="primary"
                 class="pixiu-delete-confirm-button"
                 @click="nextStep"
                 >下一步</el-button
               >
               <el-button
-                v-if="data.active === 4"
+                v-if="data.active === 3"
                 type="primary"
                 class="pixiu-delete-confirm-button"
                 @click="confirmCreate"
@@ -1178,6 +1359,91 @@ const openContainerAdvanceOption = (item) => {
   item.advance = !item.advance;
 };
 
+const addNodeSelectLabel = () => {
+  data.frontObject.nodeSelectLabels.push({ key: '', value: '' });
+};
+
+const deleteNodeSelectLabel = (index) => {
+  data.frontObject.nodeSelectLabels.splice(index, 1);
+};
+
+const metaChange = () => {
+  if (data.frontObject.enableMetadata) {
+    if (data.frontObject.labels.length === 0) {
+      addLabel();
+    }
+  }
+};
+
+const addAnnotation = () => {
+  data.frontObject.annotations.push({ key: '', value: '' });
+};
+
+const deleteAnnotation = (index) => {
+  data.frontObject.annotations.splice(index, 1);
+};
+
+const nodeChange = () => {
+  if (data.cronJobData.choiceNode) {
+    if (data.cronJobData.nodeSelectLabels.length === 0) {
+      addNodeSelectLabel();
+    }
+  }
+};
+
+const envChange = (item) => {
+  if (item.choiceEnv) {
+    if (item.envs.length === 0) {
+      addEnv(item);
+    }
+  }
+};
+
+const addEnv = (item) => {
+  item.envs.push({
+    type: '自定义',
+    key: '',
+    value: '',
+  });
+};
+
+const deleteEnv = (item, index) => {
+  item.envs.splice(index, 1);
+};
+
+const portChange = (item) => {
+  if (item.choicePort) {
+    if (item.ports.length === 0) {
+      addPort(item);
+    }
+  }
+};
+
+const addPort = (item) => {
+  item.ports.push({
+    name: '',
+    protocol: 'TCP',
+    containerPort: '',
+  });
+};
+
+const deletePort = (item, index) => {
+  item.ports.splice(index, 1);
+};
+
+const addStorage = (item) => {
+  item.storages.push({
+    volumeType: 'HostPath卷',
+    name: '',
+    mountSrc: '',
+    mountPath: '',
+  });
+};
+
+const deleteStorage = (item, index) => {
+  item.storages.splice(index, 1);
+};
+
 // 添加容器相关函数结束
 
 const cancelCreate = () => {
@@ -1208,14 +1474,14 @@ const getNamespaceList = async () => {
 };
 
 const addLabel = () => {
-  data.form.labels.push({
+  data.frontObject.labels.push({
     key: '',
     value: '',
   });
 };
 
 const deleteLabel = (index) => {
-  data.form.labels.splice(index, 1);
+  data.frontObject.labels.splice(index, 1);
 };
 
 const addContainer = () => {
@@ -1314,5 +1580,3 @@ const backToStatefulSet = () => {
   });
 };
 </script>
-
-<style></style>
