@@ -305,7 +305,7 @@
                     <div v-if="item.choicePort">
                       <div style="margin-top: -2px">
                         <el-form-item v-for="(i, index1) in item.ports" :key="index1">
-                          <el-form-item style="margin-left: 70px">
+                          <el-form-item style="margin-left: 100px">
                             <div style="font-size: 12px; color: #191919">协议</div>
                             <el-select
                               v-model="i.protocol"
@@ -354,7 +354,7 @@
                               cursor: pointer;
                               color: #006eff;
                               font-size: 12px;
-                              margin-left: 70px;
+                              margin-left: 100px;
                               margin-top: -1px;
                             "
                             @click="addPort(item)"
@@ -1191,6 +1191,59 @@ const comfirmCreate = async () => {
 
 const openContainerAdvanceOption = (item) => {
   item.advance = !item.advance;
+};
+
+const envChange = (item) => {
+  if (item.choiceEnv) {
+    if (item.envs.length === 0) {
+      addEnv(item);
+    }
+  }
+};
+
+const addEnv = (item) => {
+  item.envs.push({
+    type: '自定义',
+    key: '',
+    value: '',
+  });
+};
+
+const deleteEnv = (item, index) => {
+  item.envs.splice(index, 1);
+};
+
+const portChange = (item) => {
+  if (item.choicePort) {
+    if (item.ports.length === 0) {
+      addPort(item);
+    }
+  }
+};
+
+const addPort = (item) => {
+  item.ports.push({
+    name: '',
+    protocol: 'TCP',
+    containerPort: '',
+  });
+};
+
+const deletePort = (item, index) => {
+  item.ports.splice(index, 1);
+};
+
+const addStorage = (item) => {
+  item.storages.push({
+    volumeType: 'HostPath卷',
+    name: '',
+    mountSrc: '',
+    mountPath: '',
+  });
+};
+
+const deleteStorage = (item, index) => {
+  item.storages.splice(index, 1);
 };
 
 // 添加容器相关函数结束
