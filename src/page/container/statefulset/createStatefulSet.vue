@@ -226,7 +226,11 @@
                               >CPU 预留</span
                             >
                           </template>
-                          <el-input v-model="item.cpuRequst" placeholder="无限制">
+                          <el-input
+                            v-model="item.cpuRequst"
+                            placeholder="无限制"
+                            style="margin-left: -25px"
+                          >
                             <template #suffix>
                               <div style="font-size: 12px; color: #191919">Core</div>
                             </template>
@@ -236,7 +240,11 @@
                           <template #label>
                             <span class="form-input-key-style">内存预留 </span>
                           </template>
-                          <el-input v-model="item.memoryRequst" placeholder="无限制">
+                          <el-input
+                            v-model="item.memoryRequst"
+                            placeholder="无限制"
+                            style="margin-left: -25px"
+                          >
                             <template #suffix
                               ><div style="font-size: 12px; color: #191919">Mi</div>
                             </template>
@@ -251,7 +259,11 @@
                               >CPU 限制</span
                             >
                           </template>
-                          <el-input v-model="item.cpuLimit" placeholder="无限制">
+                          <el-input
+                            v-model="item.cpuLimit"
+                            placeholder="无限制"
+                            style="margin-left: -25px"
+                          >
                             <template #suffix>
                               <div style="font-size: 12px; color: #191919">Core</div>
                             </template>
@@ -262,7 +274,11 @@
                             <span class="form-input-key-style">内存限制</span>
                           </template>
 
-                          <el-input v-model="item.memoryLimit" placeholder="无限制">
+                          <el-input
+                            v-model="item.memoryLimit"
+                            placeholder="无限制"
+                            style="margin-left: -25px"
+                          >
                             <template #suffix
                               ><div style="font-size: 12px; color: #191919">Mi</div>
                             </template>
@@ -270,7 +286,7 @@
                         </el-form-item>
                       </el-form-item>
                     </el-form-item>
-                    <div class="container-line-describe" style="margin-left: 85px">
+                    <div class="container-line-describe" style="margin-left: 100px">
                       设置容器的资源限制与资源预留，以将容器调度到合适的节点上。
                     </div>
 
@@ -282,7 +298,7 @@
                     </el-form-item>
                     <div
                       class="container-line-describe"
-                      style="margin-left: 72px; margin-top: -8px"
+                      style="margin-left: 100px; margin-top: -8px"
                     >
                       设置容器的端口。
                     </div>
@@ -356,7 +372,7 @@
                     </el-form-item>
                     <div
                       class="container-line-describe"
-                      style="margin-left: 72px; margin-top: -8px"
+                      style="margin-left: 100px; margin-top: -8px"
                     >
                       为容器添加添加环境变量。
                     </div>
@@ -422,7 +438,7 @@
                     </el-form-item>
                     <div
                       class="container-line-describe"
-                      style="margin-left: 72px; margin-top: -8px"
+                      style="margin-left: 100px; margin-top: -8px"
                     >
                       自定义容器启动时运行的命令。默认情况下，容器启动时将运行镜像默认命令。
                     </div>
@@ -457,7 +473,7 @@
                     </el-form-item>
                     <div
                       class="container-line-describe"
-                      style="margin-left: 72px; margin-top: -8px"
+                      style="margin-left: 100px; margin-top: -8px"
                     >
                       添加探针以定时检查容器健康状态。
                     </div>
@@ -898,7 +914,7 @@
                     </el-form-item>
                     <div
                       class="container-line-describe"
-                      style="margin-left: 72px; margin-top: -8px"
+                      style="margin-left: 100px; margin-top: -8px"
                     >
                       将存储挂载到容器。
                     </div>
@@ -1016,14 +1032,14 @@
                 >上一步</el-button
               >
               <el-button
-                v-if="data.active < 4"
+                v-if="data.active < 3"
                 type="primary"
                 class="pixiu-delete-confirm-button"
                 @click="nextStep"
                 >下一步</el-button
               >
               <el-button
-                v-if="data.active === 4"
+                v-if="data.active === 3"
                 type="primary"
                 class="pixiu-delete-confirm-button"
                 @click="confirmCreate"
