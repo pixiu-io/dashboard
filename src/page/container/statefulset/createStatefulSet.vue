@@ -1017,6 +1017,170 @@
               </el-form-item>
             </div>
 
+            <div v-if="data.active === 3">
+              <el-form-item>
+                <template #label>
+                  <span class="form-item-key-style">主机网络</span>
+                </template>
+                <el-checkbox v-model="data.frontObject.hostNetwork" style="margin-left: -15px" />
+              </el-form-item>
+              <div class="dialog-describe-style">容器使用宿主机网络。</div>
+              <div style="margin-top: 15px"></div>
+
+              <el-form-item label>
+                <template #label>
+                  <span class="form-item-key-style">选择节点</span>
+                </template>
+                <el-checkbox
+                  v-model="data.frontObject.choiceNode"
+                  @change="nodeChange"
+                  style="margin-left: -15px"
+                />
+              </el-form-item>
+              <div class="dialog-describe-style">
+                分配 Pod 到特定的节点。支持使用标签选择节点和手动指定节点。
+              </div>
+
+              <div v-if="data.frontObject.choiceNode">
+                <div style="margin-top: 25px"></div>
+                <el-form-item
+                  v-for="(item, index) in data.frontObject.nodeSelectLabels"
+                  :key="index"
+                  style="margin-top: -10px"
+                >
+                  <el-form-item prop="item.key">
+                    <el-input v-model="item.key" style="width: 300px" />
+                  </el-form-item>
+                  <div>
+                    <el-input v-model="item.value" style="width: 300px; margin-left: 20px" />
+                  </div>
+                  <div
+                    class="table-inline-btn"
+                    style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
+                    @click="deleteNodeSelectLabel(index)"
+                  >
+                    删除
+                  </div>
+                </el-form-item>
+                <el-form-item>
+                  <div
+                    class="table-inline-btn"
+                    style="margin-top: -15px; margin-bottom: -15px; cursor: pointer"
+                    @click="addNodeSelectLabel"
+                  >
+                    + 添加
+                  </div>
+                </el-form-item>
+              </div>
+
+              <div style="margin-top: 15px"></div>
+              <el-form-item label>
+                <template #label>
+                  <span class="form-item-key-style">添加元数据</span>
+                </template>
+                <el-checkbox
+                  v-model="data.frontObject.enableMetadata"
+                  @change="metaChange"
+                  style="margin-left: -15px"
+                />
+              </el-form-item>
+              <div class="dialog-describe-style">为定时任务添加标签和注解数据</div>
+
+              <div v-if="data.frontObject.enableMetadata">
+                <el-form-item>
+                  <template #label>
+                    <span class="form-item-key-style">标签</span>
+                  </template>
+                </el-form-item>
+                <el-form-item
+                  v-for="(item, index) in data.frontObject.labels"
+                  :key="index"
+                  style="margin-top: -10px"
+                >
+                  <el-form-item prop="item.key">
+                    <el-input
+                      v-model="item.key"
+                      style="width: 300px; margin-left: 10px"
+                      placeholder="键"
+                    />
+                  </el-form-item>
+                  <div>
+                    <el-input
+                      v-model="item.value"
+                      style="width: 300px; margin-left: 20px"
+                      placeholder="值"
+                    />
+                  </div>
+                  <div
+                    class="table-inline-btn"
+                    style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
+                    @click="deleteLabel(index)"
+                  >
+                    删除
+                  </div>
+                </el-form-item>
+
+                <el-form-item>
+                  <div
+                    class="table-inline-btn"
+                    style="
+                      margin-left: -5px;
+                      margin-right: -20px;
+                      margin-top: -15px;
+                      margin-bottom: -15px;
+                      cursor: pointer;
+                    "
+                    @click="addLabel"
+                  >
+                    + 添加
+                  </div>
+                </el-form-item>
+
+                <el-form-item>
+                  <template #label>
+                    <span class="form-item-key-style">注解</span>
+                  </template>
+                </el-form-item>
+
+                <el-form-item
+                  v-for="(item, index) in data.frontObject.annotations"
+                  :key="index"
+                  style="margin-top: -10px"
+                >
+                  <el-form-item prop="item.key">
+                    <el-input
+                      v-model="item.key"
+                      style="width: 300px; margin-left: 10px"
+                      placeholder="键"
+                    />
+                  </el-form-item>
+                  <div>
+                    <el-input
+                      v-model="item.value"
+                      style="width: 300px; margin-left: 20px"
+                      placeholder="值"
+                    />
+                  </div>
+                  <div
+                    class="table-inline-btn"
+                    style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
+                    @click="deleteAnnotation(index)"
+                  >
+                    删除
+                  </div>
+                </el-form-item>
+                <el-form-item>
+                  <div
+                    class="table-inline-btn"
+                    style="margin-top: -15px; margin-bottom: -15px; cursor: pointer"
+                    @click="addAnnotation"
+                  >
+                    + 添加
+                  </div>
+                </el-form-item>
+              </div>
+            </div>
+
             <div style="margin-top: 30px" />
             <el-form-item style="margin-left: 30%">
               <el-button class="pixiu-cancel-button" @click="cancelCreate()">取消</el-button>
@@ -1189,6 +1353,38 @@ const openContainerAdvanceOption = (item) => {
   item.advance = !item.advance;
 };
 
+const addNodeSelectLabel = () => {
+  data.frontObject.nodeSelectLabels.push({ key: '', value: '' });
+};
+
+const deleteNodeSelectLabel = (index) => {
+  data.frontObject.nodeSelectLabels.splice(index, 1);
+};
+
+const metaChange = () => {
+  if (data.frontObject.enableMetadata) {
+    if (data.frontObject.labels.length === 0) {
+      addLabel();
+    }
+  }
+};
+
+const addAnnotation = () => {
+  data.frontObject.annotations.push({ key: '', value: '' });
+};
+
+const deleteAnnotation = (index) => {
+  data.frontObject.annotations.splice(index, 1);
+};
+
+const nodeChange = () => {
+  if (data.cronJobData.choiceNode) {
+    if (data.cronJobData.nodeSelectLabels.length === 0) {
+      addNodeSelectLabel();
+    }
+  }
+};
+
 const envChange = (item) => {
   if (item.choiceEnv) {
     if (item.envs.length === 0) {
@@ -1272,14 +1468,14 @@ const getNamespaceList = async () => {
 };
 
 const addLabel = () => {
-  data.form.labels.push({
+  data.frontObject.labels.push({
     key: '',
     value: '',
   });
 };
 
 const deleteLabel = (index) => {
-  data.form.labels.splice(index, 1);
+  data.frontObject.labels.splice(index, 1);
 };
 
 const addContainer = () => {
