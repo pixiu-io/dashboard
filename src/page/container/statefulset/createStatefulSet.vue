@@ -1039,8 +1039,8 @@
                 </template>
                 <el-checkbox
                   v-model="data.frontObject.choiceNode"
-                  @change="nodeChange"
                   style="margin-left: -15px"
+                  @change="nodeChange"
                 />
               </el-form-item>
               <div class="dialog-describe-style">
@@ -1086,8 +1086,8 @@
                 </template>
                 <el-checkbox
                   v-model="data.frontObject.enableMetadata"
-                  @change="metaChange"
                   style="margin-left: -15px"
+                  @change="metaChange"
                 />
               </el-form-item>
               <div class="dialog-describe-style">为定时任务添加标签和注解数据</div>
