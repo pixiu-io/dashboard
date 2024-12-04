@@ -1232,7 +1232,7 @@
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import { createStatefulSet } from '@/services/kubernetes/statefulsetService';
-import { makePodTemplate, makeObjectMetadata } from '@/utils/k8s';
+import { makePodTemplate, makeTemplate, makeObjectMetadata } from '@/utils/k8s';
 
 const { proxy } = getCurrentInstance();
 const ruleFormRef = ref();
@@ -1258,6 +1258,7 @@ const data = reactive({
   frontObject: {
     name: '',
     namespace: '',
+    kind: 'statefulset',
     description: '',
 
     close: false,
@@ -1287,12 +1288,8 @@ const data = reactive({
     metadata: {},
     spec: {
       template: {
-        metadata: {
-          labels: {},
-        },
-        spec: {
-          containers: [],
-        },
+        metadata: {},
+        spec: {},
       },
       replicas: 1,
       selector: {
@@ -1340,11 +1337,10 @@ const confirmCreate = async () => {
   // ruleFormRef.value.validate(async (valid) => {
   //   if (valid) {
   data.endObject.metadata = makeObjectMetadata(data.frontObject);
-  data.endObject.spec.template.spec = makePodTemplate(data.frontObject);
+  data.endObject.spec.template = makeTemplate(data.frontObject);
 
   data.endObject.spec.selector.matchLabels['pixiu.io/app'] = data.frontObject.name;
   data.endObject.spec.selector.matchLabels['pixiu.io/kind'] = 'statefulset';
-  data.endObject.spec.template.metadata.labels = data.endObject.spec.selector.matchLabels;
 
   const [result, err] = await createStatefulSet(
     data.cluster,
