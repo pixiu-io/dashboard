@@ -1338,9 +1338,10 @@ const confirmCreate = async () => {
   //   if (valid) {
   data.endObject.metadata = makeObjectMetadata(data.frontObject);
   data.endObject.spec.template = makeTemplate(data.frontObject);
-
-  data.endObject.spec.selector.matchLabels['pixiu.io/app'] = data.frontObject.name;
-  data.endObject.spec.selector.matchLabels['pixiu.io/kind'] = 'statefulset';
+  data.endObject.spec.selector.matchLabels = {
+    'pixiu.io/app': data.frontObject.name,
+    'pixiu.io/kind': data.frontObject.kind,
+  };
 
   const [result, err] = await createStatefulSet(
     data.cluster,
