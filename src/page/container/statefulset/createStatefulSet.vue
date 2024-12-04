@@ -40,7 +40,7 @@
             class="create-card-form"
           >
             <el-steps
-              style="max-width: 90%; margin-left: 6px"
+              style="max-width: 90%; margin-left: 6px; margin-top: 15px"
               :active="data.active"
               finish-status="success"
             >
@@ -66,7 +66,7 @@
               </el-step>
             </el-steps>
 
-            <div style="margin-top: 20px" />
+            <div style="margin-top: 30px" />
 
             <div v-if="data.active === 0">
               <el-form-item>
