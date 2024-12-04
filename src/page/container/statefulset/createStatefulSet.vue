@@ -1274,8 +1274,8 @@ const data = reactive({
     // 容器配置
     containers: [],
     imagePullPolicies: ['IfNotPresent', 'Always', 'Never'],
-    restartPolicies: ['OnFailure', 'Never'],
-    restartPolicy: 'OnFailure',
+    restartPolicies: ['Always'],
+    restartPolicy: 'Always',
     hostNetwork: false,
 
     // 存储设置
@@ -1337,29 +1337,29 @@ const handleChange = (value) => {
 };
 
 const confirmCreate = async () => {
-  ruleFormRef.value.validate(async (valid) => {
-    if (valid) {
-      data.endObject.metadata = makeObjectMetadata(data.frontObject);
-      data.endObject.spec.template.spec = makePodTemplate(data.frontObject);
+  // ruleFormRef.value.validate(async (valid) => {
+  //   if (valid) {
+  data.endObject.metadata = makeObjectMetadata(data.frontObject);
+  data.endObject.spec.template.spec = makePodTemplate(data.frontObject);
 
-      data.endObject.spec.selector.matchLabels['pixiu.io/app'] = data.frontObject.name;
-      data.endObject.spec.selector.matchLabels['pixiu.io/kind'] = 'statefulset';
-      data.endObject.spec.template.metadata.labels = data.endObject.spec.selector.matchLabels;
+  data.endObject.spec.selector.matchLabels['pixiu.io/app'] = data.frontObject.name;
+  data.endObject.spec.selector.matchLabels['pixiu.io/kind'] = 'statefulset';
+  data.endObject.spec.template.metadata.labels = data.endObject.spec.selector.matchLabels;
 
-      const [result, err] = await createStatefulSet(
-        data.cluster,
-        data.frontObject.namespace,
-        data.endObject,
-      );
-      if (err) {
-        proxy.$message.error(err.response.data.message);
-        return;
-      }
+  const [result, err] = await createStatefulSet(
+    data.cluster,
+    data.frontObject.namespace,
+    data.endObject,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
 
-      proxy.$message.success(`StatefulSet ${data.frontObject.name} 创建成功`);
-      backToStatefulSet();
-    }
-  });
+  proxy.$message.success(`StatefulSet ${data.frontObject.name} 创建成功`);
+  backToStatefulSet();
+  // }
+  // });
 };
 
 // 添加容器相关函数开始
@@ -1393,8 +1393,8 @@ const deleteAnnotation = (index) => {
 };
 
 const nodeChange = () => {
-  if (data.cronJobData.choiceNode) {
-    if (data.cronJobData.nodeSelectLabels.length === 0) {
+  if (data.frontObject.choiceNode) {
+    if (data.frontObject.nodeSelectLabels.length === 0) {
       addNodeSelectLabel();
     }
   }
