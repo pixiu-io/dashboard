@@ -1052,7 +1052,7 @@
                 <el-form-item
                   v-for="(item, index) in data.frontObject.nodeSelectLabels"
                   :key="index"
-                  style="margin-top: -10px"
+                  style="margin-top: -10px; margin-left: -90px"
                 >
                   <el-form-item prop="item.key">
                     <el-input v-model="item.key" style="width: 300px" />
@@ -1071,7 +1071,12 @@
                 <el-form-item>
                   <div
                     class="table-inline-btn"
-                    style="margin-top: -15px; margin-bottom: -15px; cursor: pointer"
+                    style="
+                      margin-top: -15px;
+                      margin-bottom: -15px;
+                      margin-left: -90px;
+                      cursor: pointer;
+                    "
                     @click="addNodeSelectLabel"
                   >
                     + 添加
@@ -1101,7 +1106,7 @@
                 <el-form-item
                   v-for="(item, index) in data.frontObject.labels"
                   :key="index"
-                  style="margin-top: -10px"
+                  style="margin-top: -10px; margin-left: -100px"
                 >
                   <el-form-item prop="item.key">
                     <el-input
@@ -1130,8 +1135,7 @@
                   <div
                     class="table-inline-btn"
                     style="
-                      margin-left: -5px;
-                      margin-right: -20px;
+                      margin-left: -90px;
                       margin-top: -15px;
                       margin-bottom: -15px;
                       cursor: pointer;
@@ -1151,7 +1155,7 @@
                 <el-form-item
                   v-for="(item, index) in data.frontObject.annotations"
                   :key="index"
-                  style="margin-top: -10px"
+                  style="margin-top: -10px; margin-left: -100px"
                 >
                   <el-form-item prop="item.key">
                     <el-input
@@ -1178,7 +1182,12 @@
                 <el-form-item>
                   <div
                     class="table-inline-btn"
-                    style="margin-top: -15px; margin-bottom: -15px; cursor: pointer"
+                    style="
+                      margin-top: -15px;
+                      margin-bottom: -15px;
+                      margin-left: -90px;
+                      cursor: pointer;
+                    "
                     @click="addAnnotation"
                   >
                     + 添加
