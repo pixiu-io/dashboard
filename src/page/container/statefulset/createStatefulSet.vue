@@ -124,7 +124,7 @@
                 </template>
 
                 <el-input-number
-                  v-model="data.statefulsetForm.spec.replicas"
+                  v-model="data.endObject.spec.replicas"
                   style="margin-top: 8px"
                   :min="0"
                   size="small"
@@ -1297,28 +1297,6 @@ const data = reactive({
       },
     },
   },
-
-  // statefulset 创建初始对象
-  statefulsetForm: {
-    metadata: {
-      name: '',
-      namespace: 'default',
-    },
-    spec: {
-      replicas: 1,
-      selector: {
-        matchLabels: {},
-      },
-      template: {
-        metadata: {
-          labels: {},
-        },
-        spec: {
-          containers: [],
-        },
-      },
-    },
-  },
 });
 
 const nextStep = () => {
@@ -1330,7 +1308,7 @@ const lastStep = () => {
 };
 
 const handleChange = (value) => {
-  data.statefulsetForm.spec.replicas = value;
+  data.endObject.spec.replicas = value;
 };
 
 const confirmCreate = async () => {
