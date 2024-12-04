@@ -73,7 +73,7 @@
                 <template #label>
                   <span class="form-item-key-style">名称 </span>
                 </template>
-                <el-input v-model="data.form.metadata.name" style="width: 50%" />
+                <el-input v-model="data.frontObject.name" style="width: 50%" />
               </el-form-item>
 
               <el-form-item>
@@ -90,7 +90,7 @@
 
                 <div class="namespace-select-container">
                   <el-select
-                    v-model="data.form.metadata.namespace"
+                    v-model="data.frontObject.namespace"
                     style="width: 210px"
                     @change="changeNamespace"
                   >
@@ -1232,6 +1232,7 @@
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import { createStatefulSet } from '@/services/kubernetes/statefulsetService';
+import { makePodTemplate, makeObjectMetadata } from '@/utils/k8s';
 
 const { proxy } = getCurrentInstance();
 const ruleFormRef = ref();
@@ -1255,10 +1256,11 @@ const data = reactive({
 
   // 关联前端数据的对象，用于绑定和校验
   frontObject: {
+    name: '',
+    namespace: '',
     description: '',
 
     close: false,
-
     // 容器配置
     containers: [],
 
@@ -1280,15 +1282,23 @@ const data = reactive({
     storageTypeChoices: ['持久卷', '临时卷', 'HostPath卷', '配置字典', '保密字典'],
   },
 
-  // 检验 form
-  form: {
-    metadata: {
-      name: '',
-      namespace: 'default',
+  // 最终发送给后端的对象结构体
+  endObject: {
+    metadata: {},
+    spec: {
+      template: {
+        metadata: {
+          labels: {},
+        },
+        spec: {
+          containers: [],
+        },
+      },
+      replicas: 1,
+      selector: {
+        matchLabels: {},
+      },
     },
-    labels: [],
-    selector: [],
-    containers: [],
   },
 
   // statefulset 创建初始对象
@@ -1326,37 +1336,27 @@ const handleChange = (value) => {
   data.statefulsetForm.spec.replicas = value;
 };
 
-const comfirmCreate = async () => {
+const confirmCreate = async () => {
   ruleFormRef.value.validate(async (valid) => {
     if (valid) {
-      data.statefulsetForm.metadata = data.form.metadata;
-      data.statefulsetForm.spec.template.spec.containers = data.form.containers;
+      data.endObject.metadata = makeObjectMetadata(data.frontObject);
+      data.endObject.spec.template.spec = makePodTemplate(data.frontObject);
 
-      data.statefulsetForm.spec.selector.matchLabels['pixiu.io/app'] = data.form.metadata.name;
-      data.statefulsetForm.spec.selector.matchLabels['pixiu.io/kind'] = 'statefulset';
-      data.statefulsetForm.spec.template.metadata.labels =
-        data.statefulsetForm.spec.selector.matchLabels;
-
-      // 追加 labels
-      if (data.form.labels.length > 0) {
-        data.statefulsetForm.metadata['labels'] = {};
-        for (let item of data.form.labels) {
-          data.statefulsetForm.metadata['labels'][item.key] = item.value;
-        }
-      }
+      data.endObject.spec.selector.matchLabels['pixiu.io/app'] = data.frontObject.name;
+      data.endObject.spec.selector.matchLabels['pixiu.io/kind'] = 'statefulset';
+      data.endObject.spec.template.metadata.labels = data.endObject.spec.selector.matchLabels;
 
       const [result, err] = await createStatefulSet(
         data.cluster,
-        data.form.metadata.namespace,
-        data.statefulsetForm,
+        data.frontObject.namespace,
+        data.endObject,
       );
       if (err) {
         proxy.$message.error(err.response.data.message);
         return;
       }
 
-      proxy.$message.success(`StatefulSet ${data.form.metadata.name} 创建成功`);
-
+      proxy.$message.success(`StatefulSet ${data.frontObject.name} 创建成功`);
       backToStatefulSet();
     }
   });
@@ -1470,7 +1470,7 @@ onMounted(() => {
 
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
-  data.statefulsetForm.metadata.namespace = val;
+  data.frontObject.namespace = val;
 };
 
 const getNamespaceList = async () => {
