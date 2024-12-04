@@ -40,7 +40,7 @@
             class="create-card-form"
           >
             <el-steps
-              style="max-width: 90%; margin-left: 6px"
+              style="max-width: 90%; margin-left: 6px; margin-top: 15px"
               :active="data.active"
               finish-status="success"
             >
@@ -66,14 +66,14 @@
               </el-step>
             </el-steps>
 
-            <div style="margin-top: 20px" />
+            <div style="margin-top: 30px" />
 
             <div v-if="data.active === 0">
               <el-form-item>
                 <template #label>
                   <span class="form-item-key-style">名称 </span>
                 </template>
-                <el-input v-model="data.form.metadata.name" style="width: 50%" />
+                <el-input v-model="data.frontObject.name" style="width: 50%" />
               </el-form-item>
 
               <el-form-item>
@@ -90,7 +90,7 @@
 
                 <div class="namespace-select-container">
                   <el-select
-                    v-model="data.form.metadata.namespace"
+                    v-model="data.frontObject.namespace"
                     style="width: 210px"
                     @change="changeNamespace"
                   >
@@ -1039,8 +1039,8 @@
                 </template>
                 <el-checkbox
                   v-model="data.frontObject.choiceNode"
-                  @change="nodeChange"
                   style="margin-left: -15px"
+                  @change="nodeChange"
                 />
               </el-form-item>
               <div class="dialog-describe-style">
@@ -1052,7 +1052,7 @@
                 <el-form-item
                   v-for="(item, index) in data.frontObject.nodeSelectLabels"
                   :key="index"
-                  style="margin-top: -10px"
+                  style="margin-top: -10px; margin-left: -90px"
                 >
                   <el-form-item prop="item.key">
                     <el-input v-model="item.key" style="width: 300px" />
@@ -1071,7 +1071,12 @@
                 <el-form-item>
                   <div
                     class="table-inline-btn"
-                    style="margin-top: -15px; margin-bottom: -15px; cursor: pointer"
+                    style="
+                      margin-top: -15px;
+                      margin-bottom: -15px;
+                      margin-left: -90px;
+                      cursor: pointer;
+                    "
                     @click="addNodeSelectLabel"
                   >
                     + 添加
@@ -1086,8 +1091,8 @@
                 </template>
                 <el-checkbox
                   v-model="data.frontObject.enableMetadata"
-                  @change="metaChange"
                   style="margin-left: -15px"
+                  @change="metaChange"
                 />
               </el-form-item>
               <div class="dialog-describe-style">为定时任务添加标签和注解数据</div>
@@ -1101,7 +1106,7 @@
                 <el-form-item
                   v-for="(item, index) in data.frontObject.labels"
                   :key="index"
-                  style="margin-top: -10px"
+                  style="margin-top: -10px; margin-left: -100px"
                 >
                   <el-form-item prop="item.key">
                     <el-input
@@ -1130,8 +1135,7 @@
                   <div
                     class="table-inline-btn"
                     style="
-                      margin-left: -5px;
-                      margin-right: -20px;
+                      margin-left: -90px;
                       margin-top: -15px;
                       margin-bottom: -15px;
                       cursor: pointer;
@@ -1151,7 +1155,7 @@
                 <el-form-item
                   v-for="(item, index) in data.frontObject.annotations"
                   :key="index"
-                  style="margin-top: -10px"
+                  style="margin-top: -10px; margin-left: -100px"
                 >
                   <el-form-item prop="item.key">
                     <el-input
@@ -1178,7 +1182,12 @@
                 <el-form-item>
                   <div
                     class="table-inline-btn"
-                    style="margin-top: -15px; margin-bottom: -15px; cursor: pointer"
+                    style="
+                      margin-top: -15px;
+                      margin-bottom: -15px;
+                      margin-left: -90px;
+                      cursor: pointer;
+                    "
                     @click="addAnnotation"
                   >
                     + 添加
@@ -1223,6 +1232,7 @@
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import { createStatefulSet } from '@/services/kubernetes/statefulsetService';
+import { makePodTemplate, makeObjectMetadata } from '@/utils/k8s';
 
 const { proxy } = getCurrentInstance();
 const ruleFormRef = ref();
@@ -1246,10 +1256,11 @@ const data = reactive({
 
   // 关联前端数据的对象，用于绑定和校验
   frontObject: {
+    name: '',
+    namespace: '',
     description: '',
 
     close: false,
-
     // 容器配置
     containers: [],
 
@@ -1263,23 +1274,31 @@ const data = reactive({
     // 容器配置
     containers: [],
     imagePullPolicies: ['IfNotPresent', 'Always', 'Never'],
-    restartPolicies: ['OnFailure', 'Never'],
-    restartPolicy: 'OnFailure',
+    restartPolicies: ['Always'],
+    restartPolicy: 'Always',
     hostNetwork: false,
 
     // 存储设置
     storageTypeChoices: ['持久卷', '临时卷', 'HostPath卷', '配置字典', '保密字典'],
   },
 
-  // 检验 form
-  form: {
-    metadata: {
-      name: '',
-      namespace: 'default',
+  // 最终发送给后端的对象结构体
+  endObject: {
+    metadata: {},
+    spec: {
+      template: {
+        metadata: {
+          labels: {},
+        },
+        spec: {
+          containers: [],
+        },
+      },
+      replicas: 1,
+      selector: {
+        matchLabels: {},
+      },
     },
-    labels: [],
-    selector: [],
-    containers: [],
   },
 
   // statefulset 创建初始对象
@@ -1317,40 +1336,30 @@ const handleChange = (value) => {
   data.statefulsetForm.spec.replicas = value;
 };
 
-const comfirmCreate = async () => {
-  ruleFormRef.value.validate(async (valid) => {
-    if (valid) {
-      data.statefulsetForm.metadata = data.form.metadata;
-      data.statefulsetForm.spec.template.spec.containers = data.form.containers;
+const confirmCreate = async () => {
+  // ruleFormRef.value.validate(async (valid) => {
+  //   if (valid) {
+  data.endObject.metadata = makeObjectMetadata(data.frontObject);
+  data.endObject.spec.template.spec = makePodTemplate(data.frontObject);
 
-      data.statefulsetForm.spec.selector.matchLabels['pixiu.io/app'] = data.form.metadata.name;
-      data.statefulsetForm.spec.selector.matchLabels['pixiu.io/kind'] = 'statefulset';
-      data.statefulsetForm.spec.template.metadata.labels =
-        data.statefulsetForm.spec.selector.matchLabels;
+  data.endObject.spec.selector.matchLabels['pixiu.io/app'] = data.frontObject.name;
+  data.endObject.spec.selector.matchLabels['pixiu.io/kind'] = 'statefulset';
+  data.endObject.spec.template.metadata.labels = data.endObject.spec.selector.matchLabels;
 
-      // 追加 labels
-      if (data.form.labels.length > 0) {
-        data.statefulsetForm.metadata['labels'] = {};
-        for (let item of data.form.labels) {
-          data.statefulsetForm.metadata['labels'][item.key] = item.value;
-        }
-      }
+  const [result, err] = await createStatefulSet(
+    data.cluster,
+    data.frontObject.namespace,
+    data.endObject,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
 
-      const [result, err] = await createStatefulSet(
-        data.cluster,
-        data.form.metadata.namespace,
-        data.statefulsetForm,
-      );
-      if (err) {
-        proxy.$message.error(err.response.data.message);
-        return;
-      }
-
-      proxy.$message.success(`StatefulSet ${data.form.metadata.name} 创建成功`);
-
-      backToStatefulSet();
-    }
-  });
+  proxy.$message.success(`StatefulSet ${data.frontObject.name} 创建成功`);
+  backToStatefulSet();
+  // }
+  // });
 };
 
 // 添加容器相关函数开始
@@ -1384,8 +1393,8 @@ const deleteAnnotation = (index) => {
 };
 
 const nodeChange = () => {
-  if (data.cronJobData.choiceNode) {
-    if (data.cronJobData.nodeSelectLabels.length === 0) {
+  if (data.frontObject.choiceNode) {
+    if (data.frontObject.nodeSelectLabels.length === 0) {
       addNodeSelectLabel();
     }
   }
@@ -1461,7 +1470,7 @@ onMounted(() => {
 
 const changeNamespace = async (val) => {
   localStorage.setItem('namespace', val);
-  data.statefulsetForm.metadata.namespace = val;
+  data.frontObject.namespace = val;
 };
 
 const getNamespaceList = async () => {

@@ -1,20 +1,26 @@
 const makeObjectMetadata = (data) => {
+  let metadata = {
+    name: data.name,
+    namespace: data.namespace,
+  };
+
   if (data.enableMetadata) {
     if (data.labels.length !== 0) {
       let newLabels = {};
       for (let l of data.labels) {
         newLabels[l.key] = l.value;
       }
+      metadata['labels'] = newLabels;
     }
     if (data.annotations.length !== 0) {
       let newAnnotations = {};
       for (let a of data.annotations) {
         newAnnotations[a.key] = a.value;
       }
+      metadata['annotations'] = newAnnotations;
     }
-
-    return newLabels, newAnnotations;
   }
+  return metadata;
 };
 export { makeObjectMetadata };
 
