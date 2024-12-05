@@ -191,11 +191,6 @@
       </el-step>
       <el-step>
         <template #title>
-          <span style="margin-left: 2px; font-size: 14px; color: #191919">存储设置 </span>
-        </template>
-      </el-step>
-      <el-step>
-        <template #title>
           <span style="margin-left: 2px; font-size: 14px; color: #191919">高级选项 </span>
         </template>
       </el-step>
@@ -1287,14 +1282,6 @@
         <div v-if="data.active === 3">
           <el-form-item>
             <template #label>
-              <span class="form-item-key-style">存储设置</span>
-            </template>
-          </el-form-item>
-        </div>
-
-        <div v-if="data.active === 4">
-          <el-form-item>
-            <template #label>
               <span class="form-item-key-style">主机网络</span>
             </template>
             <el-checkbox v-model="data.cronJobData.hostNetwork" />
@@ -1471,14 +1458,14 @@
           >上一步</el-button
         >
         <el-button
-          v-if="data.active < 4"
+          v-if="data.active < 3"
           type="primary"
           class="pixiu-delete-confirm-button"
           @click="nextStep"
           >下一步</el-button
         >
         <el-button
-          v-if="data.active === 4"
+          v-if="data.active === 3"
           type="primary"
           class="pixiu-delete-confirm-button"
           @click="confirmCreate"
