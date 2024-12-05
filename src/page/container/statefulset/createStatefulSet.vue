@@ -56,7 +56,7 @@
               </el-step>
               <el-step>
                 <template #title>
-                  <span style="margin-left: 2px; font-size: 14px; color: #191919">更新策略 </span>
+                  <span style="margin-left: 2px; font-size: 14px; color: #191919">策略 </span>
                 </template>
               </el-step>
               <el-step>
@@ -112,7 +112,7 @@
                   v-model="data.frontObject.description"
                   style="margin-top: 8px; width: 60%"
                   type="textarea"
-                  :autosize="data.autosize"
+                  :autosize="data.frontObject.autosize"
                 />
               </el-form-item>
             </div>
@@ -1023,6 +1023,14 @@
               </el-form-item>
             </div>
 
+            <div v-if="data.active === 2">
+              <el-form-item>
+                <template #label>
+                  <span class="form-item-key-style">TODO</span>
+                </template>
+              </el-form-item>
+            </div>
+
             <div v-if="data.active === 3">
               <el-form-item>
                 <template #label>
@@ -1248,10 +1256,6 @@ const data = reactive({
 
   namespaces: [],
 
-  autosize: {
-    minRows: 5,
-  },
-
   active: 0,
 
   // 关联前端数据的对象，用于绑定和校验
@@ -1260,6 +1264,9 @@ const data = reactive({
     namespace: '',
     kind: 'statefulset',
     description: '',
+    autosize: {
+      minRows: 5,
+    },
 
     close: false,
     // 容器配置
