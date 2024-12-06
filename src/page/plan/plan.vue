@@ -323,7 +323,7 @@
       @close="closeTaskLogDrawer"
     >
       <div style="display: flex; height: 100%; width: 100%">
-        <div style="width: 280px">
+        <div style="width: 220px">
           <el-steps direction="vertical" process-status="success" align-center class="steps">
             <el-step
               v-for="(activity, index) in data.taskData.tableData"
@@ -419,7 +419,7 @@ const data = reactive({
   },
   taskLog: {
     drawer: false,
-    width: '80%',
+    width: '55%',
     task: '',
     log: '',
   },
