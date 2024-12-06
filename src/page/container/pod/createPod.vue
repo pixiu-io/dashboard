@@ -1237,7 +1237,7 @@
 
             <div style="margin-top: 30px" />
             <el-form-item style="margin-left: 30%">
-              <el-button class="pixiu-cancel-button" @click="cancelCreate()">取消</el-button>
+              <el-button class="pixiu-cancel-button" @click="cancel()">取消</el-button>
               <el-button
                 v-if="data.active > 0"
                 type="primary"
@@ -1256,7 +1256,7 @@
                 v-if="data.active === 2"
                 type="primary"
                 class="pixiu-delete-confirm-button"
-                @click="confirmCreate"
+                @click="confirm"
                 >确认</el-button
               >
             </el-form-item>
@@ -1493,10 +1493,6 @@ const deleteStorage = (item, index) => {
 
 // 添加容器相关函数结束
 
-const cancelCreate = () => {
-  backToStatefulSet();
-};
-
 onMounted(() => {
   data.cloud = proxy.$route.query;
   data.cluster = data.cloud.cluster;
@@ -1622,9 +1618,7 @@ const deleteContainer = (index) => {
 const backToPod = () => {
   proxy.$router.push({
     name: 'Pod',
-    query: data.query,
+    query: data.cloud,
   });
 };
 </script>
-
-<style></style>
