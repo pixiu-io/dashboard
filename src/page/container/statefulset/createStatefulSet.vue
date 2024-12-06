@@ -67,6 +67,7 @@
             </el-steps>
 
             <el-scrollbar height="480px" view-style="overflow-x: hidden">
+              <div style="margin-top: 30px" />
               <div v-if="data.active === 0">
                 <el-form-item>
                   <template #label>
