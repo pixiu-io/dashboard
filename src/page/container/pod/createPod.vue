@@ -1060,6 +1060,179 @@
                   </div>
                 </el-form-item>
               </div>
+
+              <div v-if="data.active === 2">
+                <el-form-item>
+                  <template #label>
+                    <span class="form-item-key-style">主机网络</span>
+                  </template>
+                  <el-checkbox v-model="data.frontObject.hostNetwork" style="margin-left: -15px" />
+                </el-form-item>
+                <div class="dialog-describe-style">容器使用宿主机网络。</div>
+                <div style="margin-top: 15px"></div>
+
+                <el-form-item label>
+                  <template #label>
+                    <span class="form-item-key-style">选择节点</span>
+                  </template>
+                  <el-checkbox
+                    v-model="data.frontObject.choiceNode"
+                    style="margin-left: -15px"
+                    @change="nodeChange"
+                  />
+                </el-form-item>
+                <div class="dialog-describe-style">
+                  分配 Pod 到特定的节点。支持使用标签选择节点和手动指定节点。
+                </div>
+
+                <div v-if="data.frontObject.choiceNode">
+                  <div style="margin-top: 25px"></div>
+                  <el-form-item
+                    v-for="(item, index) in data.frontObject.nodeSelectLabels"
+                    :key="index"
+                    style="margin-top: -10px; margin-left: -90px"
+                  >
+                    <el-form-item prop="item.key">
+                      <el-input v-model="item.key" style="width: 300px" />
+                    </el-form-item>
+                    <div>
+                      <el-input v-model="item.value" style="width: 300px; margin-left: 20px" />
+                    </div>
+                    <div
+                      class="table-inline-btn"
+                      style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
+                      @click="deleteNodeSelectLabel(index)"
+                    >
+                      删除
+                    </div>
+                  </el-form-item>
+                  <el-form-item>
+                    <div
+                      class="table-inline-btn"
+                      style="
+                        margin-top: -15px;
+                        margin-bottom: -15px;
+                        margin-left: -90px;
+                        cursor: pointer;
+                      "
+                      @click="addNodeSelectLabel"
+                    >
+                      + 添加
+                    </div>
+                  </el-form-item>
+                </div>
+
+                <div style="margin-top: 15px"></div>
+                <el-form-item label>
+                  <template #label>
+                    <span class="form-item-key-style">添加元数据</span>
+                  </template>
+                  <el-checkbox
+                    v-model="data.frontObject.enableMetadata"
+                    style="margin-left: -15px"
+                    @change="metaChange"
+                  />
+                </el-form-item>
+                <div class="dialog-describe-style">为定时任务添加标签和注解数据</div>
+
+                <div v-if="data.frontObject.enableMetadata">
+                  <el-form-item>
+                    <template #label>
+                      <span class="form-item-key-style">标签</span>
+                    </template>
+                  </el-form-item>
+                  <el-form-item
+                    v-for="(item, index) in data.frontObject.labels"
+                    :key="index"
+                    style="margin-top: -10px; margin-left: -100px"
+                  >
+                    <el-form-item prop="item.key">
+                      <el-input
+                        v-model="item.key"
+                        style="width: 300px; margin-left: 10px"
+                        placeholder="键"
+                      />
+                    </el-form-item>
+                    <div>
+                      <el-input
+                        v-model="item.value"
+                        style="width: 300px; margin-left: 20px"
+                        placeholder="值"
+                      />
+                    </div>
+                    <div
+                      class="table-inline-btn"
+                      style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
+                      @click="deleteLabel(index)"
+                    >
+                      删除
+                    </div>
+                  </el-form-item>
+
+                  <el-form-item>
+                    <div
+                      class="table-inline-btn"
+                      style="
+                        margin-left: -90px;
+                        margin-top: -15px;
+                        margin-bottom: -15px;
+                        cursor: pointer;
+                      "
+                      @click="addLabel"
+                    >
+                      + 添加
+                    </div>
+                  </el-form-item>
+
+                  <el-form-item>
+                    <template #label>
+                      <span class="form-item-key-style">注解</span>
+                    </template>
+                  </el-form-item>
+
+                  <el-form-item
+                    v-for="(item, index) in data.frontObject.annotations"
+                    :key="index"
+                    style="margin-top: -10px; margin-left: -100px"
+                  >
+                    <el-form-item prop="item.key">
+                      <el-input
+                        v-model="item.key"
+                        style="width: 300px; margin-left: 10px"
+                        placeholder="键"
+                      />
+                    </el-form-item>
+                    <div>
+                      <el-input
+                        v-model="item.value"
+                        style="width: 300px; margin-left: 20px"
+                        placeholder="值"
+                      />
+                    </div>
+                    <div
+                      class="table-inline-btn"
+                      style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
+                      @click="deleteAnnotation(index)"
+                    >
+                      删除
+                    </div>
+                  </el-form-item>
+                  <el-form-item>
+                    <div
+                      class="table-inline-btn"
+                      style="
+                        margin-top: -15px;
+                        margin-bottom: -15px;
+                        margin-left: -90px;
+                        cursor: pointer;
+                      "
+                      @click="addAnnotation"
+                    >
+                      + 添加
+                    </div>
+                  </el-form-item>
+                </div>
+              </div>
             </el-scrollbar>
 
             <div style="margin-top: 30px" />
