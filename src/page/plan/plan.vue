@@ -54,7 +54,12 @@
         >
           <el-table-column prop="name" label="名称" sortable>
             <template #default="scope">
-              <el-link class="global-table-world" type="primary" :underline="false">
+              <el-link
+                class="global-table-world"
+                type="primary"
+                :underline="false"
+                @click="updatePlan(scope.row)"
+              >
                 {{ scope.row.name }}
               </el-link>
               <el-tooltip content="复制">
@@ -70,9 +75,9 @@
             </template>
           </el-table-column>
 
-          <el-table-column prop="gmt_create" label="创建时间" sortable :formatter="formatterTime" />
-
           <el-table-column prop="step" label="状态" :formatter="formatterPlanStatus" />
+
+          <el-table-column prop="gmt_create" label="创建时间" sortable :formatter="formatterTime" />
 
           <el-table-column prop="description" label="描述">
             <template #default="scope">
@@ -88,9 +93,9 @@
                 text
                 size="small"
                 style="margin-right: -24px; margin-left: -10px; color: #006eff"
-                @click="updatePlan(scope.row)"
+                @click="startTask(scope.row)"
               >
-                更新
+                启动部署
               </el-button>
               <el-button
                 text
@@ -98,7 +103,7 @@
                 style="margin-right: -2px; color: #006eff"
                 @click="handleTaskDrawer(scope.row)"
               >
-                查看进度
+                进度
               </el-button>
 
               <el-dropdown>
@@ -108,10 +113,6 @@
                 </span>
                 <template #dropdown>
                   <el-dropdown-menu class="dropdown-buttons">
-                    <el-dropdown-item class="dropdown-item-buttons" @click="startTask(scope.row)">
-                      启动部署
-                    </el-dropdown-item>
-
                     <el-dropdown-item
                       class="dropdown-item-buttons"
                       @click="handleDeleteDialog(scope.row)"
@@ -119,8 +120,6 @@
                       删除
                     </el-dropdown-item>
                   </el-dropdown-menu>
-
-                  <el-dropdown-menu class="dropdown-buttons"> </el-dropdown-menu>
                 </template>
               </el-dropdown>
             </template>
@@ -260,23 +259,25 @@
               color: '#191919',
             }"
           >
-            <el-table-column prop="name" label="名称" sortable />
+            <el-table-column prop="name" width="150px" label="名称" />
 
             <el-table-column
               prop="gmt_create"
               label="启动时间"
               sortable
+              width="180px"
               :formatter="formatterTime"
             />
 
             <el-table-column
               prop="gmt_modified"
               label="结束时间"
+              width="180px"
               sortable
               :formatter="formatterTime"
             />
 
-            <el-table-column prop="status" label="状态">
+            <el-table-column prop="status" label="状态" width="120px">
               <template #default="scope">
                 <div style="font-size: 12px; color: #29292b" type="primary" :underline="false">
                   <el-icon v-if="scope.row.status === '运行中'" class="is-loading" color="#409efc"
@@ -298,7 +299,7 @@
                 <el-button
                   text
                   size="small"
-                  style="margin-right: -24px; margin-left: -10px; color: #006eff"
+                  style="margin-right: -24px; margin-left: -20px; color: #006eff"
                   :disabled="scope.row.status === '未开始'"
                   @click="handleTaskLogDrawer(scope.row)"
                 >
@@ -322,7 +323,7 @@
       @close="closeTaskLogDrawer"
     >
       <div style="display: flex; height: 100%; width: 100%">
-        <div style="width: 280px">
+        <div style="width: 220px">
           <el-steps direction="vertical" process-status="success" align-center class="steps">
             <el-step
               v-for="(activity, index) in data.taskData.tableData"
@@ -412,13 +413,13 @@ const data = reactive({
   // 部署任务
   taskData: {
     drawer: false,
-    width: '55%',
+    width: '40%',
     task: '',
     tableData: [],
   },
   taskLog: {
     drawer: false,
-    width: '80%',
+    width: '55%',
     task: '',
     log: '',
   },
