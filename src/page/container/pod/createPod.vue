@@ -1552,6 +1552,10 @@ const addContainer = () => {
 };
 
 const deleteContainer = (index) => {
+  if (data.frontObject.containers.length === 1) {
+    proxy.$message.error('至少需要 1 个容器组');
+    return;
+  }
   data.frontObject.containers.splice(index, 1);
 };
 
