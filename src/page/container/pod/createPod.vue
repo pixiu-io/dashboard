@@ -62,18 +62,33 @@
               </el-step>
             </el-steps>
 
-            <el-scrollbar height="480px" view-style="overflow-x: hidden" style="margin-top: 30px">
+            <el-scrollbar height="450px" view-style="overflow-x: hidden" style="margin-top: 30px">
               <div v-if="data.active === 0">
-                <el-form-item label="名称" prop="metadata.name" style="width: 500px">
-                  <el-input v-model="data.form.metadata.name" />
-                  <div class="app-pixiu-line-describe2">
-                    最长63个字符，只能包含小写字母、数字及分隔符("-")
+                <el-form-item label="名称" prop="metadata.name">
+                  <template #label>
+                    <span class="form-item-key-style">名称 </span>
+                  </template>
+
+                  <el-input v-model="data.frontObject.name" style="width: 50%" />
+                </el-form-item>
+                <el-form-item>
+                  <div class="dialog-describe-style" style="margin-left: 0px">
+                    只能包含小写字母、数字和连字符（-），必须以小写字母或数字开头和结尾，最长 63
+                    个字符。
                   </div>
                 </el-form-item>
 
-                <el-form-item label="命名空间" style="width: 300px; margin-top: -4px">
+                <el-form-item label="命名空间">
+                  <template #label>
+                    <span class="form-item-key-style">命名空间 </span>
+                  </template>
+
                   <div class="namespace-select-container">
-                    <el-select v-model="data.form.metadata.namespace" @change="changeNamespace">
+                    <el-select
+                      v-model="data.frontObject.namespace"
+                      style="width: 210px"
+                      @change="changeNamespace"
+                    >
                       <el-option
                         v-for="item in data.namespaces"
                         :key="item"
@@ -84,7 +99,11 @@
                   </div>
                 </el-form-item>
 
-                <el-form-item label="Labels" style="margin-top: 10px">
+                <el-form-item label="Labels">
+                  <template #label>
+                    <span class="form-item-key-style">Labels</span>
+                  </template>
+
                   <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button>
                 </el-form-item>
                 <div style="margin-top: -15px"></div>
@@ -125,76 +144,45 @@
                 <div class="app-pixiu-line-describe" style="margin-top: -5px">
                   标签键值以字母、数字开头和结尾, 且只能包含字母、数字及分隔符。
                 </div>
+                <el-form-item>
+                  <template #label>
+                    <span class="form-item-key-style">描述</span>
+                  </template>
+                  <el-input
+                    v-model="data.frontObject.description"
+                    style="margin-top: 8px; width: 60%"
+                    type="textarea"
+                    :autosize="data.frontObject.autosize"
+                  />
+                </el-form-item>
               </div>
-              <el-form-item label="容器配置" style="margin-top: 10px; margin-bottom: 10px">
-                <el-button type="text" class="app-action-btn" @click="addContainer"
-                  >增加容器</el-button
-                >
-              </el-form-item>
-              <div style="margin-top: -15px"></div>
-              <el-form-item
-                v-for="(item, index) in data.form.containers"
-                :key="index"
-                style="margin-top: -25px"
-              >
-                <el-card
-                  style="
-                    width: 99%;
-                    height: 185px;
-                    background-color: #f2f2f2;
-                    margin-top: 20px;
-                    border-radius: 0px;
-                  "
-                >
-                  <div style="float: right; cursor: pointer" @click="deleteContainer(index)">
-                    <pixiu-icon name="icon-shanchu" size="14px" type="iconfont" color="#909399" />
-                  </div>
 
-                  <el-form-item
-                    class="deploy-pixiu-column"
-                    :prop="'containers[' + index + '].name'"
-                    :rules="[{ required: true, message: '容器名不能为空', trigger: 'blur' }]"
-                    >容器名称
-                    <el-input
-                      v-model="item.name"
-                      class="deploy-pixiu-incard"
-                      style="margin-left: 30px"
-                    />
-                  </el-form-item>
-
-                  <el-form-item
-                    style="margin-top: 10px"
-                    class="deploy-pixiu-column"
-                    :prop="'containers[' + index + '].image'"
-                    :rules="[{ required: true, message: '镜像不能为空', trigger: 'blur' }]"
-                    >镜像
-                    <el-input
-                      v-model="item.image"
-                      style="margin-left: 58px"
-                      class="deploy-pixiu-incard"
-                    />
-                  </el-form-item>
-
-                  <el-col style="margin-top: 10px" class="deploy-pixiu-column"
-                    >拉取策略
-                    <el-radio-group v-model="item.imagePullPolicy" style="margin-left: 30px">
-                      <el-radio-button label="IfNotPresent">IfNotPresent</el-radio-button>
-                      <el-radio-button label="Always">Always</el-radio-button>
-                      <el-radio-button label="Never">Never</el-radio-button>
-                    </el-radio-group>
-                    <div class="container-line-describe">
-                      设置镜像拉取策略，默认使用 IfNotPresent 策略
-                    </div>
-                  </el-col>
-                </el-card>
-              </el-form-item>
+              <div v-if="data.active === 1">ddd</div>
             </el-scrollbar>
 
             <div style="margin-top: 30px" />
             <el-form-item style="margin-left: 30%">
-              <el-button class="pixiu-cancel-button" @click="cancel()">取消</el-button>
-              <el-button class="pixiu-confirm-button" type="primary" @click="confirm()"
-                >确定</el-button
+              <el-button class="pixiu-cancel-button" @click="cancelCreate()">取消</el-button>
+              <el-button
+                v-if="data.active > 0"
+                type="primary"
+                class="pixiu-delete-cancel-button"
+                @click="lastStep"
+                >上一步</el-button
+              >
+              <el-button
+                v-if="data.active < 2"
+                type="primary"
+                class="pixiu-delete-confirm-button"
+                @click="nextStep"
+                >下一步</el-button
+              >
+              <el-button
+                v-if="data.active === 2"
+                type="primary"
+                class="pixiu-delete-confirm-button"
+                @click="confirmCreate"
+                >确认</el-button
               >
             </el-form-item>
           </el-form>
@@ -288,6 +276,14 @@ const data = reactive({
 
 const rules = {
   'metadata.name': [{ required: true, message: '请输入 Pod 名称', trigger: 'blur' }],
+};
+
+const nextStep = () => {
+  if (data.active++ >= 4) data.active = 4;
+};
+
+const lastStep = () => {
+  if (data.active-- <= 0) data.active = 0;
 };
 
 onMounted(() => {
