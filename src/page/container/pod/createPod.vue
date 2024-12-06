@@ -64,7 +64,7 @@
 
             <el-scrollbar height="450px" view-style="overflow-x: hidden" style="margin-top: 30px">
               <div v-if="data.active === 0">
-                <el-form-item label="名称" prop="metadata.name">
+                <el-form-item label="名称">
                   <template #label>
                     <span class="form-item-key-style">名称 </span>
                   </template>
@@ -99,51 +99,6 @@
                   </div>
                 </el-form-item>
 
-                <el-form-item label="Labels">
-                  <template #label>
-                    <span class="form-item-key-style">Labels</span>
-                  </template>
-
-                  <el-button type="text" class="app-action-btn" @click="addLabel">新增</el-button>
-                </el-form-item>
-                <div style="margin-top: -15px"></div>
-                <el-form-item
-                  v-for="(item, index) in data.form.labels"
-                  :key="index"
-                  class="labels-item-style"
-                >
-                  <el-form-item
-                    :prop="'labels[' + index + '].key'"
-                    :rules="[{ required: true, message: '标签键不能为空', trigger: 'blur' }]"
-                  >
-                    <el-input v-model="item.key" placeholder="标签键" style="width: 280px" />
-                  </el-form-item>
-
-                  <div style="margin-right: 10px; margin-left: 10px">=</div>
-
-                  <el-form-item
-                    :prop="'labels[' + index + '].value'"
-                    :rules="[{ required: true, message: '标签值不能为空', trigger: 'blur' }]"
-                  >
-                    <el-input v-model="item.value" placeholder="标签值" style="width: 280px" />
-                  </el-form-item>
-
-                  <div
-                    style="float: right; cursor: pointer; margin-left: 10px"
-                    @click="deleteLabel(index)"
-                  >
-                    <pixiu-icon
-                      name="icon-shanchu"
-                      size="14px"
-                      type="iconfont"
-                      style="margin-top: 10px; margin-left: 4px"
-                      color="#909399"
-                    />
-                  </div>
-                </el-form-item>
-                <div class="app-pixiu-line-describe" style="margin-top: -5px">
-                  标签键值以字母、数字开头和结尾, 且只能包含字母、数字及分隔符。
-                </div>
                 <el-form-item>
                   <template #label>
                     <span class="form-item-key-style">描述</span>
@@ -1271,6 +1226,7 @@
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
 import { createPod } from '@/services/kubernetes/podService';
+import { makeTemplate, makeObjectMetadata } from '@/utils/k8s';
 
 const ruleFormRef = ref();
 
@@ -1320,32 +1276,7 @@ const data = reactive({
 
   endObject: {
     metadata: {},
-    spec: {
-      template: {
-        metadata: {},
-        spec: {},
-      },
-    },
-  },
-
-  // 检验 form
-  form: {
-    metadata: {
-      name: '',
-      namespace: 'default',
-    },
-    labels: [],
-    containers: [],
-  },
-  // 创建或者更新 form
-  objectForm: {
-    metadata: {
-      name: '',
-      namespace: 'default',
-    },
-    spec: {
-      containers: [],
-    },
+    spec: {},
   },
 });
 
@@ -1371,29 +1302,38 @@ const getNamespaces = async () => {
 };
 
 const confirm = async () => {
-  ruleFormRef.value.validate(async (valid) => {
-    if (valid) {
-      data.objectForm.metadata = data.form.metadata;
-      data.objectForm.spec.containers = data.form.containers;
+  data.endObject.metadata = makeObjectMetadata(data.frontObject);
+  const tpl = makeTemplate(data.frontObject);
+  data.endObject.spec = tpl.spec;
+  const [result, err] = await createPod(data.cluster, data.frontObject.namespace, data.endObject);
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
 
-      // 追加 labels
-      if (data.form.labels.length > 0) {
-        data.objectForm.metadata['labels'] = {};
-        for (let item of data.form.labels) {
-          data.objectForm.metadata['labels'][item.key] = item.value;
-        }
-      }
+  proxy.$message.success(`Pod ${data.frontObject.name} 创建成功`);
+  backToPod();
 
-      const [result, err] = await createPod(data.cluster, data.namespace, data.objectForm);
-      if (err) {
-        proxy.$message.error(err.response.data.message);
-        return;
-      }
-      proxy.$message.success(`Pod ${data.form.metadata.name} 创建成功`);
-
-      backToPod();
-    }
-  });
+  // ruleFormRef.value.validate(async (valid) => {
+  //   if (valid) {
+  //     data.objectForm.metadata = data.form.metadata;
+  //     data.objectForm.spec.containers = data.form.containers;
+  //     // 追加 labels
+  //     if (data.form.labels.length > 0) {
+  //       data.objectForm.metadata['labels'] = {};
+  //       for (let item of data.form.labels) {
+  //         data.objectForm.metadata['labels'][item.key] = item.value;
+  //       }
+  //     }
+  //     const [result, err] = await createPod(data.cluster, data.namespace, data.objectForm);
+  //     if (err) {
+  //       proxy.$message.error(err.response.data.message);
+  //       return;
+  //     }
+  //     proxy.$message.success(`Pod ${data.form.metadata.name} 创建成功`);
+  //     backToPod();
+  //   }
+  // });
 };
 
 const cancel = () => {
