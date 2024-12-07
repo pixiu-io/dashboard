@@ -55,7 +55,9 @@
           <el-table-column prop="name" label="名称" sortable>
             <template #default="scope">
               <el-link
-                class="global-table-world"
+                :style="`color: ${
+                  scope.row.status === '#006eff'
+                }; font-size: 13px; margin-right: 2px`"
                 type="primary"
                 :underline="false"
                 @click="updatePlan(scope.row)"
@@ -323,7 +325,7 @@
       @close="closeTaskLogDrawer"
     >
       <div style="display: flex; height: 100%; width: 100%">
-        <div style="width: 220px">
+        <div style="width: 222px">
           <el-steps direction="vertical" process-status="success" align-center class="steps">
             <el-step
               v-for="(activity, index) in data.taskData.tableData"
