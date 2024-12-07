@@ -1187,7 +1187,7 @@
 <script setup>
 import { reactive, getCurrentInstance, onMounted, watch, ref } from 'vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
-import { createDaemonset } from '@/services/kubernetes/DaemonsetService';
+import { createDaemonset } from '@/services/kubernetes/daemonsetService';
 import { makeTemplate, makeObjectMetadata } from '@/utils/k8s';
 
 const { proxy } = getCurrentInstance();
