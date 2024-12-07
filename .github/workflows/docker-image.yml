@@ -34,5 +34,8 @@ jobs:
           username: ${{ secrets.DOCKER_NAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push pixiu aio:v1.0.0 image
-        run: make push-aio-v1
+      - name: Build and push dashboard image
+        run: make push
+
+      - name: Build and push pixiu aio image
+        run: make push-aio
