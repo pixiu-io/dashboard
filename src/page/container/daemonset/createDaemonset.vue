@@ -1348,12 +1348,11 @@ const confirmCreate = async () => {
     return;
   }
 
-  proxy.$message.success(`Daemonset ${data.frontObject.name} 创建成功`);
+  proxy.$notify.success(`Daemonset ${data.frontObject.name} 创建成功`);
   backToDaemonset();
 };
 
 // 添加容器相关函数开始
-
 const openContainerAdvanceOption = (item) => {
   item.advance = !item.advance;
 };
@@ -1571,7 +1570,6 @@ const deleteContainer = (index) => {
   data.frontObject.containers.splice(index, 1);
 };
 
-// 回到 Daemonset 页面
 const backToDaemonset = () => {
   proxy.$router.push({
     name: 'daemonset',
