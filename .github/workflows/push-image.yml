@@ -37,8 +37,8 @@ jobs:
       - name: Build and push dashboard image
         run: make push
 
-      - name: Build and push pixiu aio image
+      - name: Build and push pixiu aio:latest image
         run: make push-aio
 
-      - name: Build and push pixiu aio image
+      - name: Build and push pixiu aio:v1.0.0 image
         run: make push-aio-v1
