@@ -18,6 +18,7 @@ import {
   EditDeployment,
   DeploymentDetail,
   Daemonset,
+  CreateDaemonset,
   Release,
   Terminal,
   Monitor,
@@ -563,6 +564,14 @@ const routes = [
           title: 'EditStatefulSet',
         },
         component: EditStatefulSet,
+      },
+      {
+        path: 'daemonsets/createDaemonset',
+        name: 'CreateDaemonset',
+        meta: {
+          title: 'CreateDaemonset',
+        },
+        component: CreateDaemonset,
       },
       {
         path: 'users',
