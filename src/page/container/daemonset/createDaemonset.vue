@@ -1039,57 +1039,6 @@
                 <div class="dialog-describe-style">容器使用宿主机网络。</div>
                 <div style="margin-top: 15px"></div>
 
-                <el-form-item label>
-                  <template #label>
-                    <span class="form-item-key-style">选择节点</span>
-                  </template>
-                  <el-checkbox
-                    v-model="data.frontObject.choiceNode"
-                    style="margin-left: -15px"
-                    @change="nodeChange"
-                  />
-                </el-form-item>
-                <div class="dialog-describe-style">
-                  分配 Pod 到特定的节点。支持使用标签选择节点和手动指定节点。
-                </div>
-
-                <div v-if="data.frontObject.choiceNode">
-                  <div style="margin-top: 25px"></div>
-                  <el-form-item
-                    v-for="(item, index) in data.frontObject.nodeSelectLabels"
-                    :key="index"
-                    style="margin-top: -10px; margin-left: -90px"
-                  >
-                    <el-form-item prop="item.key">
-                      <el-input v-model="item.key" style="width: 300px" />
-                    </el-form-item>
-                    <div>
-                      <el-input v-model="item.value" style="width: 300px; margin-left: 20px" />
-                    </div>
-                    <div
-                      class="table-inline-btn"
-                      style="float: right; cursor: pointer; margin-left: 15px; margin-top: 6px"
-                      @click="deleteNodeSelectLabel(index)"
-                    >
-                      删除
-                    </div>
-                  </el-form-item>
-                  <el-form-item>
-                    <div
-                      class="table-inline-btn"
-                      style="
-                        margin-top: -15px;
-                        margin-bottom: -15px;
-                        margin-left: -90px;
-                        cursor: pointer;
-                      "
-                      @click="addNodeSelectLabel"
-                    >
-                      + 添加
-                    </div>
-                  </el-form-item>
-                </div>
-
                 <div style="margin-top: 15px"></div>
                 <el-form-item label>
                   <template #label>
