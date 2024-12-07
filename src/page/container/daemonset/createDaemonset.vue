@@ -118,19 +118,6 @@
               </div>
 
               <div v-if="data.active === 1">
-                <el-form-item>
-                  <template #label>
-                    <span class="form-item-key-style">实例数量 </span>
-                  </template>
-
-                  <el-input-number
-                    v-model="data.endObject.spec.replicas"
-                    style="margin-top: 8px"
-                    :min="0"
-                    size="small"
-                    @change="handleChange"
-                /></el-form-item>
-
                 <el-form-item label>
                   <template #label>
                     <span class="form-item-key-style">容器配置</span>
