@@ -323,7 +323,7 @@
       @close="closeTaskLogDrawer"
     >
       <div style="display: flex; height: 100%; width: 100%">
-        <div style="width: 220px">
+        <div style="width: 222px">
           <el-steps direction="vertical" process-status="success" align-center class="steps">
             <el-step
               v-for="(activity, index) in data.taskData.tableData"
