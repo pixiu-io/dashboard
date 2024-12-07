@@ -115,7 +115,7 @@
           header-row-class-name="pixiu-table-header"
           @selection-change="handleSelectionChange"
         >
-          <!-- <el-table-column type="selection" width="38" /> -->
+          <!-- <el-table-column type="selection" width="30" /> -->
 
           <el-table-column prop="name" sortable label="集群名称">
             <template #default="scope">

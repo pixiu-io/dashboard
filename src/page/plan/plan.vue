@@ -52,6 +52,8 @@
           header-row-class-name="pixiu-table-header"
           @selection-change="handleSelectionChange"
         >
+          <el-table-column type="selection" width="30" />
+
           <el-table-column prop="name" label="名称" sortable>
             <template #default="scope">
               <el-link
@@ -350,7 +352,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import { reactive, getCurrentInstance, onMounted, ref, onBeforeUnmount, onBeforeMount } from 'vue';
 import { formatterTime, formatterPlanStatus } from '@/utils/formatter';
 import { formatTimestamp, readStream } from '@/utils/utils';
 import Pagination from '@/components/pagination/index.vue';
@@ -374,10 +376,14 @@ const { proxy } = getCurrentInstance();
 
 const data = reactive({
   loading: false,
+  fresh: false,
+
   streams: [], // 处理流
   LogStreams: [], // 处理流
   tableData: [],
   planList: [],
+
+  timer: null,
 
   pageInfo: {
     page: 1,
@@ -429,6 +435,17 @@ const data = reactive({
 
 onMounted(() => {
   getPlanList();
+});
+
+onBeforeMount(() => {
+  data.timer = window.setInterval(() => {
+    data.fresh = true;
+    getPlanList();
+  }, 5000);
+});
+
+onBeforeUnmount(() => {
+  window.clearInterval(data.timer);
 });
 
 // 分页
@@ -513,6 +530,7 @@ const startTask = async (row) => {
     return;
   }
   proxy.$notify.success(`部署计划(${row.name}) 启动成功`);
+  getPlanList();
 };
 // 结束startTask
 
@@ -674,9 +692,12 @@ const closeTaskLogDrawer = () => {
 // 结束处理任务进度
 
 const getPlanList = async () => {
-  data.loading = true;
+  if (!data.fresh) {
+    data.loading = true;
+  }
   const [result, err] = await GetPlanList();
   data.loading = false;
+  data.fresh = false;
   if (err) {
     proxy.$message.error(err);
     return;
