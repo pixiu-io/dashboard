@@ -1,0 +1,15 @@
+name: Build images for CI
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build the dashboard image
+        run: make image
