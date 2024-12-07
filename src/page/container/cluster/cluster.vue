@@ -488,7 +488,7 @@
 </template>
 
 <script setup lang="jsx">
-import { getCurrentInstance, onMounted } from 'vue';
+import { getCurrentInstance, onMounted, onBeforeUnmount, onBeforeMount, reactive } from 'vue';
 import Description from '@/components/description/index.vue';
 import PixiuRadioCard from '@/components/radioCard/index.vue';
 import Icon from '@/components/pixiuTooltip/index.vue';
@@ -503,8 +503,21 @@ const router = useRouter();
 const cloudStore = useCloudStore();
 const { proxy } = getCurrentInstance();
 
+const data = reactive({
+  timer: null,
+});
+
 onMounted(() => {
   cloudStore.getCloudList();
+});
+
+onBeforeMount(() => {
+  data.timer = window.setInterval(() => {
+    cloudStore.getCloudList();
+  }, 5000);
+});
+onBeforeUnmount(() => {
+  window.clearInterval(data.timer);
 });
 
 // const cloudStatus = {
