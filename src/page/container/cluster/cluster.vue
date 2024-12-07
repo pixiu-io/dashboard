@@ -655,3 +655,53 @@ const confirmCreateCloud = () => {
   });
 };
 </script>
+
+<style>
+.box-card {
+  margin-top: 20px;
+  /* width: 480px; */
+  border-radius: 0px;
+}
+
+.el-main {
+  background-color: #f3f4f7;
+}
+
+.app-docs {
+  margin-top: 20px;
+  height: 60px;
+  font-size: 12px;
+  line-height: inherit;
+  padding: 14px 20px;
+  vertical-align: middle;
+  color: #002da0;
+  border: 1px solid #d5e7ff;
+  border-radius: 0;
+  background: #d5e7ff;
+  position: relative;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.example-showcase .el-dropdown + .el-dropdown {
+  margin-left: 15px;
+}
+
+.dialog-footer button:first-child {
+  margin-right: 10px;
+}
+
+.iconfont {
+  font-family: 'iconfont' !important;
+  font-size: 26px;
+  color: #28c65a;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+</style>
