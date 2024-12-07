@@ -192,7 +192,7 @@ const routes = [
           },
           {
             path: 'daemonsets',
-            name: 'Demonset',
+            name: 'daemonset',
             meta: {
               title: 'daemonset',
               func: 'getDaemonsets',
