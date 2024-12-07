@@ -14,8 +14,8 @@ jobs:
       - name: Build the dashboard image
         run: make image
 
-      - name: Build the pixiu aio image
+      - name: Build the pixiu aio:latest image
         run: make image-aio
 
-      - name: Build the pixiu aio image
+      - name: Build the pixiu aio:v1.0.0 image
         run: make image-aio-v1
