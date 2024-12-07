@@ -16,3 +16,6 @@ jobs:
 
       - name: Build the pixiu aio image
         run: make image-aio
+
+      - name: Build the pixiu aio image
+        run: make image-aio-v1

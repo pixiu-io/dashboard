@@ -39,3 +39,6 @@ jobs:
 
       - name: Build and push pixiu aio image
         run: make push-aio
+
+      - name: Build and push pixiu aio image
+        run: make push-aio-v1
