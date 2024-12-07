@@ -124,6 +124,7 @@
                   scope.row.status === 0 ? '#006eff' : '#7b7b7b'
                 }; font-size: 12px; margin-right: 2px`"
                 type="primary"
+                :underline="false"
                 :disabled="!(scope.row.status === 0)"
                 @click="jumpRoute(scope.row)"
               >
