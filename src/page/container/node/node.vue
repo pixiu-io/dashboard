@@ -10,7 +10,7 @@
   <div style="margin-top: 5px">
     <el-row>
       <el-col>
-        <button class="pixiu-two-button">新建</button>
+        <button class="pixiu-two-button" style="width: 90px" @click="addNode">新增节点</button>
         <button class="pixiu-two-button2" style="margin-left: 10px" @click="getNodes">刷新</button>
 
         <div style="margin-left: 8px; float: right; margin-top: 6px">
@@ -719,6 +719,10 @@ const onChange = (v) => {
   data.pageInfo.page = v.page;
 
   data.tableData = getTableData(data.pageInfo, data.nodeList);
+};
+
+const addNode = async () => {
+  proxy.$notify.warning({ message: '暂不支持，功能开发中' });
 };
 
 const getNodes = async () => {
