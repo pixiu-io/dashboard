@@ -57,9 +57,7 @@
           <el-table-column prop="name" label="名称" sortable>
             <template #default="scope">
               <el-link
-                :style="`color: ${
-                  scope.row.status === '#006eff'
-                }; font-size: 13px; margin-right: 2px`"
+                :style="`color: #006eff; font-size: 13px; margin-right: 2px`"
                 type="primary"
                 :underline="false"
                 @click="updatePlan(scope.row)"
