@@ -78,7 +78,7 @@
     >
       <span style="font-size: 16px; margin-top: -30px; color: #000000"> YAML创建资源 </span>
     </div>
-    <div style="margin-left: 15px; margin-right: 15px; margin-top: -10px">
+    <div style="margin-left: 15px; margin-right: 15px; margin-top: -5px">
       <MyMonaco ref="editYaml" :yaml="data.yaml" :height="data.dialogHeight"></MyMonaco>
     </div>
 
