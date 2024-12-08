@@ -71,20 +71,16 @@
       style="
         display: flex;
         justify-content: space-between;
-        /*align-items: center;*/
         text-align: left;
         font-weight: bold;
-        padding-left: 1px;
-        padding-bottom: 0;
-        position: relative;
-        margin: 0 0 10px;
+        padding-left: 15px;
       "
     >
-      <span style="font-size: 14px; min-height: 22px"> YAML创建资源 </span>
+      <span style="font-size: 16px; color: #000000"> YAML创建资源 </span>
     </div>
-
-    <div style="margin-top: -18px"></div>
-    <MyMonaco ref="editYaml" :yaml="data.yaml" :height="data.dialogHeight"></MyMonaco>
+    <div style="margin-left: 15px; margin-right: 15px; margin-top: -10px">
+      <MyMonaco ref="editYaml" :yaml="data.yaml" :height="data.dialogHeight"></MyMonaco>
+    </div>
 
     <template #footer>
       <span class="dialog-footer">
@@ -116,7 +112,7 @@ const data = reactive({
   yamlDialog: false,
   yaml: '',
   fromSize: 'small',
-  dialogWidth: 300,
+  dialogWidth: 900,
   dialogHeight: 450,
   dialogVisible: false, // 控制对话框显示与隐藏的变量
   isFullscreen: false, // 控制对话框是否全屏的变量
