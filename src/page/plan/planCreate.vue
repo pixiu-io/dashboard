@@ -574,10 +574,10 @@
                 v-model="clusterStore.nodeInfo.auth.password.password"
                 show-password
                 clearable
-                style="width: 56%"
+                style="width: 100%"
               />
             </el-form-item>
-            <div class="app-pixiu-describe" style="margin-top: -5px; margin-left: 88px">
+            <div class="app-pixiu-describe" style="margin-top: -5px; margin-left: 80px">
               根据实际需要添加节点名，地址，用户名称，和对应密码。
             </div>
           </div>
@@ -589,13 +589,13 @@
               </template>
               <el-input
                 v-model="clusterStore.nodeInfo.auth.key.data"
-                style="width: 82%"
+                style="width: 100%"
                 type="textarea"
                 :autosize="{ minRows: 6 }"
               />
             </el-form-item>
-            <div class="app-pixiu-describe" style="margin-top: -5px; margin-left: 88px">
-              输入对接节点的密码。
+            <div class="app-pixiu-describe" style="margin-top: -5px; margin-left: 80px">
+              输入节点的密钥。
             </div>
           </div>
         </el-form>

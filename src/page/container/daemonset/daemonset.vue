@@ -1038,7 +1038,8 @@ const handleEditYamlDialog = async (row) => {
 };
 
 const createDaemonset = () => {
-  proxy.$message.warning('暂不支持');
+  const url = `/daemonsets/createDaemonset?cluster=${data.cluster}`;
+  router.push(url);
 };
 
 const jumpRoute = (row) => {
@@ -1046,7 +1047,7 @@ const jumpRoute = (row) => {
     name: 'DaemonsetDetail',
     query: {
       cluster: data.cluster,
-      namespace: row.metadata.namespace,
+      namespace: data.namespace,
       name: row.metadata.name,
     },
   });
@@ -1062,8 +1063,6 @@ const getDaemonsets = async () => {
   data.tableData = result.items;
   data.pageInfo.total = result.total;
 };
-
-provide('getDaemonsets', getDaemonsets);
 
 const closeDaemonsetScaleDialog = (row) => {
   data.daemonsetReplicasDialog = false;

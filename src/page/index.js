@@ -69,6 +69,7 @@ import CRD from './container/crd/crd.vue';
 import Audit from './audit/audit.vue';
 import Daemonset from './container/daemonset/daemonset.vue';
 import DaemonsetDetail from './container/daemonset/details.vue';
+import CreateDaemonset from './container/daemonset/createDaemonset.vue';
 import PersistentVolumeClaim from './container/persistentvolumeclaim/PersistentVolumeClaim.vue';
 export {
   Home,
@@ -86,6 +87,7 @@ export {
   DeploymentDetail,
   Daemonset,
   DaemonsetDetail,
+  CreateDaemonset,
   Release,
   Node,
   NodeDetail,
