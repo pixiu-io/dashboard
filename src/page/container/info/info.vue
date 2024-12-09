@@ -419,7 +419,6 @@ const GetConfigMap = async () => {
     'ClusterConfiguration',
   );
   if (err) {
-    proxy.$notify.error(err);
     return;
   }
   data.configData.controlPlaneEndpoint = 'https://' + cfg.controlPlaneEndpoint;
