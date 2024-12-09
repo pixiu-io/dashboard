@@ -591,7 +591,8 @@
                 v-model="clusterStore.nodeInfo.auth.key.data"
                 style="width: 100%"
                 type="textarea"
-                :autosize="{ minRows: 6 }"
+                :autosize="{ minRows: 6, maxRows: 6 }"
+                show-overflow-tooltip
               />
             </el-form-item>
             <div class="app-pixiu-describe" style="margin-top: -5px; margin-left: 80px">
