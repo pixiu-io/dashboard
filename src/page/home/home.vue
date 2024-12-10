@@ -142,14 +142,12 @@ const listAudits = async () => {
     page: 1,
     limit: 10,
     total: 0,
-    nameSelector: '',
-    labelSelector: '',
   });
   if (err) {
-    proxy.$notify.error({ title: 'Deployment', message: err.response.data.message });
     return;
   }
-  clusterOption.audits = result;
+
+  clusterOption.audits = result.items;
 };
 onMounted(async () => {
   await listAudits();
