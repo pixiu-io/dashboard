@@ -49,35 +49,19 @@
           @selection-change="handleSelectionChange"
         >
           <!-- <el-table-column type="selection" width="30" /> -->
-          <el-table-column prop="operator" label="操作用户">
-            <template #default="scope">
-              <div style="font-size: 12px; color: #29292b" type="primary" :underline="false">
-                {{ scope.row.operator }}
-              </div>
-            </template>
+          <el-table-column prop="operator" label="操作用户" :formatter="formatTableValue">
           </el-table-column>
           <el-table-column prop="status" label="状态" :formatter="formatterAuditStatus">
           </el-table-column>
-          <el-table-column prop="resource_type" label="资源类型">
-            <template #default="scope">
-              <div style="font-size: 12px; color: #29292b" type="primary" :underline="false">
-                {{ scope.row.resource_type }}
-              </div>
-            </template>
+          <el-table-column
+            prop="resource_type"
+            label="资源类型"
+            :formatter="formatAuditResourceType"
+          >
           </el-table-column>
-          <el-table-column prop="action" label="操作类型">
-            <template #default="scope">
-              <div style="font-size: 12px; color: #29292b" type="primary" :underline="false">
-                {{ scope.row.action }}
-              </div>
-            </template>
+          <el-table-column prop="action" label="操作类型" :formatter="formatTableValue">
           </el-table-column>
-          <el-table-column prop="ip" label="操作IP">
-            <template #default="scope">
-              <div style="font-size: 12px; color: #29292b" type="primary" :underline="false">
-                {{ scope.row.ip }}
-              </div>
-            </template>
+          <el-table-column prop="ip" label="操作IP" :formatter="formatTableValue">
           </el-table-column>
           <el-table-column prop="path" label="请求路径" min-width="250px">
             <template #default="scope">
@@ -102,7 +86,12 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
-import { formatterTime, formatterAuditStatus } from '@/utils/formatter';
+import {
+  formatterTime,
+  formatterAuditStatus,
+  formatAuditResourceType,
+  formatTableValue,
+} from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getAuditList } from '@/services/audit/auditService';
 import { getTableData, searchData } from '@/utils/utils';
@@ -150,9 +139,3 @@ const getAudits = async () => {
   data.pageInfo.total = result.total;
 };
 </script>
-
-<style>
-.el-main {
-  background-color: #f3f4f7 !important;
-}
-</style>

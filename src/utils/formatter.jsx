@@ -277,6 +277,30 @@ const formatString = (row, column, cellValue) => {
 
 export { formatString };
 
+const formatAuditResourceType = (row, column, cellValue) => {
+  let v = cellValue;
+  if (v === 'proxy') {
+    v = 'kubernetes';
+  }
+  return (
+    <div style="font-size: 12px; color: #29292b" type="primary">
+      {v}
+    </div>
+  );
+};
+
+export { formatAuditResourceType };
+
+const formatTableValue = (row, column, cellValue) => {
+  return (
+    <div style="font-size: 12px; color: #29292b" type="primary">
+      {cellValue}
+    </div>
+  );
+};
+
+export { formatTableValue };
+
 const formatterAddress = (row, column, cellValue) => {
   if (
     cellValue === undefined ||
