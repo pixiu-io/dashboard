@@ -21,7 +21,7 @@
             刷新
           </el-button>
           <el-input
-            v-model="data.pageInfo.search.searchInfo"
+            v-model="data.pageInfo.nameSelector"
             placeholder="多个过滤标签用回车分隔"
             style="width: 560px; float: right"
             clearable
@@ -48,6 +48,7 @@
           header-row-class-name="pixiu-table-header"
           @selection-change="handleSelectionChange"
         >
+          <!-- <el-table-column type="selection" width="30" /> -->
           <el-table-column prop="operator" label="操作用户">
             <template #default="scope">
               <div style="font-size: 12px; color: #29292b" type="primary" :underline="false">
@@ -116,16 +117,12 @@ const data = reactive({
   loading: false,
 
   tableData: [],
-  auditList: [],
-
   pageInfo: {
     page: 1,
     limit: 10,
     total: 0,
-    search: {
-      field: 'name',
-      searchInfo: '',
-    },
+    nameSelector: '',
+    labelSelector: '',
   },
 });
 
@@ -143,18 +140,14 @@ const onChange = (v) => {
 
 const getAudits = async () => {
   data.loading = true;
-  const [result, err] = await getAuditList();
+  const [result, err] = await getAuditList(data.pageInfo);
   data.loading = false;
   if (err) {
     proxy.$message.error(err);
     return;
   }
-
-  data.auditList = result;
-  if (result !== null) {
-    data.pageInfo.total = data.auditList.length;
-  }
-  data.tableData = getTableData(data.pageInfo, data.auditList);
+  data.tableData = result.items;
+  data.pageInfo.total = result.total;
 };
 </script>
 

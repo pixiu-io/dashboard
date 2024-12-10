@@ -138,12 +138,16 @@ const userOption = reactive({
   ],
 });
 const listAudits = async () => {
-  const [result, err] = await getAuditList();
+  const [result, err] = await getAuditList({
+    page: 1,
+    limit: 10,
+    total: 0,
+  });
   if (err) {
-    proxy.$notify.error({ title: 'Deployment', message: err.response.data.message });
     return;
   }
-  clusterOption.audits = result;
+
+  clusterOption.audits = result.items;
 };
 onMounted(async () => {
   await listAudits();
