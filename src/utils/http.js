@@ -8,7 +8,7 @@ let watchUrl = '';
 $.ajax({
   type: 'get',
   async: false,
-  url: './config.json',
+  url: '/etc/pixiu/config.json',
   data: {},
   success: function (cfg) {
     baseUrl = cfg.url;
