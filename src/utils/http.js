@@ -2,9 +2,10 @@ import { ElMessage } from 'element-plus';
 import axios from 'axios';
 import $ from 'jquery';
 // import { router } from '@/router/index';
-
-let baseUrl = import.meta.env.VITE_BASE_API ? import.meta.env.VITE_BASE_API : window.location.host;
-let watchUrl = import.meta.env.VITE_BASE_API ? import.meta.env.VITE_BASE_API : window.location.host;
+let currentHost = window.location.protocol + '//' + window.location.host;
+let envHost = import.meta.env.VITE_BASE_API;
+let baseUrl = envHost ? envHost : currentHost;
+let watchUrl = envHost ? envHost : currentHost;
 
 const instance = axios.create({
   baseURL: baseUrl,
