@@ -2,23 +2,13 @@ import { ElMessage } from 'element-plus';
 import axios from 'axios';
 import $ from 'jquery';
 // import { router } from '@/router/index';
-
-let baseUrl = '';
-let watchUrl = '';
-$.ajax({
-  type: 'get',
-  async: false,
-  url: '/etc/pixiu/config.json',
-  data: {},
-  success: function (cfg) {
-    baseUrl = cfg.url;
-    watchUrl = cfg.watchUrl;
-  },
-  error: function (err) {},
-});
+let currentHost = window.location.protocol + '//' + window.location.host;
+let envHost = import.meta.env.VITE_BASE_API;
+let baseUrl = envHost ? envHost : currentHost;
+let watchUrl = envHost ? envHost : currentHost;
 
 const instance = axios.create({
-  baseURL: baseUrl ? baseUrl : import.meta.env.VITE_BASE_API, // 如果后端开放了cors，就可以用这个替代上面一行
+  baseURL: baseUrl,
   timeout: 6000, // 设置超时时间1分钟
   headers: {
     'Content-Type': 'application/json;charset=UTF-8', // 基础的请求头
@@ -110,12 +100,12 @@ const axiosIntance = ({ method, url, data, config }) => {
 
   // 获取 baseUrl
   if (method === 'config') {
-    return baseUrl ? baseUrl : import.meta.env.VITE_BASE_API;
+    return baseUrl;
   }
 
   // 获取 watchUrl
   if (method === 'watch') {
-    return watchUrl ? watchUrl : import.meta.env.VITE_BASE_API;
+    return watchUrl;
   }
 
   // console.error(`UnKnown Method:${method}`);
