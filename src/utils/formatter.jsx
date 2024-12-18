@@ -834,13 +834,3 @@ const formatterHelmChart = (row, column, cellValue) => {
   );
 };
 export { formatterHelmChart };
-
-const formatterChartVersion = (row, column, cellValue) => {
-  const v = cellValue.metadata.appVersion;
-  return (
-    <el-tooltip effect="light" placement="top" content={v}>
-      <div class="pixiu-ellipsis-style">{v}</div>
-    </el-tooltip>
-  );
-};
-export { formatterChartVersion };

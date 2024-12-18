@@ -65,14 +65,13 @@
 
         <el-table-column label="版本" prop="version"> </el-table-column>
 
-        <el-table-column label="APP版本" prop="chart" :formatter="formatterChartVersion">
-        </el-table-column>
+        <el-table-column label="APP版本" prop="chart.metadata.appVersion"> </el-table-column>
 
-        <!-- <el-table-column
+        <el-table-column
           prop="info.first_deployed"
           label="部署时间"
           :formatter="formatterTime"
-        ></el-table-column> -->
+        ></el-table-column>
 
         <el-table-column prop="info.first_deployed" label="更新时间" :formatter="formatterTime">
         </el-table-column>
@@ -130,12 +129,7 @@
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, onUnmounted } from 'vue';
 import { formatTimestamp, getTableData, searchData } from '@/utils/utils';
-import {
-  formatterHelmChart,
-  formatterNamespace,
-  formatterTime,
-  formatterChartVersion,
-} from '@/utils/formatter';
+import { formatterHelmChart, formatterNamespace, formatterTime } from '@/utils/formatter';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import Description from '@/components/description/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
