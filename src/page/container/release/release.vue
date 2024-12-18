@@ -176,9 +176,9 @@ onMounted(() => {
 
   // 启动 localstorage 缓存监听，用于检测命名空间是否发生了变化
   window.addEventListener('setItem', handleStorageChange);
-
   getReleases();
 });
+
 onUnmounted(() => {
   window.removeEventListener('setItem', handleStorageChange);
 });
@@ -229,9 +229,11 @@ const getReleases = async () => {
   data.releasesList = result;
   if (data.releasesList !== null) {
     data.pageInfo.total = data.releasesList.length;
+    data.tableData = getTableData(data.pageInfo, data.releasesList);
+  } else {
+    data.pageInfo.total = 0;
+    data.tableData = [];
   }
-
-  data.tableData = getTableData(data.pageInfo, data.releasesList);
 };
 
 const searchReleases = async () => {
@@ -251,7 +253,6 @@ const confirm = async () => {
     data.deleteDialog.deleteName,
   );
   if (err) {
-    proxy.$message.error(err.message);
     return;
   }
   proxy.$message.success(`(${data.deleteDialog.deleteName}) 删除成功`);
