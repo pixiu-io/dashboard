@@ -13,3 +13,13 @@ export const getReleaseList = async (cluster, namespace) => {
   );
   return [result, err];
 };
+
+export const deleteRelease = async (cluster, namespace, name) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'delete',
+      url: `/pixiu/helms/clusters/${cluster}/v1/namespaces/${namespace}/releases/${name}`,
+    }),
+  );
+  return [result, err];
+};

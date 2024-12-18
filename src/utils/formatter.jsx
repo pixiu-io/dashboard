@@ -824,3 +824,13 @@ const calculateTimeDuration = (startTime, endTime) => {
 
   return result.join('');
 };
+
+const formatterHelmChart = (row, column, cellValue) => {
+  let vv = cellValue.metadata.name + '-' + cellValue.metadata.version;
+  return (
+    <el-tooltip effect="light" placement="top" content={vv}>
+      <div class="pixiu-ellipsis-style">{vv}</div>
+    </el-tooltip>
+  );
+};
+export { formatterHelmChart };

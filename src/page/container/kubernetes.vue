@@ -146,11 +146,11 @@ const data = reactive({
           name: 'Pod',
           url: '/kubernetes/pods',
         },
-        // {
-        //   id: 1.4,
-        //   name: 'Helm',
-        //   url: '/kubernetes/release',
-        // },
+        {
+          id: 1.5,
+          name: 'Helm',
+          url: '/kubernetes/release',
+        },
       ],
     },
     {

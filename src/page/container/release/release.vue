@@ -1,10 +1,5 @@
 <template>
-  <!-- <div class="title-card-container2">
-    <div style="flex-grow: 1">
-      <PiXiuYaml :refresh="getReleases"></PiXiuYaml>
-    </div>
-  </div> -->
-
+  <Description :description="'TODO: hem 描述信息'" />
   <div style="margin-top: 5px">
     <el-row>
       <el-col>
@@ -14,9 +9,9 @@
         </button>
 
         <el-input
-          v-model="data.pageInfo.search.searchInfo"
+          v-model="data.pageInfo.nameSelector"
           placeholder="名称搜索关键字"
-          style="width: 400px; float: right"
+          style="width: 35%; float: right"
           clearable
           @input="searchReleases"
           @clear="getReleases"
@@ -43,19 +38,20 @@
       >
         <el-table-column type="selection" width="30" />
 
-        <el-table-column prop="metadata.name" label="名称" min-width="150px">
+        <el-table-column prop="metadata.name" label="实例名称" sortable min-width="100px">
           <template #default="scope">
-            <el-link class="global-table-world" type="primary" @click="jumpRoute(scope.row)">
+            <el-link
+              class="global-table-world"
+              :underline="false"
+              type="primary"
+              @click="jumpRoute(scope.row)"
+            >
               {{ scope.row.name }}
             </el-link>
           </template>
         </el-table-column>
-        <el-table-column label="版本" width="100px">
-          <template #default="scope">
-            {{ scope.row.version }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="" label="状态" width="150px">
+
+        <el-table-column label="状态">
           <template #default="scope">
             <el-tag v-if="scope.row.info.status === 'deployed'" type="success">{{
               scope.row.info.status
@@ -63,48 +59,44 @@
             <el-tag v-else type="danger">{{ scope.row.info.status }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="" label="Chart" min-width="200px">
-          <template #default="scope">
-            {{ scope.row.chart.metadata.name }}-{{ scope.row.chart.metadata.version }}
-          </template>
+
+        <el-table-column label="Chart" prop="chart" :formatter="formatterHelmChart">
         </el-table-column>
-        <el-table-column prop="" label="APP版本" width="150px">
-          <template #default="scope">
-            {{ scope.row.chart.metadata.appVersion }}
-          </template>
+
+        <el-table-column label="版本" prop="version"> </el-table-column>
+
+        <el-table-column label="APP版本" prop="chart.metadata.appVersion"> </el-table-column>
+
+        <el-table-column
+          prop="info.first_deployed"
+          label="部署时间"
+          :formatter="formatterTime"
+        ></el-table-column>
+
+        <el-table-column prop="info.first_deployed" label="更新时间" :formatter="formatterTime">
         </el-table-column>
-        <el-table-column label="部署时间" width="180px">
+
+        <el-table-column fixed="right" label="操作" width="190px">
           <template #default="scope">
-            {{ formatTimestamp(scope.row.info.first_deployed) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="" label="上次部署时间" width="180px">
-          <template #default="scope">
-            {{ formatTimestamp(scope.row.info.first_deployed) }}
-          </template>
-        </el-table-column>
-        <el-table-column fixed="right" label="操作" width="220">
-          <template #default="scope">
-            <el-button
-              size="small"
-              type="text"
-              style="margin-right: -20px; margin-left: -10px; color: #006eff"
-            >
-              查看历史版本
+            <el-button size="small" type="text" class="table-item-left1-buttom">
+              历史版本
             </el-button>
 
-            <el-button type="text" size="small" style="margin-right: 2px; color: #006eff">
+            <el-button type="text" size="small" class="table-item-left2-buttom">
               版本回滚
             </el-button>
 
             <el-dropdown>
               <span class="el-dropdown-link">
                 更多
-                <el-icon><arrow-down /></el-icon>
+                <pixiu-icon name="icon-xiala" size="12px" type="iconfont" color="#006eff" />
               </span>
               <template #dropdown>
                 <el-dropdown-menu class="dropdown-buttons">
-                  <el-dropdown-item style="color: #006eff" @click="deleteRelease(scope.row)">
+                  <el-dropdown-item
+                    class="dropdown-item-buttons"
+                    @click="handleDeleteDialog(scope.row)"
+                  >
                     删除
                   </el-dropdown-item>
                 </el-dropdown-menu>
@@ -123,16 +115,27 @@
       <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
     </el-card>
   </div>
+
+  <pixiuDialog
+    :close-event="data.deleteDialog.close"
+    :object-name="data.deleteDialog.objectName"
+    :delete-name="data.deleteDialog.deleteName"
+    @confirm="confirm"
+    @cancel="cancel"
+  ></pixiuDialog>
 </template>
 
-<script setup>
+<script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, onUnmounted } from 'vue';
 import { formatTimestamp, getTableData, searchData } from '@/utils/utils';
+import { formatterHelmChart, formatterNamespace, formatterTime } from '@/utils/formatter';
+import pixiuDialog from '@/components/pixiuDialog/index.vue';
+import Description from '@/components/description/index.vue';
 import PiXiuYaml from '@/components/pixiuyaml/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getLocalNamespace } from '@/services/kubernetes/namespaceService';
-import { getReleaseList } from '@/services/kubernetes/releaseService';
+import { getReleaseList, deleteRelease } from '@/services/kubernetes/releaseService';
 const { proxy } = getCurrentInstance();
 const router = useRouter();
 
@@ -143,23 +146,21 @@ const data = reactive({
   pageInfo: {
     page: 1,
     limit: 10,
-    query: '',
     total: 0,
-    search: {
-      field: 'name',
-      searchInfo: '',
-    },
+    nameSelector: '',
+    labelSelector: '',
   },
   tableData: [],
   loading: false,
 
   releasesList: [],
 
-  deploymentReplicasDialog: false,
-  deploymentRepcliasFrom: {
-    name: '',
-    origin: '',
-    target: 0,
+  // 删除对象属性
+  deleteDialog: {
+    close: false,
+    objectName: 'HelmRelease',
+    deleteName: '',
+    deleteNamespace: '',
   },
 });
 
@@ -169,9 +170,9 @@ onMounted(() => {
 
   // 启动 localstorage 缓存监听，用于检测命名空间是否发生了变化
   window.addEventListener('setItem', handleStorageChange);
-
   getReleases();
 });
+
 onUnmounted(() => {
   window.removeEventListener('setItem', handleStorageChange);
 });
@@ -220,19 +221,47 @@ const getReleases = async () => {
   }
 
   data.releasesList = result;
-  data.pageInfo.total = data.releasesList.length;
-  data.tableData = getTableData(data.pageInfo, data.releasesList);
+  if (data.releasesList !== null) {
+    data.pageInfo.total = data.releasesList.length;
+    data.tableData = getTableData(data.pageInfo, data.releasesList);
+  } else {
+    data.pageInfo.total = 0;
+    data.tableData = [];
+  }
 };
 
 const searchReleases = async () => {
   data.tableData = searchData(data.pageInfo, data.releasesList);
 };
 
-const deleteRelease = async (val) => {};
+const handleDeleteDialog = (row) => {
+  data.deleteDialog.close = true;
+  data.deleteDialog.deleteName = row.name;
+  data.deleteDialog.deleteNamespace = row.namespace;
+};
+
+const confirm = async () => {
+  const [result, err] = await deleteRelease(
+    data.cluster,
+    data.namespace,
+    data.deleteDialog.deleteName,
+  );
+  if (err) {
+    return;
+  }
+  proxy.$message.success(`(${data.deleteDialog.deleteName}) 删除成功`);
+
+  getReleases();
+  cancel();
+};
+
+const cancel = async () => {
+  data.deleteDialog.close = false;
+  setTimeout(() => {
+    data.deleteDialog.deleteName = '';
+    data.deleteDialog.deleteNamespace = '';
+  }, 100);
+};
 </script>
 
-<style scoped="scoped">
-.box-card {
-  margin-top: 20px;
-}
-</style>
+<style scoped="scoped"></style>
