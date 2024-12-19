@@ -1,5 +1,7 @@
 <template>
-  <Description :description="'TODO: hem 描述信息'" />
+  <Description
+    :description="'Helm 是 Kubernetes 的包管理工具，利用 charts 部署、更新、回滚和管理应用, 它可以帮助我们管理复杂的 Kubernetes 应用'"
+  />
   <div style="margin-top: 5px">
     <el-row>
       <el-col>
