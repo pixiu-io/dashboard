@@ -1,27 +1,112 @@
 <template>
-  <div style="display: flex">
-    <pixiu-icon
-      name="icon-back"
-      style="cursor: pointer"
-      size="16px"
-      type="iconfont"
-      color="#006eff"
-      @click="goToPod"
-    />
+  <el-card class="contend-card-container">
+    <div class="font-container" style="display: flex">
+      <pixiu-icon
+        name="icon-back"
+        style="cursor: pointer"
+        size="16px"
+        type="iconfont"
+        color="#006eff"
+        @click="goToPod"
+      />
 
-    <div style="size: 14px; margin-left: 20px; margin-top: -4px">
-      {{ data.name }}({{ data.namespace }})
+      <el-breadcrumb separator="/" style="margin-left: 20px">
+        <el-breadcrumb-item><span class="breadcrumb-style">集群</span></el-breadcrumb-item>
+
+        <el-breadcrumb-item>
+          <span class="breadcrumb-style">{{ data.cluster }}</span>
+        </el-breadcrumb-item>
+
+        <el-breadcrumb-item
+          ><span class="breadcrumb-style">Pod:{{ data.name }}({{ data.namespace }})</span>
+        </el-breadcrumb-item>
+      </el-breadcrumb>
     </div>
+  </el-card>
+
+  <div style="margin-top: 25px">
+    <el-row>
+      <el-col>
+        <button class="pixiu-two-button" @click="GetPod">刷新</button>
+        <button class="pixiu-two-button2" style="margin-left: 10px">删除</button>
+      </el-col>
+    </el-row>
   </div>
 
   <el-card class="contend-card-container2">
-    <el-col>
-      <button class="pixiu-two-button" @click="GetPod">刷新</button>
-      <button class="pixiu-two-button2" style="margin-left: 10px">删除</button>
-    </el-col>
-  </el-card>
+    <div v-if="data.pod" style="width: 100%; border-radius: 0px">
+      <el-descriptions
+        style="margin-left: 8px"
+        class="margin-top"
+        title="基本信息"
+        :column="3"
+        border
+      >
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">名称</div>
+          </template>
+          {{ data.pod.metadata.name }}
+        </el-descriptions-item>
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">命名空间</div>
+          </template>
+          <div style="color: 000000e6">{{ data.pod.metadata.namespace }}</div>
+        </el-descriptions-item>
 
-  <el-card class="contend-card-container2"> </el-card>
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">QoS类别</div>
+          </template>
+          {{ data.pod.status.qosClass }}
+        </el-descriptions-item>
+
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">所在节点</div>
+          </template>
+          {{ data.pod.spec.nodeName }}
+        </el-descriptions-item>
+
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">实例IP</div>
+          </template>
+          {{ data.pod.status.podIP }}
+        </el-descriptions-item>
+
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">状态</div>
+          </template>
+          Running
+        </el-descriptions-item>
+
+        <el-descriptions-item>
+          <template #label>
+            <div class="cell-item">创建时间</div>
+          </template>
+          {{ data.createTime }}
+        </el-descriptions-item>
+      </el-descriptions>
+    </div>
+
+    <el-tabs
+      v-model="data.activeName"
+      class="namespace-tab"
+      style="margin-top: 12px"
+      @tab-click="handleClick"
+      @tab-change="handleChange"
+    >
+      <el-tab-pane label="容器" name="first"> </el-tab-pane>
+      <el-tab-pane label="元数据" name="second"> </el-tab-pane>
+      <el-tab-pane label="环境变量" name="third"> </el-tab-pane>
+      <el-tab-pane label="日志" name="four"></el-tab-pane>
+      <el-tab-pane label="事件" name="five"></el-tab-pane>
+      <el-tab-pane label="YAML" name="six"></el-tab-pane>
+    </el-tabs>
+  </el-card>
 
   <div v-if="data.activeName === 'first'">
     <div style="margin-top: 20px">
@@ -472,3 +557,22 @@ const editYaml = () => {
   data.readOnly = false;
 };
 </script>
+
+<style scoped="scoped">
+.namespace-tab {
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-bottom: -32px;
+}
+
+.namespace-detail-info {
+  font-size: 13px;
+  color: #29232b;
+}
+
+.namespace-info {
+  font-size: 13px;
+  margin-left: 10px;
+  color: #29232b;
+}
+</style>
