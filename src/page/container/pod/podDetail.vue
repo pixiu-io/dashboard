@@ -158,7 +158,41 @@
       </div>
     </div>
 
-    <div v-if="data.activeName === 'second'">second</div>
+    <div v-if="data.activeName === 'second'">
+      <el-card class="app-docs" style="margin-top: 10px; height: 40px; margin-left: 10px">
+        <el-icon
+          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+          ><WarningFilled
+        /></el-icon>
+        <div style="vertical-align: middle; margin-top: -40px">Pod 所包含的容器列表。</div>
+      </el-card>
+
+      <el-table
+        :data="data.pod.spec.containers"
+        stripe
+        style="margin-top: 2px"
+        header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#191919',
+        }"
+      >
+        <el-table-column prop="container.name" sortable label="容器名称"> </el-table-column>
+
+        <el-table-column
+          prop="status"
+          sortable
+          label="状态"
+          :formatter="formatterContainerStatus"
+        />
+
+        <el-table-column prop="status.restartCount" sortable label="重启次数" />
+
+        <el-table-column prop="container.image" label="镜像" :formatter="formatterContainerImage" />
+
+        <el-table-column prop="status" label="创建时间" sortable :formatter="formatterTime" />
+      </el-table>
+    </div>
   </el-card>
 </template>
 
@@ -170,6 +204,14 @@ import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
 import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
+import {
+  formatString,
+  formatterContainerImage,
+  formatterNamespace,
+  formatterPodStatus,
+  formatterRestartCount,
+  formatterTime,
+} from '@/utils/formatter';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -226,5 +268,25 @@ const GetPod = async () => {
 const goToPod = () => {
   const queryParams = { cluster: data.cluster };
   router.push({ path: '/kubernetes/pods', query: queryParams });
+};
+
+const formatterContainerStatus = (row, column, cellValue) => {
+  let status = '运行中';
+  let color = '#28C65A';
+
+  const state = cellValue.state;
+  if (state.terminated !== undefined) {
+    status = state.terminated.reason;
+    color = '#0000FF';
+  }
+
+  return (
+    <div style="display: flex">
+      <div>
+        <pixiu-icon name="icon-circle-dot" size="12px" type="iconfont" color={color} />
+      </div>
+      <div style="margin-left: 6px"> {status}</div>
+    </div>
+  );
 };
 </script>
