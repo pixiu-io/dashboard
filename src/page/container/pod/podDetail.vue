@@ -39,7 +39,7 @@
       @tab-change="handleChange"
     >
       <el-tab-pane label="基本信息" name="first"> </el-tab-pane>
-      <el-tab-pane label="容器状态" name="second"> </el-tab-pane>
+      <el-tab-pane label="容器管理" name="second"> </el-tab-pane>
       <el-tab-pane label="元数据" name="third"> </el-tab-pane>
       <el-tab-pane label="监控指标" name="four"></el-tab-pane>
       <el-tab-pane label="环境变量" name="five"></el-tab-pane>
@@ -48,7 +48,7 @@
 
     <div v-if="data.activeName === 'first'">
       <div style="width: 50%">
-        <el-form style="margin-top: 15px">
+        <el-form style="margin-top: 10px">
           <el-form-item>
             <template #label>
               <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
@@ -155,6 +155,8 @@
         </el-form>
       </div>
     </div>
+
+    <div v-if="data.activeName === 'second'">second</div>
   </el-card>
 </template>
 
