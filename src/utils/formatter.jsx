@@ -834,24 +834,3 @@ const formatterHelmChart = (row, column, cellValue) => {
   );
 };
 export { formatterHelmChart };
-
-const formatterContainerStatus = (row, column, cellValue) => {
-  let status = '运行中';
-  let color = '#28C65A';
-
-  const state = cellValue.state;
-  if (state.terminated !== undefined) {
-    status = state.terminated.reason;
-    color = '#0000FF';
-  }
-
-  return (
-    <div style="display: flex">
-      <div>
-        <pixiu-icon name="icon-circle-dot" size="12px" type="iconfont" color={color} />
-      </div>
-      <div style="margin-left: 6px"> {status}</div>
-    </div>
-  );
-};
-export { formatterContainerStatus };
