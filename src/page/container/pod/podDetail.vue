@@ -116,7 +116,7 @@
           </el-form-item>
 
           <el-form-item style="margin-top: -10px">
-            <div v-if="data.pod.metadata.labels === undefined">-</div>
+            <div v-if="data.pod.metadata.labels === undefined" style="margin-left: 10px">-</div>
             <div v-else style="margin-top: -8px">
               <div
                 v-for="(item, index) in data.pod.metadata.labels"
@@ -139,7 +139,9 @@
           </el-form-item>
 
           <el-form-item style="margin-top: -10px">
-            <div v-if="data.pod.metadata.annotations === undefined">-</div>
+            <div v-if="data.pod.metadata.annotations === undefined" style="margin-left: 10px">
+              -
+            </div>
             <div v-else style="margin-top: -8px">
               <div
                 v-for="(item, index) in data.pod.metadata.annotations"
