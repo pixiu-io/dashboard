@@ -16,12 +16,35 @@
 
   <el-card class="contend-card-container2">
     <el-col>
-      <button class="pixiu-two-button" @click="GetPod">刷新</button>
-      <button class="pixiu-two-button2" style="margin-left: 10px">删除</button>
+      <div style="float: right; height: 50px">
+        <button class="pixiu-two-button" @click="GetPod">刷新</button>
+        <button class="pixiu-two-button2" style="margin-left: 10px">监控</button>
+        <button class="pixiu-two-button2" style="margin-left: 10px">日志</button>
+        <button class="pixiu-two-button2" style="margin-left: 10px">删除</button>
+        <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">查看YAML</button>
+        <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">远程登陆</button>
+        <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px; color: #171313">
+          更多操作
+        </button>
+      </div>
     </el-col>
   </el-card>
 
-  <el-card class="contend-card-container2"> </el-card>
+  <el-card class="contend-card-container2">
+    <el-tabs
+      v-model="data.activeName"
+      class="namespace-tab"
+      @tab-click="handleClick"
+      @tab-change="handleChange"
+    >
+      <el-tab-pane label="基本信息" name="first"> </el-tab-pane>
+      <el-tab-pane label="容器状态" name="second"> </el-tab-pane>
+      <el-tab-pane label="元数据" name="third"> </el-tab-pane>
+      <el-tab-pane label="监控指标" name="four"></el-tab-pane>
+      <el-tab-pane label="环境变量" name="five"></el-tab-pane>
+      <el-tab-pane label="事件" name="six"></el-tab-pane>
+    </el-tabs>
+  </el-card>
 </template>
 
 <script setup lang="jsx">
@@ -39,7 +62,6 @@ const router = useRouter();
 const data = reactive({
   cluster: '',
   namespace: '',
-
   name: '',
 
   pod: '',
@@ -52,7 +74,7 @@ const data = reactive({
     total: 0,
   },
 
-  activeName: 'five',
+  activeName: 'first',
 
   yaml: '',
   yamlName: '',
@@ -107,7 +129,7 @@ const cancel = () => {
 };
 
 const goToPod = () => {
-  const queryParams = { cluster: data.cluster, namespace: data.namespace };
+  const queryParams = { cluster: data.cluster };
   router.push({ path: '/kubernetes/pods', query: queryParams });
 };
 </script>
