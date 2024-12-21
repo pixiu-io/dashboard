@@ -40,10 +40,9 @@
     >
       <el-tab-pane label="基本信息" name="first"> </el-tab-pane>
       <el-tab-pane label="容器管理" name="second"> </el-tab-pane>
-      <el-tab-pane label="元数据" name="third"> </el-tab-pane>
-      <el-tab-pane label="监控指标" name="four"></el-tab-pane>
-      <el-tab-pane label="环境变量" name="five"></el-tab-pane>
-      <el-tab-pane label="事件" name="six"></el-tab-pane>
+      <el-tab-pane label="事件" name="third"> </el-tab-pane>
+      <el-tab-pane label="环境变量" name="four"></el-tab-pane>
+      <el-tab-pane label="指标" name="five"></el-tab-pane>
     </el-tabs>
 
     <div v-if="data.activeName === 'first'">
@@ -191,6 +190,44 @@
         <el-table-column prop="container.image" label="镜像" :formatter="formatterContainerImage" />
 
         <el-table-column prop="status" label="创建时间" sortable :formatter="formatterTime" />
+      </el-table>
+    </div>
+
+    <div v-if="data.activeName === 'third'">
+      <el-table
+        v-loading="data.loading"
+        :data="data.deploymentEvents"
+        stripe
+        style="margin-top: 10px; width: 100%; margin-bottom: 25px"
+        header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#191919',
+        }"
+        @selection-change="handleSelectionChange"
+      >
+        <el-table-column type="selection" width="30px" />
+        <el-table-column prop="lastTimestamp" label="最后出现时间" :formatter="formatterTime" />
+        <el-table-column prop="type" label="级别" />
+        <el-table-column prop="kind" label="资源类型"> </el-table-column>
+        <el-table-column prop="objectName" label="资源名称"> </el-table-column>
+        <el-table-column prop="message" label="内容" width="500ox" />
+
+        <el-table-column fixed="right" label="操作" width="100px">
+          <template #default="scope">
+            <el-button
+              size="small"
+              type="text"
+              style="margin-right: -25px; margin-left: -10px; color: #006eff"
+              @click="deleteEvent(scope.row)"
+            >
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+        <template #empty>
+          <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
+        </template>
       </el-table>
     </div>
   </el-card>
