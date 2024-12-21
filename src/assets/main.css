@@ -482,6 +482,18 @@
   margin-left: 8px;
 }
 
+.detail-card-key-style {
+  margin-left: 10px;
+  font-size: 13px;
+  color: #191919;
+}
+
+.detail-card-value-style {
+  font-size: 13px;
+  color: #29232b;
+  margin-left: 50px;
+}
+
 .detail-card-style-form2 {
   font-size: 13px;
   color: #29232b;

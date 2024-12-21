@@ -34,6 +34,7 @@
     <el-tabs
       v-model="data.activeName"
       class="namespace-tab"
+      style="margin-left: 10px"
       @tab-click="handleClick"
       @tab-change="handleChange"
     >
@@ -44,6 +45,116 @@
       <el-tab-pane label="环境变量" name="five"></el-tab-pane>
       <el-tab-pane label="事件" name="six"></el-tab-pane>
     </el-tabs>
+
+    <div v-if="data.activeName === 'first'">
+      <div style="width: 50%">
+        <el-form style="margin-top: 15px">
+          <el-form-item>
+            <template #label>
+              <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+                >实例信息
+              </span>
+            </template>
+          </el-form-item>
+          <el-form-item style="margin-top: -10px">
+            <template #label>
+              <span class="detail-card-key-style">名称 </span>
+            </template>
+            <span class="detail-card-value-style" style="margin-left: 76px">
+              {{ data.pod.metadata.name }}
+            </span>
+          </el-form-item>
+
+          <el-form-item style="margin-top: -5px">
+            <template #label>
+              <span class="detail-card-key-style">命名空间 </span>
+            </template>
+            <span class="detail-card-value-style">
+              {{ data.pod.metadata.namespace }}
+            </span>
+          </el-form-item>
+
+          <el-form-item style="margin-top: -5px">
+            <template #label>
+              <span class="detail-card-key-style">QoS类别 </span>
+            </template>
+            <span class="detail-card-value-style">
+              {{ data.pod.status.qosClass }}
+            </span>
+          </el-form-item>
+
+          <el-form-item style="margin-top: -5px">
+            <template #label>
+              <span class="detail-card-key-style">所在节点 </span>
+            </template>
+            <span class="detail-card-value-style">
+              {{ data.pod.spec.nodeName }}: {{ data.pod.status.hostIP }}
+            </span>
+          </el-form-item>
+          <el-form-item style="margin-top: -5px">
+            <template #label>
+              <span class="detail-card-key-style">容器地址 </span>
+            </template>
+            <span class="detail-card-value-style">
+              {{ data.pod.status.podIP }}
+            </span>
+          </el-form-item>
+
+          <el-form-item style="margin-top: -5px">
+            <template #label>
+              <span class="detail-card-key-style">运行状态 </span>
+            </template>
+            <span class="detail-card-value-style"> Running </span>
+          </el-form-item>
+
+          <el-form-item>
+            <template #label>
+              <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+                >标签
+              </span>
+            </template>
+          </el-form-item>
+
+          <el-form-item style="margin-top: -10px">
+            <div v-if="data.pod.metadata.labels === undefined">-</div>
+            <div v-else style="margin-top: -8px">
+              <div
+                v-for="(item, index) in data.pod.metadata.labels"
+                :key="item"
+                style="font-size: 14px"
+              >
+                <el-tag type="primary" style="margin-top: 5px; margin-left: 10px"
+                  >{{ index }}: {{ item }}</el-tag
+                >
+              </div>
+            </div>
+          </el-form-item>
+
+          <el-form-item>
+            <template #label>
+              <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+                >注释
+              </span>
+            </template>
+          </el-form-item>
+
+          <el-form-item style="margin-top: -10px">
+            <div v-if="data.pod.metadata.annotations === undefined">-</div>
+            <div v-else style="margin-top: -8px">
+              <div
+                v-for="(item, index) in data.pod.metadata.annotations"
+                :key="item"
+                style="font-size: 14px"
+              >
+                <el-tag type="primary" style="margin-top: 5px; margin-left: 10px"
+                  >{{ index }}: {{ item }}</el-tag
+                >
+              </div>
+            </div>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
   </el-card>
 </template>
 
@@ -64,27 +175,16 @@ const data = reactive({
   namespace: '',
   name: '',
 
-  pod: '',
-  podLogs: [],
-
-  pageInfo: {
-    page: 1,
-    limit: 10,
-    query: '',
-    total: 0,
+  pod: {
+    metadata: {},
+    spec: {},
+    status: {},
   },
 
   activeName: 'first',
 
-  yaml: '',
-  yamlName: '',
-  readOnly: true,
-
-  card: true,
-
   containerMap: {},
   containerStatusMap: {},
-  createTime: '',
 });
 
 onMounted(async () => {
@@ -92,7 +192,7 @@ onMounted(async () => {
   data.namespace = proxy.$route.query.namespace;
   data.name = proxy.$route.query.name;
 
-  await GetPod();
+  GetPod();
 });
 
 const GetPod = async () => {
@@ -102,6 +202,9 @@ const GetPod = async () => {
       url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${data.name}`,
     });
     data.pod = res;
+
+    console.log('pod', data.pod);
+
     data.yaml = jsYaml.dump(data.pod, { quotingType: '"' });
     data.createTime = formatTimestamp(data.pod.metadata.creationTimestamp);
 
@@ -113,19 +216,7 @@ const GetPod = async () => {
     for (let cs of data.pod.status.containerStatuses) {
       data.containerStatusMap[cs.name] = cs;
     }
-
-    initItems();
   } catch (error) {}
-};
-
-const initItems = () => {};
-
-const confirm = () => {
-  data.readOnly = true;
-};
-
-const cancel = () => {
-  data.readOnly = true;
 };
 
 const goToPod = () => {
