@@ -246,7 +246,7 @@
         <el-table-column prop="count" label="出现次数"> </el-table-column>
         <el-table-column prop="message" label="内容" min-width="260px" />
 
-        <el-table-column fixed="right" label="操作" width="100px">
+        <el-table-column fixed="right" label="操作" width="70px">
           <template #default="scope">
             <el-button
               size="small"
