@@ -242,9 +242,8 @@
         <el-table-column type="selection" width="30px" />
         <el-table-column prop="lastTimestamp" label="最后出现时间" :formatter="formatterTime" />
         <el-table-column prop="type" label="级别" />
-        <el-table-column prop="kind" label="资源类型"> </el-table-column>
-        <el-table-column prop="objectName" label="资源名称"> </el-table-column>
-        <el-table-column prop="message" label="内容" width="500ox" />
+        <el-table-column prop="involvedObject.kind" label="资源类型"> </el-table-column>
+        <el-table-column prop="message" label="内容" min-width="250px" />
 
         <el-table-column fixed="right" label="操作" width="100px">
           <template #default="scope">
