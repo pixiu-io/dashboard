@@ -243,7 +243,8 @@
         <el-table-column prop="lastTimestamp" label="最后出现时间" :formatter="formatterTime" />
         <el-table-column prop="type" label="级别" />
         <el-table-column prop="involvedObject.kind" label="资源类型"> </el-table-column>
-        <el-table-column prop="message" label="内容" min-width="250px" />
+        <el-table-column prop="count" label="出现次数"> </el-table-column>
+        <el-table-column prop="message" label="内容" min-width="260px" />
 
         <el-table-column fixed="right" label="操作" width="100px">
           <template #default="scope">
