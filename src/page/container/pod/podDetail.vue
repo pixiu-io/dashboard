@@ -55,56 +55,57 @@
               </span>
             </template>
           </el-form-item>
-          <el-form-item style="margin-top: -10px">
-            <template #label>
-              <span class="detail-card-key-style">名称 </span>
-            </template>
-            <span class="detail-card-value-style" style="margin-left: 76px">
-              {{ data.pod.metadata.name }}
-            </span>
-          </el-form-item>
 
-          <el-form-item style="margin-top: -5px">
-            <template #label>
-              <span class="detail-card-key-style">命名空间 </span>
-            </template>
-            <span class="detail-card-value-style">
-              {{ data.pod.metadata.namespace }}
-            </span>
-          </el-form-item>
+          <el-row>
+            <el-col>
+              <el-row :gutter="20">
+                <el-col :span="12">
+                  <span class="detail-card-key-style">名称 </span>
+                  <span class="detail-card-value-style" style="margin-left: 75px">
+                    {{ data.pod.metadata.name }}</span
+                  >
+                </el-col>
+                <el-col :span="12">
+                  <el-row>
+                    <span class="detail-card-key-style">创建时间 </span>
+                    <span class="detail-card-value-style"> {{ data.createTime }}</span>
+                  </el-row>
+                </el-col>
+              </el-row>
 
-          <el-form-item style="margin-top: -5px">
-            <template #label>
-              <span class="detail-card-key-style">QoS类别 </span>
-            </template>
-            <span class="detail-card-value-style">
-              {{ data.pod.status.qosClass }}
-            </span>
-          </el-form-item>
+              <el-row :gutter="20" style="margin-top: 15px">
+                <el-col :span="12">
+                  <span class="detail-card-key-style">命名空间 </span>
+                  <span class="detail-card-value-style"> {{ data.pod.metadata.namespace }}</span>
+                </el-col>
+                <el-col :span="12">
+                  <el-row>
+                    <span class="detail-card-key-style">所在节点 </span>
+                    <span class="detail-card-value-style">
+                      {{ data.pod.spec.nodeName }}: {{ data.pod.status.hostIP }}
+                    </span>
+                  </el-row>
+                </el-col>
+              </el-row>
 
-          <el-form-item style="margin-top: -5px">
-            <template #label>
-              <span class="detail-card-key-style">所在节点 </span>
-            </template>
-            <span class="detail-card-value-style">
-              {{ data.pod.spec.nodeName }}: {{ data.pod.status.hostIP }}
-            </span>
-          </el-form-item>
-          <el-form-item style="margin-top: -5px">
-            <template #label>
-              <span class="detail-card-key-style">容器地址 </span>
-            </template>
-            <span class="detail-card-value-style">
-              {{ data.pod.status.podIP }}
-            </span>
-          </el-form-item>
+              <el-row :gutter="20" style="margin-top: 15px">
+                <el-col :span="12">
+                  <span class="detail-card-key-style">QoS类别 </span>
+                  <span class="detail-card-value-style"> {{ data.pod.status.qosClass }}</span>
+                </el-col>
+                <el-col :span="12">
+                  <el-row>
+                    <span class="detail-card-key-style">容器地址 </span>
+                    <span class="detail-card-value-style">
+                      {{ data.pod.status.podIP }}
+                    </span>
+                  </el-row>
+                </el-col>
+              </el-row>
+            </el-col>
+          </el-row>
 
-          <el-form-item style="margin-top: -5px">
-            <template #label>
-              <span class="detail-card-key-style">运行状态 </span>
-            </template>
-            <span class="detail-card-value-style"> Running </span>
-          </el-form-item>
+          <div style="margin-top: 20px"></div>
 
           <el-form-item>
             <template #label>
@@ -268,6 +269,7 @@ const data = reactive({
 
   containerMap: {},
   containerStatusMap: {},
+  createTime: '',
 });
 
 onMounted(async () => {
@@ -285,8 +287,7 @@ const GetPod = async () => {
       url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${data.name}`,
     });
     data.pod = res;
-
-    console.log('pod', data.pod);
+    data.createTime = formatTimestamp(data.pod.metadata.creationTimestamp);
 
     data.yaml = jsYaml.dump(data.pod, { quotingType: '"' });
     data.createTime = formatTimestamp(data.pod.metadata.creationTimestamp);
