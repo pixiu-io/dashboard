@@ -39,14 +39,14 @@
       @tab-change="handleChange"
     >
       <el-tab-pane label="基本信息" name="first"> </el-tab-pane>
-      <el-tab-pane label="容器管理" name="second"> </el-tab-pane>
+      <el-tab-pane label="容器" name="second"> </el-tab-pane>
       <el-tab-pane label="事件" name="third"> </el-tab-pane>
       <el-tab-pane label="环境变量" name="four"></el-tab-pane>
       <el-tab-pane label="指标" name="five"></el-tab-pane>
     </el-tabs>
 
     <div v-if="data.activeName === 'first'">
-      <div style="width: 50%">
+      <div>
         <el-form style="margin-top: 10px">
           <el-form-item>
             <template #label>
@@ -55,56 +55,66 @@
               </span>
             </template>
           </el-form-item>
-          <el-form-item style="margin-top: -10px">
-            <template #label>
-              <span class="detail-card-key-style">名称 </span>
-            </template>
-            <span class="detail-card-value-style" style="margin-left: 76px">
-              {{ data.pod.metadata.name }}
-            </span>
-          </el-form-item>
 
-          <el-form-item style="margin-top: -5px">
-            <template #label>
-              <span class="detail-card-key-style">命名空间 </span>
-            </template>
-            <span class="detail-card-value-style">
-              {{ data.pod.metadata.namespace }}
-            </span>
-          </el-form-item>
+          <el-row>
+            <el-col>
+              <el-row :gutter="20">
+                <el-col :span="8">
+                  <span class="detail-card-key-style">名称 </span>
+                  <span class="detail-card-value-style" style="margin-left: 55px">
+                    {{ data.pod.metadata.name }}</span
+                  >
+                </el-col>
+                <el-col :span="8">
+                  <el-row>
+                    <span class="detail-card-key-style">所在节点 </span>
+                    <span class="detail-card-value-style">
+                      {{ data.pod.spec.nodeName }}: {{ data.pod.status.hostIP }}
+                    </span>
+                  </el-row>
+                </el-col>
 
-          <el-form-item style="margin-top: -5px">
-            <template #label>
-              <span class="detail-card-key-style">QoS类别 </span>
-            </template>
-            <span class="detail-card-value-style">
-              {{ data.pod.status.qosClass }}
-            </span>
-          </el-form-item>
+                <el-col :span="8">
+                  <el-row>
+                    <span class="detail-card-key-style">创建时间 </span>
+                    <span class="detail-card-value-style"> {{ data.createTime }}</span>
+                  </el-row>
+                </el-col>
+              </el-row>
 
-          <el-form-item style="margin-top: -5px">
-            <template #label>
-              <span class="detail-card-key-style">所在节点 </span>
-            </template>
-            <span class="detail-card-value-style">
-              {{ data.pod.spec.nodeName }}: {{ data.pod.status.hostIP }}
-            </span>
-          </el-form-item>
-          <el-form-item style="margin-top: -5px">
-            <template #label>
-              <span class="detail-card-key-style">容器地址 </span>
-            </template>
-            <span class="detail-card-value-style">
-              {{ data.pod.status.podIP }}
-            </span>
-          </el-form-item>
+              <el-row :gutter="20" style="margin-top: 15px">
+                <el-col :span="8">
+                  <span class="detail-card-key-style">命名空间 </span>
+                  <span class="detail-card-value-style"> {{ data.pod.metadata.namespace }}</span>
+                </el-col>
+                <el-col :span="8">
+                  <el-row>
+                    <span class="detail-card-key-style">容器地址 </span>
+                    <span class="detail-card-value-style">
+                      {{ data.pod.status.podIP }}
+                    </span>
+                  </el-row>
+                </el-col>
+                <el-col :span="8">
+                  <el-row>
+                    <span class="detail-card-key-style">QoS类别 </span>
+                    <span class="detail-card-value-style">
+                      {{ data.pod.status.qosClass }}
+                    </span>
+                  </el-row>
+                </el-col>
+              </el-row>
 
-          <el-form-item style="margin-top: -5px">
-            <template #label>
-              <span class="detail-card-key-style">运行状态 </span>
-            </template>
-            <span class="detail-card-value-style"> Running </span>
-          </el-form-item>
+              <el-row :gutter="20" style="margin-top: 15px">
+                <el-col :span="8">
+                  <span class="detail-card-key-style">运行状态 </span>
+                  <span class="detail-card-value-style"> Running</span>
+                </el-col>
+              </el-row>
+            </el-col>
+          </el-row>
+
+          <div style="margin-top: 20px"></div>
 
           <el-form-item>
             <template #label>
@@ -194,26 +204,49 @@
     </div>
 
     <div v-if="data.activeName === 'third'">
+      <el-card class="app-docs" style="margin-top: 10px; height: 40px; margin-left: 10px">
+        <el-icon
+          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+          ><WarningFilled
+        /></el-icon>
+        <div style="vertical-align: middle; margin-top: -40px">Pod 关联相关事件查询。</div>
+      </el-card>
+
+      <el-row>
+        <el-col>
+          <div style="margin-left: 8px">
+            <button class="pixiu-two-button" @click="getPodEvents">查询</button>
+            <button
+              style="margin-left: 10px; width: 85px"
+              class="pixiu-two-button2"
+              @click="deleteEventsInBatch"
+            >
+              批量删除
+            </button>
+          </div>
+        </el-col>
+      </el-row>
+
       <el-table
-        v-loading="data.loading"
-        :data="data.deploymentEvents"
+        v-loading="data.eventData.loading"
+        :data="data.eventData.eventTableData"
         stripe
-        style="margin-top: 10px; width: 100%; margin-bottom: 25px"
+        style="margin-top: 25px"
         header-row-class-name="pixiu-table-header"
         :cell-style="{
           'font-size': '12px',
           color: '#191919',
         }"
-        @selection-change="handleSelectionChange"
+        @selection-change="handleEventSelectionChange"
       >
         <el-table-column type="selection" width="30px" />
         <el-table-column prop="lastTimestamp" label="最后出现时间" :formatter="formatterTime" />
         <el-table-column prop="type" label="级别" />
-        <el-table-column prop="kind" label="资源类型"> </el-table-column>
-        <el-table-column prop="objectName" label="资源名称"> </el-table-column>
-        <el-table-column prop="message" label="内容" width="500ox" />
+        <el-table-column prop="involvedObject.kind" label="资源类型"> </el-table-column>
+        <el-table-column prop="count" label="出现次数"> </el-table-column>
+        <el-table-column prop="message" label="内容" min-width="260px" />
 
-        <el-table-column fixed="right" label="操作" width="100px">
+        <el-table-column fixed="right" label="操作" width="70px">
           <template #default="scope">
             <el-button
               size="small"
@@ -229,6 +262,10 @@
           <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
         </template>
       </el-table>
+      <pagination
+        :total="data.eventData.pageEventInfo.total"
+        @on-change="onEventChange"
+      ></pagination>
     </div>
   </el-card>
 </template>
@@ -236,11 +273,17 @@
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
-import { formatTimestamp } from '@/utils/utils';
+import { formatTimestamp, getTableData } from '@/utils/utils';
 import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
 import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
+import {
+  deleteEvent,
+  getPodEventList,
+  deleteEventsInBatch,
+} from '@/services/kubernetes/eventService';
+import Pagination from '@/components/pagination/index.vue';
 import {
   formatString,
   formatterContainerImage,
@@ -268,6 +311,25 @@ const data = reactive({
 
   containerMap: {},
   containerStatusMap: {},
+  createTime: '',
+
+  eventData: {
+    loading: false,
+
+    eventTableData: [],
+    events: [],
+    multipleEventSelection: [],
+
+    pageEventInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      search: {
+        field: 'name',
+        searchInfo: '',
+      },
+    },
+  },
 });
 
 onMounted(async () => {
@@ -285,8 +347,7 @@ const GetPod = async () => {
       url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${data.name}`,
     });
     data.pod = res;
-
-    console.log('pod', data.pod);
+    data.createTime = formatTimestamp(data.pod.metadata.creationTimestamp);
 
     data.yaml = jsYaml.dump(data.pod, { quotingType: '"' });
     data.createTime = formatTimestamp(data.pod.metadata.creationTimestamp);
@@ -300,6 +361,50 @@ const GetPod = async () => {
       data.containerStatusMap[cs.name] = cs;
     }
   } catch (error) {}
+};
+
+const getPodEvents = async () => {
+  data.eventData.loading = true;
+  const [result, err] = await getPodEventList(
+    data.cluster,
+    data.pod.metadata.uid,
+    data.pod.metadata.namespace,
+    data.pod.metadata.name,
+  );
+  data.eventData.loading = false;
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.eventData.events = result;
+  data.eventData.pageEventInfo.total = result.length;
+  data.eventData.eventTableData = getTableData(data.eventData.pageEventInfo, data.eventData.events);
+};
+
+const handleEventSelectionChange = (events) => {
+  data.eventData.multipleEventSelection = [];
+  for (let event of events) {
+    data.eventData.multipleEventSelection.push(event.metadata);
+  }
+};
+
+const deleteEvents = async () => {
+  if (data.eventData.multipleEventSelection.length === 0) {
+    proxy.$notify.warning('未选择待删除事件');
+    return;
+  }
+
+  const [result, err] = await deleteEventsInBatch(
+    data.cluster,
+    data.eventData.multipleEventSelection,
+  );
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+  proxy.$notify.success('批量删除事件成功');
+  getPodEvents();
 };
 
 const goToPod = () => {

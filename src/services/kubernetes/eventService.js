@@ -32,6 +32,15 @@ export const deleteEvent = async (cluster, namespace, name) => {
   return [result, err];
 };
 
+export const deleteEventsInBatch = async (cluster, events) => {
+  for (let event of events) {
+    const [result, err] = await deleteEvent(cluster, event.namespace, event.name);
+    if (err) {
+      return err;
+    }
+  }
+};
+
 export const getRawEventList = async (cluster, uid, namespace, name, kind, namespaced) => {
   const [err, result] = await awaitWrap(
     http({
@@ -68,4 +77,8 @@ export const getNamespaceEventList = async (cluster, namespace) => {
   );
 
   return [result.items, err];
+};
+
+export const getPodEventList = async (cluster, uid, namespace, name) => {
+  return getRawEventList(cluster, uid, namespace, name, '', true);
 };
