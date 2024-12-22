@@ -278,7 +278,11 @@ import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
 import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
-import { deleteEvent, getPodEventList } from '@/services/kubernetes/eventService';
+import {
+  deleteEvent,
+  getPodEventList,
+  deleteEventsInBatch,
+} from '@/services/kubernetes/eventService';
 import Pagination from '@/components/pagination/index.vue';
 import {
   formatString,
@@ -376,6 +380,31 @@ const getPodEvents = async () => {
   data.eventData.events = result;
   data.eventData.pageEventInfo.total = result.length;
   data.eventData.eventTableData = getTableData(data.eventData.pageEventInfo, data.eventData.events);
+};
+
+const handleEventSelectionChange = (events) => {
+  data.eventData.multipleEventSelection = [];
+  for (let event of events) {
+    data.eventData.multipleEventSelection.push(event.metadata);
+  }
+};
+
+const deleteEvents = async () => {
+  if (data.eventData.multipleEventSelection.length === 0) {
+    proxy.$notify.warning('未选择待删除事件');
+    return;
+  }
+
+  const [result, err] = await deleteEventsInBatch(
+    data.cluster,
+    data.eventData.multipleEventSelection,
+  );
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+  proxy.$notify.success('批量删除事件成功');
+  getPodEvents();
 };
 
 const goToPod = () => {
