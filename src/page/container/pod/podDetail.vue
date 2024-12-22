@@ -39,7 +39,7 @@
       @tab-change="handleChange"
     >
       <el-tab-pane label="基本信息" name="first"> </el-tab-pane>
-      <el-tab-pane label="容器管理" name="second"> </el-tab-pane>
+      <el-tab-pane label="容器" name="second"> </el-tab-pane>
       <el-tab-pane label="事件" name="third"> </el-tab-pane>
       <el-tab-pane label="环境变量" name="four"></el-tab-pane>
       <el-tab-pane label="指标" name="five"></el-tab-pane>
@@ -204,17 +204,40 @@
     </div>
 
     <div v-if="data.activeName === 'third'">
+      <el-card class="app-docs" style="margin-top: 10px; height: 40px; margin-left: 10px">
+        <el-icon
+          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+          ><WarningFilled
+        /></el-icon>
+        <div style="vertical-align: middle; margin-top: -40px">Pod 关联相关事件查询。</div>
+      </el-card>
+
+      <el-row>
+        <el-col>
+          <div style="margin-left: 8px">
+            <button class="pixiu-two-button" @click="getPodEvents">查询</button>
+            <button
+              style="margin-left: 10px; width: 85px"
+              class="pixiu-two-button2"
+              @click="deleteEventsInBatch"
+            >
+              批量删除
+            </button>
+          </div>
+        </el-col>
+      </el-row>
+
       <el-table
-        v-loading="data.loading"
-        :data="data.deploymentEvents"
+        v-loading="data.eventData.loading"
+        :data="data.eventData.eventTableData"
         stripe
-        style="margin-top: 10px; width: 100%; margin-bottom: 25px"
+        style="margin-top: 25px"
         header-row-class-name="pixiu-table-header"
         :cell-style="{
           'font-size': '12px',
           color: '#191919',
         }"
-        @selection-change="handleSelectionChange"
+        @selection-change="handleEventSelectionChange"
       >
         <el-table-column type="selection" width="30px" />
         <el-table-column prop="lastTimestamp" label="最后出现时间" :formatter="formatterTime" />
@@ -239,6 +262,10 @@
           <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
         </template>
       </el-table>
+      <pagination
+        :total="data.eventData.pageEventInfo.total"
+        @on-change="onEventChange"
+      ></pagination>
     </div>
   </el-card>
 </template>
@@ -246,11 +273,13 @@
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
-import { formatTimestamp } from '@/utils/utils';
+import { formatTimestamp, getTableData } from '@/utils/utils';
 import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
 import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
+import { deleteEvent, getPodEventList } from '@/services/kubernetes/eventService';
+import Pagination from '@/components/pagination/index.vue';
 import {
   formatString,
   formatterContainerImage,
@@ -279,6 +308,24 @@ const data = reactive({
   containerMap: {},
   containerStatusMap: {},
   createTime: '',
+
+  eventData: {
+    loading: false,
+
+    eventTableData: [],
+    events: [],
+    multipleEventSelection: [],
+
+    pageEventInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      search: {
+        field: 'name',
+        searchInfo: '',
+      },
+    },
+  },
 });
 
 onMounted(async () => {
@@ -310,6 +357,25 @@ const GetPod = async () => {
       data.containerStatusMap[cs.name] = cs;
     }
   } catch (error) {}
+};
+
+const getPodEvents = async () => {
+  data.eventData.loading = true;
+  const [result, err] = await getPodEventList(
+    data.cluster,
+    data.pod.metadata.uid,
+    data.pod.metadata.namespace,
+    data.pod.metadata.name,
+  );
+  data.eventData.loading = false;
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.eventData.events = result;
+  data.eventData.pageEventInfo.total = result.length;
+  data.eventData.eventTableData = getTableData(data.eventData.pageEventInfo, data.eventData.events);
 };
 
 const goToPod = () => {

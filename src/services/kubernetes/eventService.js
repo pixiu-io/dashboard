@@ -69,3 +69,7 @@ export const getNamespaceEventList = async (cluster, namespace) => {
 
   return [result.items, err];
 };
+
+export const getPodEventList = async (cluster, uid, namespace, name) => {
+  return getRawEventList(cluster, uid, namespace, name, '', true);
+};
