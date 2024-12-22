@@ -46,7 +46,7 @@
     </el-tabs>
 
     <div v-if="data.activeName === 'first'">
-      <div style="width: 50%">
+      <div>
         <el-form style="margin-top: 10px">
           <el-form-item>
             <template #label>
@@ -59,13 +59,22 @@
           <el-row>
             <el-col>
               <el-row :gutter="20">
-                <el-col :span="12">
+                <el-col :span="8">
                   <span class="detail-card-key-style">名称 </span>
-                  <span class="detail-card-value-style" style="margin-left: 75px">
+                  <span class="detail-card-value-style" style="margin-left: 55px">
                     {{ data.pod.metadata.name }}</span
                   >
                 </el-col>
-                <el-col :span="12">
+                <el-col :span="8">
+                  <el-row>
+                    <span class="detail-card-key-style">所在节点 </span>
+                    <span class="detail-card-value-style">
+                      {{ data.pod.spec.nodeName }}: {{ data.pod.status.hostIP }}
+                    </span>
+                  </el-row>
+                </el-col>
+
+                <el-col :span="8">
                   <el-row>
                     <span class="detail-card-key-style">创建时间 </span>
                     <span class="detail-card-value-style"> {{ data.createTime }}</span>
@@ -74,32 +83,32 @@
               </el-row>
 
               <el-row :gutter="20" style="margin-top: 15px">
-                <el-col :span="12">
+                <el-col :span="8">
                   <span class="detail-card-key-style">命名空间 </span>
                   <span class="detail-card-value-style"> {{ data.pod.metadata.namespace }}</span>
                 </el-col>
-                <el-col :span="12">
-                  <el-row>
-                    <span class="detail-card-key-style">所在节点 </span>
-                    <span class="detail-card-value-style">
-                      {{ data.pod.spec.nodeName }}: {{ data.pod.status.hostIP }}
-                    </span>
-                  </el-row>
-                </el-col>
-              </el-row>
-
-              <el-row :gutter="20" style="margin-top: 15px">
-                <el-col :span="12">
-                  <span class="detail-card-key-style">QoS类别 </span>
-                  <span class="detail-card-value-style"> {{ data.pod.status.qosClass }}</span>
-                </el-col>
-                <el-col :span="12">
+                <el-col :span="8">
                   <el-row>
                     <span class="detail-card-key-style">容器地址 </span>
                     <span class="detail-card-value-style">
                       {{ data.pod.status.podIP }}
                     </span>
                   </el-row>
+                </el-col>
+                <el-col :span="8">
+                  <el-row>
+                    <span class="detail-card-key-style">QoS类别 </span>
+                    <span class="detail-card-value-style">
+                      {{ data.pod.status.qosClass }}
+                    </span>
+                  </el-row>
+                </el-col>
+              </el-row>
+
+              <el-row :gutter="20" style="margin-top: 15px">
+                <el-col :span="8">
+                  <span class="detail-card-key-style">运行状态 </span>
+                  <span class="detail-card-value-style"> Running</span>
                 </el-col>
               </el-row>
             </el-col>
