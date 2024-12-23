@@ -1,28 +1,18 @@
 <template>
   <el-card class="contend-card-container2" style="margin-top: 1px">
     <el-col>
-      <div style="display: flex; margin-left: 18px">
-        <pixiu-icon name="icon-jiedian" size="40px" type="iconfont" color="#006eff" />
-        <div
-          class="breadcrumb-create-style"
-          style="margin-left: 10px; margin-top: 10px; font-size: 15px"
-        >
-          {{ data.name }} ({{ data.namespace }})
-        </div>
-
-        <div style="float: right; height: 50px">
-          <button class="pixiu-two-button" @click="GetPod">刷新</button>
-          <button class="pixiu-two-button2" style="margin-left: 10px">日志</button>
-          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">查看YAML</button>
-          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">远程登陆</button>
-          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px; color: #171313">
-            更多操作
-          </button>
-        </div>
+      <div style="float: right; height: 50px; justify-content: space-between">
+        <button class="pixiu-two-button" @click="GetPod">刷新</button>
+        <button class="pixiu-two-button2" style="margin-left: 10px">日志</button>
+        <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">查看YAML</button>
+        <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">远程登陆</button>
+        <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px; color: #171313">
+          更多操作
+        </button>
       </div>
     </el-col>
 
-    <div style="display: flex; margin-top: 15px; margin-bottom: -50px">
+    <div style="display: flex; margin-top: 5px; margin-bottom: -45px">
       <div>
         <Echart :option="data.monitorData.cpuOption"></Echart>
       </div>
@@ -44,7 +34,7 @@
       <el-tab-pane label="容器" name="second"> </el-tab-pane>
       <el-tab-pane label="事件" name="third"> </el-tab-pane>
       <el-tab-pane label="环境变量" name="four"></el-tab-pane>
-      <el-tab-pane label="指标" name="five"></el-tab-pane>
+      <el-tab-pane label="日志" name="five"></el-tab-pane>
     </el-tabs>
 
     <div v-if="data.activeName === 'first'">
@@ -276,7 +266,7 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import { reactive, getCurrentInstance, onMounted, onUnmounted, ref } from 'vue';
 import { formatTimestamp, getTableData } from '@/utils/utils';
 import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
@@ -468,10 +458,18 @@ onMounted(async () => {
 
   GetPod();
 
+  getMetricsInfo(data.name, data.namespace);
+
   //定时刷新 3秒
   data.monitorData.timer = setInterval(async () => {
     getMetricsInfo(data.name, data.namespace);
   }, 3000);
+});
+
+onUnmounted(() => {
+  if (data.monitorData.timer) {
+    clearInterval(data.monitorData.timer);
+  }
 });
 
 const GetPod = async () => {
