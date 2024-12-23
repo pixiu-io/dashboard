@@ -1,26 +1,9 @@
 <template>
-  <div style="display: flex">
-    <pixiu-icon
-      name="icon-back"
-      style="cursor: pointer"
-      size="16px"
-      type="iconfont"
-      color="#006eff"
-      @click="goToPod"
-    />
-
-    <div style="size: 14px; margin-left: 20px; margin-top: -4px">
-      {{ data.name }}({{ data.namespace }})
-    </div>
-  </div>
-
-  <el-card class="contend-card-container2">
+  <el-card class="contend-card-container2" style="margin-top: 1px">
     <el-col>
-      <div style="float: right; height: 50px">
+      <div style="float: right">
         <button class="pixiu-two-button" @click="GetPod">刷新</button>
-        <button class="pixiu-two-button2" style="margin-left: 10px">监控</button>
         <button class="pixiu-two-button2" style="margin-left: 10px">日志</button>
-        <button class="pixiu-two-button2" style="margin-left: 10px">删除</button>
         <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">查看YAML</button>
         <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">远程登陆</button>
         <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px; color: #171313">
@@ -28,6 +11,15 @@
         </button>
       </div>
     </el-col>
+
+    <div style="display: flex; margin-top: 5px; margin-bottom: -45px">
+      <div>
+        <Echart :option="data.monitorData.cpuOption"></Echart>
+      </div>
+      <div>
+        <Echart :option="data.monitorData.memoryOption"></Echart>
+      </div>
+    </div>
   </el-card>
 
   <el-card class="contend-card-container2">
@@ -42,7 +34,7 @@
       <el-tab-pane label="容器" name="second"> </el-tab-pane>
       <el-tab-pane label="事件" name="third"> </el-tab-pane>
       <el-tab-pane label="环境变量" name="four"></el-tab-pane>
-      <el-tab-pane label="指标" name="five"></el-tab-pane>
+      <el-tab-pane label="日志" name="five"></el-tab-pane>
     </el-tabs>
 
     <div v-if="data.activeName === 'first'">
@@ -209,7 +201,9 @@
           style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
           ><WarningFilled
         /></el-icon>
-        <div style="vertical-align: middle; margin-top: -40px">Pod 关联相关事件查询。</div>
+        <div style="vertical-align: middle; margin-top: -40px">
+          Pod 关联相关事件查询，更多查询请至事件中心
+        </div>
       </el-card>
 
       <el-row>
@@ -272,7 +266,15 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
+import {
+  reactive,
+  getCurrentInstance,
+  onMounted,
+  onUnmounted,
+  onBeforeMount,
+  onBeforeUnmount,
+  ref,
+} from 'vue';
 import { formatTimestamp, getTableData } from '@/utils/utils';
 import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
@@ -284,6 +286,7 @@ import {
   deleteEventsInBatch,
 } from '@/services/kubernetes/eventService';
 import Pagination from '@/components/pagination/index.vue';
+import Echart from '@/components/echarts/index.vue';
 import {
   formatString,
   formatterContainerImage,
@@ -292,6 +295,11 @@ import {
   formatterRestartCount,
   formatterTime,
 } from '@/utils/formatter';
+import {
+  getPodCpuUsageMetrics,
+  getPodMemoryUsageMetrics,
+  getPodMetrics,
+} from '@/services/kubernetes/metricsService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -312,6 +320,126 @@ const data = reactive({
   containerMap: {},
   containerStatusMap: {},
   createTime: '',
+
+  monitorData: {
+    timer: null,
+    cpuOption: {
+      tooltip: {
+        trigger: 'axis',
+        position: function (pt) {
+          return [pt[0], '10%'];
+        },
+      },
+      title: {
+        left: '18px',
+        text: 'CPU使用率（%）',
+        textStyle: {
+          fontSize: 13,
+          fontWeight: 'bold',
+          color: '#191919',
+        },
+      },
+
+      xAxis: {
+        type: 'time',
+        boundaryGap: false,
+      },
+      yAxis: {
+        type: 'value',
+        boundaryGap: [0, '100%'],
+        name: 'CPU（ cores ）',
+        nameLocation: 'middle',
+        nameGap: 30,
+        nameTextStyle: {
+          fontSize: 13,
+          color: '#191919',
+        },
+      },
+
+      series: [
+        {
+          name: 'CPU使用率',
+          type: 'line',
+          smooth: true,
+          symbol: 'none',
+          itemStyle: {
+            color: '#5dd183',
+          },
+          areaStyle: {
+            color: '#5dd183',
+          },
+          data: [],
+        },
+      ],
+    },
+    memoryOption: {
+      tooltip: {
+        trigger: 'axis',
+        confine: true,
+        position: function (pt) {
+          return [pt[0], '10%'];
+        },
+        formatter: function (params) {
+          let str =
+            params[0].axisValueLabel +
+            '<br/>' +
+            params[0].marker +
+            params[0].seriesName +
+            '<span style="margin-left: 15px; font-size: 13px; color: green">';
+          let v = params[0].value[1];
+          if (v >= 1024 * 1024 * 1024) {
+            str += (v / 1024 / 1024 / 1024).toFixed(2) + ' GB';
+          } else {
+            str += (v / 1024 / 1024).toFixed(2) + ' MB';
+          }
+          str += '</span>';
+          return str;
+        },
+        axisPointer: {},
+      },
+      title: {
+        left: '18px',
+        text: '内存使用量',
+        textStyle: {
+          fontSize: 13,
+          fontWeight: 'bold',
+          color: '#191919',
+        },
+      },
+
+      xAxis: {
+        type: 'time',
+        boundaryGap: false,
+      },
+      yAxis: {
+        type: 'value',
+        axisLabel: {
+          formatter: function (value) {
+            if (value >= 1024 * 1024 * 1024) {
+              return (value / 1024 / 1024 / 1024).toFixed(0) + ' GB';
+            } else {
+              return (value / 1024 / 1024).toFixed(0) + ' MB';
+            }
+          },
+        },
+      },
+      series: [
+        {
+          name: 'Memory Usage',
+          type: 'line',
+          smooth: true,
+          symbol: 'none',
+          itemStyle: {
+            color: '#a8baee',
+          },
+          areaStyle: {
+            color: '#a8baee',
+          },
+          data: [],
+        },
+      ],
+    },
+  },
 
   eventData: {
     loading: false,
@@ -338,6 +466,19 @@ onMounted(async () => {
   data.name = proxy.$route.query.name;
 
   GetPod();
+  getMetricsInfo(data.name, data.namespace);
+});
+
+onBeforeMount(() => {
+  data.timer = window.setInterval(() => {
+    getMetricsInfo(data.name, data.namespace);
+  }, 3000);
+});
+
+onBeforeUnmount(() => {
+  if (data.monitorData.timer) {
+    window.clearInterval(ata.monitorData.timer);
+  }
 });
 
 const GetPod = async () => {
@@ -361,6 +502,21 @@ const GetPod = async () => {
       data.containerStatusMap[cs.name] = cs;
     }
   } catch (error) {}
+};
+
+const parseMetrics = (metricPoints) => {
+  return metricPoints.map(({ timestamp, value }) => [new Date(timestamp).getTime(), value]);
+};
+
+const getMetricsInfo = async (name, namespace) => {
+  try {
+    const [cpuUsage] = await getPodCpuUsageMetrics(data.cluster, namespace, name);
+    data.monitorData.cpuOption.series[0].data = parseMetrics(cpuUsage.items[0].metricPoints);
+    const [memoryUsage] = await getPodMemoryUsageMetrics(data.cluster, namespace, name);
+    data.monitorData.memoryOption.series[0].data = parseMetrics(memoryUsage.items[0].metricPoints);
+  } catch (error) {
+    proxy.$notify.error(error.response?.data?.message || 'Failed to fetch metrics');
+  }
 };
 
 const getPodEvents = async () => {

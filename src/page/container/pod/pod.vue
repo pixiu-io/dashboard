@@ -945,6 +945,7 @@ const closeMonitorDrawer = () => {
     clearInterval(data.monitorData.timer);
   }
 };
+
 onUnmounted(() => {
   if (data.monitorData.timer) {
     clearInterval(data.monitorData.timer);
