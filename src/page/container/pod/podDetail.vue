@@ -1,7 +1,7 @@
 <template>
   <el-card class="contend-card-container2" style="margin-top: 1px">
     <el-col>
-      <div style="float: right; height: 50px; justify-content: space-between">
+      <div style="float: right">
         <button class="pixiu-two-button" @click="GetPod">刷新</button>
         <button class="pixiu-two-button2" style="margin-left: 10px">日志</button>
         <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">查看YAML</button>
@@ -266,7 +266,15 @@
 
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
-import { reactive, getCurrentInstance, onMounted, onUnmounted, ref } from 'vue';
+import {
+  reactive,
+  getCurrentInstance,
+  onMounted,
+  onUnmounted,
+  onBeforeMount,
+  onBeforeUnmount,
+  ref,
+} from 'vue';
 import { formatTimestamp, getTableData } from '@/utils/utils';
 import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
@@ -457,18 +465,18 @@ onMounted(async () => {
   data.name = proxy.$route.query.name;
 
   GetPod();
-
   getMetricsInfo(data.name, data.namespace);
+});
 
-  //定时刷新 3秒
-  data.monitorData.timer = setInterval(async () => {
+onBeforeMount(() => {
+  data.timer = window.setInterval(() => {
     getMetricsInfo(data.name, data.namespace);
   }, 3000);
 });
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   if (data.monitorData.timer) {
-    clearInterval(data.monitorData.timer);
+    window.clearInterval(ata.monitorData.timer);
   }
 });
 
