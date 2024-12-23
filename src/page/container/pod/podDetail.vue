@@ -298,6 +298,7 @@ import {
 import {
   getPodCpuUsageMetrics,
   getPodMemoryUsageMetrics,
+  getPodMetrics,
 } from '@/services/kubernetes/metricsService';
 
 const { proxy } = getCurrentInstance();
