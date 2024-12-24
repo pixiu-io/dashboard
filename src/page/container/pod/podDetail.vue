@@ -1,25 +1,30 @@
 <template>
   <el-card class="contend-card-container2" style="margin-top: 1px">
-    <el-col>
-      <div style="float: right">
-        <button class="pixiu-two-button" @click="GetPod">刷新</button>
-        <button class="pixiu-two-button2" style="margin-left: 10px">日志</button>
-        <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">查看YAML</button>
-        <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">远程登陆</button>
-        <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px; color: #171313">
-          更多操作
-        </button>
-      </div>
-    </el-col>
-
-    <div style="display: flex; margin-top: 5px; margin-bottom: -45px">
-      <div>
-        <Echart :option="data.monitorData.cpuOption"></Echart>
-      </div>
-      <div>
-        <Echart :option="data.monitorData.memoryOption"></Echart>
-      </div>
-    </div>
+    <el-row>
+      <el-col>
+        <div style="float: right">
+          <button class="pixiu-two-button" @click="GetPod">刷新</button>
+          <button class="pixiu-two-button2" style="margin-left: 10px">日志</button>
+          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">查看YAML</button>
+          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">远程登陆</button>
+          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px; color: #171313">
+            更多操作
+          </button>
+        </div>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col>
+        <div style="display: flex; margin-top: 5px; margin-bottom: -45px">
+          <div>
+            <Echart :option="data.monitorData.cpuOption"></Echart>
+          </div>
+          <div>
+            <Echart :option="data.monitorData.memoryOption"></Echart>
+          </div>
+        </div>
+      </el-col>
+    </el-row>
   </el-card>
 
   <el-card class="contend-card-container2">
