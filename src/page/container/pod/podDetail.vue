@@ -218,7 +218,7 @@
             <button
               style="margin-left: 10px; width: 85px"
               class="pixiu-two-button2"
-              @click="deleteEventsInBatch"
+              @click="deleteEventsss"
             >
               批量删除
             </button>
@@ -300,11 +300,7 @@ import {
   formatterRestartCount,
   formatterTime,
 } from '@/utils/formatter';
-import {
-  getPodCpuUsageMetrics,
-  getPodMemoryUsageMetrics,
-  getPodMetrics,
-} from '@/services/kubernetes/metricsService';
+import { getPodMetrics } from '@/services/kubernetes/metricsService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -495,9 +491,6 @@ const GetPod = async () => {
     data.pod = res;
     data.createTime = formatTimestamp(data.pod.metadata.creationTimestamp);
 
-    data.yaml = jsYaml.dump(data.pod, { quotingType: '"' });
-    data.createTime = formatTimestamp(data.pod.metadata.creationTimestamp);
-
     data.containerMap = {};
     for (let c of data.pod.spec.containers) {
       data.containerMap[c.name] = c;
@@ -509,19 +502,13 @@ const GetPod = async () => {
   } catch (error) {}
 };
 
-const parseMetrics = (metricPoints) => {
-  return metricPoints.map(({ timestamp, value }) => [new Date(timestamp).getTime(), value]);
-};
-
 const getMetricsInfo = async (name, namespace) => {
-  try {
-    const [cpuUsage] = await getPodCpuUsageMetrics(data.cluster, namespace, name);
-    data.monitorData.cpuOption.series[0].data = parseMetrics(cpuUsage.items[0].metricPoints);
-    const [memoryUsage] = await getPodMemoryUsageMetrics(data.cluster, namespace, name);
-    data.monitorData.memoryOption.series[0].data = parseMetrics(memoryUsage.items[0].metricPoints);
-  } catch (error) {
-    proxy.$notify.error(error.response?.data?.message || 'Failed to fetch metrics');
+  const [cpuUsage, memMetric, err] = await getPodMetrics(data.cluster, namespace, name);
+  if (err) {
+    return;
   }
+  data.monitorData.cpuOption.series[0].data = cpuUsage;
+  data.monitorData.memoryOption.series[0].data = memMetric;
 };
 
 const getPodEvents = async () => {
@@ -550,13 +537,13 @@ const handleEventSelectionChange = (events) => {
   }
 };
 
-const deleteEvents = async () => {
+const deleteEventsss = async () => {
   if (data.eventData.multipleEventSelection.length === 0) {
     proxy.$notify.warning('未选择待删除事件');
     return;
   }
 
-  const [result, err] = await deleteEventsInBatch(
+  const [result, err] = await deleteEventsInBatch2(
     data.cluster,
     data.eventData.multipleEventSelection,
   );
@@ -564,7 +551,17 @@ const deleteEvents = async () => {
     proxy.$notify.error(err.response.data.message);
     return;
   }
+
+  // for (let event of data.eventData.multipleEventSelection) {
+  //   const [result, err] = await deleteEvent(data.cluster, event.namespace, event.name);
+  //   if (err) {
+  //     proxy.$notify.error(err.response.data.message);
+  //     return;
+  //   }
+  // }
+
   proxy.$notify.success('批量删除事件成功');
+
   getPodEvents();
 };
 

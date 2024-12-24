@@ -36,14 +36,13 @@ export const getNodeUsageMetrics = async (cluster, name, metricsName, whatever) 
 };
 
 export const getPodMetrics = async (cluster, namespace, name) => {
-  const [cpuUsage, err1] = getPodCpuUsageMetrics(cluster, namespace, name);
-  const [memoryUsage, err2] = getPodMemoryUsageMetrics(cluster, namespace, name);
+  const [cpuUsage, err1] = await getPodCpuUsageMetrics(cluster, namespace, name);
+  const [memoryUsage, err2] = await getPodMemoryUsageMetrics(cluster, namespace, name);
   if (err1 || err2) {
     return [null, err1 || err2];
   }
 
-  cpuMetric = parseMetrics(cpuUsage.items[0].metricPoints);
-  memMetric = parseMetrics(memoryUsage.items[0].metricPoints);
-
-  return cpuMetric, memMetric, null;
+  const cpuMetric = parseMetrics(cpuUsage.items[0].metricPoints);
+  const memMetric = parseMetrics(memoryUsage.items[0].metricPoints);
+  return [cpuMetric, memMetric, null];
 };
