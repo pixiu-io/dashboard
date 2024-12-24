@@ -218,7 +218,7 @@
             <button
               style="margin-left: 10px; width: 85px"
               class="pixiu-two-button2"
-              @click="deleteEventsInBatch"
+              @click="handleDeleteDialog"
             >
               批量删除
             </button>
@@ -244,19 +244,6 @@
         <el-table-column prop="involvedObject.kind" label="资源类型"> </el-table-column>
         <el-table-column prop="count" label="出现次数"> </el-table-column>
         <el-table-column prop="message" label="内容" min-width="260px" />
-
-        <el-table-column fixed="right" label="操作" width="70px">
-          <template #default="scope">
-            <el-button
-              size="small"
-              type="text"
-              style="margin-right: -25px; margin-left: -10px; color: #006eff"
-              @click="deleteEvent(scope.row)"
-            >
-              删除
-            </el-button>
-          </template>
-        </el-table-column>
         <template #empty>
           <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
         </template>
@@ -267,6 +254,14 @@
       ></pagination>
     </div>
   </el-card>
+
+  <pixiuDialog
+    :close-event="data.deleteDialog.close"
+    :object-name="data.deleteDialog.objectName"
+    :delete-name="data.deleteDialog.deleteName"
+    @confirm="confirm"
+    @cancel="cancel"
+  ></pixiuDialog>
 </template>
 
 <script setup lang="jsx">
@@ -285,6 +280,7 @@ import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
 import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
+import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import {
   deleteEvent,
   getPodEventList,
@@ -300,11 +296,7 @@ import {
   formatterRestartCount,
   formatterTime,
 } from '@/utils/formatter';
-import {
-  getPodCpuUsageMetrics,
-  getPodMemoryUsageMetrics,
-  getPodMetrics,
-} from '@/services/kubernetes/metricsService';
+import { getPodMetrics } from '@/services/kubernetes/metricsService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -446,6 +438,13 @@ const data = reactive({
     },
   },
 
+  deleteDialog: {
+    close: false,
+    objectName: 'Event',
+    deleteName: '',
+    namespace: '',
+  },
+
   eventData: {
     loading: false,
 
@@ -495,9 +494,6 @@ const GetPod = async () => {
     data.pod = res;
     data.createTime = formatTimestamp(data.pod.metadata.creationTimestamp);
 
-    data.yaml = jsYaml.dump(data.pod, { quotingType: '"' });
-    data.createTime = formatTimestamp(data.pod.metadata.creationTimestamp);
-
     data.containerMap = {};
     for (let c of data.pod.spec.containers) {
       data.containerMap[c.name] = c;
@@ -509,19 +505,13 @@ const GetPod = async () => {
   } catch (error) {}
 };
 
-const parseMetrics = (metricPoints) => {
-  return metricPoints.map(({ timestamp, value }) => [new Date(timestamp).getTime(), value]);
-};
-
 const getMetricsInfo = async (name, namespace) => {
-  try {
-    const [cpuUsage] = await getPodCpuUsageMetrics(data.cluster, namespace, name);
-    data.monitorData.cpuOption.series[0].data = parseMetrics(cpuUsage.items[0].metricPoints);
-    const [memoryUsage] = await getPodMemoryUsageMetrics(data.cluster, namespace, name);
-    data.monitorData.memoryOption.series[0].data = parseMetrics(memoryUsage.items[0].metricPoints);
-  } catch (error) {
-    proxy.$notify.error(error.response?.data?.message || 'Failed to fetch metrics');
+  const [cpuUsage, memMetric, err] = await getPodMetrics(data.cluster, namespace, name);
+  if (err) {
+    return;
   }
+  data.monitorData.cpuOption.series[0].data = cpuUsage;
+  data.monitorData.memoryOption.series[0].data = memMetric;
 };
 
 const getPodEvents = async () => {
@@ -550,22 +540,35 @@ const handleEventSelectionChange = (events) => {
   }
 };
 
-const deleteEvents = async () => {
+const handleDeleteDialog = () => {
   if (data.eventData.multipleEventSelection.length === 0) {
     proxy.$notify.warning('未选择待删除事件');
     return;
   }
+  data.deleteDialog.close = true;
+  data.deleteDialog.deleteName = 'events';
+  data.deleteDialog.namespace = '';
+};
 
-  const [result, err] = await deleteEventsInBatch(
-    data.cluster,
-    data.eventData.multipleEventSelection,
-  );
-  if (err) {
-    proxy.$notify.error(err.response.data.message);
-    return;
+const confirm = async () => {
+  for (let event of data.eventData.multipleEventSelection) {
+    const [result, err] = await deleteEvent(data.cluster, event.namespace, event.name);
+    if (err) {
+      proxy.$notify.error(err.response.data.message);
+      return;
+    }
   }
+  cancel();
+
   proxy.$notify.success('批量删除事件成功');
   getPodEvents();
+};
+
+const cancel = () => {
+  data.deleteDialog.close = false;
+  setTimeout(() => {
+    data.deleteDialog.deleteName = '';
+  }, 100);
 };
 
 const goToPod = () => {
