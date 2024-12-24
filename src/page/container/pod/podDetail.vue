@@ -174,7 +174,7 @@
       </el-card>
 
       <el-table
-        :data="data.pod.spec.containers"
+        :data="data.podContainers"
         stripe
         style="margin-top: 2px"
         header-row-class-name="pixiu-table-header"
@@ -183,20 +183,27 @@
           color: '#191919',
         }"
       >
+        <el-table-column type="selection" width="30" />
         <el-table-column prop="container.name" sortable label="容器名称"> </el-table-column>
-
         <el-table-column
           prop="status"
           sortable
           label="状态"
           :formatter="formatterContainerStatus"
-        />
-
+        ></el-table-column>
         <el-table-column prop="status.restartCount" sortable label="重启次数" />
-
-        <el-table-column prop="container.image" label="镜像" :formatter="formatterContainerImage" />
-
-        <el-table-column prop="status" label="创建时间" sortable :formatter="formatterTime" />
+        <el-table-column
+          prop="status"
+          label="启动时间"
+          sortable
+          :formatter="formatterContainerStartTime"
+        />
+        <el-table-column
+          prop="container.image"
+          label="镜像"
+          :formatter="formatterContainerImage"
+          min-width="200px"
+        />
       </el-table>
     </div>
 
@@ -297,6 +304,7 @@ import {
   formatterTime,
 } from '@/utils/formatter';
 import { getPodMetrics } from '@/services/kubernetes/metricsService';
+import { getPod } from '@/services/kubernetes/podService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -311,11 +319,10 @@ const data = reactive({
     spec: {},
     status: {},
   },
+  podContainers: [],
 
   activeName: 'first',
 
-  containerMap: {},
-  containerStatusMap: {},
   createTime: '',
 
   monitorData: {
@@ -486,23 +493,26 @@ onBeforeUnmount(() => {
 });
 
 const GetPod = async () => {
-  try {
-    const res = await proxy.$http({
-      method: 'get',
-      url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${data.name}`,
-    });
-    data.pod = res;
-    data.createTime = formatTimestamp(data.pod.metadata.creationTimestamp);
+  const [p, err] = await getPod(data.cluster, data.namespace, data.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
 
-    data.containerMap = {};
-    for (let c of data.pod.spec.containers) {
-      data.containerMap[c.name] = c;
-    }
-    data.containerStatusMap = {};
-    for (let cs of data.pod.status.containerStatuses) {
-      data.containerStatusMap[cs.name] = cs;
-    }
-  } catch (error) {}
+  data.pod = p;
+  data.createTime = formatTimestamp(data.pod.metadata.creationTimestamp);
+
+  let containerStatus = {};
+  for (let cs of data.pod.status.containerStatuses) {
+    containerStatus[cs.name] = cs;
+  }
+  data.podContainers = [];
+  for (let c of data.pod.spec.containers) {
+    data.podContainers.push({
+      container: c,
+      status: containerStatus[c.name],
+    });
+  }
 };
 
 const getMetricsInfo = async (name, namespace) => {
@@ -574,6 +584,19 @@ const cancel = () => {
 const goToPod = () => {
   const queryParams = { cluster: data.cluster };
   router.push({ path: '/kubernetes/pods', query: queryParams });
+};
+
+const formatterContainerStartTime = (row, column, cellValue) => {
+  const state = cellValue.state;
+  const time = '';
+  if (state.terminated !== undefined) {
+    const time = state.terminated.startedAt;
+    return formatterTime(row, column, time);
+  }
+  if (state.running !== undefined) {
+    const time = state.running.startedAt;
+    return formatterTime(row, column, time);
+  }
 };
 
 const formatterContainerStatus = (row, column, cellValue) => {
