@@ -766,6 +766,24 @@ const handleLogDrawer = () => {
   data.logData.drawer = true;
 };
 
+const openLogDrawer = () => {
+  if (data.logData.containers.length > 0) {
+    data.logData.selectedContainer = data.logData.containers[0];
+  }
+};
+
+const closeLogDrawer = () => {
+  if (ws.value !== null) {
+    ws.value.close();
+  }
+
+  data.logData.containers = [];
+  data.logData.selectedContainer = '';
+  data.logData.previous = false;
+  data.logData.line = 25;
+  data.logData.podLogs = '点击查询获取日志';
+};
+
 const goToPod = () => {
   const queryParams = { cluster: data.cluster };
   router.push({ path: '/kubernetes/pods', query: queryParams });
