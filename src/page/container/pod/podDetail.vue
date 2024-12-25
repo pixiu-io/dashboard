@@ -386,6 +386,12 @@
     @confirm="confirm"
     @cancel="cancel"
   ></pixiuDialog>
+
+  <PiXiuViewOrEdit
+    :yaml-dialog="data.yamlDialog"
+    :yaml="data.yaml"
+    title="查看Yaml"
+  ></PiXiuViewOrEdit>
 </template>
 
 <script setup lang="jsx">
@@ -399,6 +405,7 @@ import {
   onBeforeUnmount,
   ref,
 } from 'vue';
+import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import PixiuLog from '@/components/pixiulog/index.vue';
 import { formatTimestamp, getTableData } from '@/utils/utils';
 import useClipboard from 'vue-clipboard3';
@@ -794,6 +801,11 @@ const closeLogDrawer = () => {
 const goToPod = () => {
   const queryParams = { cluster: data.cluster };
   router.push({ path: '/kubernetes/pods', query: queryParams });
+};
+
+const viewYaml = async () => {
+  data.yaml = data.pod;
+  data.yamlDialog = true;
 };
 
 const formatterContainerStartTime = (row, column, cellValue) => {
