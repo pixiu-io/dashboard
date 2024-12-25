@@ -685,9 +685,10 @@ const handleDeleteDialog = () => {
   data.deleteDialog.namespace = '';
 };
 
+const ws = ref(null);
 const getPodLogs = async () => {
   if (data.logData.selectedContainer === '') {
-    proxy.$notify.error('查询日志时，容器名称为必选项');
+    proxy.$notify.warning('查询日志时，容器名称为必选项');
     return;
   }
 
@@ -697,8 +698,8 @@ const getPodLogs = async () => {
   if (data.logData.follow) {
     ws.value = watchPodLog(
       data.cluster,
-      data.logData.namespace,
-      data.logData.pod,
+      data.namespace,
+      data.name,
       data.logData.selectedContainer,
       data.logData.line,
     );
@@ -723,8 +724,8 @@ const getPodLogs = async () => {
     data.logData.podLogs = '';
     const [result, err] = await getPodLog(
       data.cluster,
-      data.logData.namespace,
-      data.logData.pod,
+      data.namespace,
+      data.name,
       data.logData.selectedContainer,
       data.logData.line,
     );
