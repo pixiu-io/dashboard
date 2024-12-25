@@ -7,7 +7,13 @@
           <button class="pixiu-two-button2" style="margin-left: 10px" @click="handleLogDrawer">
             日志
           </button>
-          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">查看YAML</button>
+          <button
+            class="pixiu-two-button2"
+            style="margin-left: 10px; width: 85px"
+            @click="viewYaml"
+          >
+            查看YAML
+          </button>
           <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">远程登陆</button>
           <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px; color: #171313">
             更多操作
