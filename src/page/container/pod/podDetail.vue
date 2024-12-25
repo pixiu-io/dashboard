@@ -7,7 +7,13 @@
           <button class="pixiu-two-button2" style="margin-left: 10px" @click="handleLogDrawer">
             日志
           </button>
-          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">查看YAML</button>
+          <button
+            class="pixiu-two-button2"
+            style="margin-left: 10px; width: 85px"
+            @click="viewYaml"
+          >
+            查看YAML
+          </button>
           <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">远程登陆</button>
           <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px; color: #171313">
             更多操作
@@ -380,6 +386,12 @@
     @confirm="confirm"
     @cancel="cancel"
   ></pixiuDialog>
+
+  <PiXiuViewOrEdit
+    :yaml-dialog="data.yamlDialog"
+    :yaml="data.yaml"
+    title="查看Yaml"
+  ></PiXiuViewOrEdit>
 </template>
 
 <script setup lang="jsx">
@@ -393,6 +405,7 @@ import {
   onBeforeUnmount,
   ref,
 } from 'vue';
+import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import PixiuLog from '@/components/pixiulog/index.vue';
 import { formatTimestamp, getTableData } from '@/utils/utils';
 import useClipboard from 'vue-clipboard3';
@@ -432,6 +445,9 @@ const data = reactive({
     status: {},
   },
   podContainers: [],
+
+  yamlDialog: false,
+  yaml: '',
 
   activeName: 'first',
 
@@ -788,6 +804,11 @@ const closeLogDrawer = () => {
 const goToPod = () => {
   const queryParams = { cluster: data.cluster };
   router.push({ path: '/kubernetes/pods', query: queryParams });
+};
+
+const viewYaml = async () => {
+  data.yamlDialog = true;
+  data.yaml = data.pod;
 };
 
 const formatterContainerStartTime = (row, column, cellValue) => {
