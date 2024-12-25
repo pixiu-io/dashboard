@@ -446,6 +446,9 @@ const data = reactive({
   },
   podContainers: [],
 
+  yamlDialog: false,
+  yaml: '',
+
   activeName: 'first',
 
   createTime: '',
@@ -804,8 +807,8 @@ const goToPod = () => {
 };
 
 const viewYaml = async () => {
-  data.yaml = data.pod;
   data.yamlDialog = true;
+  data.yaml = data.pod;
 };
 
 const formatterContainerStartTime = (row, column, cellValue) => {
