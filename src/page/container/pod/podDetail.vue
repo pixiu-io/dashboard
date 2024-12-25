@@ -4,7 +4,9 @@
       <el-col>
         <div style="float: right">
           <button class="pixiu-two-button" @click="GetPod">刷新</button>
-          <button class="pixiu-two-button2" style="margin-left: 10px">日志</button>
+          <button class="pixiu-two-button2" style="margin-left: 10px" @click="handleLogDrawer">
+            日志
+          </button>
           <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">查看YAML</button>
           <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">远程登陆</button>
           <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px; color: #171313">
@@ -262,6 +264,115 @@
     </div>
   </el-card>
 
+  <el-drawer
+    v-model="data.logData.drawer"
+    :size="data.logData.width"
+    :with-header="false"
+    @open="openLogDrawer"
+    @close="closeLogDrawer"
+  >
+    <div style="display: flex; flex-direction: column; height: 100%">
+      <div>
+        <div
+          style="
+            text-align: left;
+            font-weight: bold;
+            padding-left: 5px;
+            margin-top: 5px;
+            font-size: 14.5px;
+            color: #191919;
+          "
+        >
+          日志
+        </div>
+
+        <el-card class="app-docs" style="margin-left: 8px; height: 40px">
+          <el-icon
+            style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+            ><WarningFilled
+          /></el-icon>
+          <div style="vertical-align: middle; margin-top: -40px">获取 Pod 的实时日志</div>
+        </el-card>
+
+        <el-form>
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 8px; font-size: 13px; color: #191919">容器选项 </span>
+            </template>
+
+            <span style="margin-left: 40px">
+              <el-select
+                v-model="data.logData.selectedContainer"
+                style="width: 260px; float: right; margin-right: 10px"
+              >
+                <el-option
+                  v-for="item in data.logData.containers"
+                  :key="item"
+                  :value="item"
+                  :label="item"
+                />
+              </el-select>
+            </span>
+          </el-form-item>
+
+          <el-form-item>
+            <template #label>
+              <span style="margin-left: 8px; font-size: 13px; color: #191919">日志行数 </span>
+            </template>
+
+            <span style="margin-left: 40px">
+              <el-select
+                v-model="data.logData.line"
+                style="width: 80px; float: right; margin-right: 10px"
+              >
+                <el-option
+                  v-for="item in data.logData.lineOptions"
+                  :key="item"
+                  :value="item"
+                  :label="item"
+                />
+              </el-select>
+            </span>
+            行
+          </el-form-item>
+
+          <el-form-item>
+            <div style="margin-left: 110px; margin-top: -12px">
+              <el-switch v-model="data.logData.previous" inline-prompt width="35px" /><span
+                style="font-size: 12px; margin-left: 5px; color: #191919"
+                >查看已退出的容器</span
+              >
+            </div>
+          </el-form-item>
+        </el-form>
+      </div>
+
+      <div
+        style="
+          display: flex;
+          justify-content: space-between;
+          margin-top: -20px;
+          margin-left: 8px;
+          margin-right: 20px;
+        "
+      >
+        <div>
+          <button style="width: 70px" class="pixiu-two-button" @click="getPodLogs">查询</button>
+        </div>
+        <div>
+          <el-switch v-model="data.logData.follow" /><span
+            style="font-size: 12px; margin-left: 5px; color: #191919"
+            >实时刷新</span
+          >
+        </div>
+      </div>
+
+      <div style="margin-top: 15px; margin-left: 8px; flex: 1">
+        <PixiuLog :yaml-dialog="data.logData.drawer" :log="data.logData.podLogs"></PixiuLog>
+      </div>
+    </div>
+  </el-drawer>
+
   <pixiuDialog
     :close-event="data.deleteDialog.close"
     :object-name="data.deleteDialog.objectName"
@@ -282,6 +393,7 @@ import {
   onBeforeUnmount,
   ref,
 } from 'vue';
+import PixiuLog from '@/components/pixiulog/index.vue';
 import { formatTimestamp, getTableData } from '@/utils/utils';
 import useClipboard from 'vue-clipboard3';
 import { ElMessage } from 'element-plus';
@@ -304,7 +416,7 @@ import {
   formatterTime,
 } from '@/utils/formatter';
 import { getPodMetrics } from '@/services/kubernetes/metricsService';
-import { getPod } from '@/services/kubernetes/podService';
+import { getPod, getPodLog, watchPodLog } from '@/services/kubernetes/podService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -324,6 +436,19 @@ const data = reactive({
   activeName: 'first',
 
   createTime: '',
+
+  logData: {
+    width: '55%',
+    drawer: false,
+    containers: [],
+    selectedContainer: '',
+    line: 25,
+    lineOptions: [25, 50, 100],
+    podLogs: '点击查询获取日志',
+    previous: false,
+    //实时日志
+    follow: false,
+  },
 
   monitorData: {
     timer: null,
@@ -560,6 +685,58 @@ const handleDeleteDialog = () => {
   data.deleteDialog.namespace = '';
 };
 
+const ws = ref(null);
+const getPodLogs = async () => {
+  if (data.logData.selectedContainer === '') {
+    proxy.$notify.warning('查询日志时，容器名称为必选项');
+    return;
+  }
+
+  if (ws.value !== null) {
+    ws.value.close();
+  }
+  if (data.logData.follow) {
+    ws.value = watchPodLog(
+      data.cluster,
+      data.namespace,
+      data.name,
+      data.logData.selectedContainer,
+      data.logData.line,
+    );
+    data.logData.podLogs = '';
+    ws.value.onclose = () => {
+      //关闭连接后打印在终端里
+      data.logData.follow = false;
+      data.logData.podLogs = '';
+      ws.value = null;
+    };
+    let tmpLog = '';
+    ws.value.onmessage = (e) => {
+      if (e.data === 'ping' || !data.logData.follow) {
+        tmpLog += e.data;
+        return;
+      } else {
+        data.logData.podLogs += tmpLog + e.data;
+        tmpLog = '';
+      }
+    };
+  } else {
+    data.logData.podLogs = '';
+    const [result, err] = await getPodLog(
+      data.cluster,
+      data.namespace,
+      data.name,
+      data.logData.selectedContainer,
+      data.logData.line,
+    );
+    if (err) {
+      proxy.$notify.error(err.response.data.message);
+      return;
+    }
+    data.logData.podLogs = result;
+  }
+};
+
 const confirm = async () => {
   for (let event of data.eventData.multipleEventSelection) {
     const [result, err] = await deleteEvent(data.cluster, event.namespace, event.name);
@@ -579,6 +756,32 @@ const cancel = () => {
   setTimeout(() => {
     data.deleteDialog.deleteName = '';
   }, 100);
+};
+
+const handleLogDrawer = () => {
+  data.logData.containers = [];
+  for (let c of data.pod.spec.containers) {
+    data.logData.containers.push(c.name);
+  }
+  data.logData.drawer = true;
+};
+
+const openLogDrawer = () => {
+  if (data.logData.containers.length > 0) {
+    data.logData.selectedContainer = data.logData.containers[0];
+  }
+};
+
+const closeLogDrawer = () => {
+  if (ws.value !== null) {
+    ws.value.close();
+  }
+
+  data.logData.containers = [];
+  data.logData.selectedContainer = '';
+  data.logData.previous = false;
+  data.logData.line = 25;
+  data.logData.podLogs = '点击查询获取日志';
 };
 
 const goToPod = () => {
