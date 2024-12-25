@@ -1187,6 +1187,7 @@ const closeLogDrawer = () => {
   data.logData.containers = [];
   data.logData.selectedContainer = '';
   data.logData.previous = false;
+  data.logData.follow = false;
   data.logData.line = 25;
   data.logData.podLogs = '点击查询获取日志';
 };
