@@ -1,10 +1,10 @@
 <template>
   <el-card class="contend-card-container2" style="margin-top: 1px">
     <div style="display: flex; margin-left: 20px; margin-top: 15px">
-      <pixiu-icon name="icon-jiedian" size="40px" type="iconfont" color="#006eff" />
+      <pixiu-icon name="icon-rongqizu" size="75px" type="iconfont" color="#006eff" />
       <div
         class="breadcrumb-create-style"
-        style="margin-left: 10px; margin-top: 10px; font-size: 15px"
+        style="margin-left: 25px; margin-top: -2px; font-size: 17px"
       >
         {{ data.name }}
       </div>
