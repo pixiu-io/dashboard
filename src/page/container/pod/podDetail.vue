@@ -622,14 +622,14 @@ onMounted(async () => {
 });
 
 onBeforeMount(() => {
-  data.timer = window.setInterval(() => {
+  data.monitorData.timer = window.setInterval(() => {
     getMetricsInfo(data.name, data.namespace);
   }, 3000);
 });
 
 onBeforeUnmount(() => {
   if (data.monitorData.timer) {
-    window.clearInterval(ata.monitorData.timer);
+    window.clearInterval(data.monitorData.timer);
   }
 });
 
