@@ -1,5 +1,15 @@
 <template>
   <el-card class="contend-card-container2" style="margin-top: 1px">
+    <div style="display: flex; margin-left: 20px; margin-top: 15px">
+      <pixiu-icon name="icon-jiedian" size="40px" type="iconfont" color="#006eff" />
+      <div
+        class="breadcrumb-create-style"
+        style="margin-left: 10px; margin-top: 10px; font-size: 15px"
+      >
+        {{ data.name }}
+      </div>
+    </div>
+
     <el-row>
       <el-col>
         <div style="float: right">
