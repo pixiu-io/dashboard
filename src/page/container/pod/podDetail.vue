@@ -21,18 +21,6 @@
         </div>
       </el-col>
     </el-row>
-    <el-row>
-      <el-col>
-        <div style="display: flex; margin-top: 5px; margin-bottom: -45px">
-          <div>
-            <Echart :option="data.monitorData.cpuOption"></Echart>
-          </div>
-          <div>
-            <Echart :option="data.monitorData.memoryOption"></Echart>
-          </div>
-        </div>
-      </el-col>
-    </el-row>
   </el-card>
 
   <el-card class="contend-card-container2">
@@ -46,8 +34,7 @@
       <el-tab-pane label="基本信息" name="first"> </el-tab-pane>
       <el-tab-pane label="容器" name="second"> </el-tab-pane>
       <el-tab-pane label="事件" name="third"> </el-tab-pane>
-      <el-tab-pane label="环境变量" name="four"></el-tab-pane>
-      <el-tab-pane label="日志" name="five"></el-tab-pane>
+      <el-tab-pane label="监控指标" name="four"></el-tab-pane>
     </el-tabs>
 
     <div v-if="data.activeName === 'first'">
@@ -213,6 +200,7 @@
           min-width="200px"
         />
       </el-table>
+      <div style="margin-top: 8px"></div>
     </div>
 
     <div v-if="data.activeName === 'third'">
@@ -228,7 +216,7 @@
 
       <el-row>
         <el-col>
-          <div style="margin-left: 8px">
+          <div style="margin-left: 10px">
             <button class="pixiu-two-button" @click="getPodEvents">查询</button>
             <button
               style="margin-left: 10px; width: 85px"
@@ -267,6 +255,27 @@
         :total="data.eventData.pageEventInfo.total"
         @on-change="onEventChange"
       ></pagination>
+    </div>
+
+    <div v-if="data.activeName === 'four'">
+      <div>
+        <el-card class="app-docs" style="margin-top: 10px; height: 40px; margin-left: 10px">
+          <el-icon
+            style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+            ><WarningFilled
+          /></el-icon>
+          <div style="vertical-align: middle; margin-top: -40px">查看 Pod 的实时资源状态</div>
+        </el-card>
+      </div>
+
+      <div style="display: flex; margin-top: 5px; margin-bottom: -45px">
+        <div>
+          <Echart :option="data.monitorData.cpuOption"></Echart>
+        </div>
+        <div>
+          <Echart :option="data.monitorData.memoryOption"></Echart>
+        </div>
+      </div>
     </div>
   </el-card>
 
