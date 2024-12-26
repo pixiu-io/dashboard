@@ -4,7 +4,7 @@
       <pixiu-icon name="icon-rongqizu" size="75px" type="iconfont" color="#006eff" />
       <div
         class="breadcrumb-create-style"
-        style="margin-left: 25px; margin-top: -2px; font-size: 17px"
+        style="margin-left: 25px; margin-top: -10px; font-size: 17px"
       >
         {{ data.name }}
       </div>
