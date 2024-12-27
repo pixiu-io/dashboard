@@ -31,6 +31,7 @@
         </div>
       </el-col>
     </el-row> -->
+
     <el-space style="display: flex; margin: 20px 15px">
       <div style="display: flex; align-items: center; height: 100%">
         <pixiu-icon name="icon-rongqizu" size="75px" type="iconfont" color="#006eff" />
@@ -43,15 +44,27 @@
           min-height: 80px;
         "
       >
-        <div class="breadcrumb-create-style" style="font-size: 17px">
+        <div
+          class="breadcrumb-create-style"
+          style="font-size: 17px; margin-top: -10px; margin-left: 10px"
+        >
           {{ data.name }}
         </div>
-        <div>status</div>
-        <div>
+
+        <div style="margin-bottom: 10px">
+          <span class="detail-card-key-style" style="font-size: 12.5px">创建时间 </span>
+          <span class="detail-card-value-style" style="margin-left: 5px; font-size: 12.5px">
+            {{ data.createTime }}</span
+          >
+        </div>
+
+        <div style="margin-bottom: -10px; margin-left: 10px">
           <button class="pixiu-two-button" @click="GetPod">刷新</button>
+
           <button class="pixiu-two-button2" style="margin-left: 10px" @click="handleLogDrawer">
             日志
           </button>
+
           <button
             class="pixiu-two-button2"
             style="margin-left: 10px; width: 85px"
@@ -59,7 +72,15 @@
           >
             查看YAML
           </button>
-          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">远程登陆</button>
+
+          <button
+            class="pixiu-two-button2"
+            style="margin-left: 10px; width: 85px"
+            @click="handleRemoteLoginDialog"
+          >
+            远程登录
+          </button>
+
           <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px; color: #171313">
             更多操作
           </button>
@@ -433,6 +454,84 @@
     </div>
   </el-drawer>
 
+  <el-dialog
+    :model-value="data.remoteLogin.close"
+    style="color: #000000; font: 14px"
+    width="500px"
+    align-center
+    center
+    draggable
+    @close="cancelRemoteLogin"
+  >
+    <template #header>
+      <div
+        style="
+          text-align: left;
+          font-weight: bold;
+          padding-left: 0px;
+          margin-top: 5px;
+          font-size: 14.5px;
+          color: #191919;
+        "
+      >
+        远程登录
+      </div>
+    </template>
+
+    <el-card class="app-docs" style="margin-top: -1px; height: 40px">
+      <el-icon
+        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+        ><WarningFilled
+      /></el-icon>
+      <div style="vertical-align: middle; margin-top: -40px">基于 WebShell 提供登陆容器的功能</div>
+    </el-card>
+
+    <el-form>
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">容器名称</span>
+        </template>
+
+        <el-select
+          v-model="data.remoteLogin.container"
+          style="margin-left: 25px; width: 300px"
+          @change="changeContainer"
+        >
+          <el-option
+            v-for="item in data.remoteLogin.containers"
+            :key="item"
+            :value="item"
+            :label="item"
+          />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">Command</span>
+        </template>
+
+        <el-radio-group v-model="data.remoteLogin.command" style="margin-left: 15px">
+          <el-radio label="/bin/sh">
+            <span style="font-size: 13px">/bin/sh</span>
+          </el-radio>
+          <el-radio label="/bin/bash"> <span style="font-size: 13px"> /bin/bash</span></el-radio>
+        </el-radio-group>
+      </el-form-item>
+    </el-form>
+
+    <div style="margin-top: -15px" />
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-delete-cancel-button" @click="cancelRemoteLogin">取消</el-button>
+        <el-button type="primary" class="pixiu-delete-confirm-button" @click="confirmRemoteLogin"
+          >确认</el-button
+        >
+      </span>
+      <div style="margin-bottom: 10px" />
+    </template>
+  </el-dialog>
+
   <pixiuDialog
     :close-event="data.deleteDialog.close"
     :object-name="data.deleteDialog.objectName"
@@ -518,6 +617,14 @@ const data = reactive({
     previous: false,
     //实时日志
     follow: false,
+  },
+
+  remoteLogin: {
+    close: false,
+    pod: '',
+    container: '',
+    containers: [],
+    command: '/bin/sh',
   },
 
   monitorData: {
@@ -753,6 +860,44 @@ const handleDeleteDialog = () => {
   data.deleteDialog.close = true;
   data.deleteDialog.deleteName = 'events';
   data.deleteDialog.namespace = '';
+};
+
+const handleRemoteLoginDialog = () => {
+  data.remoteLogin.close = true;
+  data.remoteLogin.pod = data.name;
+  data.remoteLogin.containers = [];
+  for (let c of data.pod.spec.containers) {
+    data.remoteLogin.containers.push(c.name);
+  }
+  if (data.remoteLogin.containers.length >= 1) {
+    data.remoteLogin.container = data.remoteLogin.containers[0];
+  }
+};
+
+const cancelRemoteLogin = () => {
+  data.remoteLogin.close = false;
+  data.remoteLogin.container = '';
+  data.remoteLogin.containers = [];
+  data.remoteLogin.pod = '';
+  data.remoteLogin.command = '/bin/sh';
+};
+
+const confirmRemoteLogin = () => {
+  window.open(
+    '/#/podshell?pod=' +
+      data.remoteLogin.pod +
+      '&namespace=' +
+      data.namespace +
+      '&cluster=' +
+      data.cluster +
+      '&container=' +
+      data.remoteLogin.container +
+      '&command=' +
+      data.remoteLogin.command,
+    '_blank',
+    'width=1000,height=600',
+  );
+  cancelRemoteLogin();
 };
 
 const ws = ref(null);
