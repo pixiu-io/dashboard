@@ -1,9 +1,67 @@
 <template>
   <el-card class="detail-card-container">
     <div style="margin-top: 10px; float: right">
-      <button class="pixiu-two-button2" style="width: 60px" @click="getNodeObject">刷新</button>
+      <button class="pixiu-two-button2" style="width: 60px" @click="goToPod">返回</button>
     </div>
 
+    <el-space style="display: flex; margin: 20px 15px">
+      <div style="display: flex; align-items: center; height: 100%">
+        <pixiu-icon name="icon-rongqizu" size="75px" type="iconfont" color="#006eff" />
+      </div>
+      <div
+        style="
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          min-height: 80px;
+        "
+      >
+        <div
+          class="breadcrumb-create-style"
+          style="font-size: 17px; margin-top: -10px; margin-left: 10px"
+        >
+          {{ data.name }}
+        </div>
+
+        <div style="margin-bottom: 10px">
+          <span class="detail-card-key-style" style="font-size: 12.5px">创建时间 </span>
+          <span class="detail-card-value-style" style="margin-left: 5px; font-size: 12.5px">
+            {{ data.createTime }}</span
+          >
+        </div>
+
+        <div style="margin-bottom: -10px; margin-left: 10px">
+          <button class="pixiu-two-button" @click="GetPod">刷新</button>
+
+          <button class="pixiu-two-button2" style="margin-left: 10px" @click="handleLogDrawer">
+            日志
+          </button>
+
+          <button
+            class="pixiu-two-button2"
+            style="margin-left: 10px; width: 85px"
+            @click="viewYaml"
+          >
+            查看YAML
+          </button>
+
+          <button
+            class="pixiu-two-button2"
+            style="margin-left: 10px; width: 85px"
+            @click="handleRemoteLoginDialog"
+          >
+            远程登录
+          </button>
+
+          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px; color: #171313">
+            更多操作
+          </button>
+        </div>
+      </div>
+    </el-space>
+  </el-card>
+
+  <el-card>
     <div style="display: flex; margin-left: 20px; margin-top: 15px">
       <pixiu-icon name="icon-jiedian" size="40px" type="iconfont" color="#006eff" />
       <div
@@ -140,22 +198,22 @@
           </el-form-item>
 
           <!-- <div style="margin-top: -12px"></div>
-          <el-form-item>
-            <template #label>
-              <span style="margin-left: 20px; font-size: 13px; color: #191919">kubeProxy版本 </span>
-            </template>
-            <span
-              v-if="
-                state.nodeObject.status &&
-                state.nodeObject.status.nodeInfo &&
-                state.nodeObject.status.nodeInfo.kubeProxyVersion
-              "
-              class="detail-card-style-form2"
-              style="margin-left: 72px"
-            >
-              {{ state.nodeObject.status.nodeInfo.kubeProxyVersion }}
-            </span>
-          </el-form-item> -->
+            <el-form-item>
+              <template #label>
+                <span style="margin-left: 20px; font-size: 13px; color: #191919">kubeProxy版本 </span>
+              </template>
+              <span
+                v-if="
+                  state.nodeObject.status &&
+                  state.nodeObject.status.nodeInfo &&
+                  state.nodeObject.status.nodeInfo.kubeProxyVersion
+                "
+                class="detail-card-style-form2"
+                style="margin-left: 72px"
+              >
+                {{ state.nodeObject.status.nodeInfo.kubeProxyVersion }}
+              </span>
+            </el-form-item> -->
 
           <div style="margin-top: -12px"></div>
           <el-form-item>
