@@ -1024,7 +1024,7 @@ const formatterContainerStartTime = (row, column, cellValue) => {
 };
 
 const formatterContainerStatus = (row, column, cellValue) => {
-  let status = '运行���';
+  let status = '运行中';
   let color = '#28C65A';
 
   const state = cellValue.state;
