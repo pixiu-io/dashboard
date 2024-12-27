@@ -181,9 +181,7 @@
 
           <el-form-item>
             <template #label>
-              <span
-                class="detail-card-key-style"
-                style="font-size: 14px; color: #040000; margin-left: 6px"
+              <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
                 >标签
               </span>
             </template>
