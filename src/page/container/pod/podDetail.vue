@@ -108,7 +108,12 @@
         <el-form style="margin-top: 10px">
           <el-form-item>
             <template #label>
-              <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+              <div style="margin-left: 10px">
+                <pixiu-icon name="icon-jibenxinxi" size="12px" type="iconfont" />
+              </div>
+              <span
+                class="detail-card-key-style"
+                style="font-size: 14px; color: #040000; margin-left: 6px"
                 >实例信息
               </span>
             </template>
@@ -176,7 +181,9 @@
 
           <el-form-item>
             <template #label>
-              <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+              <span
+                class="detail-card-key-style"
+                style="font-size: 14px; color: #040000; margin-left: 6px"
                 >标签
               </span>
             </template>

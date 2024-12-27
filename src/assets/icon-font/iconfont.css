@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3708393 */
-  src: url('iconfont.woff2?t=1735228461712') format('woff2'),
-       url('iconfont.woff?t=1735228461712') format('woff'),
-       url('iconfont.ttf?t=1735228461712') format('truetype');
+  src: url('iconfont.woff2?t=1735313394465') format('woff2'),
+       url('iconfont.woff?t=1735313394465') format('woff'),
+       url('iconfont.ttf?t=1735313394465') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,10 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-jibenxinxi:before {
+  content: "\eaf7";
 }
 
 .icon-rongqizu:before {
