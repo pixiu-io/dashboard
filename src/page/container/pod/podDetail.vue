@@ -1,36 +1,8 @@
 <template>
   <el-card class="contend-card-container2" style="margin-top: 1px">
-    <!-- <div style="display: flex; margin-left: 20px; margin-top: 15px">
-      <pixiu-icon name="icon-rongqizu" size="75px" type="iconfont" color="#006eff" />
-      <div
-        class="breadcrumb-create-style"
-        style="margin-left: 25px; margin-top: -10px; font-size: 17px"
-      >
-        {{ data.name }}
-      </div>
+    <div style="margin-top: 10px; float: right">
+      <button class="pixiu-two-button2" style="width: 60px" @click="goToPod">返回</button>
     </div>
-
-    <el-row>
-      <el-col>
-        <div style="float: right">
-          <button class="pixiu-two-button" @click="GetPod">刷新</button>
-          <button class="pixiu-two-button2" style="margin-left: 10px" @click="handleLogDrawer">
-            日志
-          </button>
-          <button
-            class="pixiu-two-button2"
-            style="margin-left: 10px; width: 85px"
-            @click="viewYaml"
-          >
-            查看YAML
-          </button>
-          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">远程登陆</button>
-          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px; color: #171313">
-            更多操作
-          </button>
-        </div>
-      </el-col>
-    </el-row> -->
 
     <el-space style="display: flex; margin: 20px 15px">
       <div style="display: flex; align-items: center; height: 100%">
