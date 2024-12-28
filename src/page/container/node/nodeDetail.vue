@@ -150,48 +150,69 @@
           </el-col>
         </el-row>
 
-        <el-form-item style="margin-top: 20px">
-          <template #label>
-            <span class="detail-card-key-style" style="font-size: 14px; color: #040000">标签 </span>
-          </template>
-        </el-form-item>
-        <el-form-item style="margin-top: -10px">
-          <div v-if="data.object.metadata.labels === undefined" style="margin-left: 10px">-</div>
-          <div v-else style="margin-top: -8px">
-            <div
-              v-for="(item, index) in data.object.metadata.labels"
-              :key="item"
-              style="font-size: 14px"
-            >
-              <el-tag type="primary" style="margin-top: 5px; margin-left: 10px"
-                >{{ index }}: {{ item }}</el-tag
-              >
-            </div>
-          </div>
-        </el-form-item>
+        <el-form style="margin-top: 30px">
+          <el-form-item>
+            <template #label>
+              <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+                >元数据
+              </span>
+            </template>
+          </el-form-item>
+        </el-form>
 
-        <el-form-item>
-          <template #label>
-            <span class="detail-card-key-style" style="font-size: 14px; color: #040000">注释 </span>
-          </template>
-        </el-form-item>
+        <el-row :gutter="20">
+          <el-col :span="10">
+            <el-form-item style="margin-top: -15px">
+              <template #label>
+                <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+                  >标签
+                </span>
+              </template>
+            </el-form-item>
+            <el-form-item style="margin-top: -10px">
+              <div v-if="data.object.metadata.labels === undefined" style="margin-left: 10px">
+                -
+              </div>
+              <div v-else style="margin-top: -8px">
+                <div
+                  v-for="(item, index) in data.object.metadata.labels"
+                  :key="item"
+                  style="font-size: 14px"
+                >
+                  <el-tag type="primary" style="margin-top: 5px; margin-left: 10px"
+                    >{{ index }}: {{ item }}</el-tag
+                  >
+                </div>
+              </div>
+            </el-form-item>
+          </el-col>
 
-        <el-form-item style="margin-top: -10px">
-          <div v-if="data.object.metadata.annotations === undefined" style="margin-left: 10px">
-            -
-          </div>
-          <div v-else style="margin-top: -8px">
-            <div
-              v-for="(item, index) in data.object.metadata.annotations"
-              :key="item"
-              style="font-size: 14px"
-            >
-              <el-tag type="primary" style="margin-top: 5px; margin-left: 10px"
-                >{{ index }}: {{ item }}</el-tag
-              >
-            </div>
-          </div>
-        </el-form-item>
+          <el-col :span="10">
+            <el-form-item style="margin-top: -10px">
+              <template #label>
+                <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+                  >注释
+                </span>
+              </template>
+            </el-form-item>
+            <el-form-item style="margin-top: -10px">
+              <div v-if="data.object.metadata.annotations === undefined" style="margin-left: 10px">
+                -
+              </div>
+              <div v-else style="margin-top: -8px">
+                <div
+                  v-for="(item, index) in data.object.metadata.annotations"
+                  :key="item"
+                  style="font-size: 14px"
+                >
+                  <el-tag type="primary" style="margin-top: 5px; margin-left: 10px"
+                    >{{ index }}: {{ item }}</el-tag
+                  >
+                </div>
+              </div>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
     </div>
 
