@@ -161,7 +161,7 @@
         </el-form>
 
         <el-row :gutter="20">
-          <el-col :span="10">
+          <el-col :span="12">
             <el-form-item style="margin-top: -15px">
               <template #label>
                 <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
@@ -187,7 +187,7 @@
             </el-form-item>
           </el-col>
 
-          <el-col :span="10">
+          <el-col :span="12">
             <el-form-item style="margin-top: -10px">
               <template #label>
                 <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
