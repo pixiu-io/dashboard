@@ -84,69 +84,65 @@
           </template>
         </el-form-item>
 
-        <el-row>
-          <el-col>
-            <el-row :gutter="20">
-              <el-col :span="8">
-                <span class="detail-card-key-style">节点名称 </span>
-                <span class="detail-card-value-style" style="margin-left: 55px">
-                  {{ data.object.metadata.name }}</span
-                >
-              </el-col>
-              <el-col :span="8">
-                <el-row>
-                  <span class="detail-card-key-style">容器运行时 </span>
-                  <span class="detail-card-value-style">
-                    {{ data.object.status.nodeInfo.containerRuntimeVersion }}
-                  </span>
-                </el-row>
-              </el-col>
-
-              <el-col :span="8">
-                <el-row>
-                  <span class="detail-card-key-style">创建时间 </span>
-                  <span class="detail-card-value-style"> {{ data.createTime }}</span>
-                </el-row>
-              </el-col>
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <span class="detail-card-key-style">节点名称 </span>
+            <span class="detail-card-value-style" style="margin-left: 55px">
+              {{ data.object.metadata.name }}</span
+            >
+          </el-col>
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">容器运行时 </span>
+              <span class="detail-card-value-style">
+                {{ data.object.status.nodeInfo.containerRuntimeVersion }}
+              </span>
             </el-row>
+          </el-col>
 
-            <el-row :gutter="20" style="margin-top: 15px">
-              <el-col :span="8">
-                <span class="detail-card-key-style">运行状态 </span>
-                <span class="detail-card-value-style"> Running</span>
-              </el-col>
-
-              <el-col :span="8">
-                <el-row>
-                  <span class="detail-card-key-style">操作系统 </span>
-                  <span class="detail-card-value-style">
-                    {{ data.object.status.nodeInfo.osImage }}
-                  </span>
-                </el-row>
-              </el-col>
-              <el-col :span="8">
-                <el-row>
-                  <span class="detail-card-key-style">kubelet版本 </span>
-                  <span class="detail-card-value-style">
-                    {{ data.object.status.nodeInfo.kubeletVersion }}
-                  </span>
-                </el-row>
-              </el-col>
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">创建时间 </span>
+              <span class="detail-card-value-style"> {{ data.createTime }}</span>
             </el-row>
+          </el-col>
+        </el-row>
 
-            <el-row :gutter="20" style="margin-top: 15px">
-              <el-col :span="8">
-                <span class="detail-card-key-style">PodCIDRs </span>
-                <span class="detail-card-value-style"> {{ data.object.spec.podCIDR }}</span>
-              </el-col>
+        <el-row :gutter="20" style="margin-top: 15px">
+          <el-col :span="8">
+            <span class="detail-card-key-style">运行状态 </span>
+            <span class="detail-card-value-style"> Running</span>
+          </el-col>
 
-              <el-col :span="8">
-                <span class="detail-card-key-style">内核版本 </span>
-                <span class="detail-card-value-style">
-                  {{ data.object.status.nodeInfo.kernelVersion }}</span
-                >
-              </el-col>
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">操作系统 </span>
+              <span class="detail-card-value-style">
+                {{ data.object.status.nodeInfo.osImage }}
+              </span>
             </el-row>
+          </el-col>
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">kubelet版本 </span>
+              <span class="detail-card-value-style">
+                {{ data.object.status.nodeInfo.kubeletVersion }}
+              </span>
+            </el-row>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20" style="margin-top: 15px">
+          <el-col :span="8">
+            <span class="detail-card-key-style">PodCIDRs </span>
+            <span class="detail-card-value-style"> {{ data.object.spec.podCIDR }}</span>
+          </el-col>
+
+          <el-col :span="8">
+            <span class="detail-card-key-style">内核版本 </span>
+            <span class="detail-card-value-style">
+              {{ data.object.status.nodeInfo.kernelVersion }}</span
+            >
           </el-col>
         </el-row>
 
@@ -216,7 +212,30 @@
       </el-form>
     </div>
 
-    <div v-if="data.activeName === 'second'"></div>
+    <div v-if="data.activeName === 'second'">
+      <el-card class="detail-docs" style="margin-left: 10px">
+        <el-icon
+          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+          ><WarningFilled
+        /></el-icon>
+        <div style="vertical-align: middle; margin-top: -40px">运行在 node 上的 pod 实例列表</div>
+      </el-card>
+
+      <el-row>
+        <el-col>
+          <div style="margin-left: 10px">
+            <button class="pixiu-two-button" @click="getPodEvents">查询</button>
+            <button
+              style="margin-left: 10px; width: 85px"
+              class="pixiu-two-button2"
+              @click="handleDeleteDialog"
+            >
+              批量删除
+            </button>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
   </el-card>
 </template>
 
