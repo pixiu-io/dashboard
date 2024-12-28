@@ -69,7 +69,7 @@
       @tab-change="handleChange"
     >
       <el-tab-pane label="基本信息" name="first"> </el-tab-pane>
-      <el-tab-pane label="容器" name="second"> </el-tab-pane>
+      <el-tab-pane label="容器组" name="second"> </el-tab-pane>
       <el-tab-pane label="事件" name="third"></el-tab-pane>
       <el-tab-pane label="版本记录" name="four"> </el-tab-pane>
     </el-tabs>
@@ -149,8 +149,53 @@
             </el-row>
           </el-col>
         </el-row>
+
+        <el-form-item style="margin-top: 20px">
+          <template #label>
+            <span class="detail-card-key-style" style="font-size: 14px; color: #040000">标签 </span>
+          </template>
+        </el-form-item>
+        <el-form-item style="margin-top: -10px">
+          <div v-if="data.object.metadata.labels === undefined" style="margin-left: 10px">-</div>
+          <div v-else style="margin-top: -8px">
+            <div
+              v-for="(item, index) in data.object.metadata.labels"
+              :key="item"
+              style="font-size: 14px"
+            >
+              <el-tag type="primary" style="margin-top: 5px; margin-left: 10px"
+                >{{ index }}: {{ item }}</el-tag
+              >
+            </div>
+          </div>
+        </el-form-item>
+
+        <el-form-item>
+          <template #label>
+            <span class="detail-card-key-style" style="font-size: 14px; color: #040000">注释 </span>
+          </template>
+        </el-form-item>
+
+        <el-form-item style="margin-top: -10px">
+          <div v-if="data.object.metadata.annotations === undefined" style="margin-left: 10px">
+            -
+          </div>
+          <div v-else style="margin-top: -8px">
+            <div
+              v-for="(item, index) in data.object.metadata.annotations"
+              :key="item"
+              style="font-size: 14px"
+            >
+              <el-tag type="primary" style="margin-top: 5px; margin-left: 10px"
+                >{{ index }}: {{ item }}</el-tag
+              >
+            </div>
+          </div>
+        </el-form-item>
       </el-form>
     </div>
+
+    <div v-if="data.activeName === 'second'"></div>
   </el-card>
 </template>
 
