@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "19838923",
+      "name": "总容器组",
+      "font_class": "zongrongqizu",
+      "unicode": "e63f",
+      "unicode_decimal": 58943
+    },
+    {
+      "icon_id": "7200288",
+      "name": "基本信息",
+      "font_class": "jibenxinxi",
+      "unicode": "eaf7",
+      "unicode_decimal": 60151
+    },
+    {
       "icon_id": "14353122",
       "name": "容器组",
       "font_class": "rongqizu",
