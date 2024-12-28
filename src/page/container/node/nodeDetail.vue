@@ -1,7 +1,7 @@
 <template>
   <el-card class="contend-card-container2">
     <div style="margin-top: 10px; float: right">
-      <button class="pixiu-two-button2" style="width: 60px" @click="goToPod">返回</button>
+      <button class="pixiu-two-button2" style="width: 60px" @click="goToNode">返回</button>
     </div>
 
     <el-space style="display: flex; margin: 20px 15px">
@@ -31,7 +31,7 @@
         </div>
 
         <div style="margin-bottom: -10px; margin-left: 10px">
-          <button class="pixiu-two-button" @click="GetPod">刷新</button>
+          <button class="pixiu-two-button" @click="GetNode">刷新</button>
 
           <button class="pixiu-two-button2" style="margin-left: 10px" @click="handleLogDrawer">
             日志
@@ -88,16 +88,16 @@
           <el-col>
             <el-row :gutter="20">
               <el-col :span="8">
-                <span class="detail-card-key-style">名称 </span>
+                <span class="detail-card-key-style">节点名称 </span>
                 <span class="detail-card-value-style" style="margin-left: 55px">
-                  {{ data.pod.metadata.name }}</span
+                  {{ data.object.metadata.name }}</span
                 >
               </el-col>
               <el-col :span="8">
                 <el-row>
-                  <span class="detail-card-key-style">所在节点 </span>
+                  <span class="detail-card-key-style">容器运行时 </span>
                   <span class="detail-card-value-style">
-                    {{ data.pod.spec.nodeName }}: {{ data.pod.status.hostIP }}
+                    {{ data.object.status.nodeInfo.containerRuntimeVersion }}
                   </span>
                 </el-row>
               </el-col>
@@ -112,22 +112,23 @@
 
             <el-row :gutter="20" style="margin-top: 15px">
               <el-col :span="8">
-                <span class="detail-card-key-style">命名空间 </span>
-                <span class="detail-card-value-style"> {{ data.pod.metadata.namespace }}</span>
+                <span class="detail-card-key-style">运行状态 </span>
+                <span class="detail-card-value-style"> Running</span>
               </el-col>
+
               <el-col :span="8">
                 <el-row>
-                  <span class="detail-card-key-style">容器地址 </span>
+                  <span class="detail-card-key-style">操作系统 </span>
                   <span class="detail-card-value-style">
-                    {{ data.pod.status.podIP }}
+                    {{ data.object.status.nodeInfo.osImage }}
                   </span>
                 </el-row>
               </el-col>
               <el-col :span="8">
                 <el-row>
-                  <span class="detail-card-key-style">QoS类别 </span>
+                  <span class="detail-card-key-style">kubelet版本 </span>
                   <span class="detail-card-value-style">
-                    {{ data.pod.status.qosClass }}
+                    {{ data.object.status.nodeInfo.kubeletVersion }}
                   </span>
                 </el-row>
               </el-col>
@@ -135,8 +136,15 @@
 
             <el-row :gutter="20" style="margin-top: 15px">
               <el-col :span="8">
-                <span class="detail-card-key-style">运行状态 </span>
-                <span class="detail-card-value-style"> Running</span>
+                <span class="detail-card-key-style">PodCIDRs </span>
+                <span class="detail-card-value-style"> {{ data.object.spec.podCIDR }}</span>
+              </el-col>
+
+              <el-col :span="8">
+                <span class="detail-card-key-style">内核版本 </span>
+                <span class="detail-card-value-style">
+                  {{ data.object.status.nodeInfo.kernelVersion }}</span
+                >
               </el-col>
             </el-row>
           </el-col>
@@ -160,7 +168,6 @@ const { proxy } = getCurrentInstance();
 
 const data = reactive({
   name: '',
-  clusterName: '',
   cluster: '',
 
   activeName: 'first',
@@ -168,7 +175,9 @@ const data = reactive({
   object: {
     metadata: {},
     spec: {},
-    status: {},
+    status: {
+      nodeInfo: '',
+    },
   },
   createTime: '',
 
@@ -214,7 +223,6 @@ const data = reactive({
 
 onMounted(async () => {
   data.cluster = proxy.$route.query.cluster;
-  data.clusterName = localStorage.getItem(data.cluster);
   data.name = proxy.$route.query.name;
 
   GetNode();
