@@ -2,7 +2,7 @@
 
 tag = latest
 releaseName = pixiu-dashboard
-dockerhubUser = harbor.cloud.pixiuio.com
+dockerhubUser = ccr.ccs.tencentyun.com
 
 ALL: run
 

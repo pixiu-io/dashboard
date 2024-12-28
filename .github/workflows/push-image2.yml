@@ -6,7 +6,7 @@ on:
 
 env:
   # Use docker.io for Docker Hub if empty
-  REGISTRY: harbor.cloud.pixiuio.com
+  REGISTRY: ccr.ccs.tencentyun.com
 
 jobs:
   build:
