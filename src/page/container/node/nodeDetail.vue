@@ -226,11 +226,7 @@
       <el-row>
         <el-col>
           <div style="margin-left: 10px">
-            <button
-              style="margin-left: 10px; width: 85px"
-              class="pixiu-two-button2"
-              @click="handleDeleteDialog"
-            >
+            <button style="margin-left: 10px; width: 85px" class="pixiu-two-button2">
               批量删除
             </button>
 
@@ -308,7 +304,18 @@
         sortable
         :formatter="formatterTime"
       />
-
+      <el-table-column fixed="right" label="操作" width="60px">
+        <template #default="scope">
+          <el-button
+            size="small"
+            type="text"
+            style="margin-right: -25px; margin-left: -10px; color: #006eff"
+            @click="handleDeleteDialog(scope.row)"
+          >
+            删除
+          </el-button>
+        </template>
+      </el-table-column>
       <template #empty>
         <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
       </template>
