@@ -227,17 +227,32 @@
         <el-col>
           <div style="margin-left: 10px">
             <button class="pixiu-two-button" @click="getNodePods">查询</button>
-            <button
-              style="margin-left: 10px; width: 85px"
-              class="pixiu-two-button2"
-              @click="handleDeleteDialog"
+
+            <el-input
+              v-model="data.pageInfo.search.searchInfo"
+              placeholder="名称搜索关键字"
+              style="width: 480px; float: right"
+              clearable
+              @clear="getNodePods"
+              @input="getNodePods"
             >
-              批量删除
-            </button>
+              <template #suffix>
+                <pixiu-icon
+                  name="icon-search"
+                  style="cursor: pointer"
+                  size="15px"
+                  type="iconfont"
+                  color="#909399"
+                  @click="getNodePods"
+                />
+              </template>
+            </el-input>
           </div>
         </el-col>
       </el-row>
     </div>
+    <div style="margin-top: 15px"></div>
+
     <el-table
       v-loading="data.podData.loading"
       :data="data.podData.tableData"
@@ -280,71 +295,11 @@
         :formatter="formatterTime"
       />
 
-      <el-table-column fixed="right" label="操作" width="150px">
-        <template #default="scope">
-          <el-button
-            size="small"
-            type="text"
-            style="margin-right: -25px; margin-left: -10px; color: #006eff"
-            @click="handleMonitorDrawer(scope.row)"
-          >
-            监控
-          </el-button>
-
-          <el-button
-            type="text"
-            size="small"
-            style="color: #006eff"
-            @click="handleEventDrawer(scope.row)"
-          >
-            事件
-          </el-button>
-
-          <el-dropdown>
-            <span class="el-dropdown-link">
-              更多
-              <pixiu-icon name="icon-xiala" size="12px" type="iconfont" color="#006eff" />
-            </span>
-            <template #dropdown>
-              <el-dropdown-menu class="dropdown-buttons">
-                <!-- <el-dropdown-item class="dropdown-item-buttons"> 详情 </el-dropdown-item> -->
-                <el-dropdown-item class="dropdown-item-buttons" @click="viewYaml(scope.row)">
-                  查看YAML
-                </el-dropdown-item>
-                <el-dropdown-item class="dropdown-item-buttons" @click="handleLogDrawer(scope.row)">
-                  日志
-                </el-dropdown-item>
-
-                <el-dropdown-item
-                  class="dropdown-item-buttons"
-                  @click="handleRemoteLoginDialog(scope.row)"
-                >
-                  远程登陆
-                </el-dropdown-item>
-                <el-dropdown-item
-                  class="dropdown-item-buttons"
-                  @click="handleContainerListDialog(scope.row)"
-                >
-                  容器列表
-                </el-dropdown-item>
-
-                <el-dropdown-item
-                  class="dropdown-item-buttons"
-                  @click="handleDeleteDialog(scope.row)"
-                >
-                  删除
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </template>
-      </el-table-column>
-
       <template #empty>
         <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
       </template>
     </el-table>
-    <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
+    <pagination :total="data.podData.pageInfo.total" @on-change="onChange"></pagination>
   </el-card>
 </template>
 
@@ -394,12 +349,11 @@ const data = reactive({
 
   podData: {
     loading: false,
-
     pods: [],
     tableData: [],
     pageInfo: {
       page: 1,
-      limit: 5,
+      limit: 10,
       total: 0,
       nameSelector: '',
       labelSelector: '',
@@ -458,9 +412,16 @@ const getNodePods = async () => {
     proxy.$notify.error({ title: 'Node', message: err.response.data.message });
     return;
   }
+
   data.podData.pods = result.items;
-  data.podData.pageInfo.total = result.items.length;
-  data.podData.tableData = getTableData(data.pageInfo, data.nodePods);
+  data.podData.pageInfo.total = data.podData.pods.length;
+  data.podData.tableData = getTableData(data.podData.pageInfo, data.podData.pods);
+};
+
+const onChange = (v) => {
+  data.podData.pageInfo.limit = v.limit;
+  data.podData.pageInfo.page = v.page;
+  data.podData.tableData = getTableData(data.podData.pageInfo, data.podData.pods);
 };
 
 const getNodeEvents = async () => {
@@ -482,12 +443,6 @@ const getNodeEvents = async () => {
   data.eventTableData = getTableData(data.pageEventInfo, data.nodeEvents);
 };
 
-const onChange = (v) => {
-  data.pageInfo.limit = v.limit;
-  data.pageInfo.page = v.page;
-  data.tableData = getTableData(data.pageInfo, data.nodePods);
-};
-
 const onEventChange = (v) => {
   data.pageEventInfo.limit = v.limit;
   data.pageEventInfo.page = v.page;
@@ -507,14 +462,6 @@ const formatterStatus = (row, column, cellValue) => {
     return <div class="color-green-word">{phase}</div>;
   }
   return <div>{phase}</div>;
-};
-
-const getPodRestartCount = (row, column, status) => {
-  let count = 0;
-  // status.containerStatuses.forEach((item) => {
-  //   count += item.restartCount;
-  // });
-  return <div>{count} 次</div>;
 };
 
 const handleClick = (tab, event) => {};
