@@ -218,13 +218,15 @@
           style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
           ><WarningFilled
         /></el-icon>
-        <div style="vertical-align: middle; margin-top: -40px">运行在 node 上的 pod 实例列表</div>
+        <div style="vertical-align: middle; margin-top: -40px">
+          管理运行在 node 上的全部 pod 实例
+        </div>
       </el-card>
 
       <el-row>
         <el-col>
           <div style="margin-left: 10px">
-            <button class="pixiu-two-button" @click="getPodEvents">查询</button>
+            <button class="pixiu-two-button" @click="getNodePods">查询</button>
             <button
               style="margin-left: 10px; width: 85px"
               class="pixiu-two-button2"
@@ -236,6 +238,113 @@
         </el-col>
       </el-row>
     </div>
+    <el-table
+      v-loading="data.podData.loading"
+      :data="data.podData.tableData"
+      stripe
+      style="margin-top: 2px; width: 100%"
+      header-row-class-name="pixiu-table-header"
+      :cell-style="{
+        'font-size': '12px',
+        color: '#191919',
+      }"
+      @selection-change="handlePodSelectionChange"
+    >
+      <el-table-column type="selection" width="30" />
+      <el-table-column prop="metadata.name" sortable label="实例名称" min-width="100px">
+        <template #default="scope">
+          <el-link
+            class="global-table-world"
+            :underline="false"
+            type="primary"
+            @click="jumpRoute(scope.row)"
+          >
+            {{ scope.row.metadata.name }}
+          </el-link>
+        </template>
+      </el-table-column>
+
+      <el-table-column prop="status" label="状态" :formatter="formatterPodStatus" />
+
+      <el-table-column prop="metadata.namespace" label="命名空间" :formatter="formatterNamespace">
+      </el-table-column>
+
+      <el-table-column prop="status.podIP" label="实例IP"> </el-table-column>
+
+      <el-table-column prop="status" label="重启次数" :formatter="formatterRestartCount" />
+
+      <el-table-column
+        prop="metadata.creationTimestamp"
+        label="创建时间"
+        sortable
+        :formatter="formatterTime"
+      />
+
+      <el-table-column fixed="right" label="操作" width="150px">
+        <template #default="scope">
+          <el-button
+            size="small"
+            type="text"
+            style="margin-right: -25px; margin-left: -10px; color: #006eff"
+            @click="handleMonitorDrawer(scope.row)"
+          >
+            监控
+          </el-button>
+
+          <el-button
+            type="text"
+            size="small"
+            style="color: #006eff"
+            @click="handleEventDrawer(scope.row)"
+          >
+            事件
+          </el-button>
+
+          <el-dropdown>
+            <span class="el-dropdown-link">
+              更多
+              <pixiu-icon name="icon-xiala" size="12px" type="iconfont" color="#006eff" />
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu class="dropdown-buttons">
+                <!-- <el-dropdown-item class="dropdown-item-buttons"> 详情 </el-dropdown-item> -->
+                <el-dropdown-item class="dropdown-item-buttons" @click="viewYaml(scope.row)">
+                  查看YAML
+                </el-dropdown-item>
+                <el-dropdown-item class="dropdown-item-buttons" @click="handleLogDrawer(scope.row)">
+                  日志
+                </el-dropdown-item>
+
+                <el-dropdown-item
+                  class="dropdown-item-buttons"
+                  @click="handleRemoteLoginDialog(scope.row)"
+                >
+                  远程登陆
+                </el-dropdown-item>
+                <el-dropdown-item
+                  class="dropdown-item-buttons"
+                  @click="handleContainerListDialog(scope.row)"
+                >
+                  容器列表
+                </el-dropdown-item>
+
+                <el-dropdown-item
+                  class="dropdown-item-buttons"
+                  @click="handleDeleteDialog(scope.row)"
+                >
+                  删除
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </template>
+      </el-table-column>
+
+      <template #empty>
+        <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
+      </template>
+    </el-table>
+    <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
   </el-card>
 </template>
 
@@ -245,7 +354,14 @@ import jsYaml from 'js-yaml';
 import { getNode } from '@/services/kubernetes/nodeService';
 import { getPodsByNode } from '@/services/kubernetes/podService';
 import { getTableData, formatTimestamp } from '@/utils/utils';
-import { formatterTime, formatString } from '@/utils/formatter';
+import {
+  formatString,
+  formatterContainerImage,
+  formatterNamespace,
+  formatterPodStatus,
+  formatterRestartCount,
+  formatterTime,
+} from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getRawEventList, deleteEvent } from '@/services/kubernetes/eventService';
 
@@ -275,8 +391,19 @@ const data = reactive({
       searchInfo: '',
     },
   },
+
   podData: {
     loading: false,
+
+    pods: [],
+    tableData: [],
+    pageInfo: {
+      page: 1,
+      limit: 5,
+      total: 0,
+      nameSelector: '',
+      labelSelector: '',
+    },
   },
 
   eventData: {
@@ -331,23 +458,9 @@ const getNodePods = async () => {
     proxy.$notify.error({ title: 'Node', message: err.response.data.message });
     return;
   }
-  data.nodePods = result.items;
-  data.pageInfo.total = result.items.length;
-  data.tableData = getTableData(data.pageInfo, data.nodePods);
-};
-
-const searchPods = async () => {
-  let allSearchedPods = [];
-  if (data.pageInfo.search.field === 'name') {
-    for (let pod of data.nodePods) {
-      if (pod.metadata.name.search(data.pageInfo.search.searchInfo) !== -1) {
-        allSearchedPods.push(pod);
-      }
-    }
-  }
-
-  data.pageInfo.total = allSearchedPods.length;
-  data.tableData = getTableData(data.pageInfo, allSearchedPods);
+  data.podData.pods = result.items;
+  data.podData.pageInfo.total = result.items.length;
+  data.podData.tableData = getTableData(data.pageInfo, data.nodePods);
 };
 
 const getNodeEvents = async () => {
