@@ -226,7 +226,21 @@
       <el-row>
         <el-col>
           <div style="margin-left: 10px">
-            <button class="pixiu-two-button" @click="getNodePods">查询</button>
+            <button
+              style="margin-left: 10px; width: 85px"
+              class="pixiu-two-button2"
+              @click="handleDeleteDialog"
+            >
+              批量删除
+            </button>
+
+            <button
+              class="pixiu-two-button"
+              style="float: right; margin-left: 12px"
+              @click="getNodePods"
+            >
+              查询
+            </button>
 
             <el-input
               v-model="data.pageInfo.search.searchInfo"
