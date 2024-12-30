@@ -163,6 +163,7 @@
 <script setup>
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
+import { createConfigMap } from '@/services/kubernetes/configmapService';
 
 const { proxy } = getCurrentInstance();
 const ruleFormRef = ref();
@@ -205,26 +206,24 @@ const rules = {
   'metadata.name': [{ required: true, message: '请输入 ConfigMap 名称', trigger: 'blur' }],
 };
 
-const comfirmCreate = () => {
-  ruleFormRef.value.validate(async (valid) => {
-    if (valid) {
-      data.configMapLabels.forEach((item) => {
-        data.configmapForm.data[item.key] = item.value;
-      });
-      try {
-        const resp = await proxy.$http({
-          method: 'post',
-          url:
-            `/pixiu/proxy/${data.cluster}/api/v1/namespaces/` +
-            data.configmapForm.metadata.namespace +
-            `/configmaps`,
-          data: data.configmapForm,
-        });
-        proxy.$message.success(`configmap ${data.configmapForm.metadata.name} 创建成功`);
-        backToConfigmap();
-      } catch (error) {}
-    }
+const comfirmCreate = async () => {
+  data.configmapForm.data = {};
+  data.configMapLabels.forEach((item) => {
+    data.configmapForm.data[item.key] = item.value;
   });
+
+  const [result, err] = await createConfigMap(
+    data.cluster,
+    data.configmapForm.metadata.namespace,
+    data.configmapForm,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+
+  proxy.$message.success(`configmap ${data.configmapForm.metadata.name} 创建成功`);
+  backToConfigmap();
 };
 
 const cancelCreate = () => {
@@ -273,77 +272,4 @@ const deleteLabel = (index) => {
 };
 </script>
 
-<style>
-.box-card {
-  margin-top: 20px;
-}
-
-.app-pixiu-content-card {
-  display: flex;
-  justify-content: space-around;
-}
-
-.deployee-class .el-main {
-  background-color: #f3f4f7;
-}
-
-.app-pixiu-line-describe {
-  margin-left: 100px;
-  margin-top: -18px;
-  font-size: 12px;
-  color: #888888;
-}
-
-.configmap-label-title {
-  font-size: 12px;
-  color: #888888;
-}
-
-.font-container {
-  margin-top: -5px;
-  font-weight: bold;
-  font-size: 16px;
-  vertical-align: middle;
-}
-
-.deploy-pixiu-column {
-  font-size: 13px;
-  color: #606266;
-}
-
-.deploy-pixiu-incard {
-  /* width: 323px; */
-  width: 53%;
-}
-
-.container-line-describe {
-  margin-left: 90px;
-  font-size: 12px;
-  color: #888888;
-}
-
-.deployee-class .el-radio {
-  background-color: white;
-  border-radius: 0;
-  margin-right: 0;
-  width: 99px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.deployee-class .el-radio.is-bordered.is-checked {
-  border-color: blue; /* 颜色待定 */
-}
-
-.deployee-class .el-radio__input.is-checked + .el-radio__label {
-  color: blue; /* 颜色待定 */
-}
-
-.deployee-class .el-radio__label {
-  font-size: 13px;
-}
-
-.deployee-class .el-radio__inner {
-  display: none;
-}
-</style>
+<style></style>
