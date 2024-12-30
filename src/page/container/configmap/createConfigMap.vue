@@ -163,6 +163,7 @@
 <script setup>
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { getNamespaceNames } from '@/services/kubernetes/namespaceService';
+import { createConfigMap } from '@/services/kubernetes/configmapService';
 
 const { proxy } = getCurrentInstance();
 const ruleFormRef = ref();
@@ -205,26 +206,24 @@ const rules = {
   'metadata.name': [{ required: true, message: '请输入 ConfigMap 名称', trigger: 'blur' }],
 };
 
-const comfirmCreate = () => {
-  ruleFormRef.value.validate(async (valid) => {
-    if (valid) {
-      data.configMapLabels.forEach((item) => {
-        data.configmapForm.data[item.key] = item.value;
-      });
-      try {
-        const resp = await proxy.$http({
-          method: 'post',
-          url:
-            `/pixiu/proxy/${data.cluster}/api/v1/namespaces/` +
-            data.configmapForm.metadata.namespace +
-            `/configmaps`,
-          data: data.configmapForm,
-        });
-        proxy.$message.success(`configmap ${data.configmapForm.metadata.name} 创建成功`);
-        backToConfigmap();
-      } catch (error) {}
-    }
+const comfirmCreate = async () => {
+  data.configmapForm.data = {};
+  data.configMapLabels.forEach((item) => {
+    data.configmapForm.data[item.key] = item.value;
   });
+
+  const [result, err] = await createConfigMap(
+    data.cluster,
+    data.configmapForm.metadata.namespace,
+    data.configmapForm,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+
+  proxy.$message.success(`configmap ${data.configmapForm.metadata.name} 创建成功`);
+  backToConfigmap();
 };
 
 const cancelCreate = () => {
