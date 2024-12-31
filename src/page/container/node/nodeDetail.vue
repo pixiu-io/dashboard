@@ -71,7 +71,7 @@
       <el-tab-pane label="基本信息" name="first"> </el-tab-pane>
       <el-tab-pane label="容器组" name="second"> </el-tab-pane>
       <el-tab-pane label="事件" name="third"></el-tab-pane>
-      <el-tab-pane label="版本记录" name="four"> </el-tab-pane>
+      <el-tab-pane label="监控指标" name="four"> </el-tab-pane>
     </el-tabs>
 
     <div v-if="data.activeName === 'first'">
@@ -87,15 +87,14 @@
         <el-row :gutter="20">
           <el-col :span="8">
             <span class="detail-card-key-style">节点名称 </span>
-            <span class="detail-card-value-style" style="margin-left: 55px">
-              {{ data.object.metadata.name }}</span
-            >
+            <span class="detail-card-value-style"> {{ data.object.metadata.name }}</span>
           </el-col>
+
           <el-col :span="8">
             <el-row>
-              <span class="detail-card-key-style">容器运行时 </span>
+              <span class="detail-card-key-style">操作系统 </span>
               <span class="detail-card-value-style">
-                {{ data.object.status.nodeInfo.containerRuntimeVersion }}
+                {{ data.object.status.nodeInfo.osImage }}
               </span>
             </el-row>
           </el-col>
@@ -116,16 +115,17 @@
 
           <el-col :span="8">
             <el-row>
-              <span class="detail-card-key-style">操作系统 </span>
-              <span class="detail-card-value-style">
-                {{ data.object.status.nodeInfo.osImage }}
+              <span class="detail-card-key-style">容器运行时 </span>
+              <span class="detail-card-value-style" style="margin-left: 17px">
+                {{ data.object.status.nodeInfo.containerRuntimeVersion }}
               </span>
             </el-row>
           </el-col>
+
           <el-col :span="8">
             <el-row>
               <span class="detail-card-key-style">kubelet版本 </span>
-              <span class="detail-card-value-style">
+              <span class="detail-card-value-style" style="margin-left: 15px">
                 {{ data.object.status.nodeInfo.kubeletVersion }}
               </span>
             </el-row>
@@ -135,7 +135,9 @@
         <el-row :gutter="20" style="margin-top: 15px">
           <el-col :span="8">
             <span class="detail-card-key-style">PodCIDRs </span>
-            <span class="detail-card-value-style"> {{ data.object.spec.podCIDR }}</span>
+            <span class="detail-card-value-style" style="margin-left: 22px">
+              {{ data.object.spec.podCIDR }}</span
+            >
           </el-col>
 
           <el-col :span="8">
@@ -226,9 +228,7 @@
       <el-row>
         <el-col>
           <div style="margin-left: 10px">
-            <button style="margin-left: 10px; width: 85px" class="pixiu-two-button2">
-              批量删除
-            </button>
+            <button style="width: 85px" class="pixiu-two-button2">批量删除</button>
 
             <button
               class="pixiu-two-button"
@@ -241,7 +241,7 @@
             <el-input
               v-model="data.pageInfo.search.searchInfo"
               placeholder="名称搜索关键字"
-              style="width: 480px; float: right"
+              style="width: 35%; float: right"
               clearable
               @clear="getNodePods"
               @input="getNodePods"
@@ -260,75 +260,110 @@
           </div>
         </el-col>
       </el-row>
+
+      <div style="margin-top: 10px"></div>
+      <el-table
+        v-loading="data.podData.loading"
+        :data="data.podData.tableData"
+        stripe
+        style="margin-top: 2px; width: 100%"
+        header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#191919',
+        }"
+        @selection-change="handlePodSelectionChange"
+      >
+        <el-table-column type="selection" width="30" />
+        <el-table-column prop="metadata.name" sortable label="实例名称" min-width="100px">
+          <template #default="scope">
+            <el-link
+              class="global-table-world"
+              :underline="false"
+              type="primary"
+              @click="jumpRoute(scope.row)"
+            >
+              {{ scope.row.metadata.name }}
+            </el-link>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="status" label="状态" :formatter="formatterPodStatus" />
+
+        <el-table-column prop="metadata.namespace" label="命名空间" :formatter="formatterNamespace">
+        </el-table-column>
+
+        <el-table-column prop="status.podIP" label="实例IP"> </el-table-column>
+
+        <el-table-column prop="status" label="重启次数" :formatter="formatterRestartCount" />
+
+        <el-table-column
+          prop="metadata.creationTimestamp"
+          label="创建时间"
+          sortable
+          :formatter="formatterTime"
+        />
+        <el-table-column fixed="right" label="操作" width="60px">
+          <template #default="scope">
+            <el-button
+              size="small"
+              type="text"
+              style="margin-right: -25px; margin-left: -10px; color: #006eff"
+              @click="handleDeleteDialog(scope.row)"
+            >
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+        <template #empty>
+          <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
+        </template>
+      </el-table>
+      <pagination :total="data.podData.pageInfo.total" @on-change="onChange"></pagination>
     </div>
-    <div style="margin-top: 15px"></div>
 
-    <el-table
-      v-loading="data.podData.loading"
-      :data="data.podData.tableData"
-      stripe
-      style="margin-top: 2px; width: 100%"
-      header-row-class-name="pixiu-table-header"
-      :cell-style="{
-        'font-size': '12px',
-        color: '#191919',
-      }"
-      @selection-change="handlePodSelectionChange"
-    >
-      <el-table-column type="selection" width="30" />
-      <el-table-column prop="metadata.name" sortable label="实例名称" min-width="100px">
-        <template #default="scope">
-          <el-link
-            class="global-table-world"
-            :underline="false"
-            type="primary"
-            @click="jumpRoute(scope.row)"
-          >
-            {{ scope.row.metadata.name }}
-          </el-link>
-        </template>
-      </el-table-column>
+    <div v-if="data.activeName === 'third'">
+      <el-card class="app-docs" style="margin-top: 10px; height: 40px; margin-left: 10px">
+        <el-icon
+          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+          ><WarningFilled
+        /></el-icon>
+        <div style="vertical-align: middle; margin-top: -40px">
+          Pod 关联相关事件查询，更多查询请至事件中心
+        </div>
+      </el-card>
 
-      <el-table-column prop="status" label="状态" :formatter="formatterPodStatus" />
-
-      <el-table-column prop="metadata.namespace" label="命名空间" :formatter="formatterNamespace">
-      </el-table-column>
-
-      <el-table-column prop="status.podIP" label="实例IP"> </el-table-column>
-
-      <el-table-column prop="status" label="重启次数" :formatter="formatterRestartCount" />
-
-      <el-table-column
-        prop="metadata.creationTimestamp"
-        label="创建时间"
-        sortable
-        :formatter="formatterTime"
-      />
-      <el-table-column fixed="right" label="操作" width="60px">
-        <template #default="scope">
-          <el-button
-            size="small"
-            type="text"
-            style="margin-right: -25px; margin-left: -10px; color: #006eff"
-            @click="handleDeleteDialog(scope.row)"
-          >
-            删除
-          </el-button>
-        </template>
-      </el-table-column>
-      <template #empty>
-        <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
-      </template>
-    </el-table>
-    <pagination :total="data.podData.pageInfo.total" @on-change="onChange"></pagination>
+      <el-row>
+        <el-col>
+          <div style="margin-left: 10px">
+            <button class="pixiu-two-button" @click="getNodeEvents">查询</button>
+            <button
+              style="margin-left: 10px; width: 85px"
+              class="pixiu-two-button2"
+              @click="handleDeleteDialog"
+            >
+              批量删除
+            </button>
+          </div>
+        </el-col>
+      </el-row>
+    </div>
   </el-card>
+
+  <pixiuDialog
+    :close-event="data.deleteDialog.close"
+    :object-name="data.deleteDialog.objectName"
+    :delete-name="data.deleteDialog.deleteName"
+    @confirm="confirm"
+    @cancel="cancel"
+  ></pixiuDialog>
 </template>
 
 <script setup lang="jsx">
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
 import { getNode } from '@/services/kubernetes/nodeService';
-import { getPodsByNode } from '@/services/kubernetes/podService';
+import { getPodsByNode, deletePod } from '@/services/kubernetes/podService';
 import { getTableData, formatTimestamp } from '@/utils/utils';
 import {
   formatString,
@@ -340,6 +375,7 @@ import {
 } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getRawEventList, deleteEvent } from '@/services/kubernetes/eventService';
+import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { proxy } = getCurrentInstance();
 
@@ -379,6 +415,13 @@ const data = reactive({
       nameSelector: '',
       labelSelector: '',
     },
+  },
+  // 删除对象属性
+  deleteDialog: {
+    close: false,
+    objectName: 'Pod',
+    deleteName: '',
+    namespace: '',
   },
 
   eventData: {
@@ -488,13 +531,39 @@ const formatterStatus = (row, column, cellValue) => {
 const handleClick = (tab, event) => {};
 const handleChange = (name) => {};
 
-const confirm = () => {
-  data.readOnly = true;
+// 删除开始
+const handleDeleteDialog = (row) => {
+  data.deleteDialog.close = true;
+  data.deleteDialog.deleteName = row.metadata.name;
+  data.deleteDialog.namespace = row.metadata.namespace;
+};
+
+const confirm = async () => {
+  const [result, err] = await deletePod(
+    data.cluster,
+    data.deleteDialog.namespace,
+    data.deleteDialog.deleteName,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(
+    `${data.deleteDialog.objectName}(${data.deleteDialog.deleteName}) 删除成功`,
+  );
+
+  cancel();
+  getNodePods();
 };
 
 const cancel = () => {
-  data.readOnly = true;
+  data.deleteDialog.close = false;
+  setTimeout(() => {
+    data.deleteDialog.deleteName = '';
+  }, 100);
 };
+
+// 删除结束
 
 const editYaml = () => {
   data.readOnly = false;
@@ -504,6 +573,17 @@ const goToNode = () => {
   proxy.$router.push({
     name: 'Node',
     query: { cluster: data.cluster },
+  });
+};
+
+const jumpRoute = (row) => {
+  proxy.$router.push({
+    name: 'PodDetail',
+    query: {
+      cluster: data.cluster,
+      namespace: row.metadata.namespace,
+      name: row.metadata.name,
+    },
   });
 };
 </script>
