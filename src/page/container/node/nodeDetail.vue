@@ -260,67 +260,67 @@
           </div>
         </el-col>
       </el-row>
+
+      <div style="margin-top: 15px"></div>
+      <el-table
+        v-loading="data.podData.loading"
+        :data="data.podData.tableData"
+        stripe
+        style="margin-top: 2px; width: 100%"
+        header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#191919',
+        }"
+        @selection-change="handlePodSelectionChange"
+      >
+        <el-table-column type="selection" width="30" />
+        <el-table-column prop="metadata.name" sortable label="实例名称" min-width="100px">
+          <template #default="scope">
+            <el-link
+              class="global-table-world"
+              :underline="false"
+              type="primary"
+              @click="jumpRoute(scope.row)"
+            >
+              {{ scope.row.metadata.name }}
+            </el-link>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="status" label="状态" :formatter="formatterPodStatus" />
+
+        <el-table-column prop="metadata.namespace" label="命名空间" :formatter="formatterNamespace">
+        </el-table-column>
+
+        <el-table-column prop="status.podIP" label="实例IP"> </el-table-column>
+
+        <el-table-column prop="status" label="重启次数" :formatter="formatterRestartCount" />
+
+        <el-table-column
+          prop="metadata.creationTimestamp"
+          label="创建时间"
+          sortable
+          :formatter="formatterTime"
+        />
+        <el-table-column fixed="right" label="操作" width="60px">
+          <template #default="scope">
+            <el-button
+              size="small"
+              type="text"
+              style="margin-right: -25px; margin-left: -10px; color: #006eff"
+              @click="handleDeleteDialog(scope.row)"
+            >
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+        <template #empty>
+          <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
+        </template>
+      </el-table>
+      <pagination :total="data.podData.pageInfo.total" @on-change="onChange"></pagination>
     </div>
-    <div style="margin-top: 15px"></div>
-
-    <el-table
-      v-loading="data.podData.loading"
-      :data="data.podData.tableData"
-      stripe
-      style="margin-top: 2px; width: 100%"
-      header-row-class-name="pixiu-table-header"
-      :cell-style="{
-        'font-size': '12px',
-        color: '#191919',
-      }"
-      @selection-change="handlePodSelectionChange"
-    >
-      <el-table-column type="selection" width="30" />
-      <el-table-column prop="metadata.name" sortable label="实例名称" min-width="100px">
-        <template #default="scope">
-          <el-link
-            class="global-table-world"
-            :underline="false"
-            type="primary"
-            @click="jumpRoute(scope.row)"
-          >
-            {{ scope.row.metadata.name }}
-          </el-link>
-        </template>
-      </el-table-column>
-
-      <el-table-column prop="status" label="状态" :formatter="formatterPodStatus" />
-
-      <el-table-column prop="metadata.namespace" label="命名空间" :formatter="formatterNamespace">
-      </el-table-column>
-
-      <el-table-column prop="status.podIP" label="实例IP"> </el-table-column>
-
-      <el-table-column prop="status" label="重启次数" :formatter="formatterRestartCount" />
-
-      <el-table-column
-        prop="metadata.creationTimestamp"
-        label="创建时间"
-        sortable
-        :formatter="formatterTime"
-      />
-      <el-table-column fixed="right" label="操作" width="60px">
-        <template #default="scope">
-          <el-button
-            size="small"
-            type="text"
-            style="margin-right: -25px; margin-left: -10px; color: #006eff"
-            @click="handleDeleteDialog(scope.row)"
-          >
-            删除
-          </el-button>
-        </template>
-      </el-table-column>
-      <template #empty>
-        <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
-      </template>
-    </el-table>
-    <pagination :total="data.podData.pageInfo.total" @on-change="onChange"></pagination>
   </el-card>
 </template>
 
