@@ -320,13 +320,21 @@
       <pagination :total="data.podData.pageInfo.total" @on-change="onChange"></pagination>
     </div>
   </el-card>
+
+  <pixiuDialog
+    :close-event="data.deleteDialog.close"
+    :object-name="data.deleteDialog.objectName"
+    :delete-name="data.deleteDialog.deleteName"
+    @confirm="confirm"
+    @cancel="cancel"
+  ></pixiuDialog>
 </template>
 
 <script setup lang="jsx">
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
 import { getNode } from '@/services/kubernetes/nodeService';
-import { getPodsByNode } from '@/services/kubernetes/podService';
+import { getPodsByNode, deletePod } from '@/services/kubernetes/podService';
 import { getTableData, formatTimestamp } from '@/utils/utils';
 import {
   formatString,
@@ -338,6 +346,7 @@ import {
 } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getRawEventList, deleteEvent } from '@/services/kubernetes/eventService';
+import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { proxy } = getCurrentInstance();
 
@@ -377,6 +386,13 @@ const data = reactive({
       nameSelector: '',
       labelSelector: '',
     },
+  },
+  // 删除对象属性
+  deleteDialog: {
+    close: false,
+    objectName: 'Pod',
+    deleteName: '',
+    namespace: '',
   },
 
   eventData: {
@@ -486,13 +502,39 @@ const formatterStatus = (row, column, cellValue) => {
 const handleClick = (tab, event) => {};
 const handleChange = (name) => {};
 
-const confirm = () => {
-  data.readOnly = true;
+// 删除开始
+const handleDeleteDialog = (row) => {
+  data.deleteDialog.close = true;
+  data.deleteDialog.deleteName = row.metadata.name;
+  data.deleteDialog.namespace = row.metadata.namespace;
+};
+
+const confirm = async () => {
+  const [result, err] = await deletePod(
+    data.cluster,
+    data.deleteDialog.namespace,
+    data.deleteDialog.deleteName,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(
+    `${data.deleteDialog.objectName}(${data.deleteDialog.deleteName}) 删除成功`,
+  );
+
+  cancel();
+  getNodePods();
 };
 
 const cancel = () => {
-  data.readOnly = true;
+  data.deleteDialog.close = false;
+  setTimeout(() => {
+    data.deleteDialog.deleteName = '';
+  }, 100);
 };
+
+// 删除结束
 
 const editYaml = () => {
   data.readOnly = false;
