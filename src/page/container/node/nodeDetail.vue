@@ -87,15 +87,14 @@
         <el-row :gutter="20">
           <el-col :span="8">
             <span class="detail-card-key-style">节点名称 </span>
-            <span class="detail-card-value-style" style="margin-left: 55px">
-              {{ data.object.metadata.name }}</span
-            >
+            <span class="detail-card-value-style"> {{ data.object.metadata.name }}</span>
           </el-col>
+
           <el-col :span="8">
             <el-row>
-              <span class="detail-card-key-style">容器运行时 </span>
+              <span class="detail-card-key-style">操作系统 </span>
               <span class="detail-card-value-style">
-                {{ data.object.status.nodeInfo.containerRuntimeVersion }}
+                {{ data.object.status.nodeInfo.osImage }}
               </span>
             </el-row>
           </el-col>
@@ -116,16 +115,17 @@
 
           <el-col :span="8">
             <el-row>
-              <span class="detail-card-key-style">操作系统 </span>
-              <span class="detail-card-value-style">
-                {{ data.object.status.nodeInfo.osImage }}
+              <span class="detail-card-key-style">容器运行时 </span>
+              <span class="detail-card-value-style" style="margin-left: 17px">
+                {{ data.object.status.nodeInfo.containerRuntimeVersion }}
               </span>
             </el-row>
           </el-col>
+
           <el-col :span="8">
             <el-row>
               <span class="detail-card-key-style">kubelet版本 </span>
-              <span class="detail-card-value-style">
+              <span class="detail-card-value-style" style="margin-left: 15px">
                 {{ data.object.status.nodeInfo.kubeletVersion }}
               </span>
             </el-row>
@@ -135,7 +135,9 @@
         <el-row :gutter="20" style="margin-top: 15px">
           <el-col :span="8">
             <span class="detail-card-key-style">PodCIDRs </span>
-            <span class="detail-card-value-style"> {{ data.object.spec.podCIDR }}</span>
+            <span class="detail-card-value-style" style="margin-left: 22px">
+              {{ data.object.spec.podCIDR }}</span
+            >
           </el-col>
 
           <el-col :span="8">
