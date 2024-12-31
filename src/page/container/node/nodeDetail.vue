@@ -546,6 +546,17 @@ const goToNode = () => {
     query: { cluster: data.cluster },
   });
 };
+
+const jumpRoute = (row) => {
+  proxy.$router.push({
+    name: 'PodDetail',
+    query: {
+      cluster: data.cluster,
+      namespace: row.metadata.namespace,
+      name: row.metadata.name,
+    },
+  });
+};
 </script>
 
 <style scoped="scoped"></style>
