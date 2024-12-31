@@ -71,7 +71,7 @@
       <el-tab-pane label="基本信息" name="first"> </el-tab-pane>
       <el-tab-pane label="容器组" name="second"> </el-tab-pane>
       <el-tab-pane label="事件" name="third"></el-tab-pane>
-      <el-tab-pane label="版本记录" name="four"> </el-tab-pane>
+      <el-tab-pane label="监控指标" name="four"> </el-tab-pane>
     </el-tabs>
 
     <div v-if="data.activeName === 'first'">
@@ -320,6 +320,33 @@
         </template>
       </el-table>
       <pagination :total="data.podData.pageInfo.total" @on-change="onChange"></pagination>
+    </div>
+
+    <div v-if="data.activeName === 'third'">
+      <el-card class="app-docs" style="margin-top: 10px; height: 40px; margin-left: 10px">
+        <el-icon
+          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+          ><WarningFilled
+        /></el-icon>
+        <div style="vertical-align: middle; margin-top: -40px">
+          Pod 关联相关事件查询，更多查询请至事件中心
+        </div>
+      </el-card>
+
+      <el-row>
+        <el-col>
+          <div style="margin-left: 10px">
+            <button class="pixiu-two-button" @click="getNodeEvents">查询</button>
+            <button
+              style="margin-left: 10px; width: 85px"
+              class="pixiu-two-button2"
+              @click="handleDeleteDialog"
+            >
+              批量删除
+            </button>
+          </div>
+        </el-col>
+      </el-row>
     </div>
   </el-card>
 
