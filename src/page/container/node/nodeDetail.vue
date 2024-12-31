@@ -226,9 +226,7 @@
       <el-row>
         <el-col>
           <div style="margin-left: 10px">
-            <button style="margin-left: 10px; width: 85px" class="pixiu-two-button2">
-              批量删除
-            </button>
+            <button style="width: 85px" class="pixiu-two-button2">批量删除</button>
 
             <button
               class="pixiu-two-button"
@@ -241,7 +239,7 @@
             <el-input
               v-model="data.pageInfo.search.searchInfo"
               placeholder="名称搜索关键字"
-              style="width: 480px; float: right"
+              style="width: 35%; float: right"
               clearable
               @clear="getNodePods"
               @input="getNodePods"
@@ -261,7 +259,7 @@
         </el-col>
       </el-row>
 
-      <div style="margin-top: 15px"></div>
+      <div style="margin-top: 10px"></div>
       <el-table
         v-loading="data.podData.loading"
         :data="data.podData.tableData"
