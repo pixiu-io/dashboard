@@ -261,12 +261,11 @@
         </el-col>
       </el-row>
 
-      <div style="margin-top: 10px"></div>
       <el-table
         v-loading="data.podData.loading"
         :data="data.podData.tableData"
         stripe
-        style="margin-top: 2px; width: 100%"
+        style="margin-top: 10px; width: 100%"
         header-row-class-name="pixiu-table-header"
         :cell-style="{
           'font-size': '12px',
@@ -323,7 +322,7 @@
     </div>
 
     <div v-if="data.activeName === 'third'">
-      <el-card class="app-docs" style="margin-top: 10px; height: 40px; margin-left: 10px">
+      <el-card class="detail-docs" style="margin-left: 10px">
         <el-icon
           style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
           ><WarningFilled
@@ -352,7 +351,7 @@
         v-loading="data.eventData.loading"
         :data="data.eventData.eventTableData"
         stripe
-        style="margin-top: 25px"
+        style="margin-top: 10px"
         header-row-class-name="pixiu-table-header"
         :cell-style="{
           'font-size': '12px',
