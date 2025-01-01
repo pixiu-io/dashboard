@@ -317,7 +317,6 @@
         </el-table-column>
         <template #empty>
           <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
-<<<<<<< HEAD
         </template>
       </el-table>
       <pagination :total="data.podData.pageInfo.total" @on-change="onChange"></pagination>
@@ -375,38 +374,6 @@
         :total="data.eventData.pageEventInfo.total"
         @on-change="onEventChange"
       ></pagination>
-=======
-        </template>
-      </el-table>
-      <pagination :total="data.podData.pageInfo.total" @on-change="onChange"></pagination>
-    </div>
-
-    <div v-if="data.activeName === 'third'">
-      <el-card class="app-docs" style="margin-top: 10px; height: 40px; margin-left: 10px">
-        <el-icon
-          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
-          ><WarningFilled
-        /></el-icon>
-        <div style="vertical-align: middle; margin-top: -40px">
-          Pod 关联相关事件查询，更多查询请至事件中心
-        </div>
-      </el-card>
-
-      <el-row>
-        <el-col>
-          <div style="margin-left: 10px">
-            <button class="pixiu-two-button" @click="getNodeEvents">查询</button>
-            <button
-              style="margin-left: 10px; width: 85px"
-              class="pixiu-two-button2"
-              @click="handleDeleteDialog"
-            >
-              批量删除
-            </button>
-          </div>
-        </el-col>
-      </el-row>
->>>>>>> 1a1cd1b9e06157f9e5c28c2c29ff75231c3c1ff5
     </div>
   </el-card>
 
