@@ -1,7 +1,7 @@
 <template>
   <el-card class="contend-card-container2" style="margin-top: 1px">
     <div style="margin-top: 10px; float: right">
-      <button class="pixiu-two-button2" style="width: 60px" @click="goToNode">返回</button>
+      <button class="pixiu-two-button2" style="width: 60px" @click="goToRelease">返回</button>
     </div>
 
     <el-space style="display: flex; margin: 20px 15px">
