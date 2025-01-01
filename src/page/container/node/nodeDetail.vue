@@ -339,7 +339,7 @@
             <button
               style="margin-left: 10px; width: 85px"
               class="pixiu-two-button2"
-              @click="handleDeleteDialog"
+              @click="handleDeleteEventsDialog"
             >
               批量删除
             </button>
@@ -379,6 +379,14 @@
     :delete-name="data.deleteDialog.deleteName"
     @confirm="confirm"
     @cancel="cancel"
+  ></pixiuDialog>
+
+  <pixiuDialog
+    :close-event="data.deleteEventDialog.close"
+    :object-name="data.deleteEventDialog.objectName"
+    :delete-name="data.deleteEventDialog.deleteName"
+    @confirm="confirmEvent"
+    @cancel="cancelEvent"
   ></pixiuDialog>
 </template>
 
@@ -449,17 +457,20 @@ const data = reactive({
   },
 
   // 删除对象属性
-  deleteDialog: {
+  deleteEventDialog: {
     close: false,
-    objectName: 'Pod',
-    deleteName: '',
+    objectName: 'events',
+    deleteName: 'events',
     namespace: '',
   },
 
   nodeEvents: [],
   eventData: {
     loading: false,
+
     eventTableData: [],
+    multipleEventSelection: [],
+
     pageInfo: {
       page: 1,
       limit: 10,
@@ -515,6 +526,24 @@ const onChange = (v) => {
   data.podData.tableData = getTableData(data.podData.pageInfo, data.podData.pods);
 };
 
+const formatterStatus = (row, column, cellValue) => {
+  let phase = cellValue.phase;
+  if (phase == 'Failed') {
+    phase = cellValue.reason;
+  } else if (phase == 'Pending') {
+    return <div class="color-yellow-word">{phase}</div>;
+  }
+
+  if (phase == 'Running') {
+    return <div class="color-green-word">{phase}</div>;
+  }
+  return <div>{phase}</div>;
+};
+
+const handleClick = (tab, event) => {};
+const handleChange = (name) => {};
+
+// 事件处理开始
 const getNodeEvents = async () => {
   const [result, err] = await getNodeEventList(data.cluster, data.name, data.name);
   if (err) {
@@ -533,22 +562,44 @@ const onEventChange = (v) => {
   data.eventData.eventTableData = getTableData(data.eventData.pageInfo, data.nodeEvents);
 };
 
-const formatterStatus = (row, column, cellValue) => {
-  let phase = cellValue.phase;
-  if (phase == 'Failed') {
-    phase = cellValue.reason;
-  } else if (phase == 'Pending') {
-    return <div class="color-yellow-word">{phase}</div>;
+const handleEventSelectionChange = (events) => {
+  data.eventData.multipleEventSelection = [];
+  for (let event of events) {
+    data.eventData.multipleEventSelection.push(event.metadata);
+  }
+};
+const handleDeleteEventsDialog = (row) => {
+  if (data.eventData.multipleEventSelection.length === 0) {
+    proxy.$notify.warning('未选择待删除事件');
+    return;
   }
 
-  if (phase == 'Running') {
-    return <div class="color-green-word">{phase}</div>;
-  }
-  return <div>{phase}</div>;
+  data.deleteEventDialog.close = true;
+  data.deleteEventDialog.deleteName = 'events';
+  data.deleteEventDialog.namespace = '';
 };
 
-const handleClick = (tab, event) => {};
-const handleChange = (name) => {};
+const confirmEvent = async () => {
+  for (let event of data.eventData.multipleEventSelection) {
+    const [result, err] = await deleteEvent(data.cluster, event.namespace, event.name);
+    if (err) {
+      proxy.$notify.error(err.response.data.message);
+      return;
+    }
+  }
+
+  cancelEvent();
+  proxy.$notify.success('批量删除事件成功');
+  getNodeEvents();
+};
+
+const cancelEvent = () => {
+  data.deleteEventDialog.close = false;
+  setTimeout(() => {
+    data.deleteEventDialog.deleteName = '';
+  }, 100);
+};
+// 事件处理结束
 
 // 删除开始
 const handleDeleteDialog = (row) => {
