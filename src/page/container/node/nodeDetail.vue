@@ -261,12 +261,11 @@
         </el-col>
       </el-row>
 
-      <div style="margin-top: 10px"></div>
       <el-table
         v-loading="data.podData.loading"
         :data="data.podData.tableData"
         stripe
-        style="margin-top: 2px; width: 100%"
+        style="margin-top: 10px; width: 100%"
         header-row-class-name="pixiu-table-header"
         :cell-style="{
           'font-size': '12px',
@@ -323,13 +322,13 @@
     </div>
 
     <div v-if="data.activeName === 'third'">
-      <el-card class="app-docs" style="margin-top: 10px; height: 40px; margin-left: 10px">
+      <el-card class="detail-docs" style="margin-left: 10px">
         <el-icon
           style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
           ><WarningFilled
         /></el-icon>
         <div style="vertical-align: middle; margin-top: -40px">
-          Pod 关联相关事件查询，更多查询请至事件中心
+          Node 关联事件查询，更多查询请至事件中心
         </div>
       </el-card>
 
@@ -340,13 +339,37 @@
             <button
               style="margin-left: 10px; width: 85px"
               class="pixiu-two-button2"
-              @click="handleDeleteDialog"
+              @click="handleDeleteEventsDialog"
             >
               批量删除
             </button>
           </div>
         </el-col>
       </el-row>
+
+      <el-table
+        v-loading="data.eventData.loading"
+        :data="data.eventData.eventTableData"
+        stripe
+        style="margin-top: 10px"
+        header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#191919',
+        }"
+        @selection-change="handleEventSelectionChange"
+      >
+        <el-table-column type="selection" width="30px" />
+        <el-table-column prop="lastTimestamp" label="最后出现时间" :formatter="formatterTime" />
+        <el-table-column prop="type" label="级别" />
+        <el-table-column prop="involvedObject.kind" label="资源类型"> </el-table-column>
+        <el-table-column prop="count" label="出现次数"> </el-table-column>
+        <el-table-column prop="message" label="内容" min-width="260px" />
+        <template #empty>
+          <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
+        </template>
+      </el-table>
+      <pagination :total="data.eventData.pageInfo.total" @on-change="onEventChange"></pagination>
     </div>
   </el-card>
 
@@ -356,6 +379,14 @@
     :delete-name="data.deleteDialog.deleteName"
     @confirm="confirm"
     @cancel="cancel"
+  ></pixiuDialog>
+
+  <pixiuDialog
+    :close-event="data.deleteEventDialog.close"
+    :object-name="data.deleteEventDialog.objectName"
+    :delete-name="data.deleteEventDialog.deleteName"
+    @confirm="confirmEvent"
+    @cancel="cancelEvent"
   ></pixiuDialog>
 </template>
 
@@ -374,7 +405,7 @@ import {
   formatterTime,
 } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
-import { getRawEventList, deleteEvent } from '@/services/kubernetes/eventService';
+import { deleteEvent, getNodeEventList } from '@/services/kubernetes/eventService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { proxy } = getCurrentInstance();
@@ -404,6 +435,7 @@ const data = reactive({
     },
   },
 
+  nodePods: [],
   podData: {
     loading: false,
     pods: [],
@@ -424,27 +456,33 @@ const data = reactive({
     namespace: '',
   },
 
-  eventData: {
-    loading: false,
-  },
-  pageEventInfo: {
-    page: 1,
-    limit: 5,
-    total: 0,
-    search: {
-      field: 'name',
-      searchInfo: '',
-    },
+  // 删除对象属性
+  deleteEventDialog: {
+    close: false,
+    objectName: 'events',
+    deleteName: 'events',
+    namespace: '',
   },
 
-  crontab: false,
-  nodePods: [],
   nodeEvents: [],
+  eventData: {
+    loading: false,
+
+    eventTableData: [],
+    multipleEventSelection: [],
+
+    pageInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      nameSelector: '',
+      labelSelector: '',
+    },
+  },
 
   nodeImages: [],
 
   tableData: [],
-  eventTableData: [],
 
   yaml: '',
   yamlName: '',
@@ -488,32 +526,6 @@ const onChange = (v) => {
   data.podData.tableData = getTableData(data.podData.pageInfo, data.podData.pods);
 };
 
-const getNodeEvents = async () => {
-  const [result, err] = await getRawEventList(
-    data.cluster,
-    data.nodeObject.metadata.name,
-    '',
-    data.nodeObject.metadata.name,
-    'Node',
-    false,
-  );
-  if (err) {
-    proxy.$notify.error({ title: 'Event', message: err.response.data.message });
-    return;
-  }
-
-  data.nodeEvents = result;
-  data.pageEventInfo.total = result.length;
-  data.eventTableData = getTableData(data.pageEventInfo, data.nodeEvents);
-};
-
-const onEventChange = (v) => {
-  data.pageEventInfo.limit = v.limit;
-  data.pageEventInfo.page = v.page;
-
-  data.eventTableData = getTableData(data.pageEventInfo, data.nodeEvents);
-};
-
 const formatterStatus = (row, column, cellValue) => {
   let phase = cellValue.phase;
   if (phase == 'Failed') {
@@ -530,6 +542,64 @@ const formatterStatus = (row, column, cellValue) => {
 
 const handleClick = (tab, event) => {};
 const handleChange = (name) => {};
+
+// 事件处理开始
+const getNodeEvents = async () => {
+  const [result, err] = await getNodeEventList(data.cluster, data.name, data.name);
+  if (err) {
+    proxy.$notify.error({ title: 'Event', message: err.response.data.message });
+    return;
+  }
+
+  data.nodeEvents = result;
+  data.eventData.pageInfo.total = result.length;
+  data.eventData.eventTableData = getTableData(data.pageInfo, data.nodeEvents);
+};
+
+const onEventChange = (v) => {
+  data.eventData.pageInfo.limit = v.limit;
+  data.eventData.pageInfo.page = v.page;
+  data.eventData.eventTableData = getTableData(data.eventData.pageInfo, data.nodeEvents);
+};
+
+const handleEventSelectionChange = (events) => {
+  data.eventData.multipleEventSelection = [];
+  for (let event of events) {
+    data.eventData.multipleEventSelection.push(event.metadata);
+  }
+};
+const handleDeleteEventsDialog = (row) => {
+  if (data.eventData.multipleEventSelection.length === 0) {
+    proxy.$notify.warning('未选择待删除事件');
+    return;
+  }
+
+  data.deleteEventDialog.close = true;
+  data.deleteEventDialog.deleteName = 'events';
+  data.deleteEventDialog.namespace = '';
+};
+
+const confirmEvent = async () => {
+  for (let event of data.eventData.multipleEventSelection) {
+    const [result, err] = await deleteEvent(data.cluster, event.namespace, event.name);
+    if (err) {
+      proxy.$notify.error(err.response.data.message);
+      return;
+    }
+  }
+
+  cancelEvent();
+  proxy.$notify.success('批量删除事件成功');
+  getNodeEvents();
+};
+
+const cancelEvent = () => {
+  data.deleteEventDialog.close = false;
+  setTimeout(() => {
+    data.deleteEventDialog.deleteName = '';
+  }, 100);
+};
+// 事件处理结束
 
 // 删除开始
 const handleDeleteDialog = (row) => {
