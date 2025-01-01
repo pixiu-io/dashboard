@@ -347,6 +347,33 @@
           </div>
         </el-col>
       </el-row>
+
+      <el-table
+        v-loading="data.eventData.loading"
+        :data="data.eventData.eventTableData"
+        stripe
+        style="margin-top: 25px"
+        header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#191919',
+        }"
+        @selection-change="handleEventSelectionChange"
+      >
+        <el-table-column type="selection" width="30px" />
+        <el-table-column prop="lastTimestamp" label="最后出现时间" :formatter="formatterTime" />
+        <el-table-column prop="type" label="级别" />
+        <el-table-column prop="involvedObject.kind" label="资源类型"> </el-table-column>
+        <el-table-column prop="count" label="出现次数"> </el-table-column>
+        <el-table-column prop="message" label="内容" min-width="260px" />
+        <template #empty>
+          <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
+        </template>
+      </el-table>
+      <pagination
+        :total="data.eventData.pageEventInfo.total"
+        @on-change="onEventChange"
+      ></pagination>
     </div>
   </el-card>
 
@@ -404,6 +431,7 @@ const data = reactive({
     },
   },
 
+  nodePods: [],
   podData: {
     loading: false,
     pods: [],
@@ -416,6 +444,7 @@ const data = reactive({
       labelSelector: '',
     },
   },
+
   // 删除对象属性
   deleteDialog: {
     close: false,
@@ -424,27 +453,22 @@ const data = reactive({
     namespace: '',
   },
 
+  nodeEvents: [],
   eventData: {
     loading: false,
-  },
-  pageEventInfo: {
-    page: 1,
-    limit: 5,
-    total: 0,
-    search: {
-      field: 'name',
-      searchInfo: '',
+    eventTableData: [],
+    pageInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      nameSelector: '',
+      labelSelector: '',
     },
   },
-
-  crontab: false,
-  nodePods: [],
-  nodeEvents: [],
 
   nodeImages: [],
 
   tableData: [],
-  eventTableData: [],
 
   yaml: '',
   yamlName: '',
@@ -503,15 +527,14 @@ const getNodeEvents = async () => {
   }
 
   data.nodeEvents = result;
-  data.pageEventInfo.total = result.length;
-  data.eventTableData = getTableData(data.pageEventInfo, data.nodeEvents);
+  data.eventData.pageEventInfo.total = result.length;
+  data.eventData.eventTableData = getTableData(data.pageEventInfo, data.nodeEvents);
 };
 
 const onEventChange = (v) => {
-  data.pageEventInfo.limit = v.limit;
-  data.pageEventInfo.page = v.page;
-
-  data.eventTableData = getTableData(data.pageEventInfo, data.nodeEvents);
+  data.eventData.pageEventInfo.limit = v.limit;
+  data.eventData.pageEventInfo.page = v.page;
+  data.eventData.eventTableData = getTableData(data.eventData.pageEventInfo, data.nodeEvents);
 };
 
 const formatterStatus = (row, column, cellValue) => {
