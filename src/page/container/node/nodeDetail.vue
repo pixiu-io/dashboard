@@ -397,7 +397,7 @@ import {
   formatterTime,
 } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
-import { getRawEventList, deleteEvent, getNodeEventList } from '@/services/kubernetes/eventService';
+import { deleteEvent, getNodeEventList } from '@/services/kubernetes/eventService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { proxy } = getCurrentInstance();
