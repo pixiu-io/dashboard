@@ -205,10 +205,11 @@ const onChange = (v) => {
 
 const jumpRoute = (row) => {
   router.push({
-    name: 'DeploymentDetail',
+    name: 'ReleaseDetail',
     query: {
-      name: row.metadata.name,
-      namespace: data.namespace,
+      cluster: data.cluster,
+      name: row.name,
+      namespace: row.namespace,
     },
   });
 };

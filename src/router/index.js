@@ -20,6 +20,7 @@ import {
   Daemonset,
   CreateDaemonset,
   Release,
+  ReleaseDetail,
   Terminal,
   Monitor,
   Node,
@@ -255,6 +256,14 @@ const routes = [
               title: 'PodDetail',
             },
             component: PodDetail,
+          },
+          {
+            path: 'release/detail',
+            name: 'ReleaseDetail',
+            meta: {
+              title: 'ReleaseDetail',
+            },
+            component: ReleaseDetail,
           },
           {
             path: 'deployments/detail',

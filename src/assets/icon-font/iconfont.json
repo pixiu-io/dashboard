@@ -6,6 +6,13 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "13303501",
+      "name": "helm",
+      "font_class": "helm1",
+      "unicode": "e659",
+      "unicode_decimal": 58969
+    },
+    {
       "icon_id": "19838923",
       "name": "总容器组",
       "font_class": "zongrongqizu",
