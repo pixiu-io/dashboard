@@ -12,6 +12,7 @@ import CreateStatefulSet from './container/statefulset/createStatefulSet.vue';
 import EditStatefulSet from './container/statefulset/editStatefulSet.vue';
 import StatefulSetDetail from './container/statefulset/details.vue';
 import Release from './container/release/release.vue';
+import ReleaseDetail from './container/release/releaseDetail.vue';
 import Terminal from './container/terminal.vue';
 import Monitor from './container/monitor.vue';
 import Node from './container/node/node.vue';
@@ -89,6 +90,7 @@ export {
   DaemonsetDetail,
   CreateDaemonset,
   Release,
+  ReleaseDetail,
   Node,
   NodeDetail,
   Terminal,
