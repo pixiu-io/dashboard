@@ -248,7 +248,7 @@
           ><WarningFilled
         /></el-icon>
         <div style="vertical-align: middle; margin-top: -40px">
-          Pod 关联相关事件查询，更多查询请至事件中心
+          Pod 关联事件查询，更多查询请至事件中心
         </div>
       </el-card>
 

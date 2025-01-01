@@ -329,7 +329,7 @@
           ><WarningFilled
         /></el-icon>
         <div style="vertical-align: middle; margin-top: -40px">
-          Pod 关联相关事件查询，更多查询请至事件中心
+          Node 关联事件查询，更多查询请至事件中心
         </div>
       </el-card>
 
@@ -370,10 +370,7 @@
           <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
         </template>
       </el-table>
-      <pagination
-        :total="data.eventData.pageEventInfo.total"
-        @on-change="onEventChange"
-      ></pagination>
+      <pagination :total="data.eventData.pageInfo.total" @on-change="onEventChange"></pagination>
     </div>
   </el-card>
 
@@ -401,7 +398,7 @@ import {
   formatterTime,
 } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
-import { getRawEventList, deleteEvent } from '@/services/kubernetes/eventService';
+import { getRawEventList, deleteEvent, getNodeEventList } from '@/services/kubernetes/eventService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { proxy } = getCurrentInstance();
@@ -520,28 +517,21 @@ const onChange = (v) => {
 };
 
 const getNodeEvents = async () => {
-  const [result, err] = await getRawEventList(
-    data.cluster,
-    data.nodeObject.metadata.name,
-    '',
-    data.nodeObject.metadata.name,
-    'Node',
-    false,
-  );
+  const [result, err] = await getNodeEventList(data.cluster, data.name, data.name);
   if (err) {
     proxy.$notify.error({ title: 'Event', message: err.response.data.message });
     return;
   }
 
   data.nodeEvents = result;
-  data.eventData.pageEventInfo.total = result.length;
-  data.eventData.eventTableData = getTableData(data.pageEventInfo, data.nodeEvents);
+  data.eventData.pageInfo.total = result.length;
+  data.eventData.eventTableData = getTableData(data.pageInfo, data.nodeEvents);
 };
 
 const onEventChange = (v) => {
-  data.eventData.pageEventInfo.limit = v.limit;
-  data.eventData.pageEventInfo.page = v.page;
-  data.eventData.eventTableData = getTableData(data.eventData.pageEventInfo, data.nodeEvents);
+  data.eventData.pageInfo.limit = v.limit;
+  data.eventData.pageInfo.page = v.page;
+  data.eventData.eventTableData = getTableData(data.eventData.pageInfo, data.nodeEvents);
 };
 
 const formatterStatus = (row, column, cellValue) => {
