@@ -49,6 +49,118 @@
     </el-space>
   </el-card>
 
+  <el-card class="contend-card-container2">
+    <el-tabs
+      v-model="data.activeName"
+      class="namespace-tab"
+      style="margin-left: 10px"
+      @tab-click="handleClick"
+      @tab-change="handleChange"
+    >
+      <el-tab-pane label="基本信息" name="first"> </el-tab-pane>
+      <el-tab-pane label="端口组" name="second"> </el-tab-pane>
+      <el-tab-pane label="事件" name="third"> </el-tab-pane>
+      <el-tab-pane label="YAML" name="four"></el-tab-pane>
+    </el-tabs>
+
+    <div v-if="data.activeName === 'first'">
+      <el-form style="margin-top: 10px">
+        <el-form-item>
+          <template #label>
+            <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+              >实例信息
+            </span>
+          </template>
+        </el-form-item>
+
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <span class="detail-card-key-style">名称 </span>
+            <span class="detail-card-value-style" style="margin-left: 55px">
+              {{ data.object.metadata.name }}</span
+            >
+          </el-col>
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">命名空间 </span>
+              <span class="detail-card-value-style">
+                {{ data.object.metadata.namespace }}
+              </span>
+            </el-row>
+          </el-col>
+
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">创建时间 </span>
+              <span class="detail-card-value-style"> {{ data.createTime }}</span>
+            </el-row>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20" style="margin-top: 15px">
+          <el-col :span="8">
+            <span class="detail-card-key-style">类型 </span>
+            <span class="detail-card-value-style"> {{ data.object.spec.type }}</span>
+          </el-col>
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">服务IP </span>
+              <span class="detail-card-value-style">
+                {{ data.object.spec.clusterIP }}
+              </span>
+            </el-row>
+          </el-col>
+        </el-row>
+
+        <div style="margin-top: 20px"></div>
+
+        <el-form-item>
+          <template #label>
+            <span class="detail-card-key-style" style="font-size: 14px; color: #040000">标签 </span>
+          </template>
+        </el-form-item>
+
+        <el-form-item style="margin-top: -10px">
+          <div v-if="data.object.metadata.labels === undefined" style="margin-left: 10px">-</div>
+          <div v-else style="margin-top: -8px">
+            <div
+              v-for="(item, index) in data.object.metadata.labels"
+              :key="item"
+              style="font-size: 14px"
+            >
+              <el-tag type="primary" style="margin-top: 5px; margin-left: 10px"
+                >{{ index }}: {{ item }}</el-tag
+              >
+            </div>
+          </div>
+        </el-form-item>
+
+        <el-form-item>
+          <template #label>
+            <span class="detail-card-key-style" style="font-size: 14px; color: #040000">注释 </span>
+          </template>
+        </el-form-item>
+
+        <el-form-item style="margin-top: -10px">
+          <div v-if="data.object.metadata.annotations === undefined" style="margin-left: 10px">
+            -
+          </div>
+          <div v-else style="margin-top: -8px">
+            <div
+              v-for="(item, index) in data.object.metadata.annotations"
+              :key="item"
+              style="font-size: 14px"
+            >
+              <el-tag type="primary" style="margin-top: 5px; margin-left: 10px"
+                >{{ index }}: {{ item }}</el-tag
+              >
+            </div>
+          </div>
+        </el-form-item>
+      </el-form>
+    </div>
+  </el-card>
+
   <div v-if="data.activeName === 'first'">
     <el-card class="contend-card-container2">
       <div class="big-world-style" style="margin-bottom: 20px; margin-top: 6px">基本信息</div>
@@ -202,7 +314,18 @@ const data = reactive({
     total: 0,
   },
 
-  service: '',
+  service: {
+    metadata: {},
+    spec: {},
+    status: {},
+  },
+
+  object: {
+    metadata: {},
+    spec: {},
+    status: {},
+  },
+
   yaml: '',
 
   createTime: '',
@@ -215,7 +338,7 @@ onMounted(async () => {
   data.namespace = proxy.$route.query.namespace;
   data.name = proxy.$route.query.name;
 
-  await GetService();
+  GetService();
 });
 
 const { toClipboard } = useClipboard();
