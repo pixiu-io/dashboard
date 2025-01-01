@@ -207,6 +207,7 @@ const jumpRoute = (row) => {
   router.push({
     name: 'ReleaseDetail',
     query: {
+      cluster: data.cluster,
       name: row.name,
       namespace: row.namespace,
     },
