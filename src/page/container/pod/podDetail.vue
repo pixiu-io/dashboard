@@ -514,8 +514,10 @@
 
   <PiXiuViewOrEdit
     :yaml-dialog="data.yamlDialog"
+    title="编辑Yaml"
     :yaml="data.yaml"
-    title="查看Yaml"
+    :read-only="false"
+    :refresh="GetPod"
   ></PiXiuViewOrEdit>
 </template>
 
@@ -571,7 +573,6 @@ const data = reactive({
   },
   podContainers: [],
 
-  yamlDialog: false,
   yaml: '',
 
   activeName: 'first',
@@ -754,11 +755,7 @@ onMounted(async () => {
   getMetricsInfo(data.name, data.namespace);
 });
 
-onBeforeMount(() => {
-  data.monitorData.timer = window.setInterval(() => {
-    getMetricsInfo(data.name, data.namespace);
-  }, 3000);
-});
+onBeforeMount(() => {});
 
 onBeforeUnmount(() => {
   if (data.monitorData.timer) {
@@ -972,14 +969,37 @@ const closeLogDrawer = () => {
   data.logData.podLogs = '点击查询获取日志';
 };
 
+const handleClick = (tab, event) => {};
+const handleChange = (name) => {
+  if (name === 'third') {
+    getPodEvents();
+  }
+
+  if (name === 'four') {
+    getMetricsInfo(data.name, data.namespace);
+    data.monitorData.timer = window.setInterval(() => {
+      getMetricsInfo(data.name, data.namespace);
+    }, 3000);
+  } else {
+    if (data.monitorData.timer) {
+      window.clearInterval(data.monitorData.timer);
+    }
+  }
+};
+
 const goToPod = () => {
   const queryParams = { cluster: data.cluster };
   router.push({ path: '/kubernetes/pods', query: queryParams });
 };
 
 const viewYaml = async () => {
+  const [pod, err] = await getPod(data.cluster, data.namespace, data.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+  data.yaml = pod;
   data.yamlDialog = true;
-  data.yaml = data.pod;
 };
 
 const formatterContainerStartTime = (row, column, cellValue) => {
