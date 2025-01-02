@@ -514,8 +514,10 @@
 
   <PiXiuViewOrEdit
     :yaml-dialog="data.yamlDialog"
+    title="编辑Yaml"
     :yaml="data.yaml"
-    title="查看Yaml"
+    :read-only="false"
+    :refresh="GetPod"
   ></PiXiuViewOrEdit>
 </template>
 
@@ -571,7 +573,6 @@ const data = reactive({
   },
   podContainers: [],
 
-  yamlDialog: false,
   yaml: '',
 
   activeName: 'first',
@@ -978,8 +979,13 @@ const goToPod = () => {
 };
 
 const viewYaml = async () => {
+  const [pod, err] = await getPod(data.cluster, data.namespace, data.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+  data.yaml = pod;
   data.yamlDialog = true;
-  data.yaml = data.pod;
 };
 
 const formatterContainerStartTime = (row, column, cellValue) => {

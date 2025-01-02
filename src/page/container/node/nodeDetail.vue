@@ -488,7 +488,6 @@ const data = reactive({
 
   yaml: '',
   yamlName: '',
-  readOnly: true,
 });
 
 onMounted(async () => {
