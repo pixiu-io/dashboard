@@ -755,11 +755,7 @@ onMounted(async () => {
   getMetricsInfo(data.name, data.namespace);
 });
 
-onBeforeMount(() => {
-  data.monitorData.timer = window.setInterval(() => {
-    getMetricsInfo(data.name, data.namespace);
-  }, 3000);
-});
+onBeforeMount(() => {});
 
 onBeforeUnmount(() => {
   if (data.monitorData.timer) {
@@ -977,6 +973,17 @@ const handleClick = (tab, event) => {};
 const handleChange = (name) => {
   if (name === 'third') {
     getPodEvents();
+  }
+
+  if (name === 'four') {
+    getMetricsInfo(data.name, data.namespace);
+    data.monitorData.timer = window.setInterval(() => {
+      getMetricsInfo(data.name, data.namespace);
+    }, 3000);
+  } else {
+    if (data.monitorData.timer) {
+      window.clearInterval(data.monitorData.timer);
+    }
   }
 };
 
