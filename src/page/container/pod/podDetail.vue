@@ -973,6 +973,13 @@ const closeLogDrawer = () => {
   data.logData.podLogs = '点击查询获取日志';
 };
 
+const handleClick = (tab, event) => {};
+const handleChange = (name) => {
+  if (name === 'third') {
+    getPodEvents();
+  }
+};
+
 const goToPod = () => {
   const queryParams = { cluster: data.cluster };
   router.push({ path: '/kubernetes/pods', query: queryParams });
