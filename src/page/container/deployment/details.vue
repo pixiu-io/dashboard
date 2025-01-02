@@ -32,6 +32,7 @@
 
         <div style="margin-bottom: -10px; margin-left: 10px">
           <button class="pixiu-two-button" @click="GetNode">刷新</button>
+          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">设置</button>
 
           <button
             class="pixiu-two-button2"
@@ -39,14 +40,6 @@
             @click="viewYaml"
           >
             查看YAML
-          </button>
-
-          <button
-            class="pixiu-two-button2"
-            style="margin-left: 10px; width: 85px"
-            @click="handleRemoteLoginDialog"
-          >
-            远程登录
           </button>
 
           <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px; color: #171313">
@@ -341,13 +334,8 @@
               删除
             </el-button>
 
-            <el-button
-              type="text"
-              size="small"
-              style="margin-right: 1px; color: #006eff"
-              @click="openShell(scope.row)"
-            >
-              远程登陆
+            <el-button type="text" size="small" style="margin-right: 1px; color: #006eff">
+              设置
             </el-button>
           </template>
         </el-table-column>
@@ -555,10 +543,17 @@ const selectedPod = ref('');
 
 const data = reactive({
   cluster: '',
-  clusterName: '',
   name: '',
   namespace: '',
+
+  object: {
+    metadata: {},
+    spec: {},
+    status: {},
+  },
+  createTime: '',
   activeName: 'first',
+
   labels: '',
 
   workloadType: 'Deployment',
@@ -641,12 +636,11 @@ const data = reactive({
 
 onMounted(async () => {
   data.cluster = proxy.$route.query.cluster;
-  data.clusterName = localStorage.getItem(data.cluster);
-  data.name = proxy.$route.query.name;
   data.namespace = proxy.$route.query.namespace;
+  data.name = proxy.$route.query.name;
 
-  await getDeploymentObject();
-  await getDeploymentPods();
+  GetDeployment();
+  //  getDeploymentPods();
   // await getDeploymentEvents();
 });
 
@@ -715,14 +709,14 @@ const changeLogLine = async (val) => {
   }
 };
 
-const getDeploymentObject = async () => {
+const GetDeployment = async () => {
   const [result, err] = await getDeployment(data.cluster, data.namespace, data.name);
   if (err) {
     proxy.$notify.error(err.response.data.message);
     return;
   }
-  data.deployment = result;
-  data.yaml = jsYaml.dump(data.deployment, { quotingType: '"' });
+  data.object = result;
+  data.createTime = formatTimestamp(data.object.metadata.creationTimestamp);
 };
 
 const handleDeleteDialog = (row) => {
