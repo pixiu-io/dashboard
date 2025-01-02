@@ -33,10 +33,6 @@
         <div style="margin-bottom: -10px; margin-left: 10px">
           <button class="pixiu-two-button" @click="GetNode">刷新</button>
 
-          <button class="pixiu-two-button2" style="margin-left: 10px" @click="handleLogDrawer">
-            日志
-          </button>
-
           <button
             class="pixiu-two-button2"
             style="margin-left: 10px; width: 85px"
@@ -373,6 +369,14 @@
     </div>
   </el-card>
 
+  <PiXiuViewOrEdit
+    :yaml-dialog="data.yamlDialog"
+    title="编辑Yaml"
+    :yaml="data.yaml"
+    :read-only="false"
+    :refresh="GetNode"
+  ></PiXiuViewOrEdit>
+
   <pixiuDialog
     :close-event="data.deleteDialog.close"
     :object-name="data.deleteDialog.objectName"
@@ -391,14 +395,12 @@
 </template>
 
 <script setup lang="jsx">
-import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
-import jsYaml from 'js-yaml';
+import { reactive, getCurrentInstance, onMounted } from 'vue';
 import { getNode } from '@/services/kubernetes/nodeService';
 import { getPodsByNode, deletePod } from '@/services/kubernetes/podService';
 import { getTableData, formatTimestamp } from '@/utils/utils';
+import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import {
-  formatString,
-  formatterContainerImage,
   formatterNamespace,
   formatterPodStatus,
   formatterRestartCount,
@@ -526,22 +528,15 @@ const onChange = (v) => {
   data.podData.tableData = getTableData(data.podData.pageInfo, data.podData.pods);
 };
 
-const formatterStatus = (row, column, cellValue) => {
-  let phase = cellValue.phase;
-  if (phase == 'Failed') {
-    phase = cellValue.reason;
-  } else if (phase == 'Pending') {
-    return <div class="color-yellow-word">{phase}</div>;
-  }
-
-  if (phase == 'Running') {
-    return <div class="color-green-word">{phase}</div>;
-  }
-  return <div>{phase}</div>;
-};
-
 const handleClick = (tab, event) => {};
-const handleChange = (name) => {};
+const handleChange = (name) => {
+  if (name === 'second') {
+    getNodePods();
+  }
+  if (name === 'third') {
+    getNodeEvents();
+  }
+};
 
 // 事件处理开始
 const getNodeEvents = async () => {
@@ -635,9 +630,19 @@ const cancel = () => {
 
 // 删除结束
 
-const editYaml = () => {
-  data.readOnly = false;
+// 编辑 yaml 开始
+
+const viewYaml = async () => {
+  const [node, err] = await getNode(data.cluster, data.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.yaml = node;
+  data.yamlDialog = true;
 };
+// 编辑 yaml 结束
 
 const goToNode = () => {
   proxy.$router.push({
