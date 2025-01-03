@@ -378,13 +378,24 @@
             <el-tag v-show="scope.row.status.replicas !== 0" type="success">当前版本</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="spec.template.spec.containers[0].image" label="镜像" />
+        <el-table-column prop="spec.template.spec.containers[0].image" label="镜像">
+          <template #default="scope">
+            <el-tag round>
+              <div style="display: flex">
+                <pixiu-icon name="icon-docker" size="16px" type="iconfont" color="#409EFF" />
+                <div style="margin-left: 6px">
+                  {{ scope.row.spec.template.spec.containers[0].image }}
+                </div>
+              </div>
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="metadata.creationTimestamp"
           label="创建时间"
           :formatter="formatterTime"
         />
-        <el-table-column fixed="right" label="操作" width="160px">
+        <el-table-column fixed="right" label="操作" width="100px">
           <template #default="scope">
             <el-button
               size="small"
@@ -419,7 +430,7 @@
     v-if="data.diffYamlDialog"
     v-model:dialogVisible="data.diffYamlDialog"
     title="版本差异"
-    :original="data.deployment.spec.template"
+    :original="data.object.spec.template"
     :modified="data.modifiedYaml"
   ></PiXiuDiffView>
   <!--  删除pod提示框-->
