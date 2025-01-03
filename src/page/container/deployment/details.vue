@@ -943,45 +943,6 @@ const handleEventSelectionChange = (events) => {
   }
 };
 
-const formatterStatus = (row, column, cellValue) => {
-  let phase = cellValue.phase;
-  if (phase == 'Failed') {
-    phase = cellValue.reason;
-  } else if (phase == 'Pending') {
-    return <div class="color-yellow-word">{phase}</div>;
-    // const containerStatuses = cellValue.containerStatuses;
-    // for (let i = 0; i < containerStatuses.length; i++) {
-    //   phase = containerStatuses[i].state.waiting.reason;
-    //   break;
-    // }
-  }
-
-  if (phase == 'Running') {
-    return <div class="color-green-word">{phase}</div>;
-  }
-  return <div>{phase}</div>;
-};
-
-const formatterName = (row, column, cellValue) => {
-  return (
-    <el-tooltip effect="light" placement="top" content={cellValue}>
-      <div class="pixiu-ellipsis-style">{cellValue}</div>
-    </el-tooltip>
-  );
-};
-
-const getPodRestartCount = (row, column, cellValue) => {
-  let count = 0;
-  if (cellValue === undefined) {
-  } else {
-    for (let i = 0; i < cellValue.length; i++) {
-      count = count + cellValue[i].restartCount;
-    }
-  }
-
-  return <div>{count} 次</div>;
-};
-
 const handleClick = (tab, event) => {};
 
 const handleChange = async (name) => {
