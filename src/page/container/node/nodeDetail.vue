@@ -270,7 +270,7 @@
         @selection-change="handlePodSelectionChange"
       >
         <el-table-column type="selection" width="30" />
-        <el-table-column prop="metadata.name" sortable label="实例名称" min-width="100px">
+        <el-table-column prop="metadata.name" sortable label="实例名称" min-width="120px">
           <template #default="scope">
             <el-link
               class="global-table-world"
@@ -285,8 +285,10 @@
 
         <el-table-column prop="status" label="状态" :formatter="formatterPodStatus" />
 
-        <el-table-column prop="metadata.namespace" label="命名空间" :formatter="formatterNamespace">
-        </el-table-column>
+        <el-table-column prop="metadata.namespace" label="命名空间"> </el-table-column>
+
+        <!-- <el-table-column prop="metadata.namespace" label="命名空间" :formatter="formatterNamespace">
+        </el-table-column> -->
 
         <el-table-column prop="status.podIP" label="实例IP"> </el-table-column>
 

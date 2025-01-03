@@ -350,9 +350,7 @@
       </el-table>
       <pagination :total="data.eventData.pageInfo.total" @on-change="onEventChange"></pagination>
     </div>
-  </el-card>
 
-  <el-card class="detail-card-container">
     <div v-if="data.activeName === 'four'">
       <div>
         <el-row>
@@ -416,6 +414,7 @@
       <pagination :total="data.pageReplicasetInfo.total" @on-change="onChange"></pagination>
     </div>
   </el-card>
+
   <PiXiuDiffView
     v-if="data.diffYamlDialog"
     v-model:dialogVisible="data.diffYamlDialog"
