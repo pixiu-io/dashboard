@@ -299,69 +299,38 @@
       </el-table>
       <pagination :total="data.podData.pageInfo.total" @on-change="onChange"></pagination>
     </div>
-  </el-card>
 
-  <el-card class="detail-card-container">
-    <div v-if="data.activeName === 'third'" style="margin-left: 12px">
-      <div>
-        <el-card class="detail-docs">
-          <el-icon
-            style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
-            ><WarningFilled
-          /></el-icon>
-          <div style="vertical-align: middle; margin-top: -40px">
-            事件保存事件为1小时，1小时后自动清理。
+    <div v-if="data.activeName === 'third'">
+      <el-card class="detail-docs" style="margin-left: 10px">
+        <el-icon
+          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+          ><WarningFilled
+        /></el-icon>
+        <div style="vertical-align: middle; margin-top: -40px">
+          Node 关联事件查询，更多查询请至事件中心
+        </div>
+      </el-card>
+
+      <el-row>
+        <el-col>
+          <div style="margin-left: 10px">
+            <button class="pixiu-two-button" @click="getNodeEvents">查询</button>
+            <button
+              style="margin-left: 10px; width: 85px"
+              class="pixiu-two-button2"
+              @click="handleDeleteEventsDialog"
+            >
+              批量删除
+            </button>
           </div>
-        </el-card>
+        </el-col>
+      </el-row>
 
-        <el-row>
-          <el-col>
-            <div>
-              <!-- <button class="pixiu-two-button" @click="getDeploymentEvents">刷新</button> -->
-              <button
-                style="margin-left: 10px; width: 85px"
-                class="pixiu-two-button2"
-                @click="deleteEventsInBatch"
-              >
-                批量删除
-              </button>
-
-              <div style="margin-left: 8px; float: right; margin-left: 12px">
-                <button class="pixiu-two-button" @click="getDeploymentEvents">搜索</button>
-              </div>
-
-              <el-input
-                v-model="data.pageInfo.search.searchInfo"
-                placeholder="名称搜索关键字"
-                style="width: 480px; float: right"
-                clearable
-                @clear="getDeploymentEvents"
-                @input="getDeploymentEvents"
-              >
-                <template #suffix>
-                  <pixiu-icon
-                    name="icon-search"
-                    style="cursor: pointer"
-                    size="15px"
-                    type="iconfont"
-                    color="#909399"
-                    @click="getDeploymentEvents"
-                  />
-                </template>
-              </el-input>
-              <div style="float: right">
-                <el-switch v-model="data.crontab" inline-prompt width="36px" />
-                <span style="font-size: 13px; margin-left: 5px; margin-right: 10px">自动刷新</span>
-              </div>
-            </div>
-          </el-col>
-        </el-row>
-      </div>
       <el-table
-        v-loading="data.loading"
-        :data="data.eventTableData"
+        v-loading="data.eventData.loading"
+        :data="data.eventData.eventTableData"
         stripe
-        style="margin-top: 6px"
+        style="margin-top: 10px"
         header-row-class-name="pixiu-table-header"
         :cell-style="{
           'font-size': '12px',
@@ -369,25 +338,21 @@
         }"
         @selection-change="handleEventSelectionChange"
       >
-        <el-table-column type="selection" width="30" />
-        <el-table-column
-          prop="lastTimestamp"
-          label="最后出现时间"
-          sortable
-          :formatter="formatterTime"
-        />
+        <el-table-column type="selection" width="30px" />
+        <el-table-column prop="lastTimestamp" label="最后出现时间" :formatter="formatterTime" />
         <el-table-column prop="type" label="级别" />
         <el-table-column prop="involvedObject.kind" label="资源类型"> </el-table-column>
-        <el-table-column prop="involvedObject.name" label="资源名称" :formatter="formatterName">
-        </el-table-column>
         <el-table-column prop="count" label="出现次数"> </el-table-column>
-        <el-table-column prop="message" label="内容" min-width="250px" />
+        <el-table-column prop="message" label="内容" min-width="260px" />
         <template #empty>
-          <div class="table-inline-word">该 workload 的事件列表为空</div>
+          <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
         </template>
       </el-table>
-      <pagination :total="data.pageEventInfo.total" @on-change="onEventChange"></pagination>
+      <pagination :total="data.eventData.pageInfo.total" @on-change="onEventChange"></pagination>
     </div>
+  </el-card>
+
+  <el-card class="detail-card-container">
     <div v-if="data.activeName === 'four'">
       <div>
         <el-row>
@@ -524,6 +489,22 @@ const data = reactive({
     },
   },
 
+  nodeEvents: [],
+  eventData: {
+    loading: false,
+
+    eventTableData: [],
+    multipleEventSelection: [],
+
+    pageInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      nameSelector: '',
+      labelSelector: '',
+    },
+  },
+
   labels: '',
 
   workloadType: 'Deployment',
@@ -610,7 +591,6 @@ onMounted(async () => {
   data.name = proxy.$route.query.name;
 
   GetDeployment();
-  // await getDeploymentEvents();
 });
 
 // 监听子属性变化
@@ -815,10 +795,9 @@ const onChange = (v) => {
 };
 
 const onEventChange = (v) => {
-  data.pageEventInfo.limit = v.limit;
-  data.pageEventInfo.page = v.page;
-
-  data.eventTableData = getTableData(data.pageEventInfo, data.deploymentEvents);
+  data.eventData.pageInfo.limit = v.limit;
+  data.eventData.pageInfo.page = v.page;
+  data.eventData.eventTableData = getTableData(data.eventData.pageInfo, data.nodeEvents);
 };
 
 const getPodLogs = async () => {
