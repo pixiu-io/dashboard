@@ -365,7 +365,7 @@
       </div>
       <el-table
         :data="data.replicasets"
-        style="margin-top: 6px"
+        style="margin-top: -5px"
         header-row-class-name="pixiu-table-header"
         :cell-style="{
           'font-size': '12px',
@@ -879,7 +879,7 @@ const getDeploymentEvents = async () => {
 
 const getDeploymentRs = async () => {
   data.loading = true;
-  const lables = data.deployment.metadata.labels;
+  const lables = data.object.metadata.labels;
   let labelStr = Object.keys(lables)
     .map((key) => {
       return key + '=' + lables[key];
@@ -981,7 +981,7 @@ const handleChange = async (name) => {
       getDeploymentEvents();
       break;
     case 'four':
-      await getDeploymentRs();
+      getDeploymentRs();
       break;
   }
 };
