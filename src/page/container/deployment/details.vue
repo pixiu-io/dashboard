@@ -1,193 +1,231 @@
 <template>
-  <el-card class="detail-card-container">
+  <el-card class="contend-card-container2" style="margin-top: 1px">
     <div style="margin-top: 10px; float: right">
-      <button class="pixiu-two-button2" style="width: 60px; margin-right: 6px">日志</button>
-      <button class="pixiu-two-button2" style="width: 60px">刷新</button>
+      <button class="pixiu-two-button2" style="width: 60px" @click="got">返回</button>
     </div>
 
-    <div style="display: flex; margin-left: 20px; margin-top: 15px">
-      <pixiu-icon name="icon-deploymentunitbeifen" size="40px" type="iconfont" color="#006eff" />
+    <el-space style="display: flex; margin: 20px 15px">
+      <div style="display: flex; align-items: center; height: 100%">
+        <pixiu-icon name="icon-zongrongqizu" size="75px" type="iconfont" color="#006eff" />
+      </div>
       <div
-        class="breadcrumb-create-style"
-        style="margin-left: 10px; margin-top: 10px; font-size: 15px"
+        style="
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          min-height: 80px;
+        "
       >
-        {{ data.name }}
-        <pixiu-icon
-          name="icon-copy"
-          size="12px"
-          style="cursor: pointer; margin-left: 2px"
-          type="iconfont"
-          color="#909399"
-          @click="copy(data.name)"
-        />
+        <div
+          class="breadcrumb-create-style"
+          style="font-size: 17px; margin-top: -10px; margin-left: 10px"
+        >
+          {{ data.name }}
+        </div>
+
+        <div style="margin-bottom: 10px">
+          <span class="detail-card-key-style" style="font-size: 12.5px">创建时间 </span>
+          <span class="detail-card-value-style" style="margin-left: 5px; font-size: 12.5px">
+            {{ data.createTime }}</span
+          >
+        </div>
+
+        <div style="margin-bottom: -10px; margin-left: 10px">
+          <button class="pixiu-two-button" @click="GetNode">刷新</button>
+          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">设置</button>
+
+          <button
+            class="pixiu-two-button2"
+            style="margin-left: 10px; width: 85px"
+            @click="viewYaml"
+          >
+            查看YAML
+          </button>
+
+          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px; color: #171313">
+            更多操作
+          </button>
+        </div>
       </div>
-    </div>
+    </el-space>
+  </el-card>
 
-    <div style="margin-top: 25px; display: flex">
-      <div style="width: 50%">
-        <el-form>
-          <el-form-item>
-            <template #label>
-              <span style="margin-left: 20px; font-size: 13px; color: #191919">负载名称 </span>
-            </template>
-            <span class="detail-card-style-form2" style="margin-left: 106px">
-              {{ data.name }}
-            </span>
-          </el-form-item>
-
-          <div style="margin-top: -12px"></div>
-          <el-form-item>
-            <template #label>
-              <span style="margin-left: 20px; font-size: 13px; color: #191919">状态 </span>
-            </template>
-            <span class="detail-card-style-form2" style="margin-left: 132px">
-              <div style="display: flex">
-                <div>
-                  <pixiu-icon name="icon-circle-dot" size="12px" type="iconfont" color="#28C65A" />
-                </div>
-                <div style="margin-left: 6px">运行中</div>
-              </div>
-            </span>
-          </el-form-item>
-
-          <div style="margin-top: -12px"></div>
-          <el-form-item>
-            <template #label>
-              <span style="margin-left: 20px; font-size: 13px; color: #191919"
-                >实例个数(正常/全部)</span
-              >
-            </template>
-            <span
-              v-if="data.deployment && data.deployment.status"
-              class="detail-card-style-form2"
-              style="margin-left: 40px"
-            >
-              {{ getDeployReady(data.deployment) }}
-            </span>
-            <pixiu-icon
-              name="icon-edit"
-              size="12px"
-              style="margin-left: 8px; cursor: pointer"
-              type="iconfont"
-              color="#909399"
-            />
-          </el-form-item>
-
-          <div style="margin-top: -12px"></div>
-          <el-form-item>
-            <template #label>
-              <span style="margin-left: 20px; font-size: 13px; color: #191919">运行时</span>
-            </template>
-            <span class="detail-card-style-form2" style="margin-left: 120px"> 普通运行时 </span>
-          </el-form-item>
-        </el-form>
-      </div>
-
-      <div style="width: 50%">
-        <el-form>
-          <el-form-item>
-            <template #label>
-              <span style="margin-left: 20px; font-size: 13px; color: #191919">命名空间</span>
-            </template>
-            <span
-              v-if="data.deployment.metadata && data.deployment.metadata.namespace"
-              class="detail-card-style-form2"
-              style="margin-left: 106px"
-            >
-              {{ data.deployment.metadata.namespace }}
-            </span>
-          </el-form-item>
-
-          <div style="margin-top: -12px"></div>
-          <el-form-item>
-            <template #label>
-              <span style="margin-left: 20px; font-size: 13px; color: #191919">创建时间</span>
-            </template>
-            <span
-              v-if="data.deployment.metadata && data.deployment.metadata.creationTimestamp"
-              class="detail-card-style-form2"
-              style="margin-left: 106px"
-            >
-              {{ data.deployment.metadata.creationTimestamp }}
-            </span>
-          </el-form-item>
-
-          <div style="margin-top: -12px"></div>
-          <el-form-item>
-            <template #label>
-              <span style="margin-left: 20px; font-size: 13px; color: #191919">更新策略</span>
-            </template>
-            <span
-              v-if="
-                data.deployment.spec &&
-                data.deployment.spec.strategy &&
-                data.deployment.spec.strategy.type
-              "
-              class="detail-card-style-form2"
-              style="margin-left: 106px"
-            >
-              {{ data.deployment.spec.strategy.type }}
-            </span>
-          </el-form-item>
-
-          <div style="margin-top: -12px"></div>
-          <el-form-item>
-            <template #label>
-              <span style="margin-left: 20px; font-size: 13px; color: #191919">描述</span>
-            </template>
-            <span class="detail-card-style-form2" style="margin-left: 132px"> - </span>
-          </el-form-item>
-        </el-form>
-      </div>
-    </div>
-
+  <el-card class="contend-card-container2">
     <el-tabs
       v-model="data.activeName"
-      style="margin-left: 20px"
+      style="margin-left: 10px"
       @tab-click="handleClick"
       @tab-change="handleChange"
     >
-      <el-tab-pane label="实例列表" name="first"> </el-tab-pane>
-      <el-tab-pane label="标签信息" name="second"> </el-tab-pane>
-      <el-tab-pane label="事件列表" name="third"></el-tab-pane>
+      <el-tab-pane label="基本信息" name="first"> </el-tab-pane>
+      <el-tab-pane label="容器组" name="second"> </el-tab-pane>
+      <el-tab-pane label="事件" name="third"></el-tab-pane>
       <el-tab-pane label="版本记录" name="four"> </el-tab-pane>
-      <el-tab-pane label="日志查询" name="five"></el-tab-pane>
-      <el-tab-pane label="弹性伸缩" name="six"></el-tab-pane>
+      <el-tab-pane label="弹性伸缩" name="five"> </el-tab-pane>
+      <el-tab-pane label="日志查询" name="six"> </el-tab-pane>
     </el-tabs>
 
-    <div v-if="data.activeName === 'first'" style="margin-left: 12px">
-      <div>
-        <el-row>
-          <el-card class="detail-docs">
-            <el-icon
-              style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
-              ><WarningFilled
-            /></el-icon>
-            <div style="vertical-align: middle; margin-top: -40px">
-              获取 Deployment 的实时实例列表
-            </div>
-          </el-card>
+    <div v-if="data.activeName === 'first'">
+      <el-form style="margin-top: 10px">
+        <el-form-item>
+          <template #label>
+            <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+              >基本信息
+            </span>
+          </template>
+        </el-form-item>
 
-          <el-col>
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <span class="detail-card-key-style">负载名称 </span>
+            <span class="detail-card-value-style"> {{ data.object.metadata.name }}</span>
+          </el-col>
+
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">命名空间 </span>
+              <span class="detail-card-value-style">
+                {{ data.object.metadata.namespace }}
+              </span>
+            </el-row>
+          </el-col>
+
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">创建时间 </span>
+              <span class="detail-card-value-style"> {{ data.createTime }}</span>
+            </el-row>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20" style="margin-top: 15px">
+          <el-col :span="8">
+            <span class="detail-card-key-style">状态 </span>
+            <span class="detail-card-value-style"> 运行中</span>
+          </el-col>
+
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">运行时 </span>
+              <span class="detail-card-value-style"> 普通运行时 </span>
+            </el-row>
+          </el-col>
+
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">更新策略 </span>
+              <span class="detail-card-value-style">
+                {{ data.object.spec.strategy.type }}
+              </span>
+            </el-row>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20" style="margin-top: 15px">
+          <el-col :span="8">
+            <span class="detail-card-key-style">实例个数 </span>
+            <span class="detail-card-value-style"> 1/1 </span>
+          </el-col>
+
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">描述 </span>
+              <span class="detail-card-value-style"> - </span>
+            </el-row>
+          </el-col>
+        </el-row>
+
+        <el-form style="margin-top: 25px">
+          <el-form-item>
+            <template #label>
+              <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+                >元数据
+              </span>
+            </template>
+          </el-form-item>
+
+          <el-form-item>
+            <template #label>
+              <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+                >标签
+              </span>
+            </template>
+          </el-form-item>
+
+          <el-form-item style="margin-top: -10px">
+            <div v-if="data.object.metadata.labels === undefined" style="margin-left: 10px">-</div>
+            <div v-else style="margin-top: -8px">
+              <div
+                v-for="(item, index) in data.object.metadata.labels"
+                :key="item"
+                style="font-size: 14px"
+              >
+                <el-tag type="primary" style="margin-top: 5px; margin-left: 10px"
+                  >{{ index }}: {{ item }}</el-tag
+                >
+              </div>
+            </div>
+          </el-form-item>
+
+          <el-form-item>
+            <template #label>
+              <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+                >注释
+              </span>
+            </template>
+          </el-form-item>
+
+          <el-form-item style="margin-top: -10px">
+            <div v-if="data.object.metadata.annotations === undefined" style="margin-left: 10px">
+              -
+            </div>
+            <div v-else style="margin-top: -8px">
+              <div
+                v-for="(item, index) in data.object.metadata.annotations"
+                :key="item"
+                style="font-size: 14px"
+              >
+                <el-tag type="primary" style="margin-top: 5px; margin-left: 10px"
+                  >{{ index }}: {{ item }}</el-tag
+                >
+              </div>
+            </div>
+          </el-form-item>
+        </el-form>
+      </el-form>
+    </div>
+
+    <div v-if="data.activeName === 'second'">
+      <el-card class="detail-docs" style="margin-left: 10px">
+        <el-icon
+          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+          ><WarningFilled
+        /></el-icon>
+        <div style="vertical-align: middle; margin-top: -40px">
+          管理运行在 deployment 上的全部 pod 实例
+        </div>
+      </el-card>
+
+      <el-row>
+        <el-col>
+          <div style="margin-left: 10px">
+            <button style="width: 85px" class="pixiu-two-button2">批量删除</button>
+
             <button
               class="pixiu-two-button"
-              style="margin-left: 10px; width: 85px"
-              @click="handleBatchDeleteDialog"
+              style="float: right; margin-left: 12px"
+              @click="getDeploymentPods"
             >
-              批量删除
+              查询
             </button>
-
-            <!-- <div style="margin-left: 8px; float: right; margin-left: 12px">
-              <button class="pixiu-two-button" @click="searchDeploymentPods">搜索</button>
-            </div> -->
 
             <el-input
               v-model="data.pageInfo.search.searchInfo"
               placeholder="名称搜索关键字"
-              style="width: 480px; float: right"
+              style="width: 35%; float: right"
               clearable
               @clear="getDeploymentPods"
-              @input="searchDeploymentPods"
+              @input="getDeploymentPods"
             >
               <template #suffix>
                 <pixiu-icon
@@ -200,22 +238,15 @@
                 />
               </template>
             </el-input>
-            <div style="float: right">
-              <button
-                class="pixiu-two-button2"
-                style="width: 60px; margin-right: 10px"
-                @click="getDeploymentPods"
-              >
-                刷新
-              </button>
-            </div>
-          </el-col>
-        </el-row>
-      </div>
+          </div>
+        </el-col>
+      </el-row>
+
       <el-table
-        :data="data.tableData"
+        v-loading="data.podData.loading"
+        :data="data.podData.tableData"
         stripe
-        style="margin-top: 6px"
+        style="margin-top: 10px; width: 100%"
         header-row-class-name="pixiu-table-header"
         :cell-style="{
           'font-size': '12px',
@@ -223,56 +254,35 @@
         }"
         @selection-change="handlePodSelectionChange"
       >
-        <el-table-column type="selection" width="30px" />
-        <el-table-column
-          prop="metadata.name"
-          label="实例名称"
-          min-width="70px"
-          show-overflow-tooltip
-        >
+        <el-table-column type="selection" width="30" />
+        <el-table-column prop="metadata.name" sortable label="实例名称" min-width="120px">
           <template #default="scope">
-            {{ scope.row.metadata.name }}
-            <pixiu-icon
-              name="icon-copy"
-              size="11px"
-              type="iconfont"
-              class-name="icon-box"
-              color="#909399"
-              style="cursor: pointer"
-              @click="copy(scope.row.metadata.name)"
-            />
+            <el-link
+              class="global-table-world"
+              :underline="false"
+              type="primary"
+              @click="jumpRoute(scope.row)"
+            >
+              {{ scope.row.metadata.name }}
+            </el-link>
           </template>
         </el-table-column>
 
-        <el-table-column prop="status" label="状态" :formatter="formatterStatus" />
-        <el-table-column prop="status.hostIP" label="所在节点" />
-        <el-table-column prop="status.podIP" label="实例IP">
-          <template #default="scope">
-            {{ scope.row.status.podIP }}
-            <pixiu-icon
-              name="icon-copy"
-              size="11px"
-              type="iconfont"
-              class-name="icon-box"
-              style="cursor: pointer"
-              color="#909399"
-              @click="copy(scope.row.status.podIP)"
-            />
-          </template>
-        </el-table-column>
+        <el-table-column prop="status" label="状态" :formatter="formatterPodStatus" />
 
-        <el-table-column
-          prop="status.containerStatuses"
-          label="重启次数"
-          :formatter="getPodRestartCount"
-        />
+        <el-table-column prop="metadata.namespace" label="命名空间"> </el-table-column>
+
+        <el-table-column prop="status.podIP" label="实例IP"> </el-table-column>
+
+        <el-table-column prop="status" label="重启次数" :formatter="formatterRestartCount" />
 
         <el-table-column
           prop="metadata.creationTimestamp"
           label="创建时间"
+          sortable
           :formatter="formatterTime"
         />
-        <el-table-column fixed="right" label="操作" width="160px">
+        <el-table-column fixed="right" label="操作" width="60px">
           <template #default="scope">
             <el-button
               size="small"
@@ -282,85 +292,46 @@
             >
               删除
             </el-button>
-
-            <el-button
-              type="text"
-              size="small"
-              style="margin-right: 1px; color: #006eff"
-              @click="openShell(scope.row)"
-            >
-              远程登陆
-            </el-button>
           </template>
         </el-table-column>
         <template #empty>
-          <div class="table-inline-word">该 workload 的实例列表为空</div>
+          <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
         </template>
       </el-table>
-
-      <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
+      <pagination :total="data.podData.pageInfo.total" @on-change="onChange"></pagination>
     </div>
 
-    <div v-if="data.activeName === 'third'" style="margin-left: 12px">
-      <div>
-        <el-card class="detail-docs">
-          <el-icon
-            style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
-            ><WarningFilled
-          /></el-icon>
-          <div style="vertical-align: middle; margin-top: -40px">
-            事件保存事件为1小时，1小时后自动清理。
+    <div v-if="data.activeName === 'third'">
+      <el-card class="detail-docs" style="margin-left: 10px">
+        <el-icon
+          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+          ><WarningFilled
+        /></el-icon>
+        <div style="vertical-align: middle; margin-top: -40px">
+          Deployment 关联事件查询，更多查询请至事件中心
+        </div>
+      </el-card>
+
+      <el-row>
+        <el-col>
+          <div style="margin-left: 10px">
+            <button class="pixiu-two-button" @click="getNodeEvents">查询</button>
+            <button
+              style="margin-left: 10px; width: 85px"
+              class="pixiu-two-button2"
+              @click="handleDeleteEventsDialog"
+            >
+              批量删除
+            </button>
           </div>
-        </el-card>
+        </el-col>
+      </el-row>
 
-        <el-row>
-          <el-col>
-            <div>
-              <!-- <button class="pixiu-two-button" @click="getDeploymentEvents">刷新</button> -->
-              <button
-                style="margin-left: 10px; width: 85px"
-                class="pixiu-two-button2"
-                @click="deleteEventsInBatch"
-              >
-                批量删除
-              </button>
-
-              <div style="margin-left: 8px; float: right; margin-left: 12px">
-                <button class="pixiu-two-button" @click="getDeploymentEvents">搜索</button>
-              </div>
-
-              <el-input
-                v-model="data.pageInfo.search.searchInfo"
-                placeholder="名称搜索关键字"
-                style="width: 480px; float: right"
-                clearable
-                @clear="getDeploymentEvents"
-                @input="getDeploymentEvents"
-              >
-                <template #suffix>
-                  <pixiu-icon
-                    name="icon-search"
-                    style="cursor: pointer"
-                    size="15px"
-                    type="iconfont"
-                    color="#909399"
-                    @click="getDeploymentEvents"
-                  />
-                </template>
-              </el-input>
-              <div style="float: right">
-                <el-switch v-model="data.crontab" inline-prompt width="36px" />
-                <span style="font-size: 13px; margin-left: 5px; margin-right: 10px">自动刷新</span>
-              </div>
-            </div>
-          </el-col>
-        </el-row>
-      </div>
       <el-table
-        v-loading="data.loading"
-        :data="data.eventTableData"
+        v-loading="data.eventData.loading"
+        :data="data.eventData.eventTableData"
         stripe
-        style="margin-top: 6px"
+        style="margin-top: 10px"
         header-row-class-name="pixiu-table-header"
         :cell-style="{
           'font-size': '12px',
@@ -368,25 +339,19 @@
         }"
         @selection-change="handleEventSelectionChange"
       >
-        <el-table-column type="selection" width="30" />
-        <el-table-column
-          prop="lastTimestamp"
-          label="最后出现时间"
-          sortable
-          :formatter="formatterTime"
-        />
+        <el-table-column type="selection" width="30px" />
+        <el-table-column prop="lastTimestamp" label="最后出现时间" :formatter="formatterTime" />
         <el-table-column prop="type" label="级别" />
         <el-table-column prop="involvedObject.kind" label="资源类型"> </el-table-column>
-        <el-table-column prop="involvedObject.name" label="资源名称" :formatter="formatterName">
-        </el-table-column>
         <el-table-column prop="count" label="出现次数"> </el-table-column>
-        <el-table-column prop="message" label="内容" min-width="250px" />
+        <el-table-column prop="message" label="内容" min-width="260px" />
         <template #empty>
-          <div class="table-inline-word">该 workload 的事件列表为空</div>
+          <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
         </template>
       </el-table>
-      <pagination :total="data.pageEventInfo.total" @on-change="onEventChange"></pagination>
+      <pagination :total="data.eventData.pageInfo.total" @on-change="onEventChange"></pagination>
     </div>
+
     <div v-if="data.activeName === 'four'">
       <div>
         <el-row>
@@ -401,7 +366,7 @@
       </div>
       <el-table
         :data="data.replicasets"
-        style="margin-top: 6px"
+        style="margin-top: -5px"
         header-row-class-name="pixiu-table-header"
         :cell-style="{
           'font-size': '12px',
@@ -414,13 +379,24 @@
             <el-tag v-show="scope.row.status.replicas !== 0" type="success">当前版本</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="spec.template.spec.containers[0].image" label="镜像" />
+        <el-table-column prop="spec.template.spec.containers[0].image" label="镜像">
+          <template #default="scope">
+            <el-tag round>
+              <div style="display: flex">
+                <pixiu-icon name="icon-docker" size="16px" type="iconfont" color="#409EFF" />
+                <div style="margin-left: 6px">
+                  {{ scope.row.spec.template.spec.containers[0].image }}
+                </div>
+              </div>
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="metadata.creationTimestamp"
           label="创建时间"
           :formatter="formatterTime"
         />
-        <el-table-column fixed="right" label="操作" width="160px">
+        <el-table-column fixed="right" label="操作" width="100px">
           <template #default="scope">
             <el-button
               size="small"
@@ -450,11 +426,12 @@
       <pagination :total="data.pageReplicasetInfo.total" @on-change="onChange"></pagination>
     </div>
   </el-card>
+
   <PiXiuDiffView
     v-if="data.diffYamlDialog"
     v-model:dialogVisible="data.diffYamlDialog"
     title="版本差异"
-    :original="data.deployment.spec.template"
+    :original="data.object.spec.template"
     :modified="data.modifiedYaml"
   ></PiXiuDiffView>
   <!--  删除pod提示框-->
@@ -471,8 +448,8 @@
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
 import jsYaml from 'js-yaml';
-import { getTableData, copy } from '@/utils/utils';
-import { formatterTime } from '@/utils/formatter';
+import { getTableData, copy, formatTimestamp } from '@/utils/utils';
+import { formatterTime, formatterPodStatus, formatterRestartCount } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getPodsByLabels, deletePod, getPodLog } from '@/services/kubernetes/podService';
 import {
@@ -497,10 +474,48 @@ const selectedPod = ref('');
 
 const data = reactive({
   cluster: '',
-  clusterName: '',
   name: '',
   namespace: '',
+
+  object: {
+    metadata: {},
+    spec: {
+      strategy: {},
+    },
+    status: {},
+  },
+  createTime: '',
   activeName: 'first',
+
+  podData: {
+    loading: false,
+    pods: [],
+    tableData: [],
+    pageInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      nameSelector: '',
+      labelSelector: '',
+    },
+  },
+
+  nodeEvents: [],
+  eventData: {
+    loading: false,
+
+    eventTableData: [],
+    multipleEventSelection: [],
+
+    pageInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      nameSelector: '',
+      labelSelector: '',
+    },
+  },
+
   labels: '',
 
   workloadType: 'Deployment',
@@ -583,13 +598,10 @@ const data = reactive({
 
 onMounted(async () => {
   data.cluster = proxy.$route.query.cluster;
-  data.clusterName = localStorage.getItem(data.cluster);
-  data.name = proxy.$route.query.name;
   data.namespace = proxy.$route.query.namespace;
+  data.name = proxy.$route.query.name;
 
-  await getDeploymentObject();
-  await getDeploymentPods();
-  // await getDeploymentEvents();
+  GetDeployment();
 });
 
 // 监听子属性变化
@@ -657,14 +669,14 @@ const changeLogLine = async (val) => {
   }
 };
 
-const getDeploymentObject = async () => {
+const GetDeployment = async () => {
   const [result, err] = await getDeployment(data.cluster, data.namespace, data.name);
   if (err) {
     proxy.$notify.error(err.response.data.message);
     return;
   }
-  data.deployment = result;
-  data.yaml = jsYaml.dump(data.deployment, { quotingType: '"' });
+  data.object = result;
+  data.createTime = formatTimestamp(data.object.metadata.creationTimestamp);
 };
 
 const handleDeleteDialog = (row) => {
@@ -794,10 +806,9 @@ const onChange = (v) => {
 };
 
 const onEventChange = (v) => {
-  data.pageEventInfo.limit = v.limit;
-  data.pageEventInfo.page = v.page;
-
-  data.eventTableData = getTableData(data.pageEventInfo, data.deploymentEvents);
+  data.eventData.pageInfo.limit = v.limit;
+  data.eventData.pageInfo.page = v.page;
+  data.eventData.eventTableData = getTableData(data.eventData.pageInfo, data.nodeEvents);
 };
 
 const getPodLogs = async () => {
@@ -843,8 +854,9 @@ const getPodLogs = async () => {
   }
 };
 
+// pod 列表开始
 const getDeploymentPods = async () => {
-  let matchLabels = data.deployment.spec.selector.matchLabels;
+  let matchLabels = data.object.spec.selector.matchLabels;
   let labels = [];
   for (let key in matchLabels) {
     labels.push(key + '=' + matchLabels[key]);
@@ -857,45 +869,12 @@ const getDeploymentPods = async () => {
     proxy.$notify.error(err.response.data.message);
     return;
   }
-  data.deploymentPods = result.items;
-  data.pageInfo.total = data.deploymentPods.length;
-  data.tableData = getTableData(data.pageInfo, data.deploymentPods);
-
-  data.selectedPods = [];
-  data.selectedContainers = [];
-  data.selectedPodMap = {};
-  for (let item of data.deploymentPods) {
-    let cs = [];
-    for (let c of item.spec.containers) {
-      cs.push(c.name);
-    }
-
-    data.selectedPodMap[item.metadata.name] = cs;
-    data.selectedPods.push(item.metadata.name);
-  }
-  if (data.selectedPods.length > 0) {
-    data.selectedPod = data.selectedPods[0];
-
-    data.selectedContainers = data.selectedPodMap[data.selectedPod];
-    if (data.selectedContainers.length > 0) {
-      data.selectedContainer = data.selectedContainers[0];
-    }
-  }
+  data.podData.pods = result.items;
+  data.podData.pageInfo.total = data.deploymentPods.length;
+  data.podData.tableData = getTableData(data.podData.pageInfo, data.podData.pods);
 };
 
-const searchDeploymentPods = async () => {
-  let allSearchedPods = [];
-  if (data.pageInfo.search.field === 'name') {
-    for (let pod of data.deploymentPods) {
-      if (pod.metadata.name.search(data.pageInfo.search.searchInfo) !== -1) {
-        allSearchedPods.push(pod);
-      }
-    }
-  }
-
-  data.pageInfo.total = allSearchedPods.length;
-  data.tableData = getTableData(data.pageInfo, allSearchedPods);
-};
+// pod 列表结束
 
 const getDeploymentEvents = async () => {
   data.loading = true;
@@ -912,7 +891,7 @@ const getDeploymentEvents = async () => {
 
 const getDeploymentRs = async () => {
   data.loading = true;
-  const lables = data.deployment.metadata.labels;
+  const lables = data.object.metadata.labels;
   let labelStr = Object.keys(lables)
     .map((key) => {
       return key + '=' + lables[key];
@@ -964,57 +943,18 @@ const handleEventSelectionChange = (events) => {
   }
 };
 
-const formatterStatus = (row, column, cellValue) => {
-  let phase = cellValue.phase;
-  if (phase == 'Failed') {
-    phase = cellValue.reason;
-  } else if (phase == 'Pending') {
-    return <div class="color-yellow-word">{phase}</div>;
-    // const containerStatuses = cellValue.containerStatuses;
-    // for (let i = 0; i < containerStatuses.length; i++) {
-    //   phase = containerStatuses[i].state.waiting.reason;
-    //   break;
-    // }
-  }
-
-  if (phase == 'Running') {
-    return <div class="color-green-word">{phase}</div>;
-  }
-  return <div>{phase}</div>;
-};
-
-const formatterName = (row, column, cellValue) => {
-  return (
-    <el-tooltip effect="light" placement="top" content={cellValue}>
-      <div class="pixiu-ellipsis-style">{cellValue}</div>
-    </el-tooltip>
-  );
-};
-
-const getPodRestartCount = (row, column, cellValue) => {
-  let count = 0;
-  if (cellValue === undefined) {
-  } else {
-    for (let i = 0; i < cellValue.length; i++) {
-      count = count + cellValue[i].restartCount;
-    }
-  }
-
-  return <div>{count} 次</div>;
-};
-
 const handleClick = (tab, event) => {};
 
 const handleChange = async (name) => {
   switch (name) {
     case 'second':
-      await getDeploymentObject();
+      getDeploymentPods();
       break;
     case 'third':
-      await getDeploymentEvents();
+      getDeploymentEvents();
       break;
     case 'four':
-      await getDeploymentRs();
+      getDeploymentRs();
       break;
   }
 };
@@ -1031,28 +971,4 @@ const editYaml = () => {
   data.readOnly = false;
 };
 </script>
-
-<style scoped="scoped">
-.deployment-tab {
-  margin-top: 1px;
-  margin-bottom: -32px;
-}
-
-.demo-tabs .el-tabs__content {
-  padding: 32px;
-  color: #6b778c;
-  font-size: 32px;
-  font-weight: 600;
-}
-
-.deployment-info {
-  color: #909399;
-  font-size: 13px;
-  margin-left: 8px;
-}
-
-.deploy-detail-info {
-  font-size: 13px;
-  color: #29232b;
-}
-</style>
+<style lang="scss" scoped></style>
