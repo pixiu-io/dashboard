@@ -50,6 +50,151 @@
     </el-space>
   </el-card>
 
+  <el-card class="contend-card-container2">
+    <el-tabs
+      v-model="data.activeName"
+      style="margin-left: 10px"
+      @tab-click="handleClick"
+      @tab-change="handleChange"
+    >
+      <el-tab-pane label="基本信息" name="first"> </el-tab-pane>
+      <el-tab-pane label="容器组" name="second"> </el-tab-pane>
+      <el-tab-pane label="事件" name="third"></el-tab-pane>
+      <el-tab-pane label="版本记录" name="four"> </el-tab-pane>
+      <el-tab-pane label="弹性伸缩" name="five"> </el-tab-pane>
+    </el-tabs>
+
+    <div v-if="data.activeName === 'first'">
+      <el-form style="margin-top: 10px">
+        <el-form-item>
+          <template #label>
+            <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+              >基本信息
+            </span>
+          </template>
+        </el-form-item>
+
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <span class="detail-card-key-style">负载名称 </span>
+            <span class="detail-card-value-style"> {{ data.object.metadata.name }}</span>
+          </el-col>
+
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">命名空间 </span>
+              <span class="detail-card-value-style">
+                {{ data.object.metadata.namespace }}
+              </span>
+            </el-row>
+          </el-col>
+
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">创建时间 </span>
+              <span class="detail-card-value-style"> {{ data.createTime }}</span>
+            </el-row>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20" style="margin-top: 15px">
+          <el-col :span="8">
+            <span class="detail-card-key-style">状态 </span>
+            <span class="detail-card-value-style"> 运行中</span>
+          </el-col>
+
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">运行时 </span>
+              <span class="detail-card-value-style"> 普通运行时 </span>
+            </el-row>
+          </el-col>
+
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">更新策略 </span>
+              <span class="detail-card-value-style">
+                {{ data.object.spec.strategy.type }}
+              </span>
+            </el-row>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20" style="margin-top: 15px">
+          <el-col :span="8">
+            <span class="detail-card-key-style">实例个数 </span>
+            <span class="detail-card-value-style"> 1/1 </span>
+          </el-col>
+
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">描述 </span>
+              <span class="detail-card-value-style"> - </span>
+            </el-row>
+          </el-col>
+        </el-row>
+
+        <el-form style="margin-top: 25px">
+          <el-form-item>
+            <template #label>
+              <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+                >元数据
+              </span>
+            </template>
+          </el-form-item>
+
+          <el-form-item>
+            <template #label>
+              <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+                >标签
+              </span>
+            </template>
+          </el-form-item>
+
+          <el-form-item style="margin-top: -10px">
+            <div v-if="data.object.metadata.labels === undefined" style="margin-left: 10px">-</div>
+            <div v-else style="margin-top: -8px">
+              <div
+                v-for="(item, index) in data.object.metadata.labels"
+                :key="item"
+                style="font-size: 14px"
+              >
+                <el-tag type="primary" style="margin-top: 5px; margin-left: 10px"
+                  >{{ index }}: {{ item }}</el-tag
+                >
+              </div>
+            </div>
+          </el-form-item>
+
+          <el-form-item>
+            <template #label>
+              <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+                >注释
+              </span>
+            </template>
+          </el-form-item>
+
+          <el-form-item style="margin-top: -10px">
+            <div v-if="data.object.metadata.annotations === undefined" style="margin-left: 10px">
+              -
+            </div>
+            <div v-else style="margin-top: -8px">
+              <div
+                v-for="(item, index) in data.object.metadata.annotations"
+                :key="item"
+                style="font-size: 14px"
+              >
+                <el-tag type="primary" style="margin-top: 5px; margin-left: 10px"
+                  >{{ index }}: {{ item }}</el-tag
+                >
+              </div>
+            </div>
+          </el-form-item>
+        </el-form>
+      </el-form>
+    </div>
+  </el-card>
+
   <el-card class="detail-card-container">
     <div style="margin-top: 10px; float: right">
       <button class="pixiu-two-button2" style="width: 60px; margin-right: 6px">日志</button>
@@ -517,7 +662,7 @@
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
 import jsYaml from 'js-yaml';
-import { getTableData, copy } from '@/utils/utils';
+import { getTableData, copy, formatTimestamp } from '@/utils/utils';
 import { formatterTime } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getPodsByLabels, deletePod, getPodLog } from '@/services/kubernetes/podService';
@@ -548,7 +693,9 @@ const data = reactive({
 
   object: {
     metadata: {},
-    spec: {},
+    spec: {
+      strategy: {},
+    },
     status: {},
   },
   createTime: '',
