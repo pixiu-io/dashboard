@@ -417,6 +417,18 @@
       <pagination :total="data.pageReplicasetInfo.total" @on-change="onChange"></pagination>
     </div>
 
+    <div v-if="data.activeName === 'five'">
+      <el-card class="detail-docs" style="margin-left: 10px">
+        <el-icon
+          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+          ><WarningFilled
+        /></el-icon>
+        <div style="vertical-align: middle; margin-top: -40px">
+          支持选项应用的标准输出日志，更多类型日志查询，请至日志服务中心
+        </div>
+      </el-card>
+    </div>
+
     <div v-if="data.activeName === 'six'">
       <el-row>
         <el-col>
