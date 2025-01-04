@@ -306,7 +306,7 @@
       <el-row>
         <el-col>
           <div style="margin-left: 10px">
-            <button class="pixiu-two-button" @click="getDeploymentEvents">查询</button>
+            <button class="pixiu-two-button" @click="getEvents">查询</button>
             <button
               style="margin-left: 10px; width: 85px"
               class="pixiu-two-button2"
@@ -459,7 +459,7 @@ import {
   updateDeployment,
 } from '@/services/kubernetes/deploymentService';
 import PiXiuDiffView from '@/components/pixiuyaml/diffView/index.vue';
-import { getEventList, getNamespaceEventList } from '@/services/kubernetes/eventService';
+import { getEventList, deleteEvent } from '@/services/kubernetes/eventService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { getDeploymentReplicasets } from '@/services/kubernetes/replicasetService';
 
@@ -883,7 +883,7 @@ const getDeploymentPods = async () => {
 // pod 列表结束
 
 // 事件处理开始
-const getDeploymentEvents = async () => {
+const getEvents = async () => {
   data.loading = true;
   const [result, err] = await getEventList(data.cluster, data.namespace, data.name);
   data.loading = false;
@@ -918,6 +918,7 @@ const handleDeleteEventsDialog = (row) => {
   data.deleteEventDialog.deleteName = 'events';
   data.deleteEventDialog.namespace = '';
 };
+
 const confirmEvent = async () => {
   for (let event of data.eventData.multipleEventSelection) {
     const [result, err] = await deleteEvent(data.cluster, event.namespace, event.name);
@@ -929,7 +930,7 @@ const confirmEvent = async () => {
 
   cancelEvent();
   proxy.$notify.success('批量删除事件成功');
-  getNodeEvents();
+  getEvents();
 };
 
 const cancelEvent = () => {
@@ -959,27 +960,6 @@ const getDeploymentRs = async () => {
   data.pageReplicasetInfo.total = result.length;
 };
 
-const deleteEventObject = async (row) => {
-  const [result, err] = await deleteEvent(data.cluster, data.namespace, row.metadata.name);
-  if (err) {
-    proxy.$notify.error({ title: 'Event', message: err.response.data.message });
-    return;
-  }
-  await getDeploymentEvents();
-  proxy.$notify.success({ title: 'Event', message: `${row.metadata.name} 删除成功` });
-};
-
-const deleteEventsInBatch = async () => {
-  for (let event of data.multipleEventSelection) {
-    const [result, err] = await deleteEvent(data.cluster, data.namespace, event);
-    if (err) {
-      proxy.$notify.error({ title: 'Pod', message: err.response.data.message });
-    }
-  }
-  await getDeploymentEvents();
-  proxy.$notify.success({ title: 'Events', message: '批量删除事件成功' });
-};
-
 const handlePodSelectionChange = (pods) => {
   data.multiplePodSelection = [];
   for (let pod of pods) {
@@ -995,7 +975,7 @@ const handleChange = async (name) => {
       getDeploymentPods();
       break;
     case 'third':
-      getDeploymentEvents();
+      getEvents();
       break;
     case 'four':
       getDeploymentRs();
