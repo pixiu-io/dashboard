@@ -495,16 +495,49 @@
           </span>
           行
         </el-form-item>
-
-        <el-form-item>
-          <div style="margin-left: 80px; margin-top: -12px">
-            <el-switch v-model="data.logData.previous" inline-prompt width="35px" /><span
-              style="font-size: 12px; margin-left: 5px; color: #191919"
-              >查看已退出的容器</span
-            >
-          </div>
-        </el-form-item>
       </el-form>
+
+      <el-row>
+        <el-col>
+          <div>
+            <button
+              class="pixiu-two-button"
+              style="float: right; margin-left: 12px"
+              @click="getDeploymentPods"
+            >
+              查询
+            </button>
+
+            <el-input
+              v-model="data.pageInfo.search.searchInfo"
+              placeholder="搜索关键字"
+              style="width: 35%; float: right"
+              clearable
+              @clear="getDeploymentPods"
+              @input="getDeploymentPods"
+            >
+            </el-input>
+          </div>
+        </el-col>
+      </el-row>
+
+      <el-table
+        v-loading="data.podData.loading"
+        :data="data.podData.tableData"
+        stripe
+        style="margin-top: 10px; width: 100%"
+        header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#191919',
+        }"
+      >
+        <el-table-column prop="status" label="日志内容" />
+
+        <template #empty>
+          <div class="table-inline-word">选择的该容器日志的列表为空，可以切换到其他容器</div>
+        </template>
+      </el-table>
     </div>
 
     <div v-if="data.activeName === 'six'">
