@@ -306,7 +306,7 @@
       <el-row>
         <el-col>
           <div style="margin-left: 10px">
-            <button class="pixiu-two-button" @click="getNodeEvents">查询</button>
+            <button class="pixiu-two-button" @click="getDeploymentEvents">查询</button>
             <button
               style="margin-left: 10px; width: 85px"
               class="pixiu-two-button2"
@@ -433,6 +433,14 @@
     @confirm="confirmDeletePod"
     @cancel="cancel"
   ></pixiuDialog>
+
+  <pixiuDialog
+    :close-event="data.deleteEventDialog.close"
+    :object-name="data.deleteEventDialog.objectName"
+    :delete-name="data.deleteEventDialog.deleteName"
+    @confirm="confirmEvent"
+    @cancel="cancelEvent"
+  ></pixiuDialog>
 </template>
 
 <script setup lang="jsx">
@@ -507,6 +515,29 @@ const data = reactive({
     },
   },
 
+  // 删除对象属性
+  deleteEventDialog: {
+    close: false,
+    objectName: 'events',
+    deleteName: 'events',
+    namespace: '',
+  },
+
+  eventData: {
+    loading: false,
+    events: [],
+    eventTableData: [],
+    multipleEventSelection: [],
+
+    pageInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      nameSelector: '',
+      labelSelector: '',
+    },
+  },
+
   labels: '',
 
   workloadType: 'Deployment',
@@ -526,15 +557,6 @@ const data = reactive({
     page: 1,
     limit: 10,
     total: 0,
-  },
-  pageEventInfo: {
-    page: 1,
-    limit: 10,
-    total: 0,
-    search: {
-      field: 'name',
-      searchInfo: '',
-    },
   },
 
   restarts: 0,
@@ -796,12 +818,6 @@ const onChange = (v) => {
   }
 };
 
-const onEventChange = (v) => {
-  data.eventData.pageInfo.limit = v.limit;
-  data.eventData.pageInfo.page = v.page;
-  data.eventData.eventTableData = getTableData(data.eventData.pageInfo, data.nodeEvents);
-};
-
 const getPodLogs = async () => {
   // 在指定 pod 和容器的情况下，才请求log
   if (data.selectedPod === '' || data.selectedContainer === '') {
@@ -864,9 +880,9 @@ const getDeploymentPods = async () => {
   data.podData.pageInfo.total = data.deploymentPods.length;
   data.podData.tableData = getTableData(data.podData.pageInfo, data.podData.pods);
 };
-
 // pod 列表结束
 
+// 事件处理开始
 const getDeploymentEvents = async () => {
   data.loading = true;
   const [result, err] = await getEventList(data.cluster, data.namespace, data.name);
@@ -875,10 +891,54 @@ const getDeploymentEvents = async () => {
     proxy.$notify.error({ title: 'Event', message: err.response.data.message });
     return;
   }
-  data.deploymentEvents = result;
-  data.pageEventInfo.total = result.length;
-  data.eventTableData = getTableData(data.pageEventInfo, data.deploymentEvents);
+  data.eventData.events = result;
+  data.eventData.pageInfo.total = result.length;
+  data.eventData.eventTableData = getTableData(data.eventData.pageInfo, data.eventData.events);
 };
+
+const onEventChange = (v) => {
+  data.eventData.pageInfo.limit = v.limit;
+  data.eventData.pageInfo.page = v.page;
+  data.eventData.eventTableData = getTableData(data.eventData.pageInfo, data.nodeEvents);
+};
+
+const handleEventSelectionChange = (events) => {
+  data.eventData.multipleEventSelection = [];
+  for (let event of events) {
+    data.eventData.multipleEventSelection.push(event.metadata);
+  }
+};
+const handleDeleteEventsDialog = (row) => {
+  if (data.eventData.multipleEventSelection.length === 0) {
+    proxy.$notify.warning('未选择待删除事件');
+    return;
+  }
+
+  data.deleteEventDialog.close = true;
+  data.deleteEventDialog.deleteName = 'events';
+  data.deleteEventDialog.namespace = '';
+};
+const confirmEvent = async () => {
+  for (let event of data.eventData.multipleEventSelection) {
+    const [result, err] = await deleteEvent(data.cluster, event.namespace, event.name);
+    if (err) {
+      proxy.$notify.error(err.response.data.message);
+      return;
+    }
+  }
+
+  cancelEvent();
+  proxy.$notify.success('批量删除事件成功');
+  getNodeEvents();
+};
+
+const cancelEvent = () => {
+  data.deleteEventDialog.close = false;
+  setTimeout(() => {
+    data.deleteEventDialog.deleteName = '';
+  }, 100);
+};
+// 事件处理结束
 
 const getDeploymentRs = async () => {
   data.loading = true;
@@ -924,13 +984,6 @@ const handlePodSelectionChange = (pods) => {
   data.multiplePodSelection = [];
   for (let pod of pods) {
     data.multiplePodSelection.push(pod.metadata);
-  }
-};
-
-const handleEventSelectionChange = (events) => {
-  data.multipleEventSelection = [];
-  for (let event of events) {
-    data.multipleEventSelection.push(event.metadata.name);
   }
 };
 
