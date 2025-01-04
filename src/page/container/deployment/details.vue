@@ -535,7 +535,7 @@
 
       <el-table
         v-loading="data.logData.loading"
-        :data="data.logData.tableData"
+        :data="data.logData.podLogs"
         stripe
         style="margin-top: 10px; width: 100%"
         header-row-class-name="pixiu-table-header"
@@ -544,7 +544,7 @@
           color: '#191919',
         }"
       >
-        <el-table-column prop="status" label="日志内容" />
+        <el-table-column label="日志内容" prop="lineContent" />
         <template #empty>
           <div class="table-inline-word">暂无日志</div>
         </template>
@@ -736,6 +736,7 @@ const data = reactive({
     line: 10,
     lineOptions: [10, 25, 50, 100],
 
+    podLogs: [],
     tableData: [],
   },
 
@@ -1069,7 +1070,7 @@ const GetPodLogs = async () => {
   if (data.logData.selectedPod === '' || data.logData.selectedContainer === '') {
     return;
   }
-  data.logData.podLogs = [];
+
   data.logData.loading = true;
   const [result, err] = await getPodLog(
     data.cluster,
@@ -1083,7 +1084,10 @@ const GetPodLogs = async () => {
     proxy.$notify.error(err.response.data.message);
     return;
   }
-  data.logData.podLogs = result;
+  data.logData.podLogs = [];
+  for (let content of result.split('\n')) {
+    data.logData.podLogs.push({ lineContent: content });
+  }
 };
 
 //日志处理结束
