@@ -499,7 +499,9 @@
 
       <el-row>
         <el-col>
-          <div>
+          <div style="margin-left: 10px">
+            <button style="width: 85px" class="pixiu-two-button2">批量删除</button>
+
             <button
               class="pixiu-two-button"
               style="float: right; margin-left: 12px"
@@ -510,12 +512,22 @@
 
             <el-input
               v-model="data.pageInfo.search.searchInfo"
-              placeholder="搜索关键字"
+              placeholder="名称搜索关键字"
               style="width: 35%; float: right"
               clearable
               @clear="getDeploymentPods"
               @input="getDeploymentPods"
             >
+              <template #suffix>
+                <pixiu-icon
+                  name="icon-search"
+                  style="cursor: pointer"
+                  size="15px"
+                  type="iconfont"
+                  color="#909399"
+                  @click="getDeploymentPods"
+                />
+              </template>
             </el-input>
           </div>
         </el-col>
