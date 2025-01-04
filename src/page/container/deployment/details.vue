@@ -625,9 +625,6 @@ const { proxy } = getCurrentInstance();
 const router = useRouter();
 
 const showDialog = ref(false);
-const selectedContainers = ref([]);
-const selectedContainer = ref('');
-const selectedPod = ref('');
 
 const data = reactive({
   cluster: '',
@@ -809,25 +806,6 @@ const openWindowShell = () => {
     '_blank',
     'width=1000,height=600',
   );
-};
-
-const changeContainer = async (val) => {
-  data.selectedContainer = val;
-};
-
-const changeLogLine = async (val) => {
-  if (val === '50行日志') {
-    data.selectedLog = 50;
-  }
-  if (val === '100行日志') {
-    data.selectedLog = 100;
-  }
-  if (val === '200行日志') {
-    data.selectedLog = 200;
-  }
-  if (val === '500行日志') {
-    data.selectedLog = 500;
-  }
 };
 
 const GetDeployment = async () => {
@@ -1096,8 +1074,8 @@ const GetPodLogs = async () => {
   const [result, err] = await getPodLog(
     data.cluster,
     data.namespace,
-    data.selectedPod,
-    data.selectedContainer,
+    data.logData.selectedPod,
+    data.logData.selectedContainer,
     data.logData.line,
   );
   data.logData.loading = false;
