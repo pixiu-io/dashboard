@@ -754,7 +754,7 @@ const rolloback = async (replicaset) => {
     {
       op: 'replace',
       path: '/metadata/annotations',
-      value: JSON.parse(JSON.stringify(data.deployment.metadata.annotations)),
+      value: JSON.parse(JSON.stringify(data.object.metadata.annotations)),
     },
   ];
   const [result, err] = await rolloBackDeployment(
@@ -767,10 +767,10 @@ const rolloback = async (replicaset) => {
     proxy.$notify.error({ title: 'Deployment', message: err.response.data.message });
     return;
   }
-  proxy.$notify.success({
-    title: 'Deployment',
-    message: `${replicaset.name} 回滚成功`,
-  });
+
+  proxy.$notify.success({ title: 'Deployment', message: `${data.name} 回滚成功` });
+
+  getDeploymentRs();
 };
 const deletePodsInBatch = async () => {
   for (let pod of data.multiplePodSelection) {
@@ -877,7 +877,7 @@ const getDeploymentPods = async () => {
     return;
   }
   data.podData.pods = result.items;
-  data.podData.pageInfo.total = data.deploymentPods.length;
+  data.podData.pageInfo.total = data.podData.pods.length;
   data.podData.tableData = getTableData(data.podData.pageInfo, data.podData.pods);
 };
 // pod 列表结束
@@ -953,11 +953,12 @@ const getDeploymentRs = async () => {
   const [result, err] = await getDeploymentReplicasets(data.cluster, data.namespace, labelStr);
   data.loading = false;
   if (err) {
-    proxy.$notify.error({ title: 'Event', message: err.response.data.message });
+    proxy.$notify.error({ message: err.response.data.message });
     return;
   }
+
   data.replicasets = result.items;
-  data.pageReplicasetInfo.total = result.length;
+  data.pageReplicasetInfo.total = data.replicasets.length;
 };
 
 const handlePodSelectionChange = (pods) => {
