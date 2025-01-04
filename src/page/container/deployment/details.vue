@@ -427,6 +427,84 @@
           支持选项应用的标准输出日志，更多类型日志查询，请至日志服务中心
         </div>
       </el-card>
+
+      <el-form>
+        <el-form-item>
+          <template #label>
+            <span style="margin-left: 10px; font-size: 13px; color: #191919">Pod选项 </span>
+          </template>
+
+          <span style="margin-left: 5px">
+            <el-select
+              v-model="data.logData.selectedPod"
+              style="width: 210px; float: right"
+              @change="changePod"
+            >
+              <el-option
+                v-for="item in data.logData.selectedPods"
+                :key="item"
+                :value="item"
+                :label="item"
+              />
+            </el-select>
+          </span>
+
+          <span style="margin-left: 10px">
+            <el-select
+              v-model="data.logData.selectedContainer"
+              style="width: 210px; float: right; margin-right: 10px"
+            >
+              <el-option
+                v-for="item in data.logData.selectedContainers"
+                :key="item"
+                :value="item"
+                :label="item"
+              />
+            </el-select>
+          </span>
+
+          <div style="margin-left: 4px; margin-top: 6px">
+            <pixiu-icon
+              name="icon-icon-refresh"
+              style="cursor: pointer"
+              size="16px"
+              type="iconfont"
+              color="#909399"
+              @click="getDeploymentPods"
+            />
+          </div>
+        </el-form-item>
+
+        <el-form-item>
+          <template #label>
+            <span style="margin-left: 10px; font-size: 13px; color: #191919">日志行数 </span>
+          </template>
+
+          <span style="margin-left: 5px">
+            <el-select
+              v-model="data.logData.line"
+              style="width: 80px; float: right; margin-right: 10px"
+            >
+              <el-option
+                v-for="item in data.logData.lineOptions"
+                :key="item"
+                :value="item"
+                :label="item"
+              />
+            </el-select>
+          </span>
+          行
+        </el-form-item>
+
+        <el-form-item>
+          <div style="margin-left: 80px; margin-top: -12px">
+            <el-switch v-model="data.logData.previous" inline-prompt width="35px" /><span
+              style="font-size: 12px; margin-left: 5px; color: #191919"
+              >查看已退出的容器</span
+            >
+          </div>
+        </el-form-item>
+      </el-form>
     </div>
 
     <div v-if="data.activeName === 'six'">
@@ -574,6 +652,22 @@ const data = reactive({
     },
   },
 
+  logData: {
+    deployment: '',
+    namespace: '',
+    selectedPodMap: {},
+    selectedPods: [],
+    selectedPod: '',
+    selectedContainers: [],
+    selectedContainer: '',
+
+    previous: false,
+    line: 25,
+    lineOptions: [25, 50, 100, 200, 500],
+    podLogs: '点击查询获取日志',
+    aggLog: false,
+  },
+
   labels: '',
 
   workloadType: 'Deployment',
@@ -600,26 +694,22 @@ const data = reactive({
 
   deployment: {},
   deploymentPods: [],
-
   deploymentEvents: [],
-
-  selectedPods: [],
-  selectedPod: '',
-  selectedContainers: [],
-  selectedContainer: '',
-  selectedPodMap: {},
-
-  autoSyncPods: false,
-  previous: false,
 
   tableData: [],
   eventTableData: [],
 
-  aggLog: false,
-  logLine: '100行日志',
-  logLines: ['50行日志', '100行日志', '200行日志', '500行日志'],
-  selectedLog: 100,
-  podLogs: [],
+  logData: {
+    selectedPodMap: {},
+    selectedPods: [],
+    selectedPod: '',
+    selectedContainers: [],
+    selectedContainer: '',
+
+    previous: false,
+    line: 10,
+    lineOptions: [10, 25, 50, 100],
+  },
 
   yaml: '',
   yamlName: '',
@@ -688,15 +778,6 @@ const openWindowShell = () => {
     '_blank',
     'width=1000,height=600',
   );
-};
-
-const changePod = async (val) => {
-  data.selectedPod = val;
-  data.selectedContainers = data.selectedPodMap[data.selectedPod];
-
-  if (data.selectedContainers.length > 0) {
-    data.selectedContainer = data.selectedContainers[0];
-  }
 };
 
 const changeContainer = async (val) => {
@@ -855,49 +936,6 @@ const onChange = (v) => {
   }
 };
 
-const getPodLogs = async () => {
-  // 在指定 pod 和容器的情况下，才请求log
-  if (data.selectedPod === '' || data.selectedContainer === '') {
-    return;
-  }
-
-  if (!data.aggLog) {
-    const [result, err] = await getPodLog(
-      data.cluster,
-      data.namespace,
-      data.selectedPod,
-      data.selectedContainer,
-      50,
-    );
-    if (err) {
-      proxy.$notify.error(err.response.data.message);
-      return;
-    }
-    data.podLogs = result;
-  } else {
-    data.podLogs = [];
-    for (let pod of data.selectedPods) {
-      const [result, err] = await getPodLog(
-        data.cluster,
-        data.namespace,
-        pod,
-        data.selectedContainer,
-        50,
-      );
-      if (err) {
-        proxy.$notify.error({ title: 'Pod', message: err.response.data.message });
-      } else {
-        data.podLogs.push('------------------------');
-        data.podLogs.push('Pod: ' + pod);
-        data.podLogs.push('------------------------');
-        for (let line of result) {
-          data.podLogs.push(line);
-        }
-      }
-    }
-  }
-};
-
 // pod 列表开始
 const getDeploymentPods = async () => {
   let matchLabels = data.object.spec.selector.matchLabels;
@@ -978,6 +1016,67 @@ const cancelEvent = () => {
 };
 // 事件处理结束
 
+// 日志处理开始
+const initLogOptions = async () => {
+  let matchLabels = data.object.spec.selector.matchLabels;
+  let labels = [];
+  for (let key in matchLabels) {
+    labels.push(key + '=' + matchLabels[key]);
+  }
+  const [result, err] = await getPodsByLabels(data.cluster, data.namespace, labels.join(','));
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.logData.selectedPodMap = {};
+  data.logData.selectedPods = [];
+  for (let item of result.items) {
+    let cs = [];
+    for (let c of item.spec.containers) {
+      cs.push(c.name);
+    }
+
+    data.logData.selectedPods.push(item.metadata.name);
+    data.logData.selectedPodMap[item.metadata.name] = cs;
+  }
+
+  if (data.logData.selectedPods.length > 0) {
+    data.logData.selectedPod = data.logData.selectedPods[0];
+    data.logData.selectedContainers = data.logData.selectedPodMap[data.logData.selectedPod];
+    if (data.logData.selectedContainers.length > 0) {
+      data.logData.selectedContainer = data.logData.selectedContainers[0];
+    }
+  }
+};
+
+const changePod = async (val) => {
+  data.logData.selectedPod = val;
+  data.logData.selectedContainers = data.logData.selectedPodMap[data.logData.selectedPod];
+};
+
+const GetPodLogs = async () => {
+  // 在指定 pod 和容器的情况下，才请求log
+  if (data.logData.selectedPod === '' || data.logData.selectedContainer === '') {
+    return;
+  }
+  data.logData.podLogs = [];
+  const [result, err] = await getPodLog(
+    data.cluster,
+    data.namespace,
+    data.selectedPod,
+    data.selectedContainer,
+    data.logData.line,
+  );
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+  data.logData.podLogs = result;
+};
+
+//日志处理结束
+
 const getDeploymentRs = async () => {
   data.loading = true;
   const lables = data.object.metadata.labels;
@@ -1018,6 +1117,8 @@ const handleChange = async (name) => {
     case 'four':
       getDeploymentRs();
       break;
+    case 'five':
+      initLogOptions();
   }
 };
 
