@@ -61,8 +61,8 @@
       <el-tab-pane label="容器组" name="second"> </el-tab-pane>
       <el-tab-pane label="事件" name="third"></el-tab-pane>
       <el-tab-pane label="版本记录" name="four"> </el-tab-pane>
-      <el-tab-pane label="弹性伸缩" name="five"> </el-tab-pane>
-      <el-tab-pane label="日志查询" name="six"> </el-tab-pane>
+      <el-tab-pane label="日志查询" name="five"> </el-tab-pane>
+      <el-tab-pane label="弹性伸缩" name="six"> </el-tab-pane>
     </el-tabs>
 
     <div v-if="data.activeName === 'first'">
@@ -101,13 +101,13 @@
         <el-row :gutter="20" style="margin-top: 15px">
           <el-col :span="8">
             <span class="detail-card-key-style">状态 </span>
-            <span class="detail-card-value-style"> 运行中</span>
+            <span class="detail-card-value-style" style="margin-left: 55px"> 运行中</span>
           </el-col>
 
           <el-col :span="8">
             <el-row>
               <span class="detail-card-key-style">运行时 </span>
-              <span class="detail-card-value-style"> 普通运行时 </span>
+              <span class="detail-card-value-style" style="margin-left: 40px"> 普通运行时 </span>
             </el-row>
           </el-col>
 
@@ -126,72 +126,63 @@
             <span class="detail-card-key-style">实例个数 </span>
             <span class="detail-card-value-style"> 1/1 </span>
           </el-col>
-
-          <el-col :span="8">
-            <el-row>
-              <span class="detail-card-key-style">描述 </span>
-              <span class="detail-card-value-style"> - </span>
-            </el-row>
-          </el-col>
         </el-row>
 
-        <el-form style="margin-top: 25px">
-          <el-form-item>
-            <template #label>
-              <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
-                >元数据
-              </span>
-            </template>
-          </el-form-item>
+        <el-row :gutter="20" style="margin-top: 25px">
+          <el-col :span="10">
+            <el-form-item>
+              <template #label>
+                <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+                  >标签
+                </span>
+              </template>
+            </el-form-item>
 
-          <el-form-item>
-            <template #label>
-              <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
-                >标签
-              </span>
-            </template>
-          </el-form-item>
-
-          <el-form-item style="margin-top: -10px">
-            <div v-if="data.object.metadata.labels === undefined" style="margin-left: 10px">-</div>
-            <div v-else style="margin-top: -8px">
-              <div
-                v-for="(item, index) in data.object.metadata.labels"
-                :key="item"
-                style="font-size: 14px"
-              >
-                <el-tag type="primary" style="margin-top: 5px; margin-left: 10px"
-                  >{{ index }}: {{ item }}</el-tag
-                >
+            <el-form-item style="margin-top: -10px">
+              <div v-if="data.object.metadata.labels === undefined" style="margin-left: 10px">
+                -
               </div>
-            </div>
-          </el-form-item>
-
-          <el-form-item>
-            <template #label>
-              <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
-                >注释
-              </span>
-            </template>
-          </el-form-item>
-
-          <el-form-item style="margin-top: -10px">
-            <div v-if="data.object.metadata.annotations === undefined" style="margin-left: 10px">
-              -
-            </div>
-            <div v-else style="margin-top: -8px">
-              <div
-                v-for="(item, index) in data.object.metadata.annotations"
-                :key="item"
-                style="font-size: 14px"
-              >
-                <el-tag type="primary" style="margin-top: 5px; margin-left: 10px"
-                  >{{ index }}: {{ item }}</el-tag
+              <div v-else style="margin-top: -8px">
+                <div
+                  v-for="(item, index) in data.object.metadata.labels"
+                  :key="item"
+                  style="font-size: 14px"
                 >
+                  <el-tag type="primary" style="margin-top: 5px; margin-left: 10px"
+                    >{{ index }}: {{ item }}</el-tag
+                  >
+                </div>
               </div>
-            </div>
-          </el-form-item>
-        </el-form>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="10">
+            <el-form-item>
+              <template #label>
+                <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+                  >注释
+                </span>
+              </template>
+            </el-form-item>
+
+            <el-form-item style="margin-top: -10px">
+              <div v-if="data.object.metadata.annotations === undefined" style="margin-left: 10px">
+                -
+              </div>
+              <div v-else style="margin-top: -8px">
+                <div
+                  v-for="(item, index) in data.object.metadata.annotations"
+                  :key="item"
+                  style="font-size: 14px"
+                >
+                  <el-tag type="primary" style="margin-top: 5px; margin-left: 10px"
+                    >{{ index }}: {{ item }}</el-tag
+                  >
+                </div>
+              </div>
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
     </div>
 
@@ -315,7 +306,7 @@
       <el-row>
         <el-col>
           <div style="margin-left: 10px">
-            <button class="pixiu-two-button" @click="getNodeEvents">查询</button>
+            <button class="pixiu-two-button" @click="getEvents">查询</button>
             <button
               style="margin-left: 10px; width: 85px"
               class="pixiu-two-button2"
@@ -442,6 +433,14 @@
     @confirm="confirmDeletePod"
     @cancel="cancel"
   ></pixiuDialog>
+
+  <pixiuDialog
+    :close-event="data.deleteEventDialog.close"
+    :object-name="data.deleteEventDialog.objectName"
+    :delete-name="data.deleteEventDialog.deleteName"
+    @confirm="confirmEvent"
+    @cancel="cancelEvent"
+  ></pixiuDialog>
 </template>
 
 <script setup lang="jsx">
@@ -460,7 +459,7 @@ import {
   updateDeployment,
 } from '@/services/kubernetes/deploymentService';
 import PiXiuDiffView from '@/components/pixiuyaml/diffView/index.vue';
-import { getEventList, getNamespaceEventList } from '@/services/kubernetes/eventService';
+import { getEventList, deleteEvent } from '@/services/kubernetes/eventService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { getDeploymentReplicasets } from '@/services/kubernetes/replicasetService';
 
@@ -516,6 +515,29 @@ const data = reactive({
     },
   },
 
+  // 删除对象属性
+  deleteEventDialog: {
+    close: false,
+    objectName: 'events',
+    deleteName: 'events',
+    namespace: '',
+  },
+
+  eventData: {
+    loading: false,
+    events: [],
+    eventTableData: [],
+    multipleEventSelection: [],
+
+    pageInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      nameSelector: '',
+      labelSelector: '',
+    },
+  },
+
   labels: '',
 
   workloadType: 'Deployment',
@@ -535,15 +557,6 @@ const data = reactive({
     page: 1,
     limit: 10,
     total: 0,
-  },
-  pageEventInfo: {
-    page: 1,
-    limit: 10,
-    total: 0,
-    search: {
-      field: 'name',
-      searchInfo: '',
-    },
   },
 
   restarts: 0,
@@ -805,12 +818,6 @@ const onChange = (v) => {
   }
 };
 
-const onEventChange = (v) => {
-  data.eventData.pageInfo.limit = v.limit;
-  data.eventData.pageInfo.page = v.page;
-  data.eventData.eventTableData = getTableData(data.eventData.pageInfo, data.nodeEvents);
-};
-
 const getPodLogs = async () => {
   // 在指定 pod 和容器的情况下，才请求log
   if (data.selectedPod === '' || data.selectedContainer === '') {
@@ -873,10 +880,10 @@ const getDeploymentPods = async () => {
   data.podData.pageInfo.total = data.deploymentPods.length;
   data.podData.tableData = getTableData(data.podData.pageInfo, data.podData.pods);
 };
-
 // pod 列表结束
 
-const getDeploymentEvents = async () => {
+// 事件处理开始
+const getEvents = async () => {
   data.loading = true;
   const [result, err] = await getEventList(data.cluster, data.namespace, data.name);
   data.loading = false;
@@ -884,10 +891,55 @@ const getDeploymentEvents = async () => {
     proxy.$notify.error({ title: 'Event', message: err.response.data.message });
     return;
   }
-  data.deploymentEvents = result;
-  data.pageEventInfo.total = result.length;
-  data.eventTableData = getTableData(data.pageEventInfo, data.deploymentEvents);
+  data.eventData.events = result;
+  data.eventData.pageInfo.total = result.length;
+  data.eventData.eventTableData = getTableData(data.eventData.pageInfo, data.eventData.events);
 };
+
+const onEventChange = (v) => {
+  data.eventData.pageInfo.limit = v.limit;
+  data.eventData.pageInfo.page = v.page;
+  data.eventData.eventTableData = getTableData(data.eventData.pageInfo, data.nodeEvents);
+};
+
+const handleEventSelectionChange = (events) => {
+  data.eventData.multipleEventSelection = [];
+  for (let event of events) {
+    data.eventData.multipleEventSelection.push(event.metadata);
+  }
+};
+const handleDeleteEventsDialog = (row) => {
+  if (data.eventData.multipleEventSelection.length === 0) {
+    proxy.$notify.warning('未选择待删除事件');
+    return;
+  }
+
+  data.deleteEventDialog.close = true;
+  data.deleteEventDialog.deleteName = 'events';
+  data.deleteEventDialog.namespace = '';
+};
+
+const confirmEvent = async () => {
+  for (let event of data.eventData.multipleEventSelection) {
+    const [result, err] = await deleteEvent(data.cluster, event.namespace, event.name);
+    if (err) {
+      proxy.$notify.error(err.response.data.message);
+      return;
+    }
+  }
+
+  cancelEvent();
+  proxy.$notify.success('批量删除事件成功');
+  getEvents();
+};
+
+const cancelEvent = () => {
+  data.deleteEventDialog.close = false;
+  setTimeout(() => {
+    data.deleteEventDialog.deleteName = '';
+  }, 100);
+};
+// 事件处理结束
 
 const getDeploymentRs = async () => {
   data.loading = true;
@@ -908,38 +960,10 @@ const getDeploymentRs = async () => {
   data.pageReplicasetInfo.total = result.length;
 };
 
-const deleteEventObject = async (row) => {
-  const [result, err] = await deleteEvent(data.cluster, data.namespace, row.metadata.name);
-  if (err) {
-    proxy.$notify.error({ title: 'Event', message: err.response.data.message });
-    return;
-  }
-  await getDeploymentEvents();
-  proxy.$notify.success({ title: 'Event', message: `${row.metadata.name} 删除成功` });
-};
-
-const deleteEventsInBatch = async () => {
-  for (let event of data.multipleEventSelection) {
-    const [result, err] = await deleteEvent(data.cluster, data.namespace, event);
-    if (err) {
-      proxy.$notify.error({ title: 'Pod', message: err.response.data.message });
-    }
-  }
-  await getDeploymentEvents();
-  proxy.$notify.success({ title: 'Events', message: '批量删除事件成功' });
-};
-
 const handlePodSelectionChange = (pods) => {
   data.multiplePodSelection = [];
   for (let pod of pods) {
     data.multiplePodSelection.push(pod.metadata);
-  }
-};
-
-const handleEventSelectionChange = (events) => {
-  data.multipleEventSelection = [];
-  for (let event of events) {
-    data.multipleEventSelection.push(event.metadata.name);
   }
 };
 
@@ -951,7 +975,7 @@ const handleChange = async (name) => {
       getDeploymentPods();
       break;
     case 'third':
-      getDeploymentEvents();
+      getEvents();
       break;
     case 'four':
       getDeploymentRs();
