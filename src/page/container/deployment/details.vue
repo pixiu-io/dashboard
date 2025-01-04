@@ -477,7 +477,7 @@
 
         <el-form-item>
           <template #label>
-            <span style="margin-left: 10px; font-size: 13px; color: #191919">日志行数 </span>
+            <span style="margin-left: 10px; font-size: 13px; color: #191919">选择行数 </span>
           </template>
 
           <span style="margin-left: 5px">
@@ -505,7 +505,7 @@
             <button
               class="pixiu-two-button"
               style="float: right; margin-left: 12px"
-              @click="getDeploymentPods"
+              @click="GetPodLogs"
             >
               查询
             </button>
@@ -515,8 +515,8 @@
               placeholder="名称搜索关键字"
               style="width: 35%; float: right"
               clearable
-              @clear="getDeploymentPods"
-              @input="getDeploymentPods"
+              @clear="GetPodLogs"
+              @input="GetPodLogs"
             >
               <template #suffix>
                 <pixiu-icon
@@ -525,7 +525,7 @@
                   size="15px"
                   type="iconfont"
                   color="#909399"
-                  @click="getDeploymentPods"
+                  @click="GetPodLogs"
                 />
               </template>
             </el-input>
@@ -534,8 +534,8 @@
       </el-row>
 
       <el-table
-        v-loading="data.podData.loading"
-        :data="data.podData.tableData"
+        v-loading="data.logData.loading"
+        :data="data.logData.tableData"
         stripe
         style="margin-top: 10px; width: 100%"
         header-row-class-name="pixiu-table-header"
@@ -545,9 +545,8 @@
         }"
       >
         <el-table-column prop="status" label="日志内容" />
-
         <template #empty>
-          <div class="table-inline-word">选择的该容器日志的列表为空，可以切换到其他容器</div>
+          <div class="table-inline-word">暂无日志</div>
         </template>
       </el-table>
     </div>
@@ -697,22 +696,6 @@ const data = reactive({
     },
   },
 
-  logData: {
-    deployment: '',
-    namespace: '',
-    selectedPodMap: {},
-    selectedPods: [],
-    selectedPod: '',
-    selectedContainers: [],
-    selectedContainer: '',
-
-    previous: false,
-    line: 25,
-    lineOptions: [25, 50, 100, 200, 500],
-    podLogs: '点击查询获取日志',
-    aggLog: false,
-  },
-
   labels: '',
 
   workloadType: 'Deployment',
@@ -745,6 +728,7 @@ const data = reactive({
   eventTableData: [],
 
   logData: {
+    loading: false,
     selectedPodMap: {},
     selectedPods: [],
     selectedPod: '',
@@ -754,6 +738,8 @@ const data = reactive({
     previous: false,
     line: 10,
     lineOptions: [10, 25, 50, 100],
+
+    tableData: [],
   },
 
   yaml: '',
@@ -1106,6 +1092,7 @@ const GetPodLogs = async () => {
     return;
   }
   data.logData.podLogs = [];
+  data.logData.loading = true;
   const [result, err] = await getPodLog(
     data.cluster,
     data.namespace,
@@ -1113,6 +1100,7 @@ const GetPodLogs = async () => {
     data.selectedContainer,
     data.logData.line,
   );
+  data.logData.loading = false;
   if (err) {
     proxy.$notify.error(err.response.data.message);
     return;
