@@ -769,8 +769,9 @@ const rolloback = async (replicaset) => {
   }
 
   proxy.$notify.success({ title: 'Deployment', message: `${data.name} 回滚成功` });
-
-  getDeploymentRs();
+  setTimeout(() => {
+    getDeploymentRs();
+  }, 200);
 };
 const deletePodsInBatch = async () => {
   for (let pod of data.multiplePodSelection) {
