@@ -416,6 +416,30 @@
 
       <pagination :total="data.pageReplicasetInfo.total" @on-change="onChange"></pagination>
     </div>
+
+    <div v-if="data.activeName === 'six'">
+      <el-row>
+        <el-col>
+          <div style="margin-left: 10px">
+            <button class="pixiu-two-button">启用</button>
+            <button
+              style="margin-left: 10px"
+              class="pixiu-two-button2"
+              @click="handleDeleteEventsDialog"
+            >
+              停用
+            </button>
+          </div>
+        </el-col>
+      </el-row>
+
+      <div
+        class="app-pixiu-describe"
+        style="margin-left: 10px; margin-top: 10px; font-size: 14px; color: #000000"
+      >
+        暂不支持自动伸缩功能
+      </div>
+    </div>
   </el-card>
 
   <PiXiuDiffView
