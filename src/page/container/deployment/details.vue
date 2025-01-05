@@ -32,7 +32,11 @@
 
         <div style="margin-bottom: -10px; margin-left: 10px">
           <button class="pixiu-two-button" @click="GetDeployment">刷新</button>
-          <button class="pixiu-two-button2" style="margin-left: 10px; width: 95px">
+          <button
+            class="pixiu-two-button2"
+            style="margin-left: 10px; width: 95px"
+            @click="handleDeploymentScaleDialog"
+          >
             调整实例数
           </button>
 
@@ -610,6 +614,56 @@
     :read-only="false"
     :refresh="GetDeployment"
   ></PiXiuViewOrEdit>
+
+  <el-dialog
+    :model-value="data.deploymentReplicasDialog"
+    style="color: #000000; font: 14px"
+    width="400px"
+    center
+    @close="closeDeploymentScaleDialog"
+  >
+    <template #header>
+      <div
+        style="
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+          margin-top: 5px;
+          font-size: 14.5px;
+          color: #191919;
+        "
+      >
+        调整实例数
+      </div>
+    </template>
+
+    <el-form label-width="80px" style="max-width: 300px">
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">原副本数</span>
+        </template>
+        <el-input v-model="data.deploymentRepcliasFrom.origin" disabled />
+      </el-form-item>
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">新副本数</span>
+        </template>
+        <el-input v-model="data.deploymentRepcliasFrom.target" placeholder="请输入新副本数" />
+      </el-form-item>
+    </el-form>
+
+    <div style="margin-top: -10px"></div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-small-cancel-button" @click="closeDeploymentScaleDialog"
+          >取消</el-button
+        >
+        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmDeploymentScale"
+          >确认</el-button
+        >
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="jsx">
@@ -705,6 +759,15 @@ const data = reactive({
     },
   },
 
+  deploymentReplicasDialog: false,
+  deploymentRepcliasFrom: {
+    name: '',
+    namespace: '',
+    origin: '',
+    target: 0,
+  },
+
+  // 下面需调整
   labels: '',
 
   workloadType: 'Deployment',
@@ -1101,7 +1164,6 @@ const GetPodLogs = async () => {
     data.logData.podLogs.push({ lineContent: content });
   }
 };
-
 //日志处理结束
 
 // 编辑 yaml 开始
@@ -1143,6 +1205,51 @@ const handlePodSelectionChange = (pods) => {
     data.multiplePodSelection.push(pod.metadata);
   }
 };
+
+// 副本数开始
+const handleDeploymentScaleDialog = () => {
+  data.deploymentRepcliasFrom.name = data.name;
+  data.deploymentRepcliasFrom.namespace = data.namespace;
+  data.deploymentRepcliasFrom.origin = data.object.spec.replicas;
+  data.deploymentRepcliasFrom.target = '';
+
+  data.deploymentReplicasDialog = true;
+};
+
+const closeDeploymentScaleDialog = (row) => {
+  data.deploymentReplicasDialog = false;
+
+  setTimeout(() => {
+    data.deploymentRepcliasFrom.name = '';
+    data.deploymentRepcliasFrom.namespace = '';
+    data.deploymentRepcliasFrom.origin = '';
+    data.deploymentRepcliasFrom.target = 0;
+  }, 100);
+};
+
+const confirmDeploymentScale = async () => {
+  const patchData = {
+    spec: {
+      replicas: Number(data.deploymentRepcliasFrom.target),
+    },
+  };
+
+  const [result, err] = await patchDeployment(
+    data.cluster,
+    data.deploymentRepcliasFrom.namespace,
+    data.deploymentRepcliasFrom.name,
+    patchData,
+  );
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  await getDeployments();
+  closeDeploymentScaleDialog();
+};
+
+// 副本数结束
 
 const handleClick = (tab, event) => {};
 
