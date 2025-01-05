@@ -68,7 +68,8 @@
       <el-tab-pane label="事件" name="third"></el-tab-pane>
       <el-tab-pane label="版本记录" name="four"> </el-tab-pane>
       <el-tab-pane label="日志查询" name="five"> </el-tab-pane>
-      <el-tab-pane label="弹性伸缩" name="six"> </el-tab-pane>
+      <el-tab-pane label="监控" name="six"> </el-tab-pane>
+      <el-tab-pane label="弹性伸缩" name="seven"> </el-tab-pane>
     </el-tabs>
 
     <div v-if="data.activeName === 'first'">
@@ -560,6 +561,15 @@
     </div>
 
     <div v-if="data.activeName === 'six'">
+      <div
+        class="app-pixiu-describe"
+        style="margin-left: 10px; margin-top: 10px; font-size: 14px; color: #000000"
+      >
+        暂不支持
+      </div>
+    </div>
+
+    <div v-if="data.activeName === 'seven'">
       <el-row>
         <el-col>
           <div style="margin-left: 10px">
