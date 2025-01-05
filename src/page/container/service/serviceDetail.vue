@@ -258,7 +258,7 @@
           ><WarningFilled
         /></el-icon>
         <div style="vertical-align: middle; margin-top: -40px">
-          Deployment 关联事件查询，更多查询请至事件中心
+          Service 关联事件查询，更多查询请至事件中心
         </div>
       </el-card>
 
