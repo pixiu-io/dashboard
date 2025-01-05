@@ -31,7 +31,7 @@
         </div>
 
         <div style="margin-bottom: -10px; margin-left: 10px">
-          <button class="pixiu-two-button" @click="GetNode">刷新</button>
+          <button class="pixiu-two-button" @click="GetDeployment">刷新</button>
           <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">设置</button>
 
           <button
@@ -583,6 +583,7 @@
     :original="data.object.spec.template"
     :modified="data.modifiedYaml"
   ></PiXiuDiffView>
+
   <!--  删除pod提示框-->
   <pixiuDialog
     :close-event="data.deleteDialog.close"
@@ -599,6 +600,14 @@
     @confirm="confirmEvent"
     @cancel="cancelEvent"
   ></pixiuDialog>
+
+  <PiXiuViewOrEdit
+    :yaml-dialog="data.yamlDialog"
+    title="编辑Yaml"
+    :yaml="data.yaml"
+    :read-only="false"
+    :refresh="GetDeployment"
+  ></PiXiuViewOrEdit>
 </template>
 
 <script setup lang="jsx">
@@ -609,6 +618,7 @@ import { getTableData, copy, formatTimestamp } from '@/utils/utils';
 import { formatterTime, formatterPodStatus, formatterRestartCount } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getPodsByLabels, deletePod, getPodLog } from '@/services/kubernetes/podService';
+import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import {
   getDeployment,
   getDeployReady,
@@ -1091,6 +1101,19 @@ const GetPodLogs = async () => {
 };
 
 //日志处理结束
+
+// 编辑 yaml 开始
+const viewYaml = async () => {
+  const [obj, err] = await getDeployment(data.cluster, data.namespace, data.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.yaml = obj;
+  data.yamlDialog = true;
+};
+// 编辑 yaml 结束
 
 const getDeploymentRs = async () => {
   data.loading = true;
