@@ -331,7 +331,7 @@
       <el-row>
         <el-col>
           <div style="margin-left: 10px">
-            <button class="pixiu-two-button" @click="getEvents">查询</button>
+            <button class="pixiu-two-button" @click="GetEvents">查询</button>
             <button
               style="margin-left: 10px; width: 85px"
               class="pixiu-two-button2"
@@ -751,22 +751,6 @@ const data = reactive({
     },
   },
 
-  nodeEvents: [],
-  eventData: {
-    loading: false,
-
-    eventTableData: [],
-    multipleEventSelection: [],
-
-    pageInfo: {
-      page: 1,
-      limit: 10,
-      total: 0,
-      nameSelector: '',
-      labelSelector: '',
-    },
-  },
-
   // 删除对象属性
   deleteEventDialog: {
     close: false,
@@ -1074,10 +1058,10 @@ const getDeploymentPods = async () => {
 // pod 列表结束
 
 // 事件处理开始
-const getEvents = async () => {
-  data.loading = true;
+const GetEvents = async () => {
+  data.eventData.loading = true;
   const [result, err] = await getEventList(data.cluster, data.namespace, data.name);
-  data.loading = false;
+  data.eventData.loading = false;
   if (err) {
     proxy.$notify.error({ title: 'Event', message: err.response.data.message });
     return;
@@ -1121,7 +1105,7 @@ const confirmEvent = async () => {
 
   cancelEvent();
   proxy.$notify.success('批量删除事件成功');
-  getEvents();
+  GetEvents();
 };
 
 const cancelEvent = () => {
@@ -1294,7 +1278,7 @@ const handleChange = async (name) => {
       getDeploymentPods();
       break;
     case 'third':
-      getEvents();
+      GetEvents();
       break;
     case 'four':
       getDeploymentRs();
