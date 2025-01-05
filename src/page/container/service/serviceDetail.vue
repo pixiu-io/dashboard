@@ -58,9 +58,8 @@
       @tab-change="handleChange"
     >
       <el-tab-pane label="基本信息" name="first"> </el-tab-pane>
-      <el-tab-pane label="端口组" name="second"> </el-tab-pane>
+      <el-tab-pane label="服务详情" name="second"> </el-tab-pane>
       <el-tab-pane label="事件" name="third"> </el-tab-pane>
-      <el-tab-pane label="YAML" name="four"></el-tab-pane>
     </el-tabs>
 
     <div v-if="data.activeName === 'first'">
@@ -161,26 +160,30 @@
     </div>
 
     <div v-if="data.activeName === 'second'">
-      <el-card class="detail-docs" style="margin-left: 10px">
+      <div style="margin-top: 10px">
+        <span class="detail-card-key-style">集群域名 </span>
+        <span class="detail-card-value-style" style="margin-left: 15px">
+          {{ data.object.metadata.name }}.{{ data.namespace }}</span
+        >
+      </div>
+
+      <el-card class="detail-docs" style="margin-left: 10px; margin-top: 20px">
         <el-icon
           style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
           ><WarningFilled
         /></el-icon>
         <div style="vertical-align: middle; margin-top: -40px">展示 service 关联的全部端口组</div>
       </el-card>
-
       <el-table
         v-loading="data.loading"
         :data="data.object.spec.ports"
-        stripe
-        style="margin-top: 2px"
+        style="margin-top: -15px"
         header-row-class-name="pixiu-table-header"
         :cell-style="{
           'font-size': '12px',
           color: '#191919',
         }"
       >
-        <el-table-column type="selection" width="30px" />
         <el-table-column prop="name" label="端口名称" />
         <el-table-column prop="port" label="服务端口" />
         <el-table-column prop="protocol" label="协议"> </el-table-column>
