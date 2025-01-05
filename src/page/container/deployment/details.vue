@@ -1,7 +1,7 @@
 <template>
   <el-card class="contend-card-container2" style="margin-top: 1px">
     <div style="margin-top: 10px; float: right">
-      <button class="pixiu-two-button2" style="width: 60px" @click="got">返回</button>
+      <button class="pixiu-two-button2" style="width: 60px" @click="goToDeployment">返回</button>
     </div>
 
     <el-space style="display: flex; margin: 20px 15px">
@@ -31,8 +31,14 @@
         </div>
 
         <div style="margin-bottom: -10px; margin-left: 10px">
-          <button class="pixiu-two-button" @click="GetNode">刷新</button>
-          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">设置</button>
+          <button class="pixiu-two-button" @click="GetDeployment">刷新</button>
+          <button
+            class="pixiu-two-button2"
+            style="margin-left: 10px; width: 95px"
+            @click="handleDeploymentScaleDialog"
+          >
+            调整实例数
+          </button>
 
           <button
             class="pixiu-two-button2"
@@ -583,6 +589,7 @@
     :original="data.object.spec.template"
     :modified="data.modifiedYaml"
   ></PiXiuDiffView>
+
   <!--  删除pod提示框-->
   <pixiuDialog
     :close-event="data.deleteDialog.close"
@@ -599,6 +606,64 @@
     @confirm="confirmEvent"
     @cancel="cancelEvent"
   ></pixiuDialog>
+
+  <PiXiuViewOrEdit
+    :yaml-dialog="data.yamlDialog"
+    title="编辑Yaml"
+    :yaml="data.yaml"
+    :read-only="false"
+    :refresh="GetDeployment"
+  ></PiXiuViewOrEdit>
+
+  <el-dialog
+    :model-value="data.deploymentReplicasDialog"
+    style="color: #000000; font: 14px"
+    width="400px"
+    center
+    @close="closeDeploymentScaleDialog"
+  >
+    <template #header>
+      <div
+        style="
+          text-align: left;
+          font-weight: bold;
+          padding-left: 5px;
+          margin-top: 5px;
+          font-size: 14.5px;
+          color: #191919;
+        "
+      >
+        调整实例数
+      </div>
+    </template>
+
+    <el-form label-width="80px" style="max-width: 300px">
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">原副本数</span>
+        </template>
+        <el-input v-model="data.deploymentRepcliasFrom.origin" disabled />
+      </el-form-item>
+      <el-form-item>
+        <template #label>
+          <span style="font-size: 13px; color: #191919">新副本数</span>
+        </template>
+        <el-input v-model="data.deploymentRepcliasFrom.target" placeholder="请输入新副本数" />
+      </el-form-item>
+    </el-form>
+
+    <div style="margin-top: -10px"></div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-small-cancel-button" @click="closeDeploymentScaleDialog"
+          >取消</el-button
+        >
+        <el-button type="primary" class="pixiu-small-confirm-button" @click="confirmDeploymentScale"
+          >确认</el-button
+        >
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="jsx">
@@ -609,10 +674,11 @@ import { getTableData, copy, formatTimestamp } from '@/utils/utils';
 import { formatterTime, formatterPodStatus, formatterRestartCount } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getPodsByLabels, deletePod, getPodLog } from '@/services/kubernetes/podService';
+import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import {
   getDeployment,
   getDeployReady,
-  patchDeployment,
+  scaleDeployment,
   rolloBackDeployment,
   updateDeployment,
 } from '@/services/kubernetes/deploymentService';
@@ -693,6 +759,15 @@ const data = reactive({
     },
   },
 
+  deploymentReplicasDialog: false,
+  deploymentRepcliasFrom: {
+    name: '',
+    namespace: '',
+    origin: '',
+    target: 0,
+  },
+
+  // 下面需调整
   labels: '',
 
   workloadType: 'Deployment',
@@ -1089,8 +1164,20 @@ const GetPodLogs = async () => {
     data.logData.podLogs.push({ lineContent: content });
   }
 };
-
 //日志处理结束
+
+// 编辑 yaml 开始
+const viewYaml = async () => {
+  const [obj, err] = await getDeployment(data.cluster, data.namespace, data.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.yaml = obj;
+  data.yamlDialog = true;
+};
+// 编辑 yaml 结束
 
 const getDeploymentRs = async () => {
   data.loading = true;
@@ -1119,9 +1206,58 @@ const handlePodSelectionChange = (pods) => {
   }
 };
 
+// 副本数开始
+const handleDeploymentScaleDialog = () => {
+  data.deploymentRepcliasFrom.name = data.name;
+  data.deploymentRepcliasFrom.namespace = data.namespace;
+  data.deploymentRepcliasFrom.origin = data.object.spec.replicas;
+  data.deploymentRepcliasFrom.target = '';
+
+  data.deploymentReplicasDialog = true;
+};
+
+const closeDeploymentScaleDialog = (row) => {
+  data.deploymentReplicasDialog = false;
+
+  setTimeout(() => {
+    data.deploymentRepcliasFrom.name = '';
+    data.deploymentRepcliasFrom.namespace = '';
+    data.deploymentRepcliasFrom.origin = '';
+    data.deploymentRepcliasFrom.target = 0;
+  }, 100);
+};
+
+const confirmDeploymentScale = async () => {
+  const [result, err] = await scaleDeployment(
+    data.cluster,
+    data.deploymentRepcliasFrom.namespace,
+    data.deploymentRepcliasFrom.name,
+    data.deploymentRepcliasFrom.target,
+  );
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  GetDeployment();
+  setTimeout(() => {
+    closeDeploymentScaleDialog();
+  }, 500);
+};
+// 副本数结束
+
 const handleClick = (tab, event) => {};
 
 const handleChange = async (name) => {
+  if (name !== 'third') {
+    data.eventData.events = [];
+    data.eventData.pageInfo.total = 0;
+    data.eventData.eventTableData = [];
+  }
+  if (name !== 'five') {
+    data.logData.podLogs = [];
+  }
+
   switch (name) {
     case 'second':
       getDeploymentPods();
@@ -1134,19 +1270,19 @@ const handleChange = async (name) => {
       break;
     case 'five':
       initLogOptions();
+      break;
   }
-};
-
-const confirm = () => {
-  data.readOnly = true;
 };
 
 const cancel = () => {
   clean();
 };
 
-const editYaml = () => {
-  data.readOnly = false;
+const goToDeployment = () => {
+  proxy.$router.push({
+    name: 'Deployment',
+    query: { cluster: data.cluster },
+  });
 };
 </script>
 <style lang="scss" scoped></style>

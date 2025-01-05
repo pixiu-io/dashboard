@@ -43,6 +43,16 @@ export const deleteDeployment = async (cluster, namespace, name) => {
   return [result, err];
 };
 
+export const scaleDeployment = async (cluster, namespace, name, targetReplicas) => {
+  const patchData = {
+    spec: {
+      replicas: Number(targetReplicas),
+    },
+  };
+
+  return patchDeployment(cluster, namespace, name, patchData);
+};
+
 export const getDeploymentList = async (cluster, namespace, params) => {
   // let url = `/pixiu/proxy/${cluster}/apis/apps/v1/namespaces/${namespace}/deployments`;
   // if (namespace === '全部空间') {

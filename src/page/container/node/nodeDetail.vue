@@ -632,7 +632,6 @@ const cancel = () => {
 // 删除结束
 
 // 编辑 yaml 开始
-
 const viewYaml = async () => {
   const [node, err] = await getNode(data.cluster, data.name);
   if (err) {
