@@ -678,7 +678,7 @@ import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import {
   getDeployment,
   getDeployReady,
-  patchDeployment,
+  scaleDeployment,
   rolloBackDeployment,
   updateDeployment,
 } from '@/services/kubernetes/deploymentService';
@@ -1228,27 +1228,22 @@ const closeDeploymentScaleDialog = (row) => {
 };
 
 const confirmDeploymentScale = async () => {
-  const patchData = {
-    spec: {
-      replicas: Number(data.deploymentRepcliasFrom.target),
-    },
-  };
-
-  const [result, err] = await patchDeployment(
+  const [result, err] = await scaleDeployment(
     data.cluster,
     data.deploymentRepcliasFrom.namespace,
     data.deploymentRepcliasFrom.name,
-    patchData,
+    data.deploymentRepcliasFrom.target,
   );
   if (err) {
     proxy.$notify.error(err.response.data.message);
     return;
   }
 
-  await getDeployments();
-  closeDeploymentScaleDialog();
+  GetDeployment();
+  setTimeout(() => {
+    closeDeploymentScaleDialog();
+  }, 500);
 };
-
 // 副本数结束
 
 const handleClick = (tab, event) => {};
