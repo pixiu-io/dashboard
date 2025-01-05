@@ -1249,6 +1249,15 @@ const confirmDeploymentScale = async () => {
 const handleClick = (tab, event) => {};
 
 const handleChange = async (name) => {
+  if (name !== 'third') {
+    data.eventData.events = [];
+    data.eventData.pageInfo.total = 0;
+    data.eventData.eventTableData = [];
+  }
+  if (name !== 'five') {
+    data.logData.podLogs = [];
+  }
+
   switch (name) {
     case 'second':
       getDeploymentPods();
@@ -1261,6 +1270,7 @@ const handleChange = async (name) => {
       break;
     case 'five':
       initLogOptions();
+      break;
   }
 };
 
