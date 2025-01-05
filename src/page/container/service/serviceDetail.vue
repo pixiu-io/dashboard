@@ -40,10 +40,6 @@
           >
             查看YAML
           </button>
-
-          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px; color: #171313">
-            更多操作
-          </button>
         </div>
       </div>
     </el-space>
@@ -263,6 +259,14 @@
     @confirm="confirmDeletePod"
     @cancel="cancelDeletePod"
   ></pixiuDialog>
+
+  <PiXiuViewOrEdit
+    :yaml-dialog="data.yamlDialog"
+    title="编辑Yaml"
+    :yaml="data.yaml"
+    :read-only="false"
+    :refresh="GetService"
+  ></PiXiuViewOrEdit>
 </template>
 
 <script setup lang="jsx">
@@ -275,6 +279,7 @@ import MyCodeMirror from '@/components/codemirror/index.vue';
 import { getService } from '@/services/kubernetes/serviceService';
 import { getPodsByLabels, deletePod } from '@/services/kubernetes/podService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
+import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -311,8 +316,6 @@ const data = reactive({
     deleteName: '',
     namespace: '',
   },
-
-  yaml: '',
 
   activeName: 'first',
 });
@@ -396,6 +399,19 @@ const cancelDeletePod = () => {
   }, 100);
 };
 // pod 列表结束
+
+// 编辑 yaml 开始
+const viewYaml = async () => {
+  const [obj, err] = await getService(data.cluster, data.namespace, data.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.yaml = obj;
+  data.yamlDialog = true;
+};
+// 编辑 yaml 结束
 
 const handleChange = async (name) => {
   if (name === 'second') {
