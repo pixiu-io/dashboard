@@ -48,9 +48,27 @@
             查看YAML
           </button>
 
-          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px; color: #171313">
-            更多操作
-          </button>
+          <el-dropdown>
+            <span>
+              <button
+                class="pixiu-two-button2"
+                style="margin-left: 10px; width: 85px; color: #171313"
+              >
+                更多操作
+              </button>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu class="dropdown-buttons">
+                <el-dropdown-item class="dropdown-item-buttons" @click="handleImageDialog">
+                  滚动更新
+                </el-dropdown-item>
+                <el-dropdown-item class="dropdown-item-buttons" @click="handleRedeploy">
+                  重建
+                </el-dropdown-item>
+                <el-dropdown-item class="dropdown-item-buttons"> 删除 </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </div>
       </div>
     </el-space>
@@ -692,6 +710,7 @@ import {
   getDeployReady,
   scaleDeployment,
   rolloBackDeployment,
+  reDeployDeployment,
   updateDeployment,
 } from '@/services/kubernetes/deploymentService';
 import PiXiuDiffView from '@/components/pixiuyaml/diffView/index.vue';
@@ -1289,6 +1308,34 @@ const handleChange = async (name) => {
 const cancel = () => {
   clean();
 };
+
+// 重建开始
+const handleRedeploy = async () => {
+  const patchData = {
+    spec: {
+      template: {
+        metadata: {
+          annotations: {
+            'deployment.pixiu.io/restartAt': formatTimestamp(new Date()),
+          },
+        },
+      },
+    },
+  };
+  const [result, err] = await reDeployDeployment(
+    data.cluster,
+    data.namespace,
+    data.name,
+    patchData,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$notify.success(`Deployment(${data.name}) 重新部署执行成功`);
+};
+
+// 重建结束
 
 const goToDeployment = () => {
   proxy.$router.push({
