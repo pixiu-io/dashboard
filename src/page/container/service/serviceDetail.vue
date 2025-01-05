@@ -399,12 +399,14 @@ const cancelDeletePod = () => {
     data.deleteDialog.deleteName = '';
   }, 100);
 };
-
 // pod 列表结束
 
 const handleChange = async (name) => {
   if (name === 'second') {
     GetServicePods();
+  } else {
+    data.podData.pods = [];
+    data.podData.tableData = [];
   }
 };
 </script>
