@@ -1477,7 +1477,7 @@
 
   <PiXiuViewOrEdit
     :yaml-dialog="data.editYamlDialog"
-    title="编辑YAML"
+    title="编辑Yaml"
     :yaml="data.yaml"
     :read-only="false"
     :refresh="getCronJobs"
