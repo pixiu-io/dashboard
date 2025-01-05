@@ -565,6 +565,12 @@ const handleChange = async (name) => {
     data.podData.pods = [];
     data.podData.tableData = [];
   }
+  if (name === 'third') {
+    GetEvents();
+  } else {
+    data.eventData.events = [];
+    data.eventData.eventTableData = [];
+  }
 };
 </script>
 
