@@ -261,7 +261,7 @@
     :object-name="data.deleteDialog.objectName"
     :delete-name="data.deleteDialog.deleteName"
     @confirm="confirmDeletePod"
-    @cancel="cancel"
+    @cancel="cancelDeletePod"
   ></pixiuDialog>
 </template>
 
@@ -273,7 +273,8 @@ import { formatterTime, formatterPodStatus, formatterRestartCount } from '@/util
 import useClipboard from 'vue-clipboard3';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import { getService } from '@/services/kubernetes/serviceService';
-import { getPodsByLabels } from '@/services/kubernetes/podService';
+import { getPodsByLabels, deletePod } from '@/services/kubernetes/podService';
+import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -334,7 +335,7 @@ const GetService = async () => {
   }
 
   data.object = res;
-  data.createTime = formatTimestamp(data.service.metadata.creationTimestamp);
+  data.createTime = formatTimestamp(data.object.metadata.creationTimestamp);
 };
 
 const goToService = () => {
@@ -375,15 +376,10 @@ const confirmDeletePod = async () => {
   proxy.$message.success(
     `${data.deleteDialog.objectName}(${data.deleteDialog.deleteName}) 删除成功`,
   );
+  cancelDeletePod();
 
-  getServicePods();
-  clean();
-};
-
-const clean = () => {
-  data.deleteDialog.close = false;
   setTimeout(() => {
-    data.deleteDialog.deleteName = '';
+    GetServicePods();
   }, 100);
 };
 
