@@ -1,194 +1,213 @@
 <template>
-  <el-card class="detail-card-container">
+  <el-card class="contend-card-container2" style="margin-top: 1px">
     <div style="margin-top: 10px; float: right">
-      <button class="pixiu-two-button2" style="width: 60px; margin-right: 6px">日志</button>
-      <button class="pixiu-two-button2" style="width: 60px">刷新</button>
+      <button class="pixiu-two-button2" style="width: 60px" @click="goToDeployment">返回</button>
     </div>
 
-    <div style="display: flex; margin-left: 20px; margin-top: 15px">
-      <pixiu-icon name="icon-deploymentunitbeifen" size="40px" type="iconfont" color="#006eff" />
+    <el-space style="display: flex; margin: 20px 15px">
+      <div style="display: flex; align-items: center; height: 100%">
+        <pixiu-icon name="icon-zongrongqizu" size="75px" type="iconfont" color="#006eff" />
+      </div>
       <div
-        class="breadcrumb-create-style"
-        style="margin-left: 10px; margin-top: 10px; font-size: 15px"
+        style="
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          min-height: 80px;
+        "
       >
-        {{ data.name }}
-        <pixiu-icon
-          name="icon-copy"
-          size="12px"
-          style="cursor: pointer; margin-left: 2px"
-          type="iconfont"
-          color="#909399"
-          @click="copy(data.name)"
-        />
+        <div
+          class="breadcrumb-create-style"
+          style="font-size: 17px; margin-top: -10px; margin-left: 10px"
+        >
+          {{ data.name }}
+        </div>
+
+        <div style="margin-bottom: 10px">
+          <span class="detail-card-key-style" style="font-size: 12.5px">创建时间 </span>
+          <span class="detail-card-value-style" style="margin-left: 5px; font-size: 12.5px">
+            {{ data.createTime }}</span
+          >
+        </div>
+
+        <div style="margin-bottom: -10px; margin-left: 10px">
+          <button class="pixiu-two-button" @click="GetDeployment">刷新</button>
+
+          <button
+            class="pixiu-two-button2"
+            style="margin-left: 10px; width: 85px"
+            @click="viewYaml"
+          >
+            查看YAML
+          </button>
+          <button class="pixiu-two-button2" style="margin-left: 10px; width: 95px">滚动更新</button>
+        </div>
       </div>
-    </div>
+    </el-space>
+  </el-card>
 
-    <div style="margin-top: 25px; display: flex">
-      <div style="width: 50%">
-        <el-form>
-          <el-form-item>
-            <template #label>
-              <span style="margin-left: 20px; font-size: 13px; color: #191919">负载名称 </span>
-            </template>
-            <span class="detail-card-style-form2" style="margin-left: 106px">
-              {{ data.name }}
-            </span>
-          </el-form-item>
-
-          <div style="margin-top: -12px"></div>
-          <el-form-item>
-            <template #label>
-              <span style="margin-left: 20px; font-size: 13px; color: #191919">状态 </span>
-            </template>
-            <span class="detail-card-style-form2" style="margin-left: 132px">
-              <div style="display: flex">
-                <div>
-                  <pixiu-icon name="icon-circle-dot" size="12px" type="iconfont" color="#28C65A" />
-                </div>
-                <div style="margin-left: 6px">运行中</div>
-              </div>
-            </span>
-          </el-form-item>
-
-          <div style="margin-top: -12px"></div>
-          <el-form-item>
-            <template #label>
-              <span style="margin-left: 20px; font-size: 13px; color: #191919"
-                >实例(就绪/副本/失败)</span
-              >
-            </template>
-
-            <span
-              v-if="data.daemonset && data.daemonset.status"
-              class="detail-card-style-form2"
-              style="margin-left: 40px"
-            >
-              {{ getDaemonsetReady(data.daemonset) }}
-            </span>
-            <pixiu-icon
-              name="icon-edit"
-              size="12px"
-              style="margin-left: 8px; cursor: pointer"
-              type="iconfont"
-              color="#909399"
-            />
-          </el-form-item>
-
-          <div style="margin-top: -12px"></div>
-          <el-form-item>
-            <template #label>
-              <span style="margin-left: 20px; font-size: 13px; color: #191919">运行时</span>
-            </template>
-            <span class="detail-card-style-form2" style="margin-left: 120px"> 普通运行时 </span>
-          </el-form-item>
-        </el-form>
-      </div>
-
-      <div style="width: 50%">
-        <el-form>
-          <el-form-item>
-            <template #label>
-              <span style="margin-left: 20px; font-size: 13px; color: #191919">命名空间</span>
-            </template>
-            <span
-              v-if="data.daemonset.metadata && data.daemonset.metadata.namespace"
-              class="detail-card-style-form2"
-              style="margin-left: 106px"
-            >
-              {{ data.daemonset.metadata.namespace }}
-            </span>
-          </el-form-item>
-
-          <div style="margin-top: -12px"></div>
-          <el-form-item>
-            <template #label>
-              <span style="margin-left: 20px; font-size: 13px; color: #191919">创建时间</span>
-            </template>
-            <span
-              v-if="data.daemonset.metadata && data.daemonset.metadata.creationTimestamp"
-              class="detail-card-style-form2"
-              style="margin-left: 106px"
-            >
-              {{ data.daemonset.metadata.creationTimestamp }}
-            </span>
-          </el-form-item>
-
-          <div style="margin-top: -12px"></div>
-          <el-form-item>
-            <template #label>
-              <span style="margin-left: 20px; font-size: 13px; color: #191919">更新策略</span>
-            </template>
-            <span
-              v-if="
-                data.daemonset.spec &&
-                data.daemonset.spec.updateStrategy &&
-                data.daemonset.spec.updateStrategy.type
-              "
-              class="detail-card-style-form2"
-              style="margin-left: 106px"
-            >
-              {{ data.daemonset.spec.updateStrategy.type }}
-            </span>
-          </el-form-item>
-
-          <div style="margin-top: -12px"></div>
-          <el-form-item>
-            <template #label>
-              <span style="margin-left: 20px; font-size: 13px; color: #191919">描述</span>
-            </template>
-            <span class="detail-card-style-form2" style="margin-left: 132px"> - </span>
-          </el-form-item>
-        </el-form>
-      </div>
-    </div>
-
+  <el-card class="contend-card-container2">
     <el-tabs
       v-model="data.activeName"
-      style="margin-left: 20px"
+      style="margin-left: 10px"
       @tab-click="handleClick"
       @tab-change="handleChange"
     >
-      <el-tab-pane label="实例列表" name="first"> </el-tab-pane>
-      <el-tab-pane label="标签信息" name="second"> </el-tab-pane>
-      <el-tab-pane label="事件列表" name="third"></el-tab-pane>
-      <el-tab-pane label="版本记录" name="four"> </el-tab-pane>
-      <el-tab-pane label="日志查询" name="five"></el-tab-pane>
-      <el-tab-pane label="弹性伸缩" name="six"></el-tab-pane>
+      <el-tab-pane label="基本信息" name="first"> </el-tab-pane>
+      <el-tab-pane label="容器组" name="second"> </el-tab-pane>
+      <el-tab-pane label="事件" name="third"></el-tab-pane>
+      <el-tab-pane label="日志查询" name="five"> </el-tab-pane>
+      <el-tab-pane label="监控" name="six"> </el-tab-pane>
     </el-tabs>
 
-    <div v-if="data.activeName === 'first'" style="margin-left: 12px">
-      <div>
-        <el-row>
-          <el-card class="detail-docs">
-            <el-icon
-              style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
-              ><WarningFilled
-            /></el-icon>
-            <div style="vertical-align: middle; margin-top: -40px">
-              获取 Daemonset 的实时实例列表
-            </div>
-          </el-card>
+    <div v-if="data.activeName === 'first'">
+      <el-form style="margin-top: 10px">
+        <el-form-item>
+          <template #label>
+            <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+              >基本信息
+            </span>
+          </template>
+        </el-form-item>
 
-          <el-col>
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <span class="detail-card-key-style">负载名称 </span>
+            <span class="detail-card-value-style"> {{ data.object.metadata.name }}</span>
+          </el-col>
+
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">命名空间 </span>
+              <span class="detail-card-value-style">
+                {{ data.object.metadata.namespace }}
+              </span>
+            </el-row>
+          </el-col>
+
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">创建时间 </span>
+              <span class="detail-card-value-style"> {{ data.createTime }}</span>
+            </el-row>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20" style="margin-top: 15px">
+          <el-col :span="8">
+            <span class="detail-card-key-style">状态 </span>
+            <span class="detail-card-value-style" style="margin-left: 55px"> 运行中</span>
+          </el-col>
+
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">运行时 </span>
+              <span class="detail-card-value-style" style="margin-left: 40px"> 普通运行时 </span>
+            </el-row>
+          </el-col>
+
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">更新策略 </span>
+              <span class="detail-card-value-style"> 未知 </span>
+            </el-row>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20" style="margin-top: 15px">
+          <el-col :span="8">
+            <span class="detail-card-key-style">实例个数 </span>
+            <span class="detail-card-value-style"> 1/1 </span>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20" style="margin-top: 25px">
+          <el-col :span="10">
+            <el-form-item>
+              <template #label>
+                <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+                  >标签
+                </span>
+              </template>
+            </el-form-item>
+
+            <el-form-item style="margin-top: -10px">
+              <div v-if="data.object.metadata.labels === undefined" style="margin-left: 10px">
+                -
+              </div>
+              <div v-else style="margin-top: -8px">
+                <div
+                  v-for="(item, index) in data.object.metadata.labels"
+                  :key="item"
+                  style="font-size: 14px"
+                >
+                  <el-tag type="primary" style="margin-top: 5px; margin-left: 10px"
+                    >{{ index }}: {{ item }}</el-tag
+                  >
+                </div>
+              </div>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="10">
+            <el-form-item>
+              <template #label>
+                <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+                  >注释
+                </span>
+              </template>
+            </el-form-item>
+
+            <el-form-item style="margin-top: -10px">
+              <div v-if="data.object.metadata.annotations === undefined" style="margin-left: 10px">
+                -
+              </div>
+              <div v-else style="margin-top: -8px">
+                <div
+                  v-for="(item, index) in data.object.metadata.annotations"
+                  :key="item"
+                  style="font-size: 14px"
+                >
+                  <el-tag type="primary" style="margin-top: 5px; margin-left: 10px"
+                    >{{ index }}: {{ item }}</el-tag
+                  >
+                </div>
+              </div>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+
+    <div v-if="data.activeName === 'second'">
+      <el-card class="detail-docs" style="margin-left: 10px">
+        <el-icon
+          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+          ><WarningFilled
+        /></el-icon>
+        <div style="vertical-align: middle; margin-top: -40px">管理运行在 ds 上的全部 pod 实例</div>
+      </el-card>
+
+      <el-row>
+        <el-col>
+          <div style="margin-left: 10px">
+            <button style="width: 85px" class="pixiu-two-button2">批量删除</button>
+
             <button
-              class="pixiu-two-button2"
-              style="margin-left: 10px; width: 85px"
-              @click="handleBatchDeleteDialog"
+              class="pixiu-two-button"
+              style="float: right; margin-left: 12px"
+              @click="GetDaemonsetPods"
             >
-              批量删除
+              查询
             </button>
 
-            <div style="margin-left: 8px; float: right; margin-left: 12px">
-              <button class="pixiu-two-button" @click="searchDaemonsetPods">搜索</button>
-            </div>
-
             <el-input
-              v-model="data.pageInfo.search.searchInfo"
+              v-model="data.podData.pageInfo.nameSelector"
               placeholder="名称搜索关键字"
-              style="width: 480px; float: right"
+              style="width: 35%; float: right"
               clearable
-              @clear="getDaemonsetPods"
-              @input="searchDaemonsetPods"
+              @clear="GetDaemonsetPods"
+              @input="GetDaemonsetPods"
             >
               <template #suffix>
                 <pixiu-icon
@@ -197,23 +216,19 @@
                   size="15px"
                   type="iconfont"
                   color="#909399"
-                  @click="getDaemonsetPods"
+                  @click="GetDaemonsetPods"
                 />
               </template>
             </el-input>
-            <div style="float: right">
-              <el-switch v-model="data.autoSyncPods" inline-prompt width="36px" /><span
-                style="font-size: 13px; margin-left: 5px; margin-right: 10px"
-                >自动刷新</span
-              >
-            </div>
-          </el-col>
-        </el-row>
-      </div>
+          </div>
+        </el-col>
+      </el-row>
+
       <el-table
-        :data="data.tableData"
+        v-loading="data.podData.loading"
+        :data="data.podData.tableData"
         stripe
-        style="margin-top: 6px"
+        style="margin-top: 10px; width: 100%"
         header-row-class-name="pixiu-table-header"
         :cell-style="{
           'font-size': '12px',
@@ -221,56 +236,35 @@
         }"
         @selection-change="handlePodSelectionChange"
       >
-        <el-table-column type="selection" width="30px" />
-        <el-table-column
-          prop="metadata.name"
-          label="实例名称"
-          min-width="70px"
-          show-overflow-tooltip
-        >
+        <el-table-column type="selection" width="30" />
+        <el-table-column prop="metadata.name" sortable label="实例名称" min-width="120px">
           <template #default="scope">
-            {{ scope.row.metadata.name }}
-            <pixiu-icon
-              name="icon-copy"
-              size="11px"
-              type="iconfont"
-              class-name="icon-box"
-              color="#909399"
-              style="cursor: pointer"
-              @click="copy(scope.row.metadata.name)"
-            />
+            <el-link
+              class="global-table-world"
+              :underline="false"
+              type="primary"
+              @click="jumpRoute(scope.row)"
+            >
+              {{ scope.row.metadata.name }}
+            </el-link>
           </template>
         </el-table-column>
 
-        <el-table-column prop="status" label="状态" :formatter="formatterStatus" />
-        <el-table-column prop="status.hostIP" label="所在节点" />
-        <el-table-column prop="status.podIP" label="实例IP">
-          <template #default="scope">
-            {{ scope.row.status.podIP }}
-            <pixiu-icon
-              name="icon-copy"
-              size="11px"
-              type="iconfont"
-              class-name="icon-box"
-              style="cursor: pointer"
-              color="#909399"
-              @click="copy(scope.row.status.podIP)"
-            />
-          </template>
-        </el-table-column>
+        <el-table-column prop="status" label="状态" :formatter="formatterPodStatus" />
 
-        <el-table-column
-          prop="status.containerStatuses"
-          label="重启次数"
-          :formatter="getPodRestartCount"
-        />
+        <el-table-column prop="metadata.namespace" label="命名空间"> </el-table-column>
+
+        <el-table-column prop="status.podIP" label="实例IP"> </el-table-column>
+
+        <el-table-column prop="status" label="重启次数" :formatter="formatterRestartCount" />
 
         <el-table-column
           prop="metadata.creationTimestamp"
           label="创建时间"
+          sortable
           :formatter="formatterTime"
         />
-        <el-table-column fixed="right" label="操作" width="160px">
+        <el-table-column fixed="right" label="操作" width="60px">
           <template #default="scope">
             <el-button
               size="small"
@@ -280,176 +274,16 @@
             >
               删除
             </el-button>
-
-            <el-button
-              type="text"
-              size="small"
-              style="margin-right: 1px; color: #006eff"
-              @click="openShell(scope.row)"
-            >
-              远程登陆
-            </el-button>
           </template>
         </el-table-column>
         <template #empty>
-          <div class="table-inline-word">该 workload 的实例列表为空</div>
+          <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
         </template>
       </el-table>
-
-      <pagination :total="data.pageInfo.total" @on-change="onChange"></pagination>
-    </div>
-
-    <div v-if="data.activeName === 'third'" style="margin-left: 12px">
-      <div>
-        <el-card class="detail-docs">
-          <el-icon
-            style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
-            ><WarningFilled
-          /></el-icon>
-          <div style="vertical-align: middle; margin-top: -40px">
-            事件保存事件为1小时，1小时后自动清理。
-          </div>
-        </el-card>
-
-        <el-row>
-          <el-col>
-            <div>
-              <!-- <button class="pixiu-two-button" @click="getDaemonsetEvents">刷新</button> -->
-              <button
-                style="margin-left: 10px; width: 85px"
-                class="pixiu-two-button2"
-                @click="deleteEventsInBatch"
-              >
-                批量删除
-              </button>
-
-              <div style="margin-left: 8px; float: right; margin-left: 12px">
-                <button class="pixiu-two-button" @click="getDaemonsetEvents">搜索</button>
-              </div>
-
-              <el-input
-                v-model="data.pageInfo.search.searchInfo"
-                placeholder="名称搜索关键字"
-                style="width: 480px; float: right"
-                clearable
-                @clear="getDaemonsetEvents"
-                @input="getDaemonsetEvents"
-              >
-                <template #suffix>
-                  <pixiu-icon
-                    name="icon-search"
-                    style="cursor: pointer"
-                    size="15px"
-                    type="iconfont"
-                    color="#909399"
-                    @click="getDaemonsetEvents"
-                  />
-                </template>
-              </el-input>
-              <div style="float: right">
-                <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
-                  style="font-size: 13px; margin-left: 5px; margin-right: 10px"
-                  >自动刷新</span
-                >
-              </div>
-            </div>
-          </el-col>
-        </el-row>
-      </div>
-      <el-table
-        v-loading="data.loading"
-        :data="data.eventTableData"
-        stripe
-        style="margin-top: 6px"
-        header-row-class-name="pixiu-table-header"
-        :cell-style="{
-          'font-size': '12px',
-          color: '#191919',
-        }"
-        @selection-change="handleEventSelectionChange"
-      >
-        <el-table-column type="selection" width="30" />
-        <el-table-column
-          prop="lastTimestamp"
-          label="最后出现时间"
-          sortable
-          :formatter="formatterTime"
-        />
-        <el-table-column prop="type" label="级别" />
-        <el-table-column prop="involvedObject.kind" label="资源类型"> </el-table-column>
-        <el-table-column prop="involvedObject.name" label="资源名称" :formatter="formatterName">
-        </el-table-column>
-        <el-table-column prop="count" label="出现次数"> </el-table-column>
-        <el-table-column prop="message" label="内容" min-width="250px" />
-        <template #empty>
-          <div class="table-inline-word">该 workload 的事件列表为空</div>
-        </template>
-      </el-table>
-      <pagination :total="data.pageEventInfo.total" @on-change="onEventChange"></pagination>
-    </div>
-    <div v-if="data.activeName === 'four'">
-      <div>
-        <el-row>
-          <el-card class="detail-docs">
-            <el-icon
-              style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
-              ><WarningFilled
-            /></el-icon>
-            <div style="vertical-align: middle; margin-top: -40px">获取 Daemonset 的历史记录</div>
-          </el-card>
-        </el-row>
-      </div>
-      <el-table
-        :data="data.replicasets"
-        style="margin-top: 6px"
-        header-row-class-name="pixiu-table-header"
-        :cell-style="{
-          'font-size': '12px',
-          color: '#191919',
-        }"
-      >
-        <el-table-column prop="metadata.name" label="版本号" min-width="70px">
-          <template #default="scope">
-            # {{ scope.row.metadata.annotations['daemonset.kubernetes.io/revision'] }}
-            <el-tag v-show="scope.row.status.replicas !== 0" type="success">当前版本</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="spec.template.spec.containers[0].image" label="镜像" />
-        <el-table-column
-          prop="metadata.creationTimestamp"
-          label="创建时间"
-          :formatter="formatterTime"
-        />
-        <el-table-column fixed="right" label="操作" width="160px">
-          <template #default="scope">
-            <el-button
-              size="small"
-              link
-              style="margin-right: -10px; margin-left: -10px; color: #006eff"
-              @click="showYaml(scope.row)"
-            >
-              详情
-            </el-button>
-
-            <el-button
-              link
-              size="small"
-              style="margin-right: 1px; color: #006eff"
-              :disabled="scope.row.status.replicas !== 0"
-              @click="rolloback(scope.row)"
-            >
-              回滚
-            </el-button>
-          </template>
-        </el-table-column>
-        <template #empty>
-          <div class="table-inline-word">该 workload 的实例列表为空</div>
-        </template>
-      </el-table>
-
-      <pagination :total="data.pageReplicasetInfo.total" @on-change="onChange"></pagination>
+      <pagination :total="data.podData.pageInfo.total" @on-change="onChange"></pagination>
     </div>
   </el-card>
+
   <PiXiuDiffView
     v-if="data.diffYamlDialog"
     v-model:dialogVisible="data.diffYamlDialog"
@@ -494,72 +328,55 @@ const selectedPod = ref('');
 
 const data = reactive({
   cluster: '',
-  clusterName: '',
   name: '',
   namespace: '',
+
   activeName: 'first',
-  labels: '',
 
-  workloadType: 'Daemonset',
-
-  pageInfo: {
-    page: 1,
-    limit: 10,
-    query: '',
-    total: 0,
-    search: {
-      field: 'name',
-      searchInfo: '',
+  object: {
+    metadata: {},
+    spec: {
+      strategy: {},
     },
+    status: {},
   },
-  replicasets: [],
-  pageReplicasetInfo: {
-    page: 1,
-    limit: 10,
-    total: 0,
-  },
-  pageEventInfo: {
-    page: 1,
-    limit: 10,
-    total: 0,
-    search: {
-      field: 'name',
-      searchInfo: '',
+  createTime: '',
+
+  podData: {
+    loading: false,
+    pods: [],
+    tableData: [],
+    pageInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      nameSelector: '',
+      labelSelector: '',
     },
   },
 
-  restarts: 0,
-  loading: false,
+  eventData: {
+    loading: false,
+    events: [],
+    eventTableData: [],
+    multipleEventSelection: [],
+
+    pageInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      nameSelector: '',
+      labelSelector: '',
+    },
+  },
 
   daemonset: {},
   daemonsetPods: [],
 
   daemonsetEvents: [],
 
-  selectedPods: [],
-  selectedPod: '',
-  selectedContainers: [],
-  selectedContainer: '',
-  selectedPodMap: {},
-
-  autoSyncPods: false,
-  previous: false,
-
   tableData: [],
   eventTableData: [],
-
-  aggLog: false,
-  logLine: '100行日志',
-  logLines: ['50行日志', '100行日志', '200行日志', '500行日志'],
-  selectedLog: 100,
-  podLogs: [],
-
-  yaml: '',
-  yamlName: '',
-  readOnly: true,
-
-  multiplePodSelection: [],
-  multipleEventSelection: [],
 
   // 删除对象属性
   deleteDialog: {
@@ -568,49 +385,15 @@ const data = reactive({
     deleteName: '',
     namespace: '',
   },
-
-  batchDeleteDialog: {
-    close: false,
-    objectName: 'Pods',
-    deleteNames: '',
-  },
-  diffYamlDialog: false,
-  modifiedYaml: '',
 });
 
 onMounted(async () => {
   data.cluster = proxy.$route.query.cluster;
-  data.clusterName = localStorage.getItem(data.cluster);
   data.name = proxy.$route.query.name;
   data.namespace = proxy.$route.query.namespace;
-  await getDaemonsetObject();
-  await getDaemonsetPods();
+
+  GetDaemonset();
 });
-
-const openShell = (val) => {
-  selectedPod.value = val.metadata.name;
-  selectedContainers.value = val.spec.containers;
-  if (val.spec.containers.length > 1) {
-    showDialog.value = true;
-  } else {
-    openWindowShell();
-  }
-};
-
-const openWindowShell = () => {
-  window.open(
-    '/#/podshell?pod=' +
-      selectedPod.value +
-      '&namespace=' +
-      data.namespace +
-      '&cluster=' +
-      data.cluster +
-      '&container=' +
-      selectedContainer.value,
-    '_blank',
-    'width=1000,height=600',
-  );
-};
 
 const changePod = async (val) => {
   data.selectedPod = val;
@@ -625,29 +408,14 @@ const changeContainer = async (val) => {
   data.selectedContainer = val;
 };
 
-const changeLogLine = async (val) => {
-  if (val === '50行日志') {
-    data.selectedLog = 50;
-  }
-  if (val === '100行日志') {
-    data.selectedLog = 100;
-  }
-  if (val === '200行日志') {
-    data.selectedLog = 200;
-  }
-  if (val === '500行日志') {
-    data.selectedLog = 500;
-  }
-};
-
-const getDaemonsetObject = async () => {
+const GetDaemonset = async () => {
   const [result, err] = await getDaemonset(data.cluster, data.namespace, data.name);
   if (err) {
     proxy.$notify.error(err.response.data.message);
     return;
   }
-  data.daemonset = result;
-  data.yaml = jsYaml.dump(data.daemonset, { quotingType: '"' });
+  data.object = result;
+  data.createTime = formatTimestamp(data.object.metadata.creationTimestamp);
 };
 
 const handleDeleteDialog = (row) => {
@@ -685,7 +453,7 @@ const deleteDaemonsetPod = async () => {
   proxy.$notify.success({ title: 'Pod', message: `${data.deleteDialog.deleteName} 删除成功` });
 
   cancelDeletePod();
-  await getDaemonsetPods();
+  await GetDaemonsetPods();
 };
 
 const canceldeletePodsInBatch = () => {
@@ -735,7 +503,7 @@ const deletePodsInBatch = async () => {
   }
 
   canceldeletePodsInBatch();
-  await getDaemonsetPods();
+  await GetDaemonsetPods();
 };
 
 const onChange = (v) => {
@@ -799,44 +567,24 @@ const getPodLogs = async () => {
   }
 };
 
-const getDaemonsetPods = async () => {
+const GetDaemonsetPods = async () => {
   let matchLabels = data.daemonset.spec.selector.matchLabels;
   let labels = [];
   for (let key in matchLabels) {
     labels.push(key + '=' + matchLabels[key]);
   }
 
-  data.loading = true;
+  data.podData.loading = true;
   const [result, err] = await getPodsByLabels(data.cluster, data.namespace, labels.join(','));
-  data.loading = false;
+  data.podData.loading = false;
   if (err) {
     proxy.$notify.error(err.response.data.message);
     return;
   }
-  data.daemonsetPods = result.items;
-  data.pageInfo.total = data.daemonsetPods.length;
-  data.tableData = getTableData(data.pageInfo, data.daemonsetPods);
 
-  data.selectedPods = [];
-  data.selectedContainers = [];
-  data.selectedPodMap = {};
-  for (let item of data.daemonsetPods) {
-    let cs = [];
-    for (let c of item.spec.containers) {
-      cs.push(c.name);
-    }
-
-    data.selectedPodMap[item.metadata.name] = cs;
-    data.selectedPods.push(item.metadata.name);
-  }
-  if (data.selectedPods.length > 0) {
-    data.selectedPod = data.selectedPods[0];
-
-    data.selectedContainers = data.selectedPodMap[data.selectedPod];
-    if (data.selectedContainers.length > 0) {
-      data.selectedContainer = data.selectedContainers[0];
-    }
-  }
+  data.podData.pods = result.items;
+  data.podData.pageInfo.total = data.podData.pods.length;
+  data.podData.tableData = getTableData(data.podData.pageInfo, data.podData.pods);
 };
 
 const searchDaemonsetPods = async () => {
@@ -867,25 +615,6 @@ const getDaemonsetEvents = async () => {
   data.daemonsetEvents = result;
   data.pageEventInfo.total = result.length;
   data.eventTableData = getTableData(data.pageEventInfo, data.daemonsetEvents);
-};
-
-const getDaemonsetRs = async () => {
-  data.loading = true;
-  const lables = data.daemonset.metadata.labels;
-  let labelStr = Object.keys(lables)
-    .map((key) => {
-      return key + '=' + lables[key];
-    })
-    .join(',');
-
-  const [result, err] = await getDaemonsetReplicasets(data.cluster, data.namespace, labelStr);
-  data.loading = false;
-  if (err) {
-    proxy.$notify.error({ title: 'Event', message: err.response.data.message });
-    return;
-  }
-  data.replicasets = result.items;
-  data.pageReplicasetInfo.total = result.length;
 };
 
 const deleteEventObject = async (row) => {
@@ -923,95 +652,16 @@ const handleEventSelectionChange = (events) => {
   }
 };
 
-const formatterStatus = (row, column, cellValue) => {
-  let phase = cellValue.phase;
-  if (phase == 'Failed') {
-    phase = cellValue.reason;
-  } else if (phase == 'Pending') {
-    return <div class="color-yellow-word">{phase}</div>;
-    // const containerStatuses = cellValue.containerStatuses;
-    // for (let i = 0; i < containerStatuses.length; i++) {
-    //   phase = containerStatuses[i].state.waiting.reason;
-    //   break;
-    // }
-  }
-
-  if (phase == 'Running') {
-    return <div class="color-green-word">{phase}</div>;
-  }
-  return <div>{phase}</div>;
-};
-
-const formatterName = (row, column, cellValue) => {
-  return (
-    <el-tooltip effect="light" placement="top" content={cellValue}>
-      <div class="pixiu-ellipsis-style">{cellValue}</div>
-    </el-tooltip>
-  );
-};
-
-const getPodRestartCount = (row, column, cellValue) => {
-  let count = 0;
-  if (cellValue === undefined) {
-  } else {
-    for (let i = 0; i < cellValue.length; i++) {
-      count = count + cellValue[i].restartCount;
-    }
-  }
-
-  return <div>{count} 次</div>;
-};
-
 const handleClick = (tab, event) => {};
 
 const handleChange = async (name) => {
   switch (name) {
     case 'second':
-      await getDaemonsetObject();
+      await GetDaemonsetPods();
       break;
     case 'third':
-      await getDaemonsetEvents();
-      break;
-    case 'four':
-      await getDaemonsetRs();
-      break;
   }
-};
-
-const confirm = () => {
-  data.readOnly = true;
-};
-
-const cancel = () => {
-  data.readOnly = true;
-};
-
-const editYaml = () => {
-  data.readOnly = false;
 };
 </script>
 
-<style scoped="scoped">
-.daemonset-tab {
-  margin-top: 1px;
-  margin-bottom: -32px;
-}
-
-.demo-tabs .el-tabs__content {
-  padding: 32px;
-  color: #6b778c;
-  font-size: 32px;
-  font-weight: 600;
-}
-
-.daemonset-info {
-  color: #909399;
-  font-size: 13px;
-  margin-left: 8px;
-}
-
-.deploy-detail-info {
-  font-size: 13px;
-  color: #29232b;
-}
-</style>
+<style scoped="scoped"></style>
