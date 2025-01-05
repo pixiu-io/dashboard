@@ -54,7 +54,7 @@
       @tab-change="handleChange"
     >
       <el-tab-pane label="基本信息" name="first"> </el-tab-pane>
-      <el-tab-pane label="服务详情" name="second"> </el-tab-pane>
+      <el-tab-pane label="高级设置" name="second"> </el-tab-pane>
       <el-tab-pane label="事件" name="third"> </el-tab-pane>
     </el-tabs>
 
@@ -429,7 +429,7 @@ const goToService = () => {
 
 // pod 列表开始
 const GetServicePods = async () => {
-  let matchLabels = data.object.spec.selector.matchLabels;
+  let matchLabels = data.object.spec.selector;
   let labels = [];
   for (let key in matchLabels) {
     labels.push(key + '=' + matchLabels[key]);
