@@ -109,9 +109,7 @@
           <el-col :span="8">
             <el-row>
               <span class="detail-card-key-style">更新策略 </span>
-              <span class="detail-card-value-style">
-                {{ data.object.spec.strategy.type }}
-              </span>
+              <span class="detail-card-value-style"> 未知 </span>
             </el-row>
           </el-col>
         </el-row>
@@ -187,9 +185,7 @@
           style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
           ><WarningFilled
         /></el-icon>
-        <div style="vertical-align: middle; margin-top: -40px">
-          管理运行在 deployment 上的全部 pod 实例
-        </div>
+        <div style="vertical-align: middle; margin-top: -40px">管理运行在 ds 上的全部 pod 实例</div>
       </el-card>
 
       <el-row>
@@ -206,7 +202,7 @@
             </button>
 
             <el-input
-              v-model="data.pageInfo.search.searchInfo"
+              v-model="data.podData.pageInfo.nameSelector"
               placeholder="名称搜索关键字"
               style="width: 35%; float: right"
               clearable
