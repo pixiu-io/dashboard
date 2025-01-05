@@ -196,35 +196,7 @@
       <el-row>
         <el-col>
           <div style="margin-left: 10px">
-            <button style="width: 85px" class="pixiu-two-button2">批量删除</button>
-
-            <button
-              class="pixiu-two-button"
-              style="float: right; margin-left: 12px"
-              @click="GetServicePods"
-            >
-              查询
-            </button>
-
-            <el-input
-              v-model="data.podData.pageInfo.nameSelector"
-              placeholder="名称搜索关键字"
-              style="width: 35%; float: right"
-              clearable
-              @clear="GetServicePods"
-              @input="GetServicePods"
-            >
-              <template #suffix>
-                <pixiu-icon
-                  name="icon-search"
-                  style="cursor: pointer"
-                  size="15px"
-                  type="iconfont"
-                  color="#909399"
-                  @click="GetServicePods"
-                />
-              </template>
-            </el-input>
+            <button class="pixiu-two-button" @click="GetServicePods">查询</button>
           </div>
         </el-col>
       </el-row>
@@ -283,6 +255,14 @@
       </el-table>
     </div>
   </el-card>
+
+  <pixiuDialog
+    :close-event="data.deleteDialog.close"
+    :object-name="data.deleteDialog.objectName"
+    :delete-name="data.deleteDialog.deleteName"
+    @confirm="confirmDeletePod"
+    @cancel="cancel"
+  ></pixiuDialog>
 </template>
 
 <script setup lang="jsx">
@@ -322,6 +302,13 @@ const data = reactive({
       nameSelector: '',
       labelSelector: '',
     },
+  },
+
+  deleteDialog: {
+    close: false,
+    objectName: 'Pod',
+    deleteName: '',
+    namespace: '',
   },
 
   yaml: '',
@@ -375,7 +362,51 @@ const GetServicePods = async () => {
   data.podData.tableData = getTableData(data.podData.pageInfo, data.podData.pods);
 };
 
+const confirmDeletePod = async () => {
+  const [result, err] = await deletePod(
+    data.cluster,
+    data.deleteDialog.namespace,
+    data.deleteDialog.deleteName,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$message.success(
+    `${data.deleteDialog.objectName}(${data.deleteDialog.deleteName}) 删除成功`,
+  );
+
+  getServicePods();
+  clean();
+};
+
+const clean = () => {
+  data.deleteDialog.close = false;
+  setTimeout(() => {
+    data.deleteDialog.deleteName = '';
+  }, 100);
+};
+
+const handleDeleteDialog = (row) => {
+  data.deleteDialog.close = true;
+  data.deleteDialog.deleteName = row.metadata.name;
+  data.deleteDialog.namespace = row.metadata.namespace;
+};
+
+const cancelDeletePod = () => {
+  data.deleteDialog.close = false;
+  setTimeout(() => {
+    data.deleteDialog.deleteName = '';
+  }, 100);
+};
+
 // pod 列表结束
+
+const handleChange = async (name) => {
+  if (name === 'second') {
+    GetServicePods();
+  }
+};
 </script>
 
 <style scoped="scoped"></style>
