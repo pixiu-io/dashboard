@@ -301,9 +301,8 @@ import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { formatTimestamp } from '@/utils/utils';
 import useClipboard from 'vue-clipboard3';
-import { ElMessage } from 'element-plus';
-import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
+import { getService } from '@/services/kubernetes/serviceService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -313,18 +312,7 @@ const data = reactive({
   namespace: '',
   name: '',
 
-  pageInfo: {
-    page: 1,
-    limit: 10,
-    query: '',
-    total: 0,
-  },
-
-  service: {
-    metadata: {},
-    spec: {},
-    status: {},
-  },
+  createTime: '',
 
   object: {
     metadata: {},
@@ -347,9 +335,7 @@ const data = reactive({
 
   yaml: '',
 
-  createTime: '',
   activeName: 'first',
-  loading: false,
 });
 
 onMounted(async () => {
@@ -362,39 +348,28 @@ onMounted(async () => {
 
 const { toClipboard } = useClipboard();
 
-const copyYmal = async () => {
-  try {
-    await toClipboard(data.yaml);
-    ElMessage({
-      type: 'success',
-      message: '已复制',
-    });
-  } catch (e) {
-    ElMessage({
-      type: 'error',
-      message: e.valueOf().toString(),
-    });
-  }
-};
-
 const GetService = async () => {
-  try {
-    const res = await proxy.$http({
-      method: 'get',
-      url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.namespace}/services/${data.name}`,
-    });
-    data.service = res;
-    data.object = res;
+  const [res, err] = await getService(data.cluster, data.namespace, data.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
 
-    data.createTime = formatTimestamp(data.service.metadata.creationTimestamp);
-    data.yaml = jsYaml.dump(data.service, { quotingType: '"' });
-  } catch (error) {}
+  data.object = res;
+  data.createTime = formatTimestamp(data.service.metadata.creationTimestamp);
 };
 
 const goToService = () => {
   const queryParams = { cluster: data.cluster, namespace: data.namespace };
   router.push({ path: '/kubernetes/services', query: queryParams });
 };
+
+// pod 列表开始
+const GetServicePods = async () => {
+  let matchLabels = data.object.spec.selector.matchLabels;
+};
+
+// pod 列表结束
 </script>
 
 <style scoped="scoped"></style>
