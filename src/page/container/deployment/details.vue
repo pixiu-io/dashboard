@@ -1162,21 +1162,13 @@ const handleChange = async (name) => {
   }
 };
 
-const confirm = () => {
-  data.readOnly = true;
-};
-
 const cancel = () => {
   clean();
 };
 
-const editYaml = () => {
-  data.readOnly = false;
-};
-
 const goToDeployment = () => {
   proxy.$router.push({
-    name: 'Node',
+    name: 'Deployment',
     query: { cluster: data.cluster },
   });
 };
