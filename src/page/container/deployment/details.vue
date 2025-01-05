@@ -1,7 +1,7 @@
 <template>
   <el-card class="contend-card-container2" style="margin-top: 1px">
     <div style="margin-top: 10px; float: right">
-      <button class="pixiu-two-button2" style="width: 60px" @click="got">返回</button>
+      <button class="pixiu-two-button2" style="width: 60px" @click="goToDeployment">返回</button>
     </div>
 
     <el-space style="display: flex; margin: 20px 15px">
@@ -32,7 +32,9 @@
 
         <div style="margin-bottom: -10px; margin-left: 10px">
           <button class="pixiu-two-button" @click="GetDeployment">刷新</button>
-          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">设置</button>
+          <button class="pixiu-two-button2" style="margin-left: 10px; width: 95px">
+            调整实例数
+          </button>
 
           <button
             class="pixiu-two-button2"
@@ -1170,6 +1172,13 @@ const cancel = () => {
 
 const editYaml = () => {
   data.readOnly = false;
+};
+
+const goToDeployment = () => {
+  proxy.$router.push({
+    name: 'Node',
+    query: { cluster: data.cluster },
+  });
 };
 </script>
 <style lang="scss" scoped></style>
