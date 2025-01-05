@@ -180,6 +180,112 @@
         </el-row>
       </el-form>
     </div>
+
+    <div v-if="data.activeName === 'second'">
+      <el-card class="detail-docs" style="margin-left: 10px">
+        <el-icon
+          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+          ><WarningFilled
+        /></el-icon>
+        <div style="vertical-align: middle; margin-top: -40px">
+          管理运行在 deployment 上的全部 pod 实例
+        </div>
+      </el-card>
+
+      <el-row>
+        <el-col>
+          <div style="margin-left: 10px">
+            <button style="width: 85px" class="pixiu-two-button2">批量删除</button>
+
+            <button
+              class="pixiu-two-button"
+              style="float: right; margin-left: 12px"
+              @click="GetDaemonsetPods"
+            >
+              查询
+            </button>
+
+            <el-input
+              v-model="data.pageInfo.search.searchInfo"
+              placeholder="名称搜索关键字"
+              style="width: 35%; float: right"
+              clearable
+              @clear="GetDaemonsetPods"
+              @input="GetDaemonsetPods"
+            >
+              <template #suffix>
+                <pixiu-icon
+                  name="icon-search"
+                  style="cursor: pointer"
+                  size="15px"
+                  type="iconfont"
+                  color="#909399"
+                  @click="GetDaemonsetPods"
+                />
+              </template>
+            </el-input>
+          </div>
+        </el-col>
+      </el-row>
+
+      <el-table
+        v-loading="data.podData.loading"
+        :data="data.podData.tableData"
+        stripe
+        style="margin-top: 10px; width: 100%"
+        header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#191919',
+        }"
+        @selection-change="handlePodSelectionChange"
+      >
+        <el-table-column type="selection" width="30" />
+        <el-table-column prop="metadata.name" sortable label="实例名称" min-width="120px">
+          <template #default="scope">
+            <el-link
+              class="global-table-world"
+              :underline="false"
+              type="primary"
+              @click="jumpRoute(scope.row)"
+            >
+              {{ scope.row.metadata.name }}
+            </el-link>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="status" label="状态" :formatter="formatterPodStatus" />
+
+        <el-table-column prop="metadata.namespace" label="命名空间"> </el-table-column>
+
+        <el-table-column prop="status.podIP" label="实例IP"> </el-table-column>
+
+        <el-table-column prop="status" label="重启次数" :formatter="formatterRestartCount" />
+
+        <el-table-column
+          prop="metadata.creationTimestamp"
+          label="创建时间"
+          sortable
+          :formatter="formatterTime"
+        />
+        <el-table-column fixed="right" label="操作" width="60px">
+          <template #default="scope">
+            <el-button
+              size="small"
+              type="text"
+              style="margin-right: -25px; margin-left: -10px; color: #006eff"
+              @click="handleDeleteDialog(scope.row)"
+            >
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+        <template #empty>
+          <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
+        </template>
+      </el-table>
+      <pagination :total="data.podData.pageInfo.total" @on-change="onChange"></pagination>
+    </div>
   </el-card>
 
   <PiXiuDiffView
@@ -244,6 +350,21 @@ const data = reactive({
     loading: false,
     pods: [],
     tableData: [],
+    pageInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      nameSelector: '',
+      labelSelector: '',
+    },
+  },
+
+  eventData: {
+    loading: false,
+    events: [],
+    eventTableData: [],
+    multipleEventSelection: [],
+
     pageInfo: {
       page: 1,
       limit: 10,
@@ -336,7 +457,7 @@ const deleteDaemonsetPod = async () => {
   proxy.$notify.success({ title: 'Pod', message: `${data.deleteDialog.deleteName} 删除成功` });
 
   cancelDeletePod();
-  await getDaemonsetPods();
+  await GetDaemonsetPods();
 };
 
 const canceldeletePodsInBatch = () => {
@@ -386,7 +507,7 @@ const deletePodsInBatch = async () => {
   }
 
   canceldeletePodsInBatch();
-  await getDaemonsetPods();
+  await GetDaemonsetPods();
 };
 
 const onChange = (v) => {
@@ -450,7 +571,7 @@ const getPodLogs = async () => {
   }
 };
 
-const getDaemonsetPods = async () => {
+const GetDaemonsetPods = async () => {
   let matchLabels = data.daemonset.spec.selector.matchLabels;
   let labels = [];
   for (let key in matchLabels) {
@@ -535,71 +656,15 @@ const handleEventSelectionChange = (events) => {
   }
 };
 
-const formatterStatus = (row, column, cellValue) => {
-  let phase = cellValue.phase;
-  if (phase == 'Failed') {
-    phase = cellValue.reason;
-  } else if (phase == 'Pending') {
-    return <div class="color-yellow-word">{phase}</div>;
-    // const containerStatuses = cellValue.containerStatuses;
-    // for (let i = 0; i < containerStatuses.length; i++) {
-    //   phase = containerStatuses[i].state.waiting.reason;
-    //   break;
-    // }
-  }
-
-  if (phase == 'Running') {
-    return <div class="color-green-word">{phase}</div>;
-  }
-  return <div>{phase}</div>;
-};
-
-const formatterName = (row, column, cellValue) => {
-  return (
-    <el-tooltip effect="light" placement="top" content={cellValue}>
-      <div class="pixiu-ellipsis-style">{cellValue}</div>
-    </el-tooltip>
-  );
-};
-
-const getPodRestartCount = (row, column, cellValue) => {
-  let count = 0;
-  if (cellValue === undefined) {
-  } else {
-    for (let i = 0; i < cellValue.length; i++) {
-      count = count + cellValue[i].restartCount;
-    }
-  }
-
-  return <div>{count} 次</div>;
-};
-
 const handleClick = (tab, event) => {};
 
 const handleChange = async (name) => {
   switch (name) {
     case 'second':
-      await getDaemonsetObject();
+      await GetDaemonsetPods();
       break;
     case 'third':
-      await getDaemonsetEvents();
-      break;
-    case 'four':
-      await getDaemonsetRs();
-      break;
   }
-};
-
-const confirm = () => {
-  data.readOnly = true;
-};
-
-const cancel = () => {
-  data.readOnly = true;
-};
-
-const editYaml = () => {
-  data.readOnly = false;
 };
 </script>
 
