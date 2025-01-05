@@ -86,3 +86,7 @@ export const getPodEventList = async (cluster, uid, namespace, name) => {
 export const getNodeEventList = async (cluster, uid, name) => {
   return getRawEventList(cluster, uid, '', name, 'Node', false);
 };
+
+export const getServiceEventList = async (cluster, uid, namespace, name) => {
+  return getRawEventList(cluster, uid, namespace, name, '', false);
+};

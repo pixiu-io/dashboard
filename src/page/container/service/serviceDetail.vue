@@ -338,6 +338,7 @@ import { getService } from '@/services/kubernetes/serviceService';
 import { getPodsByLabels, deletePod } from '@/services/kubernetes/podService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
+import { getServiceEventList, deleteEvent } from '@/services/kubernetes/eventService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -496,7 +497,12 @@ const viewYaml = async () => {
 // 事件处理开始
 const GetEvents = async () => {
   data.eventData.loading = true;
-  const [result, err] = await getEventList(data.cluster, data.namespace, data.name);
+  const [result, err] = await getServiceEventList(
+    data.cluster,
+    data.object.metadata.uid,
+    data.object.metadata.namespace,
+    data.object.metadata.name,
+  );
   data.eventData.loading = false;
   if (err) {
     proxy.$notify.error({ title: 'Event', message: err.response.data.message });
