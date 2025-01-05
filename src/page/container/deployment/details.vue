@@ -506,7 +506,10 @@
       <el-row>
         <el-col>
           <div style="margin-left: 10px">
-            <button style="width: 85px" class="pixiu-two-button2">批量删除</button>
+            <button style="width: 85px" class="pixiu-two-button2">历史日志</button>
+            <button style="width: 85px; margin-left: 10px" class="pixiu-two-button2">
+              实时日志
+            </button>
 
             <button
               class="pixiu-two-button"
@@ -542,8 +545,7 @@
       <el-table
         v-loading="data.logData.loading"
         :data="data.logData.podLogs"
-        stripe
-        style="margin-top: 10px; width: 100%"
+        style="margin-top: 10px; width: 100%; margin-left: 10px"
         header-row-class-name="pixiu-table-header"
         :cell-style="{
           'font-size': '12px',
@@ -1285,4 +1287,4 @@ const goToDeployment = () => {
   });
 };
 </script>
-<style lang="scss" scoped></style>
+<style scoped></style>
