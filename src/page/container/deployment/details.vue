@@ -48,9 +48,27 @@
             查看YAML
           </button>
 
-          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px; color: #171313">
-            更多操作
-          </button>
+          <el-dropdown>
+            <span>
+              <button
+                class="pixiu-two-button2"
+                style="margin-left: 10px; width: 85px; color: #171313"
+              >
+                更多操作
+              </button>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu class="dropdown-buttons">
+                <el-dropdown-item class="dropdown-item-buttons" @click="handleImageDialog">
+                  滚动更新
+                </el-dropdown-item>
+                <el-dropdown-item class="dropdown-item-buttons" @click="handleRedeploy">
+                  重建
+                </el-dropdown-item>
+                <el-dropdown-item class="dropdown-item-buttons"> 删除 </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </div>
       </div>
     </el-space>
@@ -68,7 +86,8 @@
       <el-tab-pane label="事件" name="third"></el-tab-pane>
       <el-tab-pane label="版本记录" name="four"> </el-tab-pane>
       <el-tab-pane label="日志查询" name="five"> </el-tab-pane>
-      <el-tab-pane label="弹性伸缩" name="six"> </el-tab-pane>
+      <el-tab-pane label="监控" name="six"> </el-tab-pane>
+      <el-tab-pane label="弹性伸缩" name="seven"> </el-tab-pane>
     </el-tabs>
 
     <div v-if="data.activeName === 'first'">
@@ -506,7 +525,10 @@
       <el-row>
         <el-col>
           <div style="margin-left: 10px">
-            <button style="width: 85px" class="pixiu-two-button2">批量删除</button>
+            <button style="width: 85px" class="pixiu-two-button2">历史日志</button>
+            <button style="width: 85px; margin-left: 10px" class="pixiu-two-button2">
+              实时日志
+            </button>
 
             <button
               class="pixiu-two-button"
@@ -542,8 +564,7 @@
       <el-table
         v-loading="data.logData.loading"
         :data="data.logData.podLogs"
-        stripe
-        style="margin-top: 10px; width: 100%"
+        style="margin-top: 10px; width: 100%; margin-left: 10px"
         header-row-class-name="pixiu-table-header"
         :cell-style="{
           'font-size': '12px',
@@ -558,6 +579,15 @@
     </div>
 
     <div v-if="data.activeName === 'six'">
+      <div
+        class="app-pixiu-describe"
+        style="margin-left: 10px; margin-top: 10px; font-size: 14px; color: #000000"
+      >
+        暂不支持
+      </div>
+    </div>
+
+    <div v-if="data.activeName === 'seven'">
       <el-row>
         <el-col>
           <div style="margin-left: 10px">
@@ -680,6 +710,7 @@ import {
   getDeployReady,
   scaleDeployment,
   rolloBackDeployment,
+  reDeployDeployment,
   updateDeployment,
 } from '@/services/kubernetes/deploymentService';
 import PiXiuDiffView from '@/components/pixiuyaml/diffView/index.vue';
@@ -1278,6 +1309,34 @@ const cancel = () => {
   clean();
 };
 
+// 重建开始
+const handleRedeploy = async () => {
+  const patchData = {
+    spec: {
+      template: {
+        metadata: {
+          annotations: {
+            'deployment.pixiu.io/restartAt': formatTimestamp(new Date()),
+          },
+        },
+      },
+    },
+  };
+  const [result, err] = await reDeployDeployment(
+    data.cluster,
+    data.namespace,
+    data.name,
+    patchData,
+  );
+  if (err) {
+    proxy.$message.error(err.response.data.message);
+    return;
+  }
+  proxy.$notify.success(`Deployment(${data.name}) 重新部署执行成功`);
+};
+
+// 重建结束
+
 const goToDeployment = () => {
   proxy.$router.push({
     name: 'Deployment',
@@ -1285,4 +1344,4 @@ const goToDeployment = () => {
   });
 };
 </script>
-<style lang="scss" scoped></style>
+<style scoped></style>
