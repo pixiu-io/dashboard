@@ -167,17 +167,10 @@
         >
       </div>
 
-      <el-card class="detail-docs" style="margin-left: 10px; margin-top: 20px">
-        <el-icon
-          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
-          ><WarningFilled
-        /></el-icon>
-        <div style="vertical-align: middle; margin-top: -40px">展示 service 关联的全部端口组</div>
-      </el-card>
       <el-table
         v-loading="data.loading"
         :data="data.object.spec.ports"
-        style="margin-top: -15px"
+        style="margin-top: 10px"
         header-row-class-name="pixiu-table-header"
         :cell-style="{
           'font-size': '12px',
@@ -263,13 +256,9 @@
         </el-table-column>
 
         <el-table-column prop="status" label="状态" :formatter="formatterPodStatus" />
-
         <el-table-column prop="metadata.namespace" label="命名空间"> </el-table-column>
-
         <el-table-column prop="status.podIP" label="实例IP"> </el-table-column>
-
         <el-table-column prop="status" label="重启次数" :formatter="formatterRestartCount" />
-
         <el-table-column
           prop="metadata.creationTimestamp"
           label="创建时间"
@@ -299,10 +288,12 @@
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
-import { formatTimestamp } from '@/utils/utils';
+import { formatTimestamp, getTableData } from '@/utils/utils';
+import { formatterTime, formatterPodStatus, formatterRestartCount } from '@/utils/formatter';
 import useClipboard from 'vue-clipboard3';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import { getService } from '@/services/kubernetes/serviceService';
+import { getPodsByLabels } from '@/services/kubernetes/podService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -367,6 +358,21 @@ const goToService = () => {
 // pod 列表开始
 const GetServicePods = async () => {
   let matchLabels = data.object.spec.selector.matchLabels;
+  let labels = [];
+  for (let key in matchLabels) {
+    labels.push(key + '=' + matchLabels[key]);
+  }
+
+  data.podData.loading = true;
+  const [result, err] = await getPodsByLabels(data.cluster, data.namespace, labels.join(','));
+  data.podData.loading = false;
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.podData.pods = result.items;
+  data.podData.tableData = getTableData(data.podData.pageInfo, data.podData.pods);
 };
 
 // pod 列表结束
