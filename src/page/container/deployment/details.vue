@@ -699,7 +699,6 @@
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref, watch } from 'vue';
-import jsYaml from 'js-yaml';
 import { getTableData, copy, formatTimestamp } from '@/utils/utils';
 import { formatterTime, formatterPodStatus, formatterRestartCount } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';

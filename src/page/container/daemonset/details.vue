@@ -40,7 +40,6 @@
           >
             查看YAML
           </button>
-          <button class="pixiu-two-button2" style="margin-left: 10px; width: 95px">滚动更新</button>
         </div>
       </div>
     </el-space>
@@ -480,13 +479,6 @@
     </div>
   </el-card>
 
-  <PiXiuDiffView
-    v-if="data.diffYamlDialog"
-    v-model:dialogVisible="data.diffYamlDialog"
-    title="版本差异"
-    :original="data.daemonset.spec.template"
-    :modified="data.modifiedYaml"
-  ></PiXiuDiffView>
   <pixiuDialog
     :close-event="data.deleteDialog.close"
     :object-name="data.deleteDialog.objectName"
@@ -494,6 +486,14 @@
     @confirm="deleteDaemonsetPod"
     @cancel="cancelDeletePod"
   ></pixiuDialog>
+
+  <PiXiuViewOrEdit
+    :yaml-dialog="data.yamlDialog"
+    title="编辑Yaml"
+    :yaml="data.yaml"
+    :read-only="false"
+    :refresh="GetDaemonset"
+  ></PiXiuViewOrEdit>
 </template>
 
 <script setup lang="jsx">
@@ -515,9 +515,8 @@ import {
   getDaemonsetReady,
   rolloBackDaemonset,
 } from '@/services/kubernetes/daemonsetService';
-import PiXiuDiffView from '@/components/pixiuyaml/diffView/index.vue';
-import { getEventByResourceList, getDaemonSetEventList } from '@/services/kubernetes/eventService';
-import { getDaemonsetReplicasets } from '@/services/kubernetes/replicasetService';
+import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
+import { getDaemonSetEventList } from '@/services/kubernetes/eventService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -573,7 +572,6 @@ const data = reactive({
 
   daemonset: {},
   daemonsetPods: [],
-
   daemonsetEvents: [],
 
   tableData: [],
@@ -734,6 +732,19 @@ const searchDaemonsetPods = async () => {
   data.pageInfo.total = allSearchedPods.length;
   data.tableData = getTableData(data.pageInfo, allSearchedPods);
 };
+
+// 编辑 yaml 开始
+const viewYaml = async () => {
+  const [obj, err] = await getDaemonset(data.cluster, data.namespace, data.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.yaml = obj;
+  data.yamlDialog = true;
+};
+// 编辑 yaml 结束
 
 // 事件处理开始
 const GetEvents = async () => {
