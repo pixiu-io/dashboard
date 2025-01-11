@@ -1271,6 +1271,11 @@ const handleChange = async (name) => {
   }
   if (name !== 'five') {
     data.logData.podLogs = [];
+    data.logData.selectedPodMap = {};
+    data.logData.selectedPods = [];
+    data.logData.selectedContainers = [];
+    data.logData.selectedPod = '';
+    data.logData.selectedContainer = '';
   }
 
   switch (name) {

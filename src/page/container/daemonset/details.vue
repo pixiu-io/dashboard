@@ -889,6 +889,11 @@ const handleChange = async (name) => {
     initLogOptions();
   } else {
     data.logData.podLogs = [];
+    data.logData.selectedPodMap = {};
+    data.logData.selectedPods = [];
+    data.logData.selectedContainers = [];
+    data.logData.selectedPod = '';
+    data.logData.selectedContainer = '';
   }
 };
 
