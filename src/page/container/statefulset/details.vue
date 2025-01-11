@@ -480,6 +480,13 @@
       </div>
     </div>
   </el-card>
+  <PiXiuViewOrEdit
+    :yaml-dialog="data.yamlDialog"
+    title="编辑Yaml"
+    :yaml="data.yaml"
+    :read-only="false"
+    :refresh="GetStatefulSet"
+  ></PiXiuViewOrEdit>
 </template>
 
 <script setup lang="jsx">
@@ -742,6 +749,19 @@ const GetPodLogs = async () => {
   }
 };
 //日志处理结束
+
+// 编辑 yaml 开始
+const viewYaml = async () => {
+  const [obj, err] = await getStatefulSet(data.cluster, data.namespace, data.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.yaml = obj;
+  data.yamlDialog = true;
+};
+// 编辑 yaml 结束
 
 const handleClick = (tab, event) => {};
 
