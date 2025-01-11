@@ -518,10 +518,12 @@
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import { formatterTime } from '@/utils/formatter';
-import useClipboard from 'vue-clipboard3';
-import { ElMessage } from 'element-plus';
-import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
+import pixiuDialog from '@/components/pixiuDialog/index.vue';
+import { getTableData, copy, formatTimestamp } from '@/utils/utils';
+import { formatterTime, formatterPodStatus, formatterRestartCount } from '@/utils/formatter';
+import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
+import Pagination from '@/components/pagination/index.vue';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -536,44 +538,75 @@ const data = reactive({
   name: '',
   namespace: '',
 
-  workloadType: 'StatefulSet',
-
-  pageInfo: {
-    page: 1,
-    limit: 10,
-    query: '',
-    total: 0,
-  },
-
-  restarts: 0,
-  loading: false,
-
-  statefulset: {},
-  statefulsetPods: [],
-
-  statefulsetEvents: [],
-  eventAutoRefresh: true,
-
   activeName: 'second',
 
-  selectedPods: [],
-  selectedPod: '',
-  selectedContainers: [],
-  selectedContainer: '',
-  selectedPodMap: {},
+  object: {
+    metadata: {},
+    spec: {},
+    status: {},
+  },
 
-  crontab: true,
-  previous: false,
+  createTime: '',
 
-  logAutoRefresh: true,
-  logLine: '100行日志',
-  logLines: ['50行日志', '100行日志', '200行日志', '500行日志'],
-  selectedLog: 100,
-  podLogs: [],
+  podData: {
+    loading: false,
+    pods: [],
+    tableData: [],
+    pageInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      nameSelector: '',
+      labelSelector: '',
+    },
+  },
 
-  yaml: '',
-  yamlName: '',
-  readOnly: true,
+  eventData: {
+    loading: false,
+    events: [],
+    eventTableData: [],
+    multipleEventSelection: [],
+
+    pageInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      nameSelector: '',
+      labelSelector: '',
+    },
+  },
+
+  logData: {
+    loading: false,
+    selectedPodMap: {},
+    selectedPods: [],
+    selectedPod: '',
+    selectedContainers: [],
+    selectedContainer: '',
+
+    previous: false,
+    line: 10,
+    lineOptions: [10, 25, 50, 100],
+
+    podLogs: [],
+    tableData: [],
+
+    pageInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      nameSelector: '',
+      labelSelector: '',
+    },
+  },
+
+  // 删除对象属性
+  deleteDialog: {
+    close: false,
+    objectName: 'Pod',
+    deleteName: '',
+    namespace: '',
+  },
 });
 
 onMounted(async () => {
