@@ -177,136 +177,111 @@
         </el-row>
       </el-form>
     </div>
-  </el-card>
 
-  <div v-if="data.activeName === 'second'">
-    <div style="margin-top: 20px">
+    <div v-if="data.activeName === 'second'">
+      <el-card class="detail-docs" style="margin-left: 10px">
+        <el-icon
+          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+          ><WarningFilled
+        /></el-icon>
+        <div style="vertical-align: middle; margin-top: -40px">管理运行在 ds 上的全部 pod 实例</div>
+      </el-card>
+
       <el-row>
         <el-col>
-          <button class="pixiu-two-button">刷新</button>
-          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px">销毁重建</button>
+          <div style="margin-left: 10px">
+            <button style="width: 85px" class="pixiu-two-button2">批量删除</button>
 
-          <div style="margin-left: 8px; float: right; margin-top: 6px">
-            <pixiu-icon
-              name="icon-icon-refresh"
-              style="cursor: pointer"
-              size="14px"
-              type="iconfont"
-              color="#909399"
-              @click="getStatefulSetPods"
-            />
-          </div>
-
-          <el-input
-            placeholder="名称搜索关键字"
-            style="width: 480px; float: right"
-            clearable
-            @clear="getStatefulSetPods"
-          >
-            <template #suffix>
-              <pixiu-icon
-                name="icon-search"
-                style="cursor: pointer"
-                size="15px"
-                type="iconfont"
-                color="#909399"
-                @click="getStatefulSetPods"
-              />
-            </template>
-          </el-input>
-          <div style="float: right">
-            <el-switch v-model="data.crontab" inline-prompt width="36px" /><span
-              style="font-size: 13px; margin-left: 5px; margin-right: 10px"
-              >自动刷新</span
+            <button
+              class="pixiu-two-button"
+              style="float: right; margin-left: 12px"
+              @click="GetObjectPods"
             >
+              查询
+            </button>
+
+            <el-input
+              v-model="data.podData.pageInfo.nameSelector"
+              placeholder="名称搜索关键字"
+              style="width: 35%; float: right"
+              clearable
+              @clear="GetObjectPods"
+              @input="GetObjectPods"
+            >
+              <template #suffix>
+                <pixiu-icon
+                  name="icon-search"
+                  style="cursor: pointer"
+                  size="15px"
+                  type="iconfont"
+                  color="#909399"
+                  @click="GetObjectPods"
+                />
+              </template>
+            </el-input>
           </div>
         </el-col>
       </el-row>
-    </div>
-    <el-card style="margin-top: 15px" class="contend-card-container2">
+
       <el-table
-        v-loading="data.loading"
-        :data="data.statefulsetPods"
+        v-loading="data.podData.loading"
+        :data="data.podData.tableData"
         stripe
-        style="margin-top: 10px; width: 100%; margin-bottom: 25px"
+        style="margin-top: 10px; width: 100%"
         header-row-class-name="pixiu-table-header"
         :cell-style="{
           'font-size': '12px',
           color: '#191919',
         }"
-        @selection-change="handleSelectionChange"
+        @selection-change="handlePodSelectionChange"
       >
         <el-table-column type="selection" width="30" />
-        <el-table-column prop="metadata.name" label="实例名称" min-width="70px">
+        <el-table-column prop="metadata.name" sortable label="实例名称" min-width="120px">
           <template #default="scope">
-            {{ scope.row.metadata.name }}
-            <el-tooltip content="复制">
-              <pixiu-icon
-                name="icon-copy"
-                size="11px"
-                type="iconfont"
-                class-name="icon-box"
-                color="#909399"
-                @click="copy(scope.row)"
-              />
-            </el-tooltip>
+            <el-link
+              class="global-table-world"
+              :underline="false"
+              type="primary"
+              @click="jumpRoute(scope.row)"
+            >
+              {{ scope.row.metadata.name }}
+            </el-link>
           </template>
         </el-table-column>
 
-        <el-table-column prop="status" label="状态" :formatter="formatterStatus" />
-        <el-table-column prop="status.hostIP" label="所在节点" />
+        <el-table-column prop="status" label="状态" :formatter="formatterPodStatus" />
 
-        <el-table-column prop="status.podIP" label="实例IP">
-          <template #default="scope">
-            {{ scope.row.status.podIP }}
-            <el-tooltip content="复制">
-              <pixiu-icon
-                name="icon-copy"
-                size="11px"
-                type="iconfont"
-                class-name="icon-box"
-                color="#909399"
-                @click="copyIP(scope.row)"
-              />
-            </el-tooltip>
-          </template>
-        </el-table-column>
+        <el-table-column prop="metadata.namespace" label="命名空间"> </el-table-column>
 
-        <el-table-column
-          prop="status.containerStatuses"
-          label="重启次数"
-          :formatter="getPodRestartCount"
-        />
+        <el-table-column prop="status.podIP" label="实例IP"> </el-table-column>
+
+        <el-table-column prop="status" label="重启次数" :formatter="formatterRestartCount" />
 
         <el-table-column
           prop="metadata.creationTimestamp"
           label="创建时间"
+          sortable
           :formatter="formatterTime"
         />
-        <el-table-column fixed="right" label="操作" width="160px">
+        <el-table-column fixed="right" label="操作" width="60px">
           <template #default="scope">
             <el-button
               size="small"
               type="text"
               style="margin-right: -25px; margin-left: -10px; color: #006eff"
-              @click="deletePod(scope.row)"
+              @click="handleDeleteDialog(scope.row)"
             >
-              批量删除
-            </el-button>
-
-            <el-button
-              type="text"
-              size="small"
-              style="margin-right: 1px; color: #006eff"
-              @click="openShell(scope.row)"
-            >
-              远程连接
+              删除
             </el-button>
           </template>
         </el-table-column>
+        <template #empty>
+          <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
+        </template>
       </el-table>
-    </el-card>
-  </div>
+      <pagination :total="data.podData.pageInfo.total" @on-change="onChange"></pagination>
+    </div>
+  </el-card>
 
   <div v-if="data.activeName === 'third'">
     <el-card class="contend-card-container2">
@@ -568,6 +543,12 @@ import { formatterTime, formatterPodStatus, formatterRestartCount } from '@/util
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getStatefulSet } from '@/services/kubernetes/statefulsetService';
+import {
+  getPodsByLabels,
+  getPodContainerLog,
+  deletePod,
+  getPodLog,
+} from '@/services/kubernetes/podService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -675,57 +656,40 @@ const GetStatefulSet = async () => {
   data.createTime = formatTimestamp(data.object.metadata.creationTimestamp);
 };
 
-const deletePod = async (row) => {
-  const pods = await proxy.$http({
-    method: 'delete',
-    url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${row.metadata.namespace}/pods/${row.metadata.name}`,
-  });
-
-  await getStatefulSetPods();
-};
-
-const getStatefulSetPods = async () => {
-  let matchLabels = data.statefulset.spec.selector.matchLabels;
+// 处理 pod 开始
+const GetObjectPods = async () => {
+  let matchLabels = data.object.spec.selector.matchLabels;
   let labels = [];
   for (let key in matchLabels) {
     labels.push(key + '=' + matchLabels[key]);
   }
 
-  const pods = await proxy.$http({
-    method: 'get',
-    url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.namespace}/pods`,
-    data: {
-      labelSelector: labels.join(','),
-      limit: 500,
-    },
-  });
-  data.statefulsetPods = pods.items;
-
-  data.selectedPods = [];
-  data.selectedContainers = [];
-  data.selectedPodMap = {};
-  for (let item of data.selectedPods) {
-    let cs = [];
-    for (let c of item.spec.containers) {
-      cs.push(c.name);
-    }
-
-    data.selectedPodMap[item.metadata.name] = cs;
-    data.selectedPods.push(item.metadata.name);
+  data.podData.loading = true;
+  const [result, err] = await getPodsByLabels(data.cluster, data.namespace, labels.join(','));
+  data.podData.loading = false;
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
   }
-  if (data.selectedPods.length > 0) {
-    data.selectedPod = data.selectedPods[0];
 
-    data.selectedContainers = data.selectedPodMap[data.selectedPod];
-    if (data.selectedContainers.length > 0) {
-      data.selectedContainer = data.selectedContainers[0];
-    }
-  }
+  data.podData.pods = result.items;
+  data.podData.pageInfo.total = data.podData.pods.length;
+  data.podData.tableData = getTableData(data.podData.pageInfo, data.podData.pods);
 };
+
+// 处理 pod 结束
 
 const handleClick = (tab, event) => {};
 
-const handleChange = (name) => {};
+const handleChange = (name) => {
+  if (name === 'second') {
+    GetObjectPods();
+  } else {
+    data.podData.pods = [];
+    data.podData.pageInfo.total = 0;
+    data.podData.tableData = [];
+  }
+};
 
 const goToStatefulSet = () => {
   const queryParams = { cluster: data.cluster, namespace: data.namespace };
