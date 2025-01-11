@@ -431,7 +431,7 @@
             </button>
 
             <el-input
-              v-model="data.pageInfo.search.searchInfo"
+              v-model="data.logData.pageInfo.nameSelector"
               placeholder="名称搜索关键字"
               style="width: 35%; float: right"
               clearable
@@ -593,6 +593,14 @@ const data = reactive({
 
     podLogs: [],
     tableData: [],
+
+    pageInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      nameSelector: '',
+      labelSelector: '',
+    },
   },
 
   // 删除对象属性
