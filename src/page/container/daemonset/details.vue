@@ -1,7 +1,7 @@
 <template>
   <el-card class="contend-card-container2" style="margin-top: 1px">
     <div style="margin-top: 10px; float: right">
-      <button class="pixiu-two-button2" style="width: 60px" @click="goToDeployment">返回</button>
+      <button class="pixiu-two-button2" style="width: 60px" @click="goToDaemonset">返回</button>
     </div>
 
     <el-space style="display: flex; margin: 20px 15px">
@@ -31,7 +31,7 @@
         </div>
 
         <div style="margin-bottom: -10px; margin-left: 10px">
-          <button class="pixiu-two-button" @click="GetDeployment">刷新</button>
+          <button class="pixiu-two-button" @click="GetDaemonset">刷新</button>
 
           <button
             class="pixiu-two-button2"
@@ -305,7 +305,7 @@ import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
-import { getTableData, copy } from '@/utils/utils';
+import { getTableData, copy, formatTimestamp } from '@/utils/utils';
 import { formatterTime } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getPodsByLabels, deletePod, getPodLog } from '@/services/kubernetes/podService';
@@ -661,6 +661,13 @@ const handleChange = async (name) => {
       break;
     case 'third':
   }
+};
+
+const goToDaemonset = () => {
+  proxy.$router.push({
+    name: 'Daemonset',
+    query: { cluster: data.cluster },
+  });
 };
 </script>
 
