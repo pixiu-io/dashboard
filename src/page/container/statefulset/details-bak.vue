@@ -1,50 +1,4 @@
 <template>
-  <el-card class="contend-card-container2" style="margin-top: 1px">
-    <div style="margin-top: 10px; float: right">
-      <button class="pixiu-two-button2" style="width: 60px" @click="goToStatefulSet">返回</button>
-    </div>
-
-    <el-space style="display: flex; margin: 20px 15px">
-      <div style="display: flex; align-items: center; height: 100%">
-        <pixiu-icon name="icon-zongrongqizu" size="75px" type="iconfont" color="#006eff" />
-      </div>
-      <div
-        style="
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          min-height: 80px;
-        "
-      >
-        <div
-          class="breadcrumb-create-style"
-          style="font-size: 17px; margin-top: -10px; margin-left: 10px"
-        >
-          {{ data.name }}
-        </div>
-
-        <div style="margin-bottom: 10px">
-          <span class="detail-card-key-style" style="font-size: 12.5px">创建时间 </span>
-          <span class="detail-card-value-style" style="margin-left: 5px; font-size: 12.5px">
-            {{ data.createTime }}</span
-          >
-        </div>
-
-        <div style="margin-bottom: -10px; margin-left: 10px">
-          <button class="pixiu-two-button" @click="GetDaemonset">刷新</button>
-
-          <button
-            class="pixiu-two-button2"
-            style="margin-left: 10px; width: 85px"
-            @click="viewYaml"
-          >
-            查看YAML
-          </button>
-        </div>
-      </div>
-    </el-space>
-  </el-card>
-
   <el-card class="contend-card-container">
     <div class="font-container" style="display: flex">
       <pixiu-icon
@@ -578,11 +532,69 @@ const data = reactive({
 
 onMounted(async () => {
   data.cluster = proxy.$route.query.cluster;
-  data.namespace = proxy.$route.query.namespace;
   data.name = proxy.$route.query.name;
+  data.namespace = proxy.$route.query.namespace;
 
-  GetStatefulSet();
+  await getStatefulSet();
+  await getStatefulSetPods();
+  // await getStatefulSetEvents();
 });
+
+const { toClipboard } = useClipboard();
+const copy = async (val) => {
+  try {
+    await toClipboard(val.metadata.name);
+    ElMessage({
+      type: 'success',
+      message: '已复制',
+    });
+  } catch (e) {
+    ElMessage({
+      type: 'error',
+      message: e.valueOf().toString(),
+    });
+  }
+};
+
+const copyYmal = async () => {
+  try {
+    await toClipboard(data.yaml);
+    ElMessage({
+      type: 'success',
+      message: '已复制',
+    });
+  } catch (e) {
+    ElMessage({
+      type: 'error',
+      message: e.valueOf().toString(),
+    });
+  }
+};
+
+const openShell = (val) => {
+  selectedPod.value = val.metadata.name;
+  selectedContainers.value = val.spec.containers;
+  if (val.spec.containers.length > 1) {
+    showDialog.value = true;
+  } else {
+    openWindowShell();
+  }
+};
+
+const openWindowShell = () => {
+  window.open(
+    '/#/podshell?pod=' +
+      selectedPod.value +
+      '&namespace=' +
+      data.namespace +
+      '&cluster=' +
+      data.cluster +
+      '&container=' +
+      selectedContainer.value,
+    '_blank',
+    'width=1000,height=600',
+  );
+};
 
 const changePod = async (val) => {
   data.selectedPod = val;
@@ -593,7 +605,49 @@ const changePod = async (val) => {
   }
 };
 
-const GetStatefulSet = async () => {
+const changeContainer = async (val) => {
+  data.selectedContainer = val;
+};
+
+const changeLogLine = async (val) => {
+  if (val === '50行日志') {
+    data.selectedLog = 50;
+  }
+  if (val === '100行日志') {
+    data.selectedLog = 100;
+  }
+  if (val === '200行日志') {
+    data.selectedLog = 200;
+  }
+  if (val === '500行日志') {
+    data.selectedLog = 500;
+  }
+};
+
+const copyIP = async (val) => {
+  try {
+    if (val.status.podIP === undefined) {
+      ElMessage({
+        type: 'warning',
+        message: '数据为空，无法复制',
+      });
+      return;
+    }
+
+    await toClipboard(val.status.podIP);
+    ElMessage({
+      type: 'success',
+      message: '已复制',
+    });
+  } catch (e) {
+    ElMessage({
+      type: 'error',
+      message: e.valueOf().toString(),
+    });
+  }
+};
+
+const getStatefulSet = async () => {
   const res = await proxy.$http({
     method: 'get',
     url: `/pixiu/proxy/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/statefulsets/${data.name}`,
@@ -666,6 +720,50 @@ const getStatefulSetPods = async () => {
   }
 };
 
+const getStatefulSetEvents = async () => {
+  const events = await proxy.$http({
+    method: 'get',
+    url: `/pixiu/kubeproxy/clusters/${data.cluster}/namespaces/${data.namespace}/name/${data.name}/kind/statefulsets/events`,
+  });
+  data.statefulsetEvents = events;
+};
+
+const deleteEvent = async () => {};
+
+const formatterStatus = (row, column, cellValue) => {
+  let phase = cellValue.phase;
+  if (phase == 'Failed') {
+    phase = cellValue.reason;
+  } else if (phase == 'Pending') {
+    return <div class="color-yellow-word">{phase}</div>;
+    // const containerStatuses = cellValue.containerStatuses;
+    // for (let i = 0; i < containerStatuses.length; i++) {
+    //   phase = containerStatuses[i].state.waiting.reason;
+    //   break;
+    // }
+  }
+
+  if (phase == 'Running') {
+    return <div class="color-green-word">{phase}</div>;
+  }
+  return <div>{phase}</div>;
+};
+const getPodRestartCount = (row, column, cellValue) => {
+  let count = 0;
+  if (cellValue === undefined) {
+  } else {
+    for (let i = 0; i < cellValue.length; i++) {
+      count = count + cellValue[i].restartCount;
+    }
+  }
+
+  return <div>{count} 次</div>;
+};
+
+const padZero = (number) => {
+  return number.toString().padStart(2, '0');
+};
+
 const handleClick = (tab, event) => {};
 
 const handleChange = (name) => {};
@@ -688,4 +786,27 @@ const editYaml = () => {
 };
 </script>
 
-<style scoped="scoped"></style>
+<style scoped="scoped">
+.deployment-tab {
+  margin-top: 1px;
+  margin-bottom: -32px;
+}
+
+.demo-tabs .el-tabs__content {
+  padding: 32px;
+  color: #6b778c;
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.deployment-info {
+  color: #909399;
+  font-size: 13px;
+  margin-left: 8px;
+}
+
+.deploy-detail-info {
+  font-size: 13px;
+  color: #29232b;
+}
+</style>
