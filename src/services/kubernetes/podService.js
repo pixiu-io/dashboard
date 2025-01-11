@@ -118,6 +118,38 @@ export const getPodLog = async (cluster, namespace, name, container, line) => {
   return [result, err];
 };
 
+export const getPodContainerLog = async (cluster, namespace, name, container, line) => {
+  const [err, result] = await awaitWrap(
+    http({
+      method: 'get',
+      url: `/pixiu/proxy/${cluster}/api/v1/namespaces/${namespace}/pods/${name}/log`,
+      data: {
+        container: container,
+        tailLines: line,
+      },
+    }),
+  );
+  if (err) {
+    return [result, err];
+  }
+  if (result === '') {
+    return [[], err];
+  }
+  return [result.split('\n'), err];
+};
+
+export const getPodContainersLog = async (cluster, namespace, name, containers, line) => {
+  let logs = [];
+  for (let i = 0; i < containers.length; i++) {
+    const [log, err] = getPodContainerLog(cluster, namespace, name, containers[i], line);
+    if (err) {
+      return [logs, err];
+    }
+    logs = logs.concat(log);
+  }
+  return [logs, err];
+};
+
 export const watchPodLog = (cluster, namespace, name, container, line) => {
   const baseUrl = http({ method: 'watch' });
   const url = `${baseUrl}/pixiu/kubeproxy/clusters/${cluster}/namespaces/${namespace}/pods/${name}/log?container=${container}&tailLines=${line}`;

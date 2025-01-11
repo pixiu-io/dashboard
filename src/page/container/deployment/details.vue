@@ -703,7 +703,7 @@ import jsYaml from 'js-yaml';
 import { getTableData, copy, formatTimestamp } from '@/utils/utils';
 import { formatterTime, formatterPodStatus, formatterRestartCount } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
-import { getPodsByLabels, deletePod, getPodLog } from '@/services/kubernetes/podService';
+import { getPodsByLabels, deletePod, getPodContainerLog } from '@/services/kubernetes/podService';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import {
   getDeployment,
@@ -1162,7 +1162,7 @@ const GetPodLogs = async () => {
   }
 
   data.logData.loading = true;
-  const [result, err] = await getPodLog(
+  const [result, err] = await getPodContainerLog(
     data.cluster,
     data.namespace,
     data.logData.selectedPod,
@@ -1175,7 +1175,7 @@ const GetPodLogs = async () => {
     return;
   }
   data.logData.podLogs = [];
-  for (let content of result.split('\n')) {
+  for (let content of result) {
     data.logData.podLogs.push({ lineContent: content });
   }
 };
