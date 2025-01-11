@@ -334,6 +334,151 @@
       </el-table>
       <pagination :total="data.eventData.pageInfo.total" @on-change="onEventChange"></pagination>
     </div>
+
+    <div v-if="data.activeName === 'four'">
+      <el-card class="detail-docs" style="margin-left: 10px">
+        <el-icon
+          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+          ><WarningFilled
+        /></el-icon>
+        <div style="vertical-align: middle; margin-top: -40px">
+          支持选项应用的标准输出日志，更多类型日志查询，请至日志服务中心
+        </div>
+      </el-card>
+
+      <el-form>
+        <el-form-item>
+          <template #label>
+            <span style="margin-left: 10px; font-size: 13px; color: #191919">Pod选项 </span>
+          </template>
+
+          <span style="margin-left: 5px">
+            <el-select
+              v-model="data.logData.selectedPod"
+              style="width: 210px; float: right"
+              @change="changePod"
+            >
+              <el-option
+                v-for="item in data.logData.selectedPods"
+                :key="item"
+                :value="item"
+                :label="item"
+              />
+            </el-select>
+          </span>
+
+          <span style="margin-left: 10px">
+            <el-select
+              v-model="data.logData.selectedContainer"
+              style="width: 210px; float: right; margin-right: 10px"
+            >
+              <el-option
+                v-for="item in data.logData.selectedContainers"
+                :key="item"
+                :value="item"
+                :label="item"
+              />
+            </el-select>
+          </span>
+
+          <div style="margin-left: 4px; margin-top: 6px">
+            <pixiu-icon
+              name="icon-icon-refresh"
+              style="cursor: pointer"
+              size="16px"
+              type="iconfont"
+              color="#909399"
+              @click="getDeploymentPods"
+            />
+          </div>
+        </el-form-item>
+
+        <el-form-item>
+          <template #label>
+            <span style="margin-left: 10px; font-size: 13px; color: #191919">选择行数 </span>
+          </template>
+
+          <span style="margin-left: 5px">
+            <el-select
+              v-model="data.logData.line"
+              style="width: 80px; float: right; margin-right: 10px"
+            >
+              <el-option
+                v-for="item in data.logData.lineOptions"
+                :key="item"
+                :value="item"
+                :label="item"
+              />
+            </el-select>
+          </span>
+          行
+        </el-form-item>
+      </el-form>
+
+      <el-row>
+        <el-col>
+          <div style="margin-left: 10px">
+            <button style="width: 85px" class="pixiu-two-button2">历史日志</button>
+            <button style="width: 85px; margin-left: 10px" class="pixiu-two-button2">
+              实时日志
+            </button>
+
+            <button
+              class="pixiu-two-button"
+              style="float: right; margin-left: 12px"
+              @click="GetPodLogs"
+            >
+              查询
+            </button>
+
+            <el-input
+              v-model="data.logData.pageInfo.nameSelector"
+              placeholder="名称搜索关键字"
+              style="width: 35%; float: right"
+              clearable
+              @clear="GetPodLogs"
+              @input="GetPodLogs"
+            >
+              <template #suffix>
+                <pixiu-icon
+                  name="icon-search"
+                  style="cursor: pointer"
+                  size="15px"
+                  type="iconfont"
+                  color="#909399"
+                  @click="GetPodLogs"
+                />
+              </template>
+            </el-input>
+          </div>
+        </el-col>
+      </el-row>
+
+      <el-table
+        v-loading="data.logData.loading"
+        :data="data.logData.podLogs"
+        style="margin-top: 10px; width: 100%; margin-left: 10px"
+        header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#191919',
+        }"
+      >
+        <el-table-column label="日志内容" prop="lineContent" />
+        <template #empty>
+          <div class="table-inline-word">暂无日志</div>
+        </template>
+      </el-table>
+    </div>
+
+    <div v-if="data.activeName === 'five'">
+      <div
+        class="app-pixiu-describe"
+        style="margin-left: 10px; margin-top: 10px; font-size: 14px; color: #000000"
+      >
+        暂不支持
+      </div>
+    </div>
   </el-card>
 </template>
 
