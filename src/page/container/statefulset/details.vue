@@ -45,94 +45,139 @@
     </el-space>
   </el-card>
 
-  <el-card class="contend-card-container">
-    <div class="font-container" style="display: flex">
-      <pixiu-icon
-        name="icon-back"
-        style="cursor: pointer"
-        size="16px"
-        type="iconfont"
-        color="#006eff"
-        @click="goToStatefulSet"
-      />
-
-      <el-breadcrumb separator="/" style="margin-left: 20px">
-        <el-breadcrumb-item><span class="breadcrumb-style">集群</span></el-breadcrumb-item>
-
-        <el-breadcrumb-item>
-          <span class="breadcrumb-style">{{ data.cluster }}</span>
-        </el-breadcrumb-item>
-
-        <el-breadcrumb-item
-          ><span class="breadcrumb-style">StatefulSet:{{ data.name }}({{ data.namespace }})</span>
-        </el-breadcrumb-item>
-      </el-breadcrumb>
-    </div>
-
-    <div style="margin-top: 20px"></div>
-
+  <el-card class="contend-card-container2">
     <el-tabs
       v-model="data.activeName"
-      class="deployment-tab"
+      style="margin-left: 10px"
       @tab-click="handleClick"
       @tab-change="handleChange"
     >
       <el-tab-pane label="基本信息" name="first"> </el-tab-pane>
-      <el-tab-pane label="Pod管理" name="second"> </el-tab-pane>
-      <el-tab-pane label="日志" name="third"> </el-tab-pane>
-      <el-tab-pane label="事件" name="four"></el-tab-pane>
-      <el-tab-pane label="YAML" name="five"></el-tab-pane>
+      <el-tab-pane label="容器组" name="second"> </el-tab-pane>
+      <el-tab-pane label="事件" name="third"></el-tab-pane>
+      <el-tab-pane label="日志查询" name="four"> </el-tab-pane>
+      <el-tab-pane label="监控" name="five"> </el-tab-pane>
     </el-tabs>
-  </el-card>
 
-  <div v-if="data.activeName === 'first'">
-    <el-card class="contend-card-container2">
-      <div class="big-world-style" style="margin-bottom: 20px">基本信息</div>
+    <div v-if="data.activeName === 'first'">
+      <el-form style="margin-top: 10px">
+        <el-form-item>
+          <template #label>
+            <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+              >基本信息
+            </span>
+          </template>
+        </el-form-item>
 
-      <div
-        v-if="data.statefulset.metadata"
-        style="margin-top: 8px; width: 100%; border-radius: 0px"
-      >
-        <el-form-item label="名称" class="deployment-info">
-          <span class="deploy-detail-info" style="margin-left: 90px">
-            {{ data.statefulset.metadata.name }}
-          </span>
-        </el-form-item>
-        <el-form-item label="命名空间" class="deployment-info">
-          <span class="deploy-detail-info" style="margin-left: 63px">
-            {{ data.statefulset.metadata.namespace }}
-          </span>
-        </el-form-item>
-        <el-form-item label="创建时间" class="deployment-info">
-          <span class="deploy-detail-info" style="margin-left: 63px">
-            {{ data.statefulset.metadata.creationTimestamp }}
-          </span>
-        </el-form-item>
-        <el-form-item label="Labels" class="deployment-info">
-          <span class="deploy-detail-info" style="margin-left: 75px">
-            <div v-if="data.statefulset.spec.selector.matchLabels === undefined">-</div>
-            <div v-else>
-              <div
-                v-for="(item, index) in data.statefulset.spec.selector.matchLabels"
-                :key="item"
-                style="margin-top: -1px"
-              >
-                {{ index }}: {{ item }}
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <span class="detail-card-key-style">负载名称 </span>
+            <span class="detail-card-value-style"> {{ data.object.metadata.name }}</span>
+          </el-col>
+
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">命名空间 </span>
+              <span class="detail-card-value-style">
+                {{ data.object.metadata.namespace }}
+              </span>
+            </el-row>
+          </el-col>
+
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">创建时间 </span>
+              <span class="detail-card-value-style"> {{ data.createTime }}</span>
+            </el-row>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20" style="margin-top: 15px">
+          <el-col :span="8">
+            <span class="detail-card-key-style">状态 </span>
+            <span class="detail-card-value-style" style="margin-left: 55px"> 运行中</span>
+          </el-col>
+
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">运行时 </span>
+              <span class="detail-card-value-style" style="margin-left: 40px"> 普通运行时 </span>
+            </el-row>
+          </el-col>
+
+          <el-col :span="8">
+            <el-row>
+              <span class="detail-card-key-style">更新策略 </span>
+              <span class="detail-card-value-style"> 未知 </span>
+            </el-row>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20" style="margin-top: 15px">
+          <el-col :span="8">
+            <span class="detail-card-key-style">实例个数 </span>
+            <span class="detail-card-value-style"> 1/1 </span>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20" style="margin-top: 25px">
+          <el-col :span="10">
+            <el-form-item>
+              <template #label>
+                <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+                  >标签
+                </span>
+              </template>
+            </el-form-item>
+
+            <el-form-item style="margin-top: -10px">
+              <div v-if="data.object.metadata.labels === undefined" style="margin-left: 10px">
+                -
               </div>
-            </div>
-          </span>
-        </el-form-item>
-        <el-form-item label="副本数" class="deployment-info">
-          <span class="deploy-detail-info" style="margin-left: 75px">
-            {{ data.statefulset.spec.replicas }}
-          </span>
-        </el-form-item>
-        <el-form-item label="其他" class="deployment-info">
-          <span class="deploy-detail-info" style="margin-left: 88px"> - </span>
-        </el-form-item>
-      </div></el-card
-    >
-  </div>
+              <div v-else style="margin-top: -8px">
+                <div
+                  v-for="(item, index) in data.object.metadata.labels"
+                  :key="item"
+                  style="font-size: 14px"
+                >
+                  <el-tag type="primary" style="margin-top: 5px; margin-left: 10px"
+                    >{{ index }}: {{ item }}</el-tag
+                  >
+                </div>
+              </div>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="10">
+            <el-form-item>
+              <template #label>
+                <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
+                  >注释
+                </span>
+              </template>
+            </el-form-item>
+
+            <el-form-item style="margin-top: -10px">
+              <div v-if="data.object.metadata.annotations === undefined" style="margin-left: 10px">
+                -
+              </div>
+              <div v-else style="margin-top: -8px">
+                <div
+                  v-for="(item, index) in data.object.metadata.annotations"
+                  :key="item"
+                  style="font-size: 14px"
+                >
+                  <el-tag type="primary" style="margin-top: 5px; margin-left: 10px"
+                    >{{ index }}: {{ item }}</el-tag
+                  >
+                </div>
+              </div>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+    </div>
+  </el-card>
 
   <div v-if="data.activeName === 'second'">
     <div style="margin-top: 20px">
@@ -153,7 +198,6 @@
           </div>
 
           <el-input
-            v-model="data.pageInfo.query"
             placeholder="名称搜索关键字"
             style="width: 480px; float: right"
             clearable
@@ -517,28 +561,23 @@
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
-import { formatterTime } from '@/utils/formatter';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { getTableData, copy, formatTimestamp } from '@/utils/utils';
 import { formatterTime, formatterPodStatus, formatterRestartCount } from '@/utils/formatter';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import Pagination from '@/components/pagination/index.vue';
+import { getStatefulSet } from '@/services/kubernetes/statefulsetService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
-
-const showDialog = ref(false);
-const selectedContainers = ref([]);
-const selectedContainer = ref('');
-const selectedPod = ref('');
 
 const data = reactive({
   cluster: '',
   name: '',
   namespace: '',
 
-  activeName: 'second',
+  activeName: 'first',
 
   object: {
     metadata: {},
@@ -627,13 +666,13 @@ const changePod = async (val) => {
 };
 
 const GetStatefulSet = async () => {
-  const res = await proxy.$http({
-    method: 'get',
-    url: `/pixiu/proxy/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/statefulsets/${data.name}`,
-  });
-  data.statefulset = res;
-
-  data.yaml = jsYaml.dump(data.statefulset, { quotingType: '"' });
+  const [result, err] = await getStatefulSet(data.cluster, data.namespace, data.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+  data.object = result;
+  data.createTime = formatTimestamp(data.object.metadata.creationTimestamp);
 };
 
 const deletePod = async (row) => {
@@ -643,21 +682,6 @@ const deletePod = async (row) => {
   });
 
   await getStatefulSetPods();
-};
-
-const getPodLog = async () => {
-  // 在指定 pod 和容器的情况下，才请求log
-  if (data.selectedPod === '' || data.selectedContainer === '') {
-    return;
-  }
-
-  const log = await proxy.$http({
-    method: 'get',
-    url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${data.selectedPod}/log`,
-    data: { container: data.selectedContainer },
-  });
-
-  data.podLogs = log.split('\n');
 };
 
 const getStatefulSetPods = async () => {
@@ -706,18 +730,6 @@ const handleChange = (name) => {};
 const goToStatefulSet = () => {
   const queryParams = { cluster: data.cluster, namespace: data.namespace };
   router.push({ path: '/kubernetes/statefulsets', query: queryParams });
-};
-
-const confirm = () => {
-  data.readOnly = true;
-};
-
-const cancel = () => {
-  data.readOnly = true;
-};
-
-const editYaml = () => {
-  data.readOnly = false;
 };
 </script>
 
