@@ -282,6 +282,57 @@
       </el-table>
       <pagination :total="data.podData.pageInfo.total" @on-change="onChange"></pagination>
     </div>
+
+    <div v-if="data.activeName === 'third'">
+      <el-card class="detail-docs" style="margin-left: 10px">
+        <el-icon
+          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+          ><WarningFilled
+        /></el-icon>
+        <div style="vertical-align: middle; margin-top: -40px">
+          Deployment 关联事件查询，更多查询请至事件中心
+        </div>
+      </el-card>
+
+      <el-row>
+        <el-col>
+          <div style="margin-left: 10px">
+            <button class="pixiu-two-button" @click="GetEvents">查询</button>
+            <button
+              style="margin-left: 10px; width: 85px"
+              class="pixiu-two-button2"
+              @click="handleDeleteEventsDialog"
+            >
+              批量删除
+            </button>
+          </div>
+        </el-col>
+      </el-row>
+
+      <el-table
+        v-loading="data.eventData.loading"
+        :data="data.eventData.eventTableData"
+        stripe
+        style="margin-top: 10px"
+        header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#191919',
+        }"
+        @selection-change="handleEventSelectionChange"
+      >
+        <el-table-column type="selection" width="30px" />
+        <el-table-column prop="lastTimestamp" label="最后出现时间" :formatter="formatterTime" />
+        <el-table-column prop="type" label="级别" />
+        <el-table-column prop="involvedObject.kind" label="资源类型"> </el-table-column>
+        <el-table-column prop="count" label="出现次数"> </el-table-column>
+        <el-table-column prop="message" label="内容" min-width="260px" />
+        <template #empty>
+          <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
+        </template>
+      </el-table>
+      <pagination :total="data.eventData.pageInfo.total" @on-change="onEventChange"></pagination>
+    </div>
   </el-card>
 
   <PiXiuDiffView
@@ -306,7 +357,7 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import jsYaml from 'js-yaml';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { getTableData, copy, formatTimestamp } from '@/utils/utils';
-import { formatterTime } from '@/utils/formatter';
+import { formatterTime, formatterPodStatus, formatterRestartCount } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { getPodsByLabels, deletePod, getPodLog } from '@/services/kubernetes/podService';
 import {
@@ -315,7 +366,7 @@ import {
   rolloBackDaemonset,
 } from '@/services/kubernetes/daemonsetService';
 import PiXiuDiffView from '@/components/pixiuyaml/diffView/index.vue';
-import { getEventByResourceList } from '@/services/kubernetes/eventService';
+import { getEventByResourceList, getDaemonSetEventList } from '@/services/kubernetes/eventService';
 import { getDaemonsetReplicasets } from '@/services/kubernetes/replicasetService';
 
 const { proxy } = getCurrentInstance();
@@ -517,13 +568,6 @@ const onChange = (v) => {
   }
 };
 
-const onEventChange = (v) => {
-  data.pageEventInfo.limit = v.limit;
-  data.pageEventInfo.page = v.page;
-
-  data.eventTableData = getTableData(data.pageEventInfo, data.daemonsetEvents);
-};
-
 const getPodLogs = async () => {
   // 在指定 pod 和容器的情况下，才请求log
   if (data.selectedPod === '' || data.selectedContainer === '') {
@@ -568,7 +612,7 @@ const getPodLogs = async () => {
 };
 
 const GetDaemonsetPods = async () => {
-  let matchLabels = data.daemonset.spec.selector.matchLabels;
+  let matchLabels = data.object.spec.selector.matchLabels;
   let labels = [];
   for (let key in matchLabels) {
     labels.push(key + '=' + matchLabels[key]);
@@ -601,42 +645,64 @@ const searchDaemonsetPods = async () => {
   data.tableData = getTableData(data.pageInfo, allSearchedPods);
 };
 
-const getDaemonsetEvents = async () => {
-  const [result, err] = await getEventByResourceList(
-    data.cluster,
-    data.namespace,
-    data.name,
-    'daemonsets',
-  );
+// 事件处理开始
+const GetEvents = async () => {
+  data.eventData.loading = true;
+  const [result, err] = await getDaemonSetEventList(data.cluster, data.namespace, data.name);
+  data.eventData.loading = false;
   if (err) {
     proxy.$notify.error({ title: 'Event', message: err.response.data.message });
     return;
   }
-  data.daemonsetEvents = result;
-  data.pageEventInfo.total = result.length;
-  data.eventTableData = getTableData(data.pageEventInfo, data.daemonsetEvents);
+  data.eventData.events = result;
+  data.eventData.pageInfo.total = result.length;
+  data.eventData.eventTableData = getTableData(data.eventData.pageInfo, data.eventData.events);
 };
 
-const deleteEventObject = async (row) => {
-  const [result, err] = await deleteEvent(data.cluster, data.namespace, row.metadata.name);
-  if (err) {
-    proxy.$notify.error({ title: 'Event', message: err.response.data.message });
+const onEventChange = (v) => {
+  data.eventData.pageInfo.limit = v.limit;
+  data.eventData.pageInfo.page = v.page;
+  data.eventData.eventTableData = getTableData(data.eventData.pageInfo, data.nodeEvents);
+};
+
+const handleEventSelectionChange = (events) => {
+  data.eventData.multipleEventSelection = [];
+  for (let event of events) {
+    data.eventData.multipleEventSelection.push(event.metadata);
+  }
+};
+const handleDeleteEventsDialog = (row) => {
+  if (data.eventData.multipleEventSelection.length === 0) {
+    proxy.$notify.warning('未选择待删除事件');
     return;
   }
-  await getDaemonsetEvents();
-  proxy.$notify.success({ title: 'Event', message: `${row.metadata.name} 删除成功` });
+
+  data.deleteEventDialog.close = true;
+  data.deleteEventDialog.deleteName = 'events';
+  data.deleteEventDialog.namespace = '';
 };
 
-const deleteEventsInBatch = async () => {
-  for (let event of data.multipleEventSelection) {
-    const [result, err] = await deleteEvent(data.cluster, data.namespace, event);
+const confirmEvent = async () => {
+  for (let event of data.eventData.multipleEventSelection) {
+    const [result, err] = await deleteEvent(data.cluster, event.namespace, event.name);
     if (err) {
-      proxy.$notify.error({ title: 'Pod', message: err.response.data.message });
+      proxy.$notify.error(err.response.data.message);
+      return;
     }
   }
-  await getDaemonsetEvents();
-  proxy.$notify.success({ title: 'Events', message: '批量删除事件成功' });
+
+  cancelEvent();
+  proxy.$notify.success('批量删除事件成功');
+  GetEvents();
 };
+
+const cancelEvent = () => {
+  data.deleteEventDialog.close = false;
+  setTimeout(() => {
+    data.deleteEventDialog.deleteName = '';
+  }, 100);
+};
+// 事件处理结束
 
 const handlePodSelectionChange = (pods) => {
   data.multiplePodSelection = [];
@@ -645,21 +711,23 @@ const handlePodSelectionChange = (pods) => {
   }
 };
 
-const handleEventSelectionChange = (events) => {
-  data.multipleEventSelection = [];
-  for (let event of events) {
-    data.multipleEventSelection.push(event.metadata.name);
-  }
-};
-
 const handleClick = (tab, event) => {};
 
 const handleChange = async (name) => {
-  switch (name) {
-    case 'second':
-      await GetDaemonsetPods();
-      break;
-    case 'third':
+  if (name === 'second') {
+    GetDaemonsetPods();
+  } else {
+    data.podData.pods = [];
+    data.podData.pageInfo.total = 0;
+    data.podData.tableData = [];
+  }
+
+  if (name === 'third') {
+    GetEvents();
+  } else {
+    data.eventData.events = [];
+    data.eventData.pageInfo.total = 0;
+    data.eventData.eventTableData = [];
   }
 };
 

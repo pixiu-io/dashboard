@@ -90,3 +90,7 @@ export const getNodeEventList = async (cluster, uid, name) => {
 export const getServiceEventList = async (cluster, uid, namespace, name) => {
   return getRawEventList(cluster, uid, namespace, name, '', false);
 };
+
+export const getDaemonSetEventList = async (cluster, uid, namespace, name) => {
+  return getRawEventList(cluster, uid, namespace, name, 'DaemonSet', true);
+};
