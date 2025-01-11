@@ -1174,7 +1174,6 @@ const GetPodLogs = async () => {
     proxy.$notify.error(err.response.data.message);
     return;
   }
-
   data.logData.podLogs = [];
   for (let content of result) {
     data.logData.podLogs.push({ lineContent: content });
