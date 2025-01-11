@@ -587,15 +587,6 @@ onMounted(async () => {
   GetStatefulSet();
 });
 
-const changePod = async (val) => {
-  data.selectedPod = val;
-  data.selectedContainers = data.selectedPodMap[data.selectedPod];
-
-  if (data.selectedContainers.length > 0) {
-    data.selectedContainer = data.selectedContainers[0];
-  }
-};
-
 const GetStatefulSet = async () => {
   const [result, err] = await getStatefulSet(data.cluster, data.namespace, data.name);
   if (err) {
@@ -687,6 +678,71 @@ const cancelEvent = () => {
 };
 // 事件处理结束
 
+// 日志处理开始
+const initLogOptions = async () => {
+  let matchLabels = data.object.spec.selector.matchLabels;
+  let labels = [];
+  for (let key in matchLabels) {
+    labels.push(key + '=' + matchLabels[key]);
+  }
+  const [result, err] = await getPodsByLabels(data.cluster, data.namespace, labels.join(','));
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.logData.selectedPodMap = {};
+  data.logData.selectedPods = [];
+  for (let item of result.items) {
+    let cs = [];
+    for (let c of item.spec.containers) {
+      cs.push(c.name);
+    }
+
+    data.logData.selectedPods.push(item.metadata.name);
+    data.logData.selectedPodMap[item.metadata.name] = cs;
+  }
+
+  if (data.logData.selectedPods.length > 0) {
+    data.logData.selectedPod = data.logData.selectedPods[0];
+    data.logData.selectedContainers = data.logData.selectedPodMap[data.logData.selectedPod];
+    if (data.logData.selectedContainers.length > 0) {
+      data.logData.selectedContainer = data.logData.selectedContainers[0];
+    }
+  }
+};
+
+const changePod = async (val) => {
+  data.logData.selectedPod = val;
+  data.logData.selectedContainers = data.logData.selectedPodMap[data.logData.selectedPod];
+};
+
+const GetPodLogs = async () => {
+  // 在指定 pod 和容器的情况下，才请求log
+  if (data.logData.selectedPod === '' || data.logData.selectedContainer === '') {
+    return;
+  }
+
+  data.logData.loading = true;
+  const [result, err] = await getPodContainerLog(
+    data.cluster,
+    data.namespace,
+    data.logData.selectedPod,
+    data.logData.selectedContainer,
+    data.logData.line,
+  );
+  data.logData.loading = false;
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+  data.logData.podLogs = [];
+  for (let content of result) {
+    data.logData.podLogs.push({ lineContent: content });
+  }
+};
+//日志处理结束
+
 const handleClick = (tab, event) => {};
 
 const handleChange = (name) => {
@@ -704,6 +760,17 @@ const handleChange = (name) => {
     data.eventData.events = [];
     data.eventData.pageInfo.total = 0;
     data.eventData.eventTableData = [];
+  }
+
+  if (name === 'four') {
+    initLogOptions();
+  } else {
+    data.logData.podLogs = [];
+    data.logData.selectedPodMap = {};
+    data.logData.selectedPods = [];
+    data.logData.selectedContainers = [];
+    data.logData.selectedPod = '';
+    data.logData.selectedContainer = '';
   }
 };
 
