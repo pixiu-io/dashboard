@@ -56,8 +56,8 @@
       <el-tab-pane label="基本信息" name="first"> </el-tab-pane>
       <el-tab-pane label="容器组" name="second"> </el-tab-pane>
       <el-tab-pane label="事件" name="third"></el-tab-pane>
-      <el-tab-pane label="日志查询" name="five"> </el-tab-pane>
-      <el-tab-pane label="监控" name="six"> </el-tab-pane>
+      <el-tab-pane label="日志查询" name="four"> </el-tab-pane>
+      <el-tab-pane label="监控" name="five"> </el-tab-pane>
     </el-tabs>
 
     <div v-if="data.activeName === 'first'">
@@ -334,7 +334,7 @@
       <pagination :total="data.eventData.pageInfo.total" @on-change="onEventChange"></pagination>
     </div>
 
-    <div v-if="data.activeName === 'five'">
+    <div v-if="data.activeName === 'four'">
       <el-card class="detail-docs" style="margin-left: 10px">
         <el-icon
           style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
@@ -470,7 +470,7 @@
       </el-table>
     </div>
 
-    <div v-if="data.activeName === 'six'">
+    <div v-if="data.activeName === 'five'">
       <div
         class="app-pixiu-describe"
         style="margin-left: 10px; margin-top: 10px; font-size: 14px; color: #000000"
@@ -879,6 +879,8 @@ const handleChange = async (name) => {
 
   if (name === 'four') {
     initLogOptions();
+  } else {
+    data.logData.podLogs = [];
   }
 };
 
