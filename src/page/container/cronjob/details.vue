@@ -470,7 +470,22 @@ const viewYaml = async () => {
 
 const handleClick = (tab, event) => {};
 
-const handleChange = (name) => {};
+const handleChange = (name) => {
+  if (name === 'third') {
+    GetEvents();
+  } else {
+    data.eventData.events = [];
+    data.eventData.pageInfo.total = 0;
+    data.eventData.eventTableData = [];
+  }
+
+  if (name === 'second') {
+    GetJobs();
+  } else {
+    data.jobData.pageInfo.total = 0;
+    data.jobData.tableData = [];
+  }
+};
 
 const goToCronJob = () => {
   const queryParams = { cluster: data.cluster, namespace: data.namespace };
