@@ -51,6 +51,7 @@ import CreateNamespace from './container/namespace/createNamespace.vue';
 import NamespaceDetail from './container/namespace/namespaceDetail.vue';
 import NotFound from './notFound/notFound.vue';
 import Job from './container/job/job.vue';
+import JobDetail from './container/job/details.vue';
 import CreateJob from './container/job/createJob.vue';
 import EditJob from './container/job/editJob.vue';
 import CronJob from './container/cronjob/cronJob.vue';
@@ -130,6 +131,7 @@ export {
   NamespaceDetail,
   NotFound,
   Job,
+  JobDetail,
   CreateJob,
   EditJob,
   CronJob,

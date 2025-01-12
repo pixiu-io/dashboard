@@ -321,7 +321,16 @@ const createJob = () => {
   router.push(url);
 };
 
-const jumpRoute = (row) => {};
+const jumpRoute = (row) => {
+  router.push({
+    name: 'JobDetail',
+    query: {
+      cluster: data.cluster,
+      namespace: data.namespace,
+      name: row.metadata.name,
+    },
+  });
+};
 
 const getJobs = async () => {
   const [result, err] = await getJobList(data.cluster, data.namespace, data.pageInfo);
