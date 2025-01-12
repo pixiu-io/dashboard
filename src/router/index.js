@@ -56,10 +56,12 @@ import {
   CreateNamespace,
   NamespaceDetail,
   Job,
+  JobDetail,
   CreateJob,
   EditJob,
   CronJob,
   CreateCronJob,
+  CronJobDetail,
   EditCronJob,
   Task,
   TaskRun,
@@ -321,6 +323,23 @@ const routes = [
               title: 'ServiceDetail',
             },
             component: ServiceDetail,
+          },
+          {
+            path: 'cronjobs/detail',
+            name: 'CronJobDetail',
+            meta: {
+              title: 'CronJobDetail',
+            },
+            component: CronJobDetail,
+          },
+
+          {
+            path: 'jobs/detail',
+            name: 'JobDetail',
+            meta: {
+              title: 'JobDetail',
+            },
+            component: JobDetail,
           },
           {
             path: 'ingress',

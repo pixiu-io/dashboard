@@ -1503,7 +1503,6 @@ import {
   onBeforeUnmount,
   onBeforeMount,
 } from 'vue';
-import jsYaml from 'js-yaml';
 import { getTableData } from '@/utils/utils';
 import { makePodTemplate, makeObjectMetadata } from '@/utils/k8s';
 import {
@@ -1529,6 +1528,7 @@ import Pagination from '@/components/pagination/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
 const { proxy } = getCurrentInstance();
+const router = useRouter();
 const editYaml = ref();
 
 const data = reactive({
@@ -2160,14 +2160,17 @@ const getCronJobs = async () => {
   data.pageInfo.total = result.total;
   data.tableData = result.items;
 };
+
+const jumpRoute = (row) => {
+  router.push({
+    name: 'CronJobDetail',
+    query: {
+      cluster: data.cluster,
+      namespace: data.namespace,
+      name: row.metadata.name,
+    },
+  });
+};
 </script>
 
-<style>
-/* .el-overlay-dialog {
-  overflow: hidden;
-} */
-
-.el-overlay-dialog {
-  scrollbar-width: none;
-}
-</style>
+<style></style>

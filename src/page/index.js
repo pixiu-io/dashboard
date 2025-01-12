@@ -51,11 +51,13 @@ import CreateNamespace from './container/namespace/createNamespace.vue';
 import NamespaceDetail from './container/namespace/namespaceDetail.vue';
 import NotFound from './notFound/notFound.vue';
 import Job from './container/job/job.vue';
+import JobDetail from './container/job/details.vue';
 import CreateJob from './container/job/createJob.vue';
 import EditJob from './container/job/editJob.vue';
 import CronJob from './container/cronjob/cronJob.vue';
 import CreateCronJob from './container/cronjob/createCronJob.vue';
 import EditCronJob from './container/cronjob/editCronJob.vue';
+import CronJobDetail from './container/cronjob/details.vue';
 import Task from './container/cicd/task.vue';
 import TaskRun from './container/cicd/taskrun.vue';
 import Pipeline from './container/cicd/pipeline.vue';
@@ -129,11 +131,13 @@ export {
   NamespaceDetail,
   NotFound,
   Job,
+  JobDetail,
   CreateJob,
   EditJob,
   CronJob,
   CreateCronJob,
   EditCronJob,
+  CronJobDetail,
   Task,
   TaskRun,
   Pipeline,
