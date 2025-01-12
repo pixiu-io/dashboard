@@ -519,343 +519,126 @@
 <script setup lang="jsx">
 import { useRouter } from 'vue-router';
 import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
-import { formatterTime } from '@/utils/formatter';
-import useClipboard from 'vue-clipboard3';
-import { ElMessage } from 'element-plus';
-import jsYaml from 'js-yaml';
 import MyCodeMirror from '@/components/codemirror/index.vue';
+import pixiuDialog from '@/components/pixiuDialog/index.vue';
+import { getTableData, copy, formatTimestamp } from '@/utils/utils';
+import { formatterTime, formatterPodStatus, formatterRestartCount } from '@/utils/formatter';
+import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
+import Pagination from '@/components/pagination/index.vue';
+import { getStatefulSet } from '@/services/kubernetes/statefulsetService';
+import {
+  getPodsByLabels,
+  getPodContainerLog,
+  deletePod,
+  getPodLog,
+} from '@/services/kubernetes/podService';
+import { getStatefulSetEventList } from '@/services/kubernetes/eventService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
-
-const showDialog = ref(false);
-const selectedContainers = ref([]);
-const selectedContainer = ref('');
-const selectedPod = ref('');
 
 const data = reactive({
   cluster: '',
   name: '',
   namespace: '',
 
-  workloadType: 'Deployment',
+  activeName: 'first',
 
-  pageInfo: {
-    page: 1,
-    limit: 10,
-    query: '',
-    total: 0,
+  object: {
+    metadata: {},
+    spec: {},
+    status: {},
   },
 
-  restarts: 0,
-  loading: false,
+  createTime: '',
 
-  deployment: {},
-  deploymentPods: [],
+  podData: {
+    loading: false,
+    pods: [],
+    tableData: [],
+    pageInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      nameSelector: '',
+      labelSelector: '',
+    },
+  },
 
-  deploymentEvents: [],
-  eventAutoRefresh: true,
+  eventData: {
+    loading: false,
+    events: [],
+    eventTableData: [],
+    multipleEventSelection: [],
 
-  activeName: 'second',
+    pageInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      nameSelector: '',
+      labelSelector: '',
+    },
+  },
 
-  selectedPods: [],
-  selectedPod: '',
-  selectedContainers: [],
-  selectedContainer: '',
-  selectedPodMap: {},
+  logData: {
+    loading: false,
+    selectedPodMap: {},
+    selectedPods: [],
+    selectedPod: '',
+    selectedContainers: [],
+    selectedContainer: '',
 
-  crontab: true,
-  previous: false,
+    previous: false,
+    line: 10,
+    lineOptions: [10, 25, 50, 100],
 
-  logAutoRefresh: true,
-  logLine: '100行日志',
-  logLines: ['50行日志', '100行日志', '200行日志', '500行日志'],
-  selectedLog: 100,
-  podLogs: [],
+    podLogs: [],
+    tableData: [],
 
-  yaml: '',
-  yamlName: '',
-  readOnly: true,
+    pageInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      nameSelector: '',
+      labelSelector: '',
+    },
+  },
+
+  // 删除对象属性
+  deleteDialog: {
+    close: false,
+    objectName: 'Pod',
+    deleteName: '',
+    namespace: '',
+  },
 });
 
 onMounted(async () => {
   data.cluster = proxy.$route.query.cluster;
-  data.name = proxy.$route.query.name;
   data.namespace = proxy.$route.query.namespace;
+  data.name = proxy.$route.query.name;
 
-  await getDeployment();
-  await getDeploymentPods();
-  await getDeploymentEvents();
+  GetCronJob();
 });
 
-const { toClipboard } = useClipboard();
-const copy = async (val) => {
-  try {
-    await toClipboard(val.metadata.name);
-    ElMessage({
-      type: 'success',
-      message: '已复制',
-    });
-  } catch (e) {
-    ElMessage({
-      type: 'error',
-      message: e.valueOf().toString(),
-    });
-  }
-};
-
-const copyYmal = async () => {
-  try {
-    await toClipboard(data.yaml);
-    ElMessage({
-      type: 'success',
-      message: '已复制',
-    });
-  } catch (e) {
-    ElMessage({
-      type: 'error',
-      message: e.valueOf().toString(),
-    });
-  }
-};
-
-const openShell = (val) => {
-  selectedPod.value = val.metadata.name;
-  selectedContainers.value = val.spec.containers;
-  if (val.spec.containers.length > 1) {
-    showDialog.value = true;
-  } else {
-    openWindowShell();
-  }
-};
-
-const openWindowShell = () => {
-  window.open(
-    '/#/podshell?pod=' +
-      selectedPod.value +
-      '&namespace=' +
-      data.namespace +
-      '&cluster=' +
-      data.cluster +
-      '&container=' +
-      selectedContainer.value,
-    '_blank',
-    'width=1000,height=600',
-  );
-};
-
-const changePod = async (val) => {
-  data.selectedPod = val;
-  data.selectedContainers = data.selectedPodMap[data.selectedPod];
-
-  if (data.selectedContainers.length > 0) {
-    data.selectedContainer = data.selectedContainers[0];
-  }
-};
-
-const changeContainer = async (val) => {
-  data.selectedContainer = val;
-};
-
-const changeLogLine = async (val) => {
-  if (val === '50行日志') {
-    data.selectedLog = 50;
-  }
-  if (val === '100行日志') {
-    data.selectedLog = 100;
-  }
-  if (val === '200行日志') {
-    data.selectedLog = 200;
-  }
-  if (val === '500行日志') {
-    data.selectedLog = 500;
-  }
-};
-
-const copyIP = async (val) => {
-  try {
-    if (val.status.podIP === undefined) {
-      ElMessage({
-        type: 'warning',
-        message: '数据为空，无法复制',
-      });
-      return;
-    }
-
-    await toClipboard(val.status.podIP);
-    ElMessage({
-      type: 'success',
-      message: '已复制',
-    });
-  } catch (e) {
-    ElMessage({
-      type: 'error',
-      message: e.valueOf().toString(),
-    });
-  }
-};
-
-const getDeployment = async () => {
-  const res = await proxy.$http({
-    method: 'get',
-    url: `/pixiu/proxy/${data.cluster}/apis/apps/v1/namespaces/${data.namespace}/deployments/${data.name}`,
-  });
-  data.deployment = res;
-
-  data.yaml = jsYaml.dump(data.deployment, { quotingType: '"' });
-};
-
-const deletePod = async (row) => {
-  const pods = await proxy.$http({
-    method: 'delete',
-    url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${row.metadata.namespace}/pods/${row.metadata.name}`,
-  });
-
-  await getDeploymentPods();
-};
-
-const getPodLog = async () => {
-  // 在指定 pod 和容器的情况下，才请求log
-  if (data.selectedPod === '' || data.selectedContainer === '') {
+const GetCronJob = async () => {
+  const [result, err] = await getCronJob(data.cluster, data.namespace, data.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
     return;
   }
-
-  const log = await proxy.$http({
-    method: 'get',
-    url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.namespace}/pods/${data.selectedPod}/log`,
-    data: { container: data.selectedContainer },
-  });
-
-  data.podLogs = log.split('\n');
-};
-
-const getDeploymentPods = async () => {
-  let matchLabels = data.deployment.spec.selector.matchLabels;
-  let labels = [];
-  for (let key in matchLabels) {
-    labels.push(key + '=' + matchLabels[key]);
-  }
-
-  const pods = await proxy.$http({
-    method: 'get',
-    url: `/pixiu/proxy/${data.cluster}/api/v1/namespaces/${data.namespace}/pods`,
-    data: {
-      labelSelector: labels.join(','),
-      limit: 500,
-    },
-  });
-  data.deploymentPods = pods.items;
-
-  data.selectedPods = [];
-  data.selectedContainers = [];
-  data.selectedPodMap = {};
-  for (let item of data.deploymentPods) {
-    let cs = [];
-    for (let c of item.spec.containers) {
-      cs.push(c.name);
-    }
-
-    data.selectedPodMap[item.metadata.name] = cs;
-    data.selectedPods.push(item.metadata.name);
-  }
-  if (data.selectedPods.length > 0) {
-    data.selectedPod = data.selectedPods[0];
-
-    data.selectedContainers = data.selectedPodMap[data.selectedPod];
-    if (data.selectedContainers.length > 0) {
-      data.selectedContainer = data.selectedContainers[0];
-    }
-  }
-};
-
-const getDeploymentEvents = async () => {
-  const events = await proxy.$http({
-    method: 'get',
-    url: `/pixiu/kubeproxy/clusters/${data.cluster}/namespaces/${data.namespace}/name/${data.name}/kind/deployment/events`,
-  });
-  data.deploymentEvents = events;
-};
-
-const deleteEvent = async () => {};
-
-const formatterStatus = (row, column, cellValue) => {
-  let phase = cellValue.phase;
-  if (phase == 'Failed') {
-    phase = cellValue.reason;
-  } else if (phase == 'Pending') {
-    return <div class="color-yellow-word">{phase}</div>;
-    // const containerStatuses = cellValue.containerStatuses;
-    // for (let i = 0; i < containerStatuses.length; i++) {
-    //   phase = containerStatuses[i].state.waiting.reason;
-    //   break;
-    // }
-  }
-
-  if (phase == 'Running') {
-    return <div class="color-green-word">{phase}</div>;
-  }
-  return <div>{phase}</div>;
-};
-
-const getPodRestartCount = (row, column, cellValue) => {
-  let count = 0;
-  if (cellValue === undefined) {
-  } else {
-    for (let i = 0; i < cellValue.length; i++) {
-      count = count + cellValue[i].restartCount;
-    }
-  }
-
-  return <div>{count} 次</div>;
-};
-
-const padZero = (number) => {
-  return number.toString().padStart(2, '0');
+  data.object = result;
+  data.createTime = formatTimestamp(data.object.metadata.creationTimestamp);
 };
 
 const handleClick = (tab, event) => {};
 
 const handleChange = (name) => {};
 
-const goToDeployment = () => {
+const goToCronJob = () => {
   const queryParams = { cluster: data.cluster, namespace: data.namespace };
   router.push({ path: '/kubernetes/deployments', query: queryParams });
 };
-
-const confirm = () => {
-  data.readOnly = true;
-};
-
-const cancel = () => {
-  data.readOnly = true;
-};
-
-const editYaml = () => {
-  data.readOnly = false;
-};
 </script>
 
-<style scoped="scoped">
-.deployment-tab {
-  margin-top: 1px;
-  margin-bottom: -32px;
-}
-
-.demo-tabs .el-tabs__content {
-  padding: 32px;
-  color: #6b778c;
-  font-size: 32px;
-  font-weight: 600;
-}
-
-.deployment-info {
-  color: #909399;
-  font-size: 13px;
-  margin-left: 8px;
-}
-
-.deploy-detail-info {
-  font-size: 13px;
-  color: #29232b;
-}
-</style>
+<style scoped="scoped"></style>
