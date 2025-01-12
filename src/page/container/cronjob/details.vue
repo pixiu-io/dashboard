@@ -246,11 +246,12 @@
           </template>
         </el-table-column>
 
-        <el-table-column prop="status" label="状态" :formatter="formatterPodStatus" />
+        <el-table-column prop="status" label="状态" :formatter="formatterJobStatus" />
 
         <el-table-column prop="metadata.namespace" label="执行情况(完成/全部)"> </el-table-column>
 
-        <el-table-column prop="status.podIP" label="运行时长"> </el-table-column>
+        <el-table-column prop="status" label="运行时长" :formatter="formatterJobDuration">
+        </el-table-column>
 
         <el-table-column
           prop="metadata.creationTimestamp"
@@ -344,7 +345,7 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { getTableData, copy, formatTimestamp } from '@/utils/utils';
-import { formatterTime, formatterPodStatus, formatterRestartCount } from '@/utils/formatter';
+import { formatterTime, formatterJobStatus, formatterJobDuration } from '@/utils/formatter';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getCronJob } from '@/services/kubernetes/cronjobService';
