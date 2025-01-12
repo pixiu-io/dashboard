@@ -753,7 +753,7 @@ const GetPodLogs = async () => {
 
 // 编辑 yaml 开始
 const viewYaml = async () => {
-  const [obj, err] = await getStatefulSet(data.cluster, data.namespace, data.name);
+  const [obj, err] = await getJob(data.cluster, data.namespace, data.name);
   if (err) {
     proxy.$notify.error(err.response.data.message);
     return;

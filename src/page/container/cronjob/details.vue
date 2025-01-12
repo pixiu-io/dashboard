@@ -227,6 +227,14 @@
       <pagination :total="data.eventData.pageInfo.total" @on-change="onEventChange"></pagination>
     </div>
   </el-card>
+
+  <PiXiuViewOrEdit
+    :yaml-dialog="data.yamlDialog"
+    title="编辑Yaml"
+    :yaml="data.yaml"
+    :read-only="false"
+    :refresh="GetCronJob"
+  ></PiXiuViewOrEdit>
 </template>
 
 <script setup lang="jsx">
@@ -238,7 +246,7 @@ import { getTableData, copy, formatTimestamp } from '@/utils/utils';
 import { formatterTime, formatterPodStatus, formatterRestartCount } from '@/utils/formatter';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import Pagination from '@/components/pagination/index.vue';
-import { getStatefulSet } from '@/services/kubernetes/statefulsetService';
+import { getCronJob } from '@/services/kubernetes/cronJobService';
 import {
   getPodsByLabels,
   getPodContainerLog,
@@ -343,6 +351,19 @@ const GetCronJob = async () => {
   data.object = result;
   data.createTime = formatTimestamp(data.object.metadata.creationTimestamp);
 };
+
+// 编辑 yaml 开始
+const viewYaml = async () => {
+  const [obj, err] = await getCronJob(data.cluster, data.namespace, data.name);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.yaml = obj;
+  data.yamlDialog = true;
+};
+// 编辑 yaml 结束
 
 const handleClick = (tab, event) => {};
 
