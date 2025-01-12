@@ -6,7 +6,7 @@
 
     <el-space style="display: flex; margin: 20px 15px">
       <div style="display: flex; align-items: center; height: 100%">
-        <pixiu-icon name="icon-zongrongqizu" size="75px" type="iconfont" color="#006eff" />
+        <pixiu-icon name="icon-renwu" size="75px" type="iconfont" color="#006eff" />
       </div>
       <div
         style="

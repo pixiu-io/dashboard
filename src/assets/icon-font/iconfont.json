@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "4422023",
+      "name": "任务",
+      "font_class": "renwu",
+      "unicode": "e61a",
+      "unicode_decimal": 58906
+    },
+    {
+      "icon_id": "22941351",
+      "name": "定时任务",
+      "font_class": "dingshirenwu",
+      "unicode": "e78c",
+      "unicode_decimal": 59276
+    },
+    {
       "icon_id": "13303501",
       "name": "helm",
       "font_class": "helm1",
