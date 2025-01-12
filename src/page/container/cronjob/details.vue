@@ -226,16 +226,13 @@
       <el-table
         v-loading="data.jobData.loading"
         :data="data.jobData.tableData"
-        stripe
         style="margin-top: 10px; width: 100%"
         header-row-class-name="pixiu-table-header"
         :cell-style="{
           'font-size': '12px',
           color: '#191919',
         }"
-        @selection-change="handlePodSelectionChange"
       >
-        <el-table-column type="selection" width="30" />
         <el-table-column prop="metadata.name" sortable label="任务名称" min-width="120px">
           <template #default="scope">
             <el-link
@@ -378,7 +375,7 @@ const data = reactive({
     tableData: [],
     pageInfo: {
       page: 1,
-      limit: 10,
+      limit: 500,
       total: 0,
       nameSelector: '',
       labelSelector: '',
@@ -441,9 +438,20 @@ const GetJobs = async () => {
     return;
   }
 
-  data.jobData.jobs = result.items;
-  // data.jobData.pageInfo.total = data.jobData.jobs.length;
-  // data.jobData.tableData = getTableData(data.jobData.pageInfo, data.jobData.pods);
+  data.jobData.tableData = [];
+  for (let job of result.items) {
+    if (job.metadata.ownerReferences !== undefined) {
+      if (job.metadata.ownerReferences.length > 0) {
+        if (
+          job.metadata.ownerReferences[0].name === data.name &&
+          job.metadata.ownerReferences[0].uid === data.object.metadata.uid
+        ) {
+          data.jobData.tableData.push(job);
+        }
+      }
+    }
+  }
+  data.jobData.pageInfo.total = data.jobData.tableData.length;
 };
 // 处理任务列表结束
 
