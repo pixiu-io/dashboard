@@ -31,7 +31,7 @@
         </div>
 
         <div style="margin-bottom: -10px; margin-left: 10px">
-          <button class="pixiu-two-button" @click="GetDaemonset">刷新</button>
+          <button class="pixiu-two-button" @click="GetJob">刷新</button>
 
           <button
             class="pixiu-two-button2"

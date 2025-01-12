@@ -31,7 +31,7 @@
         </div>
 
         <div style="margin-bottom: -10px; margin-left: 10px">
-          <button class="pixiu-two-button" @click="GetDaemonset">刷新</button>
+          <button class="pixiu-two-button" @click="GetCronJob">刷新</button>
 
           <button
             class="pixiu-two-button2"
@@ -183,7 +183,7 @@
           ><WarningFilled
         /></el-icon>
         <div style="vertical-align: middle; margin-top: -40px">
-          StatefulSet 关联事件查询，更多查询请至事件中心
+          CronJob 关联事件查询，更多查询请至事件中心
         </div>
       </el-card>
 
@@ -246,7 +246,7 @@ import { getTableData, copy, formatTimestamp } from '@/utils/utils';
 import { formatterTime, formatterPodStatus, formatterRestartCount } from '@/utils/formatter';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import Pagination from '@/components/pagination/index.vue';
-import { getCronJob } from '@/services/kubernetes/cronJobService';
+import { getCronJob } from '@/services/kubernetes/cronjobService';
 import {
   getPodsByLabels,
   getPodContainerLog,
