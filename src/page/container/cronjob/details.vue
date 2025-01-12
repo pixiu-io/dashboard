@@ -183,7 +183,7 @@
           ><WarningFilled
         /></el-icon>
         <div style="vertical-align: middle; margin-top: -40px">
-          管理运行在 sts 上的全部 pod 实例
+          管理运行在 CronJob 上的全部 Job 实例
         </div>
       </el-card>
 
@@ -195,18 +195,18 @@
             <button
               class="pixiu-two-button"
               style="float: right; margin-left: 12px"
-              @click="GetObjectPods"
+              @click="GetJobs"
             >
               查询
             </button>
 
             <el-input
-              v-model="data.podData.pageInfo.nameSelector"
+              v-model="data.jobData.pageInfo.nameSelector"
               placeholder="名称搜索关键字"
               style="width: 35%; float: right"
               clearable
-              @clear="GetObjectPods"
-              @input="GetObjectPods"
+              @clear="GetJobs"
+              @input="GetJobs"
             >
               <template #suffix>
                 <pixiu-icon
@@ -215,7 +215,7 @@
                   size="15px"
                   type="iconfont"
                   color="#909399"
-                  @click="GetObjectPods"
+                  @click="GetJobs"
                 />
               </template>
             </el-input>
@@ -224,8 +224,8 @@
       </el-row>
 
       <el-table
-        v-loading="data.podData.loading"
-        :data="data.podData.tableData"
+        v-loading="data.jobData.loading"
+        :data="data.jobData.tableData"
         stripe
         style="margin-top: 10px; width: 100%"
         header-row-class-name="pixiu-table-header"
@@ -277,7 +277,7 @@
           <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
         </template>
       </el-table>
-      <pagination :total="data.podData.pageInfo.total" @on-change="onChange"></pagination>
+      <pagination :total="data.jobData.pageInfo.total" @on-change="onChange"></pagination>
     </div>
 
     <div v-if="data.activeName === 'third'">
@@ -351,12 +351,7 @@ import { formatterTime, formatterPodStatus, formatterRestartCount } from '@/util
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getCronJob } from '@/services/kubernetes/cronjobService';
-import {
-  getPodsByLabels,
-  getPodContainerLog,
-  deletePod,
-  getPodLog,
-} from '@/services/kubernetes/podService';
+import { getJobList } from '@/services/kubernetes/jobService';
 import { getStatefulSetEventList } from '@/services/kubernetes/eventService';
 
 const { proxy } = getCurrentInstance();
@@ -377,9 +372,9 @@ const data = reactive({
 
   createTime: '',
 
-  podData: {
+  jobData: {
     loading: false,
-    pods: [],
+    jobs: [],
     tableData: [],
     pageInfo: {
       page: 1,
@@ -395,30 +390,6 @@ const data = reactive({
     events: [],
     eventTableData: [],
     multipleEventSelection: [],
-
-    pageInfo: {
-      page: 1,
-      limit: 10,
-      total: 0,
-      nameSelector: '',
-      labelSelector: '',
-    },
-  },
-
-  logData: {
-    loading: false,
-    selectedPodMap: {},
-    selectedPods: [],
-    selectedPod: '',
-    selectedContainers: [],
-    selectedContainer: '',
-
-    previous: false,
-    line: 10,
-    lineOptions: [10, 25, 50, 100],
-
-    podLogs: [],
-    tableData: [],
 
     pageInfo: {
       page: 1,
@@ -455,6 +426,26 @@ const GetCronJob = async () => {
   data.object = result;
   data.createTime = formatTimestamp(data.object.metadata.creationTimestamp);
 };
+
+// 处理任务列表开始
+const GetJobs = async () => {
+  data.jobData.loading = true;
+  const [result, err] = await getJobList(data.cluster, data.namespace, data.jobData.pageInfo);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+  data.jobData.loading = false;
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.jobData.jobs = result.items;
+  // data.jobData.pageInfo.total = data.jobData.jobs.length;
+  // data.jobData.tableData = getTableData(data.jobData.pageInfo, data.jobData.pods);
+};
+// 处理任务列表结束
 
 // 编辑 yaml 开始
 const viewYaml = async () => {
