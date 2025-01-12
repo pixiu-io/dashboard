@@ -185,7 +185,7 @@
           ><WarningFilled
         /></el-icon>
         <div style="vertical-align: middle; margin-top: -40px">
-          管理运行在 sts 上的全部 pod 实例
+          管理运行在 job 上的全部 pod 实例
         </div>
       </el-card>
 
@@ -291,7 +291,7 @@
           ><WarningFilled
         /></el-icon>
         <div style="vertical-align: middle; margin-top: -40px">
-          StatefulSet 关联事件查询，更多查询请至事件中心
+          Job 关联事件查询，更多查询请至事件中心
         </div>
       </el-card>
 
