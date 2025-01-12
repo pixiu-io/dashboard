@@ -248,7 +248,7 @@
 
         <el-table-column prop="status" label="状态" :formatter="formatterPodStatus" />
 
-        <el-table-column prop="metadata.namespace" label="执行情况"> </el-table-column>
+        <el-table-column prop="metadata.namespace" label="执行情况(完成/全部)"> </el-table-column>
 
         <el-table-column prop="status.podIP" label="运行时长"> </el-table-column>
 
