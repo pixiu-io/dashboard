@@ -176,6 +176,108 @@
       </el-form>
     </div>
 
+    <div v-if="data.activeName === 'second'">
+      <el-card class="detail-docs" style="margin-left: 10px">
+        <el-icon
+          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+          ><WarningFilled
+        /></el-icon>
+        <div style="vertical-align: middle; margin-top: -40px">
+          管理运行在 CronJob 上的全部 Job 实例
+        </div>
+      </el-card>
+
+      <el-row>
+        <el-col>
+          <div style="margin-left: 10px">
+            <button style="width: 85px" class="pixiu-two-button2">批量删除</button>
+
+            <button
+              class="pixiu-two-button"
+              style="float: right; margin-left: 12px"
+              @click="GetJobs"
+            >
+              查询
+            </button>
+
+            <el-input
+              v-model="data.jobData.pageInfo.nameSelector"
+              placeholder="名称搜索关键字"
+              style="width: 35%; float: right"
+              clearable
+              @clear="GetJobs"
+              @input="GetJobs"
+            >
+              <template #suffix>
+                <pixiu-icon
+                  name="icon-search"
+                  style="cursor: pointer"
+                  size="15px"
+                  type="iconfont"
+                  color="#909399"
+                  @click="GetJobs"
+                />
+              </template>
+            </el-input>
+          </div>
+        </el-col>
+      </el-row>
+
+      <el-table
+        v-loading="data.jobData.loading"
+        :data="data.jobData.tableData"
+        style="margin-top: 10px; width: 100%"
+        header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#191919',
+        }"
+      >
+        <el-table-column prop="metadata.name" sortable label="任务名称" min-width="120px">
+          <template #default="scope">
+            <el-link
+              class="global-table-world"
+              :underline="false"
+              type="primary"
+              @click="jumpRoute(scope.row)"
+            >
+              {{ scope.row.metadata.name }}
+            </el-link>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="status" label="状态" :formatter="formatterJobStatus" />
+
+        <el-table-column prop="metadata.namespace" label="执行情况(完成/全部)"> </el-table-column>
+
+        <el-table-column prop="status" label="运行时长" :formatter="formatterJobDuration">
+        </el-table-column>
+
+        <el-table-column
+          prop="metadata.creationTimestamp"
+          label="创建时间"
+          sortable
+          :formatter="formatterTime"
+        />
+        <el-table-column fixed="right" label="操作" width="60px">
+          <template #default="scope">
+            <el-button
+              size="small"
+              type="text"
+              style="margin-right: -25px; margin-left: -10px; color: #006eff"
+              @click="handleDeleteDialog(scope.row)"
+            >
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+        <template #empty>
+          <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
+        </template>
+      </el-table>
+      <pagination :total="data.jobData.pageInfo.total" @on-change="onChange"></pagination>
+    </div>
+
     <div v-if="data.activeName === 'third'">
       <el-card class="detail-docs" style="margin-left: 10px">
         <el-icon
@@ -243,16 +345,11 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { getTableData, copy, formatTimestamp } from '@/utils/utils';
-import { formatterTime, formatterPodStatus, formatterRestartCount } from '@/utils/formatter';
+import { formatterTime, formatterJobStatus, formatterJobDuration } from '@/utils/formatter';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getCronJob } from '@/services/kubernetes/cronjobService';
-import {
-  getPodsByLabels,
-  getPodContainerLog,
-  deletePod,
-  getPodLog,
-} from '@/services/kubernetes/podService';
+import { getJobList } from '@/services/kubernetes/jobService';
 import { getStatefulSetEventList } from '@/services/kubernetes/eventService';
 
 const { proxy } = getCurrentInstance();
@@ -273,13 +370,13 @@ const data = reactive({
 
   createTime: '',
 
-  podData: {
+  jobData: {
     loading: false,
-    pods: [],
+    jobs: [],
     tableData: [],
     pageInfo: {
       page: 1,
-      limit: 10,
+      limit: 500,
       total: 0,
       nameSelector: '',
       labelSelector: '',
@@ -291,30 +388,6 @@ const data = reactive({
     events: [],
     eventTableData: [],
     multipleEventSelection: [],
-
-    pageInfo: {
-      page: 1,
-      limit: 10,
-      total: 0,
-      nameSelector: '',
-      labelSelector: '',
-    },
-  },
-
-  logData: {
-    loading: false,
-    selectedPodMap: {},
-    selectedPods: [],
-    selectedPod: '',
-    selectedContainers: [],
-    selectedContainer: '',
-
-    previous: false,
-    line: 10,
-    lineOptions: [10, 25, 50, 100],
-
-    podLogs: [],
-    tableData: [],
 
     pageInfo: {
       page: 1,
@@ -352,6 +425,37 @@ const GetCronJob = async () => {
   data.createTime = formatTimestamp(data.object.metadata.creationTimestamp);
 };
 
+// 处理任务列表开始
+const GetJobs = async () => {
+  data.jobData.loading = true;
+  const [result, err] = await getJobList(data.cluster, data.namespace, data.jobData.pageInfo);
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+  data.jobData.loading = false;
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+
+  data.jobData.tableData = [];
+  for (let job of result.items) {
+    if (job.metadata.ownerReferences !== undefined) {
+      if (job.metadata.ownerReferences.length > 0) {
+        if (
+          job.metadata.ownerReferences[0].name === data.name &&
+          job.metadata.ownerReferences[0].uid === data.object.metadata.uid
+        ) {
+          data.jobData.tableData.push(job);
+        }
+      }
+    }
+  }
+  data.jobData.pageInfo.total = data.jobData.tableData.length;
+};
+// 处理任务列表结束
+
 // 编辑 yaml 开始
 const viewYaml = async () => {
   const [obj, err] = await getCronJob(data.cluster, data.namespace, data.name);
@@ -367,7 +471,22 @@ const viewYaml = async () => {
 
 const handleClick = (tab, event) => {};
 
-const handleChange = (name) => {};
+const handleChange = (name) => {
+  if (name === 'third') {
+    GetEvents();
+  } else {
+    data.eventData.events = [];
+    data.eventData.pageInfo.total = 0;
+    data.eventData.eventTableData = [];
+  }
+
+  if (name === 'second') {
+    GetJobs();
+  } else {
+    data.jobData.pageInfo.total = 0;
+    data.jobData.tableData = [];
+  }
+};
 
 const goToCronJob = () => {
   const queryParams = { cluster: data.cluster, namespace: data.namespace };
