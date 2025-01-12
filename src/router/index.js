@@ -60,6 +60,7 @@ import {
   EditJob,
   CronJob,
   CreateCronJob,
+  CronJobDetail,
   EditCronJob,
   Task,
   TaskRun,
@@ -321,6 +322,14 @@ const routes = [
               title: 'ServiceDetail',
             },
             component: ServiceDetail,
+          },
+          {
+            path: 'cronjobs/detail',
+            name: 'CronJobDetail',
+            meta: {
+              title: 'CronJobDetail',
+            },
+            component: CronJobDetail,
           },
           {
             path: 'ingress',

@@ -56,6 +56,7 @@ import EditJob from './container/job/editJob.vue';
 import CronJob from './container/cronjob/cronJob.vue';
 import CreateCronJob from './container/cronjob/createCronJob.vue';
 import EditCronJob from './container/cronjob/editCronJob.vue';
+import CronJobDetail from './container/cronjob/details.vue';
 import Task from './container/cicd/task.vue';
 import TaskRun from './container/cicd/taskrun.vue';
 import Pipeline from './container/cicd/pipeline.vue';
@@ -134,6 +135,7 @@ export {
   CronJob,
   CreateCronJob,
   EditCronJob,
+  CronJobDetail,
   Task,
   TaskRun,
   Pipeline,
