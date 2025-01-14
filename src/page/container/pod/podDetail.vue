@@ -986,28 +986,15 @@ const cancelEvent = () => {
 
 // 日志处理开始
 const initLogOptions = async () => {
-  let matchLabels = data.object.spec.selector.matchLabels;
-  let labels = [];
-  for (let key in matchLabels) {
-    labels.push(key + '=' + matchLabels[key]);
-  }
-  const [result, err] = await getPodsByLabels(data.cluster, data.namespace, labels.join(','));
-  if (err) {
-    proxy.$notify.error(err.response.data.message);
-    return;
-  }
-
   data.logData.selectedPodMap = {};
   data.logData.selectedPods = [];
-  for (let item of result.items) {
-    let cs = [];
-    for (let c of item.spec.containers) {
-      cs.push(c.name);
-    }
 
-    data.logData.selectedPods.push(item.metadata.name);
-    data.logData.selectedPodMap[item.metadata.name] = cs;
+  let cs = [];
+  for (let c of data.pod.spec.containers) {
+    cs.push(c.name);
   }
+  data.logData.selectedPods.push(data.pod.metadata.name);
+  data.logData.selectedPodMap[data.pod.metadata.name] = cs;
 
   if (data.logData.selectedPods.length > 0) {
     data.logData.selectedPod = data.logData.selectedPods[0];
