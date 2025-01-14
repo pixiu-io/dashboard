@@ -307,7 +307,7 @@ const jumpRoute = (row) => {
     name: 'ServiceDetail',
     query: {
       cluster: data.cluster,
-      namespace: data.namespace,
+      namespace: row.metadata.namespace,
       name: row.metadata.name,
     },
   });

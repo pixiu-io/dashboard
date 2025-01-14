@@ -1047,7 +1047,7 @@ const jumpRoute = (row) => {
     name: 'DaemonsetDetail',
     query: {
       cluster: data.cluster,
-      namespace: data.namespace,
+      namespace: row.metadata.namespace,
       name: row.metadata.name,
     },
   });
