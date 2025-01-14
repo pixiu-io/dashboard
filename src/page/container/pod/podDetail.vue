@@ -282,10 +282,7 @@
           <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
         </template>
       </el-table>
-      <pagination
-        :total="data.eventData.pageEventInfo.total"
-        @on-change="onEventChange"
-      ></pagination>
+      <pagination :total="data.eventData.pageInfo.total" @on-change="onEventChange"></pagination>
     </div>
 
     <div v-if="data.activeName === 'four'">
@@ -927,9 +924,9 @@ const getMetricsInfo = async (name, namespace) => {
 // 事件处理开始
 const GetEvents = async () => {
   data.eventData.loading = true;
-  const [result, err] = await getDaemonSetEventList(
+  const [result, err] = await getPodEventList(
     data.cluster,
-    data.object.metadata.uid,
+    data.pod.metadata.uid,
     data.namespace,
     data.name,
   );
