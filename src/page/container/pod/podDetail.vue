@@ -687,6 +687,7 @@ import {
   getPodContainerLog,
   deletePod,
   getPodLog,
+  getPod,
 } from '@/services/kubernetes/podService';
 
 const { proxy } = getCurrentInstance();
