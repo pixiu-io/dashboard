@@ -255,7 +255,7 @@
       <el-row>
         <el-col>
           <div style="margin-left: 10px">
-            <button class="pixiu-two-button" @click="getPodEvents">查询</button>
+            <button class="pixiu-two-button" @click="GetEvents">查询</button>
             <button
               style="margin-left: 10px; width: 85px"
               class="pixiu-two-button2"
@@ -795,7 +795,7 @@ const getMetricsInfo = async (name, namespace) => {
   data.monitorData.memoryOption.series[0].data = memMetric;
 };
 
-const getPodEvents = async () => {
+const GetEvents = async () => {
   data.eventData.loading = true;
   const [result, err] = await getPodEventList(
     data.cluster,
@@ -932,7 +932,7 @@ const confirm = async () => {
   cancel();
 
   proxy.$notify.success('批量删除事件成功');
-  getPodEvents();
+  GetEvents();
 };
 
 const cancel = () => {
@@ -972,7 +972,7 @@ const closeLogDrawer = () => {
 const handleClick = (tab, event) => {};
 const handleChange = (name) => {
   if (name === 'third') {
-    getPodEvents();
+    GetEvents();
   }
 
   if (name === 'four') {
