@@ -1,9 +1,4 @@
 <template>
-  <!-- <div class="title-card-container2">
-    <div style="flex-grow: 1">
-      <PiXiuYaml :refresh="getNamespaces" title="命名空间" :display-namespace="false"></PiXiuYaml>
-    </div>
-  </div> -->
   <Description
     :description="'Namespace 提供一种机制，将同一集群中的资源划分为相互隔离的组。同一名字空间内的资源名称要唯一。'"
   />
@@ -35,7 +30,6 @@
       <el-table
         v-loading="data.loading"
         :data="data.tableData"
-        stripe
         style="margin-top: 2px; width: 100%"
         :cell-style="{
           'font-size': '12px',
@@ -49,6 +43,7 @@
           <template #default="scope">
             <el-link
               class="global-table-world"
+              :underline="false"
               type="primary"
               @click="jumpNamespaceRoute(scope.row)"
             >
@@ -59,14 +54,14 @@
 
         <el-table-column label="状态" prop="status" sortable :formatter="formatStatus">
         </el-table-column>
-
+        <!--
         <el-table-column
           prop="metadata.labels"
           label="Labels"
           sortable
           :formatter="formatterLabelsBackup2"
           width="380px"
-        />
+        /> -->
 
         <el-table-column
           label="创建时间"
@@ -78,7 +73,7 @@
 
         <el-table-column label="描述" prop="-"> <span>-</span> </el-table-column>
 
-        <el-table-column fixed="right" label="操作" width="200px">
+        <el-table-column fixed="right" label="操作" width="180px">
           <template #default="scope">
             <el-button
               size="small"
@@ -601,8 +596,6 @@ const searchNamespace = async () => {
 };
 
 const jumpNamespaceRoute = (row) => {
-  proxy.$notify.warning('暂不支持，请多关注社区变动');
-  return;
   router.push({
     name: 'NamespaceDetail',
     query: {
@@ -628,15 +621,6 @@ const editYaml = async (row) => {
   data.editYamlDialog = true;
   data.yaml = result;
 };
-
-const confirmEditYaml = async (yamlData) => {
-  //todo
-};
 </script>
 
-<style scoped="scoped">
-.icon-box {
-  padding: 3px;
-  margin-top: -1px;
-}
-</style>
+<style scoped="scoped"></style>
