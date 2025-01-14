@@ -88,7 +88,7 @@ export const getNodeEventList = async (cluster, uid, name) => {
 };
 
 export const getServiceEventList = async (cluster, uid, namespace, name) => {
-  return getRawEventList(cluster, uid, namespace, name, '', false);
+  return getRawEventList(cluster, uid, namespace, name, '', true);
 };
 
 export const getDaemonSetEventList = async (cluster, uid, namespace, name) => {
@@ -97,4 +97,16 @@ export const getDaemonSetEventList = async (cluster, uid, namespace, name) => {
 
 export const getStatefulSetEventList = async (cluster, uid, namespace, name) => {
   return getRawEventList(cluster, uid, namespace, name, 'StatefulSet', true);
+};
+
+export const getJobEventList = async (cluster, uid, namespace, name) => {
+  return getRawEventList(cluster, uid, namespace, name, 'Job', true);
+};
+
+export const getCronJobEventList = async (cluster, uid, namespace, name) => {
+  return getRawEventList(cluster, uid, namespace, name, 'CronJob', true);
+};
+
+export const getDeploymentEventList = async (cluster, uid, namespace, name) => {
+  return getRawEventList(cluster, uid, namespace, name, 'Deployment', true);
 };
