@@ -33,10 +33,6 @@
         <div style="margin-bottom: -10px; margin-left: 10px">
           <button class="pixiu-two-button" @click="GetPod">刷新</button>
 
-          <button class="pixiu-two-button2" style="margin-left: 10px" @click="handleLogDrawer">
-            日志
-          </button>
-
           <button
             class="pixiu-two-button2"
             style="margin-left: 10px; width: 85px"
@@ -51,10 +47,6 @@
             @click="handleRemoteLoginDialog"
           >
             远程登录
-          </button>
-
-          <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px; color: #171313">
-            更多操作
           </button>
         </div>
       </div>
@@ -72,6 +64,7 @@
       <el-tab-pane label="基本信息" name="first"> </el-tab-pane>
       <el-tab-pane label="容器" name="second"> </el-tab-pane>
       <el-tab-pane label="事件" name="third"> </el-tab-pane>
+      <el-tab-pane label="日志查询" name="five"> </el-tab-pane>
       <el-tab-pane label="监控指标" name="four"></el-tab-pane>
     </el-tabs>
 
@@ -216,7 +209,6 @@
           color: '#191919',
         }"
       >
-        <el-table-column type="selection" width="30" />
         <el-table-column prop="container.name" sortable label="容器名称"> </el-table-column>
         <el-table-column
           prop="status"
@@ -255,7 +247,7 @@
       <el-row>
         <el-col>
           <div style="margin-left: 10px">
-            <button class="pixiu-two-button" @click="getPodEvents">查询</button>
+            <button class="pixiu-two-button" @click="GetEvents">查询</button>
             <button
               style="margin-left: 10px; width: 85px"
               class="pixiu-two-button2"
@@ -289,10 +281,7 @@
           <div class="table-inline-word">选择的该命名空间的列表为空，可以切换到其他命名空间</div>
         </template>
       </el-table>
-      <pagination
-        :total="data.eventData.pageEventInfo.total"
-        @on-change="onEventChange"
-      ></pagination>
+      <pagination :total="data.eventData.pageInfo.total" @on-change="onEventChange"></pagination>
     </div>
 
     <div v-if="data.activeName === 'four'">
@@ -314,6 +303,142 @@
           <Echart :option="data.monitorData.memoryOption"></Echart>
         </div>
       </div>
+    </div>
+
+    <div v-if="data.activeName === 'five'">
+      <el-card class="detail-docs" style="margin-left: 10px">
+        <el-icon
+          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+          ><WarningFilled
+        /></el-icon>
+        <div style="vertical-align: middle; margin-top: -40px">
+          支持选项应用的标准输出日志，更多类型日志查询，请至日志服务中心
+        </div>
+      </el-card>
+
+      <el-form>
+        <el-form-item>
+          <template #label>
+            <span style="margin-left: 10px; font-size: 13px; color: #191919">Pod选项 </span>
+          </template>
+
+          <span style="margin-left: 5px">
+            <el-select
+              v-model="data.logData.selectedPod"
+              style="width: 210px; float: right"
+              @change="changePod"
+            >
+              <el-option
+                v-for="item in data.logData.selectedPods"
+                :key="item"
+                :value="item"
+                :label="item"
+              />
+            </el-select>
+          </span>
+
+          <span style="margin-left: 10px">
+            <el-select
+              v-model="data.logData.selectedContainer"
+              style="width: 210px; float: right; margin-right: 10px"
+            >
+              <el-option
+                v-for="item in data.logData.selectedContainers"
+                :key="item"
+                :value="item"
+                :label="item"
+              />
+            </el-select>
+          </span>
+
+          <div style="margin-left: 4px; margin-top: 6px">
+            <pixiu-icon
+              name="icon-icon-refresh"
+              style="cursor: pointer"
+              size="16px"
+              type="iconfont"
+              color="#909399"
+              @click="getDeploymentPods"
+            />
+          </div>
+        </el-form-item>
+
+        <el-form-item>
+          <template #label>
+            <span style="margin-left: 10px; font-size: 13px; color: #191919">选择行数 </span>
+          </template>
+
+          <span style="margin-left: 5px">
+            <el-select
+              v-model="data.logData.line"
+              style="width: 80px; float: right; margin-right: 10px"
+            >
+              <el-option
+                v-for="item in data.logData.lineOptions"
+                :key="item"
+                :value="item"
+                :label="item"
+              />
+            </el-select>
+          </span>
+          行
+        </el-form-item>
+      </el-form>
+
+      <el-row>
+        <el-col>
+          <div style="margin-left: 10px">
+            <button style="width: 85px" class="pixiu-two-button2">历史日志</button>
+            <button style="width: 85px; margin-left: 10px" class="pixiu-two-button2">
+              实时日志
+            </button>
+
+            <button
+              class="pixiu-two-button"
+              style="float: right; margin-left: 12px"
+              @click="GetPodLogs"
+            >
+              查询
+            </button>
+
+            <el-input
+              v-model="data.logData.pageInfo.nameSelector"
+              placeholder="名称搜索关键字"
+              style="width: 35%; float: right"
+              clearable
+              @clear="GetPodLogs"
+              @input="GetPodLogs"
+            >
+              <template #suffix>
+                <pixiu-icon
+                  name="icon-search"
+                  style="cursor: pointer"
+                  size="15px"
+                  type="iconfont"
+                  color="#909399"
+                  @click="GetPodLogs"
+                />
+              </template>
+            </el-input>
+          </div>
+        </el-col>
+      </el-row>
+
+      <el-table
+        v-loading="data.logData.loading"
+        :data="data.logData.podLogs"
+        style="margin-top: 10px; width: 100%; margin-left: 10px"
+        header-row-class-name="pixiu-table-header"
+        :cell-style="{
+          'font-size': '12px',
+          color: '#191919',
+        }"
+      >
+        <el-table-column label="日志内容" prop="lineContent" />
+        <template #empty>
+          <div class="table-inline-word">暂无日志</div>
+        </template>
+      </el-table>
     </div>
   </el-card>
 
@@ -556,7 +681,13 @@ import {
   formatterTime,
 } from '@/utils/formatter';
 import { getPodMetrics } from '@/services/kubernetes/metricsService';
-import { getPod, getPodLog, watchPodLog } from '@/services/kubernetes/podService';
+import {
+  getPodsByLabels,
+  getPodContainerLog,
+  deletePod,
+  getPodLog,
+  getPod,
+} from '@/services/kubernetes/podService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -578,19 +709,6 @@ const data = reactive({
   activeName: 'first',
 
   createTime: '',
-
-  logData: {
-    width: '55%',
-    drawer: false,
-    containers: [],
-    selectedContainer: '',
-    line: 25,
-    lineOptions: [25, 50, 100],
-    podLogs: '点击查询获取日志',
-    previous: false,
-    //实时日志
-    follow: false,
-  },
 
   remoteLogin: {
     close: false,
@@ -727,21 +845,42 @@ const data = reactive({
     namespace: '',
   },
 
-  eventData: {
+  logData: {
     loading: false,
+    selectedPodMap: {},
+    selectedPods: [],
+    selectedPod: '',
+    selectedContainers: [],
+    selectedContainer: '',
 
-    eventTableData: [],
-    events: [],
-    multipleEventSelection: [],
+    previous: false,
+    line: 10,
+    lineOptions: [10, 25, 50, 100],
 
-    pageEventInfo: {
+    podLogs: [],
+    tableData: [],
+
+    pageInfo: {
       page: 1,
       limit: 10,
       total: 0,
-      search: {
-        field: 'name',
-        searchInfo: '',
-      },
+      nameSelector: '',
+      labelSelector: '',
+    },
+  },
+
+  eventData: {
+    loading: false,
+    events: [],
+    eventTableData: [],
+    multipleEventSelection: [],
+
+    pageInfo: {
+      page: 1,
+      limit: 10,
+      total: 0,
+      nameSelector: '',
+      labelSelector: '',
     },
   },
 });
@@ -752,7 +891,6 @@ onMounted(async () => {
   data.name = proxy.$route.query.name;
 
   GetPod();
-  getMetricsInfo(data.name, data.namespace);
 });
 
 onBeforeMount(() => {});
@@ -769,21 +907,8 @@ const GetPod = async () => {
     proxy.$notify.error(err.response.data.message);
     return;
   }
-
   data.pod = p;
   data.createTime = formatTimestamp(data.pod.metadata.creationTimestamp);
-
-  let containerStatus = {};
-  for (let cs of data.pod.status.containerStatuses) {
-    containerStatus[cs.name] = cs;
-  }
-  data.podContainers = [];
-  for (let c of data.pod.spec.containers) {
-    data.podContainers.push({
-      container: c,
-      status: containerStatus[c.name],
-    });
-  }
 };
 
 const getMetricsInfo = async (name, namespace) => {
@@ -795,23 +920,29 @@ const getMetricsInfo = async (name, namespace) => {
   data.monitorData.memoryOption.series[0].data = memMetric;
 };
 
-const getPodEvents = async () => {
+// 事件处理开始
+const GetEvents = async () => {
   data.eventData.loading = true;
   const [result, err] = await getPodEventList(
     data.cluster,
     data.pod.metadata.uid,
-    data.pod.metadata.namespace,
-    data.pod.metadata.name,
+    data.namespace,
+    data.name,
   );
   data.eventData.loading = false;
   if (err) {
-    proxy.$notify.error(err.response.data.message);
+    proxy.$notify.error({ title: 'Event', message: err.response.data.message });
     return;
   }
-
   data.eventData.events = result;
-  data.eventData.pageEventInfo.total = result.length;
-  data.eventData.eventTableData = getTableData(data.eventData.pageEventInfo, data.eventData.events);
+  data.eventData.pageInfo.total = result.length;
+  data.eventData.eventTableData = getTableData(data.eventData.pageInfo, data.eventData.events);
+};
+
+const onEventChange = (v) => {
+  data.eventData.pageInfo.limit = v.limit;
+  data.eventData.pageInfo.page = v.page;
+  data.eventData.eventTableData = getTableData(data.eventData.pageInfo, data.eventData.events);
 };
 
 const handleEventSelectionChange = (events) => {
@@ -820,17 +951,92 @@ const handleEventSelectionChange = (events) => {
     data.eventData.multipleEventSelection.push(event.metadata);
   }
 };
-
-const handleDeleteDialog = () => {
+const handleDeleteEventsDialog = (row) => {
   if (data.eventData.multipleEventSelection.length === 0) {
     proxy.$notify.warning('未选择待删除事件');
     return;
   }
-  data.deleteDialog.close = true;
-  data.deleteDialog.deleteName = 'events';
-  data.deleteDialog.namespace = '';
+
+  data.deleteEventDialog.close = true;
+  data.deleteEventDialog.deleteName = 'events';
+  data.deleteEventDialog.namespace = '';
 };
 
+const confirmEvent = async () => {
+  for (let event of data.eventData.multipleEventSelection) {
+    const [result, err] = await deleteEvent(data.cluster, event.namespace, event.name);
+    if (err) {
+      proxy.$notify.error(err.response.data.message);
+      return;
+    }
+  }
+
+  cancelEvent();
+  proxy.$notify.success('批量删除事件成功');
+  GetEvents();
+};
+
+const cancelEvent = () => {
+  data.deleteEventDialog.close = false;
+  setTimeout(() => {
+    data.deleteEventDialog.deleteName = '';
+  }, 100);
+};
+// 事件处理结束
+
+// 日志处理开始
+const initLogOptions = async () => {
+  data.logData.selectedPodMap = {};
+  data.logData.selectedPods = [];
+
+  let cs = [];
+  for (let c of data.pod.spec.containers) {
+    cs.push(c.name);
+  }
+  data.logData.selectedPods.push(data.pod.metadata.name);
+  data.logData.selectedPodMap[data.pod.metadata.name] = cs;
+
+  if (data.logData.selectedPods.length > 0) {
+    data.logData.selectedPod = data.logData.selectedPods[0];
+    data.logData.selectedContainers = data.logData.selectedPodMap[data.logData.selectedPod];
+    if (data.logData.selectedContainers.length > 0) {
+      data.logData.selectedContainer = data.logData.selectedContainers[0];
+    }
+  }
+};
+
+const changePod = async (val) => {
+  data.logData.selectedPod = val;
+  data.logData.selectedContainers = data.logData.selectedPodMap[data.logData.selectedPod];
+};
+
+const GetPodLogs = async () => {
+  // 在指定 pod 和容器的情况下，才请求log
+  if (data.logData.selectedPod === '' || data.logData.selectedContainer === '') {
+    return;
+  }
+
+  data.logData.loading = true;
+  const [result, err] = await getPodContainerLog(
+    data.cluster,
+    data.namespace,
+    data.logData.selectedPod,
+    data.logData.selectedContainer,
+    data.logData.line,
+  );
+  data.logData.loading = false;
+  if (err) {
+    proxy.$notify.error(err.response.data.message);
+    return;
+  }
+  data.logData.podLogs = [];
+  for (let content of result) {
+    data.logData.podLogs.push({ lineContent: content });
+  }
+};
+//日志处理结束
+
+// 远程登陆开始
 const handleRemoteLoginDialog = () => {
   data.remoteLogin.close = true;
   data.remoteLogin.pod = data.name;
@@ -868,58 +1074,7 @@ const confirmRemoteLogin = () => {
   );
   cancelRemoteLogin();
 };
-
-const ws = ref(null);
-const getPodLogs = async () => {
-  if (data.logData.selectedContainer === '') {
-    proxy.$notify.warning('查询日志时，容器名称为必选项');
-    return;
-  }
-
-  if (ws.value !== null) {
-    ws.value.close();
-  }
-  if (data.logData.follow) {
-    ws.value = watchPodLog(
-      data.cluster,
-      data.namespace,
-      data.name,
-      data.logData.selectedContainer,
-      data.logData.line,
-    );
-    data.logData.podLogs = '';
-    ws.value.onclose = () => {
-      //关闭连接后打印在终端里
-      data.logData.follow = false;
-      data.logData.podLogs = '';
-      ws.value = null;
-    };
-    let tmpLog = '';
-    ws.value.onmessage = (e) => {
-      if (e.data === 'ping' || !data.logData.follow) {
-        tmpLog += e.data;
-        return;
-      } else {
-        data.logData.podLogs += tmpLog + e.data;
-        tmpLog = '';
-      }
-    };
-  } else {
-    data.logData.podLogs = '';
-    const [result, err] = await getPodLog(
-      data.cluster,
-      data.namespace,
-      data.name,
-      data.logData.selectedContainer,
-      data.logData.line,
-    );
-    if (err) {
-      proxy.$notify.error(err.response.data.message);
-      return;
-    }
-    data.logData.podLogs = result;
-  }
-};
+// 远程登陆结束
 
 const confirm = async () => {
   for (let event of data.eventData.multipleEventSelection) {
@@ -932,7 +1087,7 @@ const confirm = async () => {
   cancel();
 
   proxy.$notify.success('批量删除事件成功');
-  getPodEvents();
+  GetEvents();
 };
 
 const cancel = () => {
@@ -942,37 +1097,41 @@ const cancel = () => {
   }, 100);
 };
 
-const handleLogDrawer = () => {
-  data.logData.containers = [];
-  for (let c of data.pod.spec.containers) {
-    data.logData.containers.push(c.name);
-  }
-  data.logData.drawer = true;
-};
-
-const openLogDrawer = () => {
-  if (data.logData.containers.length > 0) {
-    data.logData.selectedContainer = data.logData.containers[0];
-  }
-};
-
-const closeLogDrawer = () => {
-  if (ws.value !== null) {
-    ws.value.close();
-  }
-
-  data.logData.containers = [];
-  data.logData.selectedContainer = '';
-  data.logData.previous = false;
-  data.logData.follow = false;
-  data.logData.line = 25;
-  data.logData.podLogs = '点击查询获取日志';
-};
-
 const handleClick = (tab, event) => {};
 const handleChange = (name) => {
+  if (name === 'second') {
+    let containerStatus = {};
+    for (let cs of data.pod.status.containerStatuses) {
+      containerStatus[cs.name] = cs;
+    }
+    data.podContainers = [];
+    for (let c of data.pod.spec.containers) {
+      data.podContainers.push({
+        container: c,
+        status: containerStatus[c.name],
+      });
+    }
+  } else {
+    data.podContainers = [];
+  }
+
   if (name === 'third') {
-    getPodEvents();
+    GetEvents();
+  } else {
+    data.eventData.events = [];
+    data.eventData.pageInfo.total = 0;
+    data.eventData.eventTableData = [];
+  }
+
+  if (name === 'five') {
+    initLogOptions();
+  } else {
+    data.logData.podLogs = [];
+    data.logData.selectedPodMap = {};
+    data.logData.selectedPods = [];
+    data.logData.selectedContainers = [];
+    data.logData.selectedPod = '';
+    data.logData.selectedContainer = '';
   }
 
   if (name === 'four') {
