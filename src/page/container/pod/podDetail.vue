@@ -892,7 +892,6 @@ onMounted(async () => {
   data.name = proxy.$route.query.name;
 
   GetPod();
-  getMetricsInfo(data.name, data.namespace);
 });
 
 onBeforeMount(() => {});
@@ -1051,6 +1050,7 @@ const GetPodLogs = async () => {
 };
 //日志处理结束
 
+// 远程登陆开始
 const handleRemoteLoginDialog = () => {
   data.remoteLogin.close = true;
   data.remoteLogin.pod = data.name;
@@ -1088,58 +1088,7 @@ const confirmRemoteLogin = () => {
   );
   cancelRemoteLogin();
 };
-
-const ws = ref(null);
-const getPodLogs = async () => {
-  if (data.logData.selectedContainer === '') {
-    proxy.$notify.warning('查询日志时，容器名称为必选项');
-    return;
-  }
-
-  if (ws.value !== null) {
-    ws.value.close();
-  }
-  if (data.logData.follow) {
-    ws.value = watchPodLog(
-      data.cluster,
-      data.namespace,
-      data.name,
-      data.logData.selectedContainer,
-      data.logData.line,
-    );
-    data.logData.podLogs = '';
-    ws.value.onclose = () => {
-      //关闭连接后打印在终端里
-      data.logData.follow = false;
-      data.logData.podLogs = '';
-      ws.value = null;
-    };
-    let tmpLog = '';
-    ws.value.onmessage = (e) => {
-      if (e.data === 'ping' || !data.logData.follow) {
-        tmpLog += e.data;
-        return;
-      } else {
-        data.logData.podLogs += tmpLog + e.data;
-        tmpLog = '';
-      }
-    };
-  } else {
-    data.logData.podLogs = '';
-    const [result, err] = await getPodLog(
-      data.cluster,
-      data.namespace,
-      data.name,
-      data.logData.selectedContainer,
-      data.logData.line,
-    );
-    if (err) {
-      proxy.$notify.error(err.response.data.message);
-      return;
-    }
-    data.logData.podLogs = result;
-  }
-};
+// 远程登陆结束
 
 const confirm = async () => {
   for (let event of data.eventData.multipleEventSelection) {
@@ -1164,8 +1113,39 @@ const cancel = () => {
 
 const handleClick = (tab, event) => {};
 const handleChange = (name) => {
+  if (name === 'second') {
+    let containerStatus = {};
+    for (let cs of data.pod.status.containerStatuses) {
+      containerStatus[cs.name] = cs;
+    }
+    data.podContainers = [];
+    for (let c of data.pod.spec.containers) {
+      data.podContainers.push({
+        container: c,
+        status: containerStatus[c.name],
+      });
+    }
+  } else {
+    data.podContainers = [];
+  }
+
   if (name === 'third') {
     GetEvents();
+  } else {
+    data.eventData.events = [];
+    data.eventData.pageInfo.total = 0;
+    data.eventData.eventTableData = [];
+  }
+
+  if (name === 'five') {
+    initLogOptions();
+  } else {
+    data.logData.podLogs = [];
+    data.logData.selectedPodMap = {};
+    data.logData.selectedPods = [];
+    data.logData.selectedContainers = [];
+    data.logData.selectedPod = '';
+    data.logData.selectedContainer = '';
   }
 
   if (name === 'four') {
