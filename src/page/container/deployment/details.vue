@@ -713,7 +713,7 @@ import {
   updateDeployment,
 } from '@/services/kubernetes/deploymentService';
 import PiXiuDiffView from '@/components/pixiuyaml/diffView/index.vue';
-import { getEventList, deleteEvent } from '@/services/kubernetes/eventService';
+import { getDeploymentEventList, deleteEvent } from '@/services/kubernetes/eventService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { getDeploymentReplicasets } from '@/services/kubernetes/replicasetService';
 
@@ -1059,7 +1059,12 @@ const getDeploymentPods = async () => {
 // 事件处理开始
 const GetEvents = async () => {
   data.eventData.loading = true;
-  const [result, err] = await getEventList(data.cluster, data.namespace, data.name);
+  const [result, err] = await getDeploymentEventList(
+    data.cluster,
+    data.object.metadata.uid,
+    data.namespace,
+    data.name,
+  );
   data.eventData.loading = false;
   if (err) {
     proxy.$notify.error({ title: 'Event', message: err.response.data.message });
@@ -1073,7 +1078,7 @@ const GetEvents = async () => {
 const onEventChange = (v) => {
   data.eventData.pageInfo.limit = v.limit;
   data.eventData.pageInfo.page = v.page;
-  data.eventData.eventTableData = getTableData(data.eventData.pageInfo, data.nodeEvents);
+  data.eventData.eventTableData = getTableData(data.eventData.pageInfo, data.eventData.events);
 };
 
 const handleEventSelectionChange = (events) => {

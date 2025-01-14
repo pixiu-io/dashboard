@@ -1,7 +1,7 @@
 <template>
   <el-card class="contend-card-container2" style="margin-top: 1px">
     <div style="margin-top: 10px; float: right">
-      <button class="pixiu-two-button2" style="width: 60px" @click="goToJob">返回</button>
+      <button class="pixiu-two-button2" style="width: 60px" @click="goToCronJob">返回</button>
     </div>
 
     <el-space style="display: flex; margin: 20px 15px">
@@ -350,7 +350,7 @@ import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getCronJob } from '@/services/kubernetes/cronjobService';
 import { getJobList } from '@/services/kubernetes/jobService';
-import { getStatefulSetEventList } from '@/services/kubernetes/eventService';
+import { getCronJobEventList } from '@/services/kubernetes/eventService';
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -489,9 +489,73 @@ const handleChange = (name) => {
 };
 
 const goToCronJob = () => {
-  const queryParams = { cluster: data.cluster, namespace: data.namespace };
-  router.push({ path: '/kubernetes/deployments', query: queryParams });
+  const queryParams = { cluster: data.cluster };
+  router.push({ path: '/kubernetes/cronJob', query: queryParams });
 };
+
+// 事件处理开始
+const GetEvents = async () => {
+  data.eventData.loading = true;
+  const [result, err] = await getCronJobEventList(
+    data.cluster,
+    data.object.metadata.uid,
+    data.namespace,
+    data.name,
+  );
+  data.eventData.loading = false;
+  if (err) {
+    proxy.$notify.error({ title: 'Event', message: err.response.data.message });
+    return;
+  }
+  data.eventData.events = result;
+  data.eventData.pageInfo.total = result.length;
+  data.eventData.eventTableData = getTableData(data.eventData.pageInfo, data.eventData.events);
+};
+
+const onEventChange = (v) => {
+  data.eventData.pageInfo.limit = v.limit;
+  data.eventData.pageInfo.page = v.page;
+  data.eventData.eventTableData = getTableData(data.eventData.pageInfo, data.eventData.events);
+};
+
+const handleEventSelectionChange = (events) => {
+  data.eventData.multipleEventSelection = [];
+  for (let event of events) {
+    data.eventData.multipleEventSelection.push(event.metadata);
+  }
+};
+const handleDeleteEventsDialog = (row) => {
+  if (data.eventData.multipleEventSelection.length === 0) {
+    proxy.$notify.warning('未选择待删除事件');
+    return;
+  }
+
+  data.deleteEventDialog.close = true;
+  data.deleteEventDialog.deleteName = 'events';
+  data.deleteEventDialog.namespace = '';
+};
+
+const confirmEvent = async () => {
+  for (let event of data.eventData.multipleEventSelection) {
+    const [result, err] = await deleteEvent(data.cluster, event.namespace, event.name);
+    if (err) {
+      proxy.$notify.error(err.response.data.message);
+      return;
+    }
+  }
+
+  cancelEvent();
+  proxy.$notify.success('批量删除事件成功');
+  GetEvents();
+};
+
+const cancelEvent = () => {
+  data.deleteEventDialog.close = false;
+  setTimeout(() => {
+    data.deleteEventDialog.deleteName = '';
+  }, 100);
+};
+// 事件处理结束
 </script>
 
 <style scoped="scoped"></style>
