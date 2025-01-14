@@ -209,7 +209,6 @@
           color: '#191919',
         }"
       >
-        <el-table-column type="selection" width="30" />
         <el-table-column prop="container.name" sortable label="容器名称"> </el-table-column>
         <el-table-column
           prop="status"
