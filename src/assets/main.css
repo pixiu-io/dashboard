@@ -31,6 +31,9 @@
   background-color: #006eff;
   cursor: pointer;
 }
+.pixiu-two-button:hover {
+  opacity: 0.8;
+}
 
 .pixiu-two-button2 {
   height: 31px;
@@ -42,6 +45,10 @@
   color: #0366e7;
   background-color: white;
   cursor: pointer;
+}
+.pixiu-two-button2:hover {
+  background-color: #cccccc;
+  opacity: 0.8;
 }
 
 .pixiu-two-button3 {
@@ -57,6 +64,9 @@
   cursor: pointer;
   width: 85px;
 }
+.pixiu-two-button3:hover {
+  opacity: 0.8;
+}
 
 .pixiu-two-button4 {
   height: 31px;
@@ -69,6 +79,10 @@
   background-color: white;
   cursor: pointer;
   width: 85px;
+}
+.pixiu-two-button4:hover {
+  background-color: #cccccc;
+  opacity: 0.8;
 }
 
 /* 通用确认按钮 */
