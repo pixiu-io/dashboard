@@ -649,6 +649,10 @@ const runningStatus = {
     name: 'icon-circle-dot',
     color: '#c62828',
   },
+  已启动: {
+    name: 'icon-circle-dot',
+    color: '#28C65A', // 绿色
+  },
 };
 
 const formatterNodeAuthType = (row, column, cellValue) => {
@@ -759,7 +763,7 @@ const formatterJobStatus = (row, column, cellValue) => {
 export { formatterJobStatus };
 
 const formatterCronJobStatus = (row, column, cellValue) => {
-  let status = '运行中';
+  let status = '已启动';
   if (cellValue.suspend === true) {
     status = '已暂停';
   }
