@@ -92,9 +92,9 @@
 
           <el-col :span="8">
             <el-row>
-              <span class="detail-card-key-style">运行任务数 </span>
+              <span class="detail-card-key-style">定时计划 </span>
               <span class="detail-card-value-style" style="margin-left: 20px">
-                {{ data.object.status.active.length }}
+                {{ data.object.spec.schedule }}
               </span>
             </el-row>
           </el-col>
@@ -111,8 +111,10 @@
 
         <el-row :gutter="20" style="margin-top: 15px">
           <el-col :span="8">
-            <span class="detail-card-key-style">定时计划 </span>
-            <span class="detail-card-value-style"> {{ data.object.spec.schedule }} </span>
+            <span class="detail-card-key-style">正在运行任务数 </span>
+            <span class="detail-card-value-style">
+              {{ data.jobNubmer }}
+            </span>
           </el-col>
         </el-row>
 
@@ -391,6 +393,7 @@ const data = reactive({
 
   createTime: '',
   jobStatus: '',
+  jobNubmer: 0,
 
   jobData: {
     loading: false,
@@ -450,6 +453,7 @@ const GetCronJob = async () => {
     status = '已暂停';
   }
   data.jobStatus = status;
+  data.jobNubmer = data.object.status.active.length;
 };
 
 // 处理任务列表开始
