@@ -93,7 +93,7 @@
           <el-col :span="8">
             <el-row>
               <span class="detail-card-key-style">定时计划 </span>
-              <span class="detail-card-value-style" style="margin-left: 20px">
+              <span class="detail-card-value-style">
                 {{ data.object.spec.schedule }}
               </span>
             </el-row>
