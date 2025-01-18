@@ -58,15 +58,7 @@
     </el-tabs>
 
     <div v-if="data.activeName === 'first'">
-      <el-form style="margin-top: 10px">
-        <el-form-item>
-          <template #label>
-            <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
-              >基本信息
-            </span>
-          </template>
-        </el-form-item>
-
+      <el-form style="margin-top: 20px">
         <el-row :gutter="20">
           <el-col :span="8">
             <span class="detail-card-key-style">负载名称 </span>
@@ -93,28 +85,54 @@
         <el-row :gutter="20" style="margin-top: 15px">
           <el-col :span="8">
             <span class="detail-card-key-style">状态 </span>
-            <span class="detail-card-value-style" style="margin-left: 55px"> 运行中</span>
+            <span class="detail-card-value-style" style="margin-left: 55px">
+              {{ data.jobStatus }}</span
+            >
           </el-col>
 
           <el-col :span="8">
             <el-row>
-              <span class="detail-card-key-style">运行时 </span>
-              <span class="detail-card-value-style" style="margin-left: 40px"> 普通运行时 </span>
+              <span class="detail-card-key-style">定时计划 </span>
+              <span class="detail-card-value-style">
+                {{ data.object.spec.schedule }}
+              </span>
             </el-row>
           </el-col>
 
           <el-col :span="8">
             <el-row>
-              <span class="detail-card-key-style">更新策略 </span>
-              <span class="detail-card-value-style"> 未知 </span>
+              <span class="detail-card-key-style">并发策略 </span>
+              <span class="detail-card-value-style">
+                {{ data.object.spec.concurrencyPolicy }}
+              </span>
             </el-row>
           </el-col>
         </el-row>
 
         <el-row :gutter="20" style="margin-top: 15px">
           <el-col :span="8">
-            <span class="detail-card-key-style">实例个数 </span>
-            <span class="detail-card-value-style"> 1/1 </span>
+            <span class="detail-card-key-style">正在运行任务数 </span>
+            <span class="detail-card-value-style">
+              {{ data.jobNubmer }}
+            </span>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20" style="margin-top: 15px">
+          <el-col :span="8">
+            <span class="detail-card-key-style">保留执行成功任务数 </span>
+            <span class="detail-card-value-style">
+              {{ data.object.spec.successfulJobsHistoryLimit }}
+            </span>
+          </el-col>
+        </el-row>
+
+        <el-row :gutter="20" style="margin-top: 15px">
+          <el-col :span="8">
+            <span class="detail-card-key-style">保留执行失败任务数 </span>
+            <span class="detail-card-value-style">
+              {{ data.object.spec.failedJobsHistoryLimit }}
+            </span>
           </el-col>
         </el-row>
 
@@ -234,16 +252,6 @@
         }"
       >
         <el-table-column prop="metadata.name" sortable label="任务名称" min-width="120px">
-          <template #default="scope">
-            <el-link
-              class="global-table-world"
-              :underline="false"
-              type="primary"
-              @click="jumpRoute(scope.row)"
-            >
-              {{ scope.row.metadata.name }}
-            </el-link>
-          </template>
         </el-table-column>
 
         <el-table-column prop="status" label="状态" :formatter="formatterJobStatus" />
@@ -345,7 +353,12 @@ import { reactive, getCurrentInstance, onMounted, ref } from 'vue';
 import MyCodeMirror from '@/components/codemirror/index.vue';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 import { getTableData, copy, formatTimestamp } from '@/utils/utils';
-import { formatterTime, formatterJobStatus, formatterJobDuration } from '@/utils/formatter';
+import {
+  formatterTime,
+  formatterCronJobStatus,
+  formatterJobStatus,
+  formatterJobDuration,
+} from '@/utils/formatter';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
 import Pagination from '@/components/pagination/index.vue';
 import { getCronJob } from '@/services/kubernetes/cronjobService';
@@ -365,10 +378,12 @@ const data = reactive({
   object: {
     metadata: {},
     spec: {},
-    status: {},
+    status: { active: [] },
   },
 
   createTime: '',
+  jobStatus: '',
+  jobNubmer: 0,
 
   jobData: {
     loading: false,
@@ -423,6 +438,12 @@ const GetCronJob = async () => {
   }
   data.object = result;
   data.createTime = formatTimestamp(data.object.metadata.creationTimestamp);
+  let status = '已启动';
+  if (data.object.spec.suspend) {
+    status = '已暂停';
+  }
+  data.jobStatus = status;
+  data.jobNubmer = data.object.status.active.length;
 };
 
 // 处理任务列表开始

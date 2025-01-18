@@ -649,6 +649,14 @@ const runningStatus = {
     name: 'icon-circle-dot',
     color: '#c62828',
   },
+  已启动: {
+    name: 'icon-circle-dot',
+    color: '#28C65A', // 绿色
+  },
+  执行中: {
+    name: 'icon-circle-dot',
+    color: '#28C65A', // 绿色
+  },
 };
 
 const formatterNodeAuthType = (row, column, cellValue) => {
@@ -740,12 +748,12 @@ export { formatterClusterNode };
 const formatterJobStatus = (row, column, cellValue) => {
   if (!cellValue.conditions) {
     if (cellValue.startTime) {
-      return parseStatus('运行中');
+      return parseStatus('执行中');
     }
     return parseStatus('未执行');
   }
 
-  let status = '运行中';
+  let status = '执行中';
   for (let condition of cellValue.conditions) {
     if (condition.type === 'Complete') {
       if (condition.status === 'True') {
@@ -759,7 +767,7 @@ const formatterJobStatus = (row, column, cellValue) => {
 export { formatterJobStatus };
 
 const formatterCronJobStatus = (row, column, cellValue) => {
-  let status = '运行中';
+  let status = '已启动';
   if (cellValue.suspend === true) {
     status = '已暂停';
   }
