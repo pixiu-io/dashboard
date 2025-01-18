@@ -252,16 +252,6 @@
         }"
       >
         <el-table-column prop="metadata.name" sortable label="任务名称" min-width="120px">
-          <template #default="scope">
-            <el-link
-              class="global-table-world"
-              :underline="false"
-              type="primary"
-              @click="jumpRoute(scope.row)"
-            >
-              {{ scope.row.metadata.name }}
-            </el-link>
-          </template>
         </el-table-column>
 
         <el-table-column prop="status" label="状态" :formatter="formatterJobStatus" />
