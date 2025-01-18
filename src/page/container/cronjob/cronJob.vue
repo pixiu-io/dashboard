@@ -35,7 +35,6 @@
       <el-table
         v-loading="data.loading"
         :data="data.tableData"
-        stripe
         style="margin-top: 2px; width: 100%"
         header-row-class-name="pixiu-table-header"
         :cell-style="{
@@ -44,7 +43,7 @@
         }"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="30" />
+        <!-- <el-table-column type="selection" width="30" /> -->
         <el-table-column prop="metadata.name" sortable label="实例名称">
           <template #default="scope">
             <el-link
@@ -135,7 +134,7 @@
                   >
                     编辑YAML
                   </el-dropdown-item>
-                  <el-dropdown-item class="dropdown-item-buttons"> 修改定时计划 </el-dropdown-item>
+                  <!-- <el-dropdown-item class="dropdown-item-buttons"> 修改定时计划 </el-dropdown-item> -->
                   <el-dropdown-item
                     class="dropdown-item-buttons"
                     @click="handleDeleteDialog(scope.row)"
@@ -1935,6 +1934,10 @@ const openAdvanceOption = () => {
 
 const openContainerAdvanceOption = (item) => {
   item.advance = !item.advance;
+};
+
+const editCronJob = () => {
+  proxy.$notify.warning('暂未实现，请编辑YAML进行设置');
 };
 
 const confirmCreate = async () => {
