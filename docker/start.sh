@@ -6,15 +6,18 @@ if [[ ! -d "/etc/pixiu" ]]; then
     mkdir -p /etc/pixiu
 fi
 
-if [[ -e "/usr/share/nginx/html/pixiu/config.json" ]]; then
-    rm -rf /usr/share/nginx/html/pixiu/config.json
-fi
-if [[ -e "/etc/pixiu/config.json" ]]; then
-    cp /etc/pixiu/config.json /usr/share/nginx/html/pixiu/config.json
+if [[ -e "/static/config.json" ]]; then
+    rm -rf /static/config.json
 fi
 
-echo "Starting pixiu dashboard service"
-nginx -g 'daemon on;'
+URL=$(grep "url" /etc/pixiu/config.yaml | awk -F'url:' '{print $2}' | tr -d '[:space:]')
+if [[  -z "$URL" ]]; then
+    URL="http://localhost:8080"
+fi
+cat >/static/config.json << EOF
+{
+    "url": "${URL}"
+}
+EOF
 
-echo "Starting pixiu backend service"
 /app
