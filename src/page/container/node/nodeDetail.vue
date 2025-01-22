@@ -430,10 +430,23 @@
 
       <el-form-item>
         <template #label>
+          <span class="dialog-label-key-style"> 登陆端口</span>
+        </template>
+        <div class="dialog-label-value-style">
+          <el-input
+            v-model="data.remoteLogin.port"
+            clearable
+            style="margin-left: 3px; width: 50%"
+          />
+        </div>
+      </el-form-item>
+
+      <el-form-item>
+        <template #label>
           <span class="dialog-label-key-style">用户名</span>
         </template>
         <div class="dialog-label-value-style" style="margin-left: 16px; width: 50%">
-          <el-input v-model="data.remoteLogin.user" />
+          <el-input v-model="data.remoteLogin.user" clearable />
         </div>
       </el-form-item>
 
@@ -441,7 +454,7 @@
         <template #label>
           <span class="dialog-label-key-style">密码</span>
         </template>
-        <div class="dialog-label-value-style" style="margin-left: 29px; width: 80%">
+        <div class="dialog-label-value-style" style="margin-left: 29px; width: 50%">
           <el-input v-model="data.remoteLogin.password" clearable show-password />
         </div>
       </el-form-item>
@@ -555,7 +568,7 @@ const data = reactive({
   remoteLogin: {
     close: false,
     ip: '',
-    user: '',
+    user: 'root',
     password: '',
     port: '22',
   },
