@@ -44,9 +44,9 @@
           <button
             class="pixiu-two-button2"
             style="margin-left: 10px; width: 85px"
-            @click="handleRemoteLoginDialog"
+            @click="handleHostRemoteLoginDialog"
           >
-            远程登录
+            远程登陆
           </button>
 
           <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px; color: #171313">
@@ -394,6 +394,69 @@
     @confirm="confirmEvent"
     @cancel="cancelEvent"
   ></pixiuDialog>
+
+  <el-dialog
+    :model-value="data.remoteLogin.close"
+    style="color: #000000; font: 14px"
+    width="500px"
+    align-center
+    center
+    draggable
+    @close="cancelHostRemoteLogin"
+  >
+    <template #header>
+      <div class="dialog-header-style">远程登录</div>
+    </template>
+
+    <el-card class="app-docs" style="margin-top: 0px; height: 40px">
+      <el-icon
+        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+        ><WarningFilled
+      /></el-icon>
+      <div style="vertical-align: middle; margin-top: -40px">
+        基于 WebShell 提供 ssh 登陆虚拟机的功能
+      </div>
+    </el-card>
+
+    <el-form>
+      <el-form-item>
+        <template #label>
+          <span class="dialog-label-key-style">IP地址</span>
+        </template>
+
+        <el-radio-group v-model="data.remoteLogin.ip" style="margin-left: 15px"> </el-radio-group>
+      </el-form-item>
+      <el-form-item>
+        <template #label>
+          <span class="dialog-label-key-style">Command</span>
+        </template>
+
+        <el-radio-group v-model="data.remoteLogin.command" style="margin-left: 15px">
+          <el-radio label="/bin/sh">
+            <span class="dialog-label-value-style">/bin/sh</span>
+          </el-radio>
+          <el-radio label="/bin/bash"> <span style="font-size: 13px"> /bin/bash</span></el-radio>
+        </el-radio-group>
+      </el-form-item>
+    </el-form>
+
+    <div style="margin-top: -25px" />
+
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-delete-cancel-button" @click="cancelHostRemoteLogin"
+          >取消</el-button
+        >
+        <el-button
+          type="primary"
+          class="pixiu-delete-confirm-button"
+          @click="confirmHostRemoteLogin"
+          >确认</el-button
+        >
+      </span>
+      <div style="margin-bottom: 10px" />
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="jsx">
@@ -484,9 +547,11 @@ const data = reactive({
     },
   },
 
-  nodeImages: [],
-
-  tableData: [],
+  remoteLogin: {
+    close: false,
+    ip: '',
+    command: '/bin/sh',
+  },
 
   yaml: '',
   yamlName: '',
@@ -643,6 +708,20 @@ const viewYaml = async () => {
   data.yamlDialog = true;
 };
 // 编辑 yaml 结束
+
+// 远程登录开始
+const handleHostRemoteLoginDialog = () => {
+  data.remoteLogin.close = true;
+};
+
+const confirmHostRemoteLogin = () => {
+  data.remoteLogin.close = false;
+};
+
+const cancelHostRemoteLogin = () => {
+  data.remoteLogin.close = false;
+};
+// 远程登录结束
 
 const goToNode = () => {
   proxy.$router.push({
