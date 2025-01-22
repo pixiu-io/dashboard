@@ -405,7 +405,7 @@
     @close="cancelHostRemoteLogin"
   >
     <template #header>
-      <div class="dialog-header-style">远程登录</div>
+      <div class="dialog-header-style">远程登陆</div>
     </template>
 
     <el-card class="app-docs" style="margin-top: 0px; height: 40px">
@@ -414,7 +414,7 @@
         ><WarningFilled
       /></el-icon>
       <div style="vertical-align: middle; margin-top: -40px">
-        基于 WebShell 提供 ssh 登陆虚拟机的功能
+        基于 WebShell 通过 bash 提供 ssh 登陆节点的功能
       </div>
     </el-card>
 
@@ -425,18 +425,6 @@
         </template>
 
         <el-radio-group v-model="data.remoteLogin.ip" style="margin-left: 15px"> </el-radio-group>
-      </el-form-item>
-      <el-form-item>
-        <template #label>
-          <span class="dialog-label-key-style">Command</span>
-        </template>
-
-        <el-radio-group v-model="data.remoteLogin.command" style="margin-left: 15px">
-          <el-radio label="/bin/sh">
-            <span class="dialog-label-value-style">/bin/sh</span>
-          </el-radio>
-          <el-radio label="/bin/bash"> <span style="font-size: 13px"> /bin/bash</span></el-radio>
-        </el-radio-group>
       </el-form-item>
     </el-form>
 
