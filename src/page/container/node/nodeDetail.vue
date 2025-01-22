@@ -568,7 +568,7 @@ const data = reactive({
   remoteLogin: {
     close: false,
     ip: '',
-    user: 'root',
+    user: '',
     password: '',
     port: '22',
   },
