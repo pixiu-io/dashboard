@@ -740,18 +740,23 @@ const handleHostRemoteLoginDialog = () => {
   }
 
   data.remoteLogin.ip = ip;
-
-  console.log(data.remoteLogin);
-
   data.remoteLogin.close = true;
 };
 
 const confirmHostRemoteLogin = () => {
-  data.remoteLogin.close = false;
+  console.log(data.remoteLogin);
+
+  // data.remoteLogin.close = false;
 };
 
 const cancelHostRemoteLogin = () => {
   data.remoteLogin.close = false;
+  setTimeout(() => {
+    data.remoteLogin.ip = '';
+    data.remoteLogin.port = '22';
+    data.remoteLogin.user = '';
+    data.remoteLogin.password = '';
+  }, 100);
 };
 // 远程登录结束
 
