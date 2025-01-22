@@ -421,14 +421,31 @@
     <el-form>
       <el-form-item>
         <template #label>
-          <span class="dialog-label-key-style">IP地址</span>
+          <span class="dialog-label-key-style">节点地址</span>
         </template>
+        <div class="dialog-label-value-style">
+          {{ data.remoteLogin.ip }}
+        </div>
+      </el-form-item>
 
-        <el-radio-group v-model="data.remoteLogin.ip" style="margin-left: 15px"> </el-radio-group>
+      <el-form-item>
+        <template #label>
+          <span class="dialog-label-key-style">用户名</span>
+        </template>
+        <div class="dialog-label-value-style" style="margin-left: 16px; width: 50%">
+          <el-input v-model="data.remoteLogin.user" />
+        </div>
+      </el-form-item>
+
+      <el-form-item>
+        <template #label>
+          <span class="dialog-label-key-style">密码</span>
+        </template>
+        <div class="dialog-label-value-style" style="margin-left: 29px; width: 80%">
+          <el-input v-model="data.remoteLogin.password" clearable show-password />
+        </div>
       </el-form-item>
     </el-form>
-
-    <div style="margin-top: -25px" />
 
     <template #footer>
       <span class="dialog-footer">
@@ -538,7 +555,9 @@ const data = reactive({
   remoteLogin: {
     close: false,
     ip: '',
-    command: '/bin/sh',
+    user: '',
+    password: '',
+    port: '22',
   },
 
   yaml: '',
@@ -699,6 +718,18 @@ const viewYaml = async () => {
 
 // 远程登录开始
 const handleHostRemoteLoginDialog = () => {
+  let ip;
+  for (let i = 0; i < data.object.status.addresses.length; i++) {
+    if (data.object.status.addresses[i].type === 'InternalIP') {
+      ip = data.object.status.addresses[i].address;
+      break;
+    }
+  }
+
+  data.remoteLogin.ip = ip;
+
+  console.log(data.remoteLogin);
+
   data.remoteLogin.close = true;
 };
 
