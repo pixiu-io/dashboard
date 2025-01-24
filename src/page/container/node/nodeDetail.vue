@@ -411,7 +411,7 @@
         </el-col>
       </el-row>
 
-      <div ref="terminalContainer" class="terminal-container"></div>
+      <!-- <div ref="terminalContainer" class="terminal-container"></div> -->
     </div>
   </el-card>
 
