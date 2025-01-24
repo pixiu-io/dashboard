@@ -60,7 +60,7 @@
   <el-card class="contend-card-container2">
     <el-tabs
       v-model="data.activeName"
-      style="margin-left: 10px"
+      class="detail-tabs-style"
       @tab-click="handleClick"
       @tab-change="handleChange"
     >
@@ -372,7 +372,40 @@
     </div>
 
     <div v-if="data.activeName === 'five'">
-      <div ref="terminalContainer" class="terminal-container"></div>
+      <el-card class="detail-docs" style="margin-left: 10px">
+        <el-icon
+          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+          ><WarningFilled
+        /></el-icon>
+        <div style="vertical-align: middle; margin-top: -40px">
+          基于 WebShell 通过 bash 提供 ssh 登陆节点的功能
+        </div>
+      </el-card>
+
+      <el-row>
+        <el-col>
+          <div style="margin-left: 10px; display: flex">
+            <button class="pixiu-two-button">登陆</button>
+            <button style="margin-left: 10px; width: 85px" class="pixiu-two-button2">
+              设置凭证
+            </button>
+
+            <div class="dialog-label-key-style" style="margin-left: 20px; margin-top: 5px">
+              节点地址:
+            </div>
+            <div class="dialog-label-key-style" style="margin-left: 10px; margin-top: 5px">
+              {{ data.remoteLogin.ip }}
+            </div>
+
+            <div class="dialog-label-key-style" style="margin-left: 20px; margin-top: 5px">
+              SSH端口:
+            </div>
+            <div class="dialog-label-key-style" style="margin-left: 10px; margin-top: 5px">
+              {{ data.remoteLogin.port }}
+            </div>
+          </div>
+        </el-col>
+      </el-row>
     </div>
   </el-card>
 
@@ -483,26 +516,21 @@
 </template>
 
 <script setup lang="jsx">
-import { getCurrentInstance, onMounted, ref, onBeforeUnmount, reactive } from 'vue';
+import { getCurrentInstance, onMounted, ref, reactive } from 'vue';
 import { getNode } from '@/services/kubernetes/nodeService';
 import { getPodsByNode, deletePod } from '@/services/kubernetes/podService';
 import { getTableData, formatTimestamp } from '@/utils/utils';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
-import {
-  formatterNamespace,
-  formatterPodStatus,
-  formatterRestartCount,
-  formatterTime,
-} from '@/utils/formatter';
+import { formatterPodStatus, formatterRestartCount, formatterTime } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { deleteEvent, getNodeEventList } from '@/services/kubernetes/eventService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
-import { Terminal } from '@xterm/xterm';
-import '@xterm/xterm/css/xterm.css';
-import { FitAddon } from '@xterm/addon-fit';
-import Base64 from 'crypto-js/enc-base64';
-import Utf8 from 'crypto-js/enc-utf8';
+import { Terminal } from 'xterm';
+import { FitAddon } from 'xterm-addon-fit';
+import 'xterm/css/xterm.css';
+import 'xterm/lib/xterm.js';
+
 const msgData = '1';
 const msgResize = '2';
 const terminalContainer = ref(null);
@@ -643,6 +671,20 @@ const handleChange = (name) => {
   if (name === 'third') {
     getNodeEvents();
   }
+
+  if (name === 'five') {
+    let ip;
+    for (let i = 0; i < data.object.status.addresses.length; i++) {
+      if (data.object.status.addresses[i].type === 'InternalIP') {
+        ip = data.object.status.addresses[i].address;
+        break;
+      }
+    }
+    data.remoteLogin.ip = ip;
+  } else {
+    data.remoteLogin.ip = '';
+    data.remoteLogin.port = '22';
+  }
 };
 
 // 事件处理开始
@@ -752,16 +794,7 @@ const viewYaml = async () => {
 
 // 远程登录开始
 const handleHostRemoteLoginDialog = () => {
-  let ip;
-  for (let i = 0; i < data.object.status.addresses.length; i++) {
-    if (data.object.status.addresses[i].type === 'InternalIP') {
-      ip = data.object.status.addresses[i].address;
-      break;
-    }
-  }
-
-  data.remoteLogin.ip = ip;
-  data.remoteLogin.close = true;
+  data.activeName = 'five';
 };
 
 const confirmHostRemoteLogin = () => {
@@ -780,9 +813,15 @@ const confirmHostRemoteLogin = () => {
     terminal.loadAddon(fitAddon);
     fitAddon.fit();
     // 初始化Xterm和FitAddon
+
+    const baseAPI = proxy.$http({ method: 'config' });
+    const websocketAddr = baseAPI.replace('http', 'ws');
+
     const webSocket = new WebSocket(
-      `ws://124.222.40.110:8090/pixiu/kubeproxy/nodes/ws?host=59.111.148.85&user=root&password=123456&port=22`,
+      websocketAddr +
+        `/pixiu/kubeproxy/nodes/ws?host=${data.remoteLogin.ip}&user=${data.remoteLogin.user}&password=${data.remoteLogin.password}&port=${data.remoteLogin.port}`,
     );
+
     webSocket.binaryType = 'arraybuffer';
     const enc = new TextDecoder('utf-8');
     webSocket.onmessage = (event) => {
