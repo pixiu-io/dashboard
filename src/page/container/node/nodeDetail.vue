@@ -44,9 +44,9 @@
           <button
             class="pixiu-two-button2"
             style="margin-left: 10px; width: 85px"
-            @click="handleRemoteLoginDialog"
+            @click="ChangeToRemoteLoginTab"
           >
-            远程登录
+            远程登陆
           </button>
 
           <button class="pixiu-two-button2" style="margin-left: 10px; width: 85px; color: #171313">
@@ -60,7 +60,7 @@
   <el-card class="contend-card-container2">
     <el-tabs
       v-model="data.activeName"
-      style="margin-left: 10px"
+      class="detail-tabs-style"
       @tab-click="handleClick"
       @tab-change="handleChange"
     >
@@ -68,6 +68,7 @@
       <el-tab-pane label="容器组" name="second"> </el-tab-pane>
       <el-tab-pane label="事件" name="third"></el-tab-pane>
       <el-tab-pane label="监控指标" name="four"> </el-tab-pane>
+      <el-tab-pane label="远程登陆" name="five"> </el-tab-pane>
     </el-tabs>
 
     <div v-if="data.activeName === 'first'">
@@ -369,6 +370,49 @@
       </el-table>
       <pagination :total="data.eventData.pageInfo.total" @on-change="onEventChange"></pagination>
     </div>
+
+    <div v-if="data.activeName === 'five'">
+      <el-card class="detail-docs" style="margin-left: 10px">
+        <el-icon
+          style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
+          ><WarningFilled
+        /></el-icon>
+        <div style="vertical-align: middle; margin-top: -40px">
+          基于 WebShell 通过 bash 提供 ssh 登陆节点的功能
+        </div>
+      </el-card>
+
+      <el-row>
+        <el-col>
+          <div style="margin-left: 10px; display: flex">
+            <button class="pixiu-two-button">登陆</button>
+            <button
+              style="margin-left: 10px; width: 85px"
+              class="pixiu-two-button2"
+              @click="handleHostRemoteLoginDialog"
+            >
+              设置凭证
+            </button>
+
+            <div class="dialog-label-key-style" style="margin-left: 20px; margin-top: 5px">
+              节点地址:
+            </div>
+            <div class="dialog-label-key-style" style="margin-left: 10px; margin-top: 5px">
+              {{ data.remoteLogin.ip }}
+            </div>
+
+            <div class="dialog-label-key-style" style="margin-left: 20px; margin-top: 5px">
+              SSH端口:
+            </div>
+            <div class="dialog-label-key-style" style="margin-left: 10px; margin-top: 5px">
+              {{ data.remoteLogin.port }}
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+
+      <div ref="terminalContainer" class="terminal-container"></div>
+    </div>
   </el-card>
 
   <PiXiuViewOrEdit
@@ -394,25 +438,98 @@
     @confirm="confirmEvent"
     @cancel="cancelEvent"
   ></pixiuDialog>
+
+  <el-dialog
+    :model-value="data.remoteLogin.close"
+    style="color: #000000; font: 14px"
+    width="500px"
+    align-center
+    center
+    draggable
+    @close="cancelHostRemoteLogin"
+  >
+    <template #header>
+      <div class="dialog-header-style">设置登陆凭证</div>
+    </template>
+
+    <el-form>
+      <el-form-item>
+        <template #label>
+          <span class="dialog-label-key-style"> 登陆端口</span>
+        </template>
+        <div class="dialog-label-value-style">
+          <el-input
+            v-model="data.remoteLogin.port"
+            clearable
+            style="margin-left: 3px; width: 50%"
+          />
+        </div>
+      </el-form-item>
+
+      <el-form-item>
+        <template #label>
+          <span class="dialog-label-key-style">用户名</span>
+        </template>
+        <div class="dialog-label-value-style" style="margin-left: 16px; width: 50%">
+          <el-input v-model="data.remoteLogin.user" clearable />
+        </div>
+      </el-form-item>
+
+      <el-form-item>
+        <template #label>
+          <span class="dialog-label-key-style">密码</span>
+        </template>
+        <div class="dialog-label-value-style" style="margin-left: 29px; width: 50%">
+          <el-input v-model="data.remoteLogin.password" clearable show-password />
+        </div>
+      </el-form-item>
+    </el-form>
+
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button class="pixiu-delete-cancel-button" @click="cancelHostRemoteLogin"
+          >取消</el-button
+        >
+        <el-button
+          type="primary"
+          class="pixiu-delete-confirm-button"
+          @click="confirmHostRemoteLogin"
+          >确认</el-button
+        >
+      </span>
+      <div style="margin-bottom: 10px" />
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="jsx">
-import { reactive, getCurrentInstance, onMounted } from 'vue';
+import { getCurrentInstance, onMounted, ref, reactive } from 'vue';
 import { getNode } from '@/services/kubernetes/nodeService';
 import { getPodsByNode, deletePod } from '@/services/kubernetes/podService';
 import { getTableData, formatTimestamp } from '@/utils/utils';
 import PiXiuViewOrEdit from '@/components/pixiuyaml/viewOrEdit/index.vue';
-import {
-  formatterNamespace,
-  formatterPodStatus,
-  formatterRestartCount,
-  formatterTime,
-} from '@/utils/formatter';
+import { formatterPodStatus, formatterRestartCount, formatterTime } from '@/utils/formatter';
 import Pagination from '@/components/pagination/index.vue';
 import { deleteEvent, getNodeEventList } from '@/services/kubernetes/eventService';
 import pixiuDialog from '@/components/pixiuDialog/index.vue';
 
+import { Terminal } from 'xterm';
+import { FitAddon } from 'xterm-addon-fit';
+import 'xterm/css/xterm.css';
+import 'xterm/lib/xterm.js';
+
+const msgData = '1';
+const msgResize = '2';
+const terminalContainer = ref(null);
+let terminal;
+let fitAddon;
+
 const { proxy } = getCurrentInstance();
+
+const data2 = reactive({
+  rows: 20,
+  cols: 80,
+});
 
 const data = reactive({
   name: '',
@@ -484,9 +601,13 @@ const data = reactive({
     },
   },
 
-  nodeImages: [],
-
-  tableData: [],
+  remoteLogin: {
+    close: false,
+    ip: '',
+    user: '',
+    password: '',
+    port: '22',
+  },
 
   yaml: '',
   yamlName: '',
@@ -536,6 +657,20 @@ const handleChange = (name) => {
   }
   if (name === 'third') {
     getNodeEvents();
+  }
+
+  if (name === 'five') {
+    let ip;
+    for (let i = 0; i < data.object.status.addresses.length; i++) {
+      if (data.object.status.addresses[i].type === 'InternalIP') {
+        ip = data.object.status.addresses[i].address;
+        break;
+      }
+    }
+    data.remoteLogin.ip = ip;
+  } else {
+    data.remoteLogin.ip = '';
+    data.remoteLogin.port = '22';
   }
 };
 
@@ -644,6 +779,96 @@ const viewYaml = async () => {
 };
 // 编辑 yaml 结束
 
+// 远程登录开始
+const ChangeToRemoteLoginTab = () => {
+  data.activeName = 'five';
+};
+
+const confirmHostRemoteLogin = () => {
+  if (terminalContainer.value) {
+    terminal = new Terminal({
+      rendererType: 'canvas', //渲染类型
+      convertEol: false, //启用时，光标将设置为下一行的开头
+      disableStdin: false, //是否应禁用输入
+      cursorStyle: 'underline', //光标样式
+      cursorBlink: true, //光标闪烁
+      theme: {
+        cursor: 'help', //设置光标
+      },
+    });
+    fitAddon = new FitAddon();
+    terminal.loadAddon(fitAddon);
+    fitAddon.fit();
+    // 初始化Xterm和FitAddon
+
+    const baseAPI = proxy.$http({ method: 'config' });
+    const websocketAddr = baseAPI.replace('http', 'ws');
+
+    const webSocket = new WebSocket(
+      websocketAddr +
+        `/pixiu/kubeproxy/nodes/ws?host=${data.remoteLogin.ip}&user=${data.remoteLogin.user}&password=${data.remoteLogin.password}&port=${data.remoteLogin.port}`,
+    );
+
+    webSocket.binaryType = 'arraybuffer';
+    const enc = new TextDecoder('utf-8');
+    webSocket.onmessage = (event) => {
+      terminal.write(enc.decode(event.data));
+    };
+
+    webSocket.onopen = () => {
+      // 将终端挂载到指定的 DOM 容器中
+      terminal.open(terminalContainer.value);
+      fitAddon.fit();
+      terminal.focus();
+    };
+
+    webSocket.onclose = () => {
+      terminal.write('\r\WebTerminal quit!');
+    };
+
+    webSocket.onerror = (event) => {
+      webSocket.close();
+    };
+
+    terminal.onKey((event) => {
+      webSocket.send(msgData + Base64.stringify(Utf8.parse(event.key)), ArrayBuffer);
+    });
+
+    terminal.onResize(({ cols, rows }) => {
+      webSocket.send(
+        msgResize +
+          Base64.stringify(
+            Utf8.parse(
+              JSON.stringify({
+                columns: cols,
+                rows: rows,
+              }),
+            ),
+          ),
+        ArrayBuffer,
+      );
+    });
+
+    // 监听窗口大小变化事件
+    window.addEventListener('resize', () => fitAddon.fit());
+  }
+
+  // data.remoteLogin.close = false;
+};
+
+const handleHostRemoteLoginDialog = () => {
+  data.remoteLogin.close = true;
+};
+
+const cancelHostRemoteLogin = () => {
+  data.remoteLogin.close = false;
+  setTimeout(() => {
+    data.remoteLogin.user = '';
+    data.remoteLogin.password = '';
+  }, 100);
+};
+// 远程登录结束
+
 const goToNode = () => {
   proxy.$router.push({
     name: 'Node',
@@ -663,4 +888,9 @@ const jumpRoute = (row) => {
 };
 </script>
 
-<style scoped="scoped"></style>
+<style scoped="scoped">
+.terminal-container {
+  width: 100vw;
+  min-height: 40vh;
+}
+</style>
