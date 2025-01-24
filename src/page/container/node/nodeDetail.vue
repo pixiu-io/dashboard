@@ -450,16 +450,6 @@
       <div class="dialog-header-style">设置登陆凭证</div>
     </template>
 
-    <el-card class="app-docs" style="margin-top: 0px; height: 40px">
-      <el-icon
-        style="vertical-align: middle; font-size: 16px; margin-left: -25px; margin-top: -50px"
-        ><WarningFilled
-      /></el-icon>
-      <div style="vertical-align: middle; margin-top: -40px">
-        基于 WebShell 通过 bash 提供 ssh 登陆节点的功能
-      </div>
-    </el-card>
-
     <el-form>
       <el-form-item>
         <template #label>
@@ -865,11 +855,13 @@ const confirmHostRemoteLogin = () => {
   // data.remoteLogin.close = false;
 };
 
+const handleHostRemoteLoginDialog = () => {
+  data.remoteLogin.close = true;
+};
+
 const cancelHostRemoteLogin = () => {
   data.remoteLogin.close = false;
   setTimeout(() => {
-    data.remoteLogin.ip = '';
-    data.remoteLogin.port = '22';
     data.remoteLogin.user = '';
     data.remoteLogin.password = '';
   }, 100);
