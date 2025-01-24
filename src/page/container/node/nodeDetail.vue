@@ -410,6 +410,8 @@
           </div>
         </el-col>
       </el-row>
+
+      <div ref="terminalContainer" class="terminal-container"></div>
     </div>
   </el-card>
 
@@ -825,7 +827,6 @@ const confirmHostRemoteLogin = () => {
     };
 
     webSocket.onerror = (event) => {
-      console.error(event);
       webSocket.close();
     };
 
@@ -890,6 +891,6 @@ const jumpRoute = (row) => {
 <style scoped="scoped">
 .terminal-container {
   width: 100vw;
-  height: 100vh;
+  min-height: 40vh;
 }
 </style>
