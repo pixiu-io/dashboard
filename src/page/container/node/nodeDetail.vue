@@ -385,7 +385,7 @@
       <el-row>
         <el-col>
           <div style="margin-left: 10px; display: flex">
-            <button class="pixiu-two-button">登陆</button>
+            <button class="pixiu-two-button" @click="confirmHostRemoteLogin">登陆</button>
             <button
               style="margin-left: 10px; width: 85px"
               class="pixiu-two-button2"
@@ -490,12 +490,7 @@
         <el-button class="pixiu-delete-cancel-button" @click="cancelHostRemoteLogin"
           >取消</el-button
         >
-        <el-button
-          type="primary"
-          class="pixiu-delete-confirm-button"
-          @click="confirmHostRemoteLogin"
-          >确认</el-button
-        >
+        <el-button type="primary" class="pixiu-delete-confirm-button">确认</el-button>
       </span>
       <div style="margin-bottom: 10px" />
     </template>
@@ -785,6 +780,8 @@ const ChangeToRemoteLoginTab = () => {
 };
 
 const confirmHostRemoteLogin = () => {
+  console.log('dddd');
+
   if (terminalContainer.value) {
     terminal = new Terminal({
       rendererType: 'canvas', //渲染类型
