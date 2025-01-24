@@ -44,7 +44,7 @@
           <button
             class="pixiu-two-button2"
             style="margin-left: 10px; width: 85px"
-            @click="handleHostRemoteLoginDialog"
+            @click="ChangeToRemoteLoginTab"
           >
             远程登陆
           </button>
@@ -386,7 +386,11 @@
         <el-col>
           <div style="margin-left: 10px; display: flex">
             <button class="pixiu-two-button">登陆</button>
-            <button style="margin-left: 10px; width: 85px" class="pixiu-two-button2">
+            <button
+              style="margin-left: 10px; width: 85px"
+              class="pixiu-two-button2"
+              @click="handleHostRemoteLoginDialog"
+            >
               设置凭证
             </button>
 
@@ -443,7 +447,7 @@
     @close="cancelHostRemoteLogin"
   >
     <template #header>
-      <div class="dialog-header-style">远程登陆</div>
+      <div class="dialog-header-style">设置登陆凭证</div>
     </template>
 
     <el-card class="app-docs" style="margin-top: 0px; height: 40px">
@@ -457,15 +461,6 @@
     </el-card>
 
     <el-form>
-      <el-form-item>
-        <template #label>
-          <span class="dialog-label-key-style">节点地址</span>
-        </template>
-        <div class="dialog-label-value-style">
-          {{ data.remoteLogin.ip }}
-        </div>
-      </el-form-item>
-
       <el-form-item>
         <template #label>
           <span class="dialog-label-key-style"> 登陆端口</span>
@@ -793,7 +788,7 @@ const viewYaml = async () => {
 // 编辑 yaml 结束
 
 // 远程登录开始
-const handleHostRemoteLoginDialog = () => {
+const ChangeToRemoteLoginTab = () => {
   data.activeName = 'five';
 };
 
