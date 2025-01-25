@@ -73,13 +73,13 @@
 
     <div v-if="data.activeName === 'first'">
       <el-form style="margin-top: 10px">
-        <el-form-item>
+        <!-- <el-form-item>
           <template #label>
             <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
               >基本信息
             </span>
           </template>
-        </el-form-item>
+        </el-form-item> -->
 
         <el-row :gutter="20">
           <el-col :span="8">
@@ -145,7 +145,7 @@
           </el-col>
         </el-row>
 
-        <el-form style="margin-top: 30px">
+        <el-form style="margin-top: 20px">
           <el-form-item>
             <template #label>
               <span class="detail-card-key-style" style="font-size: 14px; color: #040000"
